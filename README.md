@@ -1,2 +1,3 @@
 # syn
-Python metaprogramming and compilation facilities
+
+Python metaprogramming and compilation facilities.
