@@ -3,15 +3,15 @@ from setuptools import setup, find_packages
 
 DIR = os.path.dirname(os.path.abspath(__file__))
 
-def requirements(fpath):
+def read(fpath):
     with open(fpath, 'r') as f:
-        txt = f.read()
-    reqs = list(filter(bool, txt.split('\n')))
-    return reqs
+        return f.read()
+
+def requirements(fpath):
+    return list(filter(bool, read(fpath).split('\n')))
 
 def version(fpath):
-    with open(fpath, 'r') as f:
-        return f.read().strip()
+    return read(fpath).strip()
 
 setup(
     name = 'syn',
