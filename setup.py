@@ -1,7 +1,4 @@
-import os
 from setuptools import setup, find_packages
-
-DIR = os.path.dirname(os.path.abspath(__file__))
 
 def read(fpath):
     with open(fpath, 'r') as f:
@@ -24,4 +21,25 @@ setup(
     packages = find_packages(),
     install_requires = requirements('requirements.txt'),
     namespace_packages = ['syn'],
+    license = 'MIT',
+    keywords = 'syn',
+    classifiers = [
+        'Development Status :: 1 - Planning',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: POSIX',
+        'Operating System :: Unix',
+        'Operating System :: MacOS :: MacOS X',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Topic :: Software Development',
+        'Topic :: Software Development :: Libraries',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: Software Development :: Code Generators',
+        'Topic :: Software Development :: Documentation',
+        'Topic :: Utilities'
+    ]
 )
