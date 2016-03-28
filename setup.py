@@ -9,9 +9,13 @@ def requirements(fpath):
     reqs = list(filter(bool, txt.split('\n')))
     return reqs
 
+def version(fpath):
+    with open(fpath, 'r') as f:
+        return f.read().strip()
+
 setup(
     name = 'syn',
-    version = '0.0.1',
+    version = version('version.txt'),
     author = 'Matt Bodenhamer',
     author_email = 'mbodenhamer@mbodenhamer.com',
     description = 'Python metaprogramming, typing, and compilation facilities.',
