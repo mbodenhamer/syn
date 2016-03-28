@@ -21,4 +21,5 @@ setup(
     description = 'Python metaprogramming, typing, and compilation facilities.',
     packages = find_packages(),
     install_requires = requirements('requirements.txt'),
+    namespace_packages = ['syn'],
 )
