@@ -2,11 +2,35 @@ all: test
 
 #-------------------------------------------------------------------------------
 
+check:
+	@check-manifest
+
+build: check
+	@python setup.py sdist bdist_wheel
+
+.PHONY: check build
+#-------------------------------------------------------------------------------
+
 test:
-	nosetests -v
+	@coverage erase
+	@tox
+	@coverage html
 
-dbtest:
-	nosetests -v --ipdb --ipdb-failures
+show:
+	@chromium-browser htmlcov/index.html
 
-.PHONY: test dbtest
+.PHONY: test show
+#-------------------------------------------------------------------------------
+
+cleandeps:
+	@if [ -z $$(which fmap) ]; then \
+	echo "fmap required; installing via pip" \
+	sudo pip install fmap \
+	fi
+
+clean: cleandeps
+	@fmap 'rm -f' '*.py[co]'
+	@fmap -b rmdir __pycache__
+
+.PHONY: cleandeps clean
 #-------------------------------------------------------------------------------
