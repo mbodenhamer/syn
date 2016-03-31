@@ -24,7 +24,7 @@ setup(
     license = 'MIT',
     keywords = 'syn',
     classifiers = [
-        'Development Status :: 1 - Planning',
+        'Development Status :: 2 - Pre-Alpha',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
@@ -40,6 +40,5 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Software Development :: Code Generators',
         'Topic :: Software Development :: Documentation',
-        'Topic :: Utilities'
     ]
 )
