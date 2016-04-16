@@ -1,0 +1,9 @@
+check-manifest
+coverage
+detox
+lxml
+nose
+pip-tools
+twine
+tox
+xunitmerge
