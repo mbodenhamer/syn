@@ -1,0 +1,190 @@
+import six
+from collections import Iterable
+from syn.base_utils import hasmethod, message
+
+if six.PY2:
+    str = unicode # pylint: disable=W0622
+
+#-------------------------------------------------------------------------------
+# Base Class
+
+
+class Type(object):
+    __slots__ = ()
+
+    def check(self, value):
+        raise NotImplementedError
+
+    @classmethod
+    def dispatch(cls, obj):
+        if isinstance(obj, Type):
+            return obj
+
+        if obj is None:
+            return AnyType()
+
+        if isinstance(obj, type):
+            return TypeType(obj)
+
+        if isinstance(obj, tuple):
+            return MultiType(obj)
+
+        if isinstance(obj, Iterable) and not isinstance(obj, (str, bytes)):
+            return ValuesType(obj)
+
+        raise TypeError('Unable to dispatch appropriate type represetation'
+                         ' for {}'.format(obj))
+
+    def coerce(self, value):
+        raise NotImplementedError
+
+    def query(self, value):
+        try:
+            self.check(value)
+            return True
+        except TypeError:
+            return False
+
+    def validate(self, value):
+        raise NotImplementedError
+
+
+#-------------------------------------------------------------------------------
+# Any Type
+
+
+class AnyType(Type):
+    def check(self, value):
+        pass
+
+    def coerce(self, value):
+        return value
+
+    def validate(self, value):
+        pass
+
+
+#-------------------------------------------------------------------------------
+# Type Type
+
+
+class TypeType(Type):
+    '''A representation for various possible types syntagmathon supports.'''
+    __slots__ = ('type', 'call_coerce', 'call_validate')
+
+    def __init__(self, typ):
+        self.type = typ
+        self.call_coerce = hasmethod(self.type, 'coerce')
+        self.call_validate = hasmethod(self.type, 'validate')
+
+    def check(self, value):
+        if not isinstance(value, self.type):
+            raise TypeError('Expected value of type {}; got: {}'
+                            .format(self.type, value))
+
+    def coerce(self, value):
+        if self.call_coerce:
+            return self.type.coerce(value)
+
+        try:
+            return self.type(value)
+        except Exception as e:
+            raise TypeError('Cannot coerce {} to type {}: {}'
+                            .format(value, self.type, message(e)))
+
+    def validate(self, value):
+        self.check(value)
+
+        if self.call_validate:
+            value.validate()
+
+
+#-------------------------------------------------------------------------------
+# Values Type
+
+
+class ValuesType(Type):
+    '''A set (or list) of values, any of which is valid.
+
+    Think of this is a denotational definition of the type.
+    '''
+    __slots__ = ('values', 'indexed_values')
+
+    def __init__(self, values):
+        self.values = values
+
+        self.indexed_values = values
+        if not hasattr(values, '__getitem__'):
+            self.indexed_values = list(values)
+
+    def check(self, value):
+        if value not in self.values:
+            raise TypeError('Invalid value: {}'.format(value))
+
+    def coerce(self, value):
+        try:
+            self.check(value)
+        except TypeError as e:
+            raise TypeError('Cannot coerce {}: {}'.format(value, message(e)))
+        return value
+
+    def validate(self, value):
+        self.check(value)
+
+
+#-------------------------------------------------------------------------------
+# MultiType
+
+
+class MultiType(Type):
+    '''A tuple of type specifiers, any of which may be valid.
+    '''
+    __slots__ = ('types', 'typestr', 'typelist', 'typemap', 'is_typelist')
+
+    def __init__(self, types):
+        self.is_typelist = False
+        if all(isinstance(typ, type) for typ in types):
+            self.is_typelist = True
+            self.typelist = types
+            
+        self.typestr = ', '.join(map(str, types))
+        self.types = [Type.dispatch(typ) for typ in types]
+        self.typemap = dict(zip(types, self.types))
+
+    def check(self, value):
+        if self.is_typelist:
+            if isinstance(value, self.typelist):
+                return self.typemap[type(value)]
+        
+        else:
+            for typ in self.types:
+                try:
+                    typ.check(value)
+                    return typ
+                except TypeError:
+                    pass
+        
+        raise TypeError("Value '{}' is not any valid type: {}"
+                        .format(value, self.typestr))
+
+    def coerce(self, value):
+        for typ in self.types:
+            try:
+                return typ.coerce(value)
+            except TypeError:
+                pass
+
+        raise TypeError('Cannot coerce {} to any valid type: {}'
+                        .format(value, self.typestr))
+
+    def validate(self, value):
+        typ = self.check(value)
+        typ.validate(value)
+        
+
+#-------------------------------------------------------------------------------
+# __all__
+
+__all__ = ('Type', 'AnyType', 'TypeType', 'ValuesType', 'MultiType')
+
+#-------------------------------------------------------------------------------
