@@ -1,3 +1,6 @@
-include MANIFEST.in README.rst LICENSE
-include requirements.txt
-include version.txt
+include MANIFEST.in README.rst CHANGELOG.rst LICENSE Makefile version.txt
+include requirements.txt requirements.in
+include dev-requirements.txt dev-requirements.in
+include requirements.yml
+include tox.ini Dockerfile
+recursive-include dev *
