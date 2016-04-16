@@ -28,7 +28,7 @@ def main(*args):
     wheel = os.path.abspath(glob('/app/dist/*-{}-*.whl'.format(version))[0])
     versions = list(map(str.strip, os.environ['PYVERSIONS'].split(',')))
     
-    call('cp -r /app/tests /tests', shell=True)
+    call('cp -r /app /tests', shell=True)
     
     xunits = []
     os.chdir('/tmp')
