@@ -6,11 +6,13 @@
 Welcome to syn's documentation!
 ===============================
 
+.. include:: ../README.rst
+.. include:: ../CHANGELOG.rst
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
-
 
 
 Indices and tables
