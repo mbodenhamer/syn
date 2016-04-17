@@ -11,7 +11,7 @@ install:
   - pip install .
 
 script:
-  nosetests --with-coverage --cover-package=fmap
+  nosetests --with-coverage --cover-package=syn
 
 after_success:
   coveralls
