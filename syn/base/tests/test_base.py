@@ -2,10 +2,11 @@ import syn.base
 import syn.base.a
 
 #-------------------------------------------------------------------------------
-# Base
+# Base imports
 
-def test_base_import():
+def test_base_imports():
     assert syn.base.Base is syn.base.a.Base
+    assert syn.base.Attr is syn.base.a.Attr
 
 #-------------------------------------------------------------------------------
 

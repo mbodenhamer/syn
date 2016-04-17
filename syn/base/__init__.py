@@ -1,1 +1,1 @@
-from .a import Base
+from .a import Base, Attr
