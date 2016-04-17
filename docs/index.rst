@@ -4,7 +4,6 @@
    contain the root `toctree` directive.
 
 .. include:: ../README.rst
-.. include:: ../CHANGELOG.rst
 
 Contents:
 
@@ -12,6 +11,7 @@ Contents:
    :maxdepth: 2
 
    syn
+   changelog
 
 Indices and tables
 ==================
