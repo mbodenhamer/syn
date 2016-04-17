@@ -46,6 +46,12 @@ def test_typetype():
     assert_raises(TypeError, t.check, 1.2)
     assert t.query(1)
     assert not t.query(1.2)
+    res, e = t.query_exception(1)
+    assert res
+    assert e is None
+    res, e = t.query_exception(1.2)
+    assert not res
+    assert isinstance(e, TypeError)
     assert t.coerce(1.2) == 1
     assert_raises(TypeError, t.coerce, 'abc')
     t.validate(1)

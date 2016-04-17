@@ -46,6 +46,13 @@ class Type(object):
         except TypeError:
             return False
 
+    def query_exception(self, value):
+        try:
+            self.check(value)
+            return True, None
+        except TypeError as e:
+            return False, e
+
     def validate(self, value):
         raise NotImplementedError
 
