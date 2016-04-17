@@ -65,19 +65,22 @@ test:
 	@$(PYDEV) tox
 	@$(PYDEV) coverage html
 
+quick-test:
+	@$(PYDEV) nosetests -v --pdb --pdb-failures
+
 dist-test: build
 	@$(PYDEV) dist-test $(VERSION)
 
 show:
 	@python -c "import webbrowser as wb; wb.open('htmlcov/index.html')"
 
-.PHONY: test show
+.PHONY: test quick-test dist-test show
 #-------------------------------------------------------------------------------
 # Cleanup
 
 clean:
-	@$(PYDEV) fmap 'rm -f' '*.py[co]'
-	@$(PYDEV) fmap -d rmdir __pycache__
+	@$(PYDEV) fmap -r syn 'rm -f' '*.py[co]'
+	@$(PYDEV) fmap -r syn -d rmdir __pycache__
 	@$(PYDEV) make -C docs clean
 
 .PHONY: clean
