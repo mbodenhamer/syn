@@ -163,10 +163,10 @@ def test_meta():
                          y = 2.3)
 
     class B(A):
-        _attrs = Attrs(c = Attr(dict),
-                       d = Attr(list, default=[1, 2]))
-        _opts = AttrDict(y = 3.4,
-                         z = 'abc')
+        _attrs = dict(c = Attr(dict),
+                      d = Attr(list, default=[1, 2]))
+        _opts = dict(y = 3.4,
+                     z = 'abc')
 
     assert A._attrs.types['a'].type is int
     assert A._attrs.types['b'].type is float
