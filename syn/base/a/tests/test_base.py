@@ -26,14 +26,14 @@ def test_base():
     assert obj.b == 3.4
     assert obj.c == u'abc'
     
-    assert obj._to_dict() == kwargs
-    assert obj._to_dict(exclude=['a', 'b']) == dict(c=u'abc')
+    assert obj.to_dict() == kwargs
+    assert obj.to_dict(exclude=['a', 'b']) == dict(c=u'abc')
 
     assert obj != 5
     assert_equivalent(obj, A(**kwargs))
     assert_inequivalent(obj, A(a=6, b=3.4, c=u'abc'))
 
-    assert A(a=5, b=3.4)._to_dict() == dict(a=5, b=3.4)
+    assert A(a=5, b=3.4).to_dict() == dict(a=5, b=3.4)
 
     assert_deepcopy_idempotent(obj)
     assert_pickle_idempotent(obj)
@@ -55,7 +55,7 @@ def test_positional_args():
     assert obj.b == 3.4
     assert obj.c == u'abc'
 
-    assert B(5)._to_dict() == dict(a=5, b=1.2)
+    assert B(5).to_dict() == dict(a=5, b=1.2)
 
     assert_raises(ValueError, B, 1, 2, 3)
 

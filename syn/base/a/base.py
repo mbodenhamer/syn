@@ -48,13 +48,13 @@ class Base(object):
             self.validate()
 
     def __getstate__(self):
-        return self._to_dict()
+        return self.to_dict()
 
     def __setstate__(self, state):
         for attr, val in state.items():
             setattr(self, attr, val)
 
-    def _to_dict(self, exclude=()):
+    def to_dict(self, exclude=()):
         exclude = set(exclude)
         return {attr: getattr(self, attr) for attr in self._attrs.types
                 if attr not in exclude and hasattr(self, attr)}
@@ -63,8 +63,8 @@ class Base(object):
         if type(self) is not type(other):
             return False
 
-        dct1 = self._to_dict()
-        dct2 = other._to_dict()
+        dct1 = self.to_dict()
+        dct2 = other.to_dict()
         return dct1 == dct2
 
     def __ne__(self, other):
