@@ -92,8 +92,53 @@ def run_all_tests(env, verbose=False, print_errors=False, exclude=None):
             env[tf]()
         
 #-------------------------------------------------------------------------------
+# Testing utilities
+
+def assert_equivalent(o1, o2):
+    '''Asserts that o1 and o2 are distinct, yet equivalent objects
+    '''
+    if not (isinstance(o1, type) and isinstance(o2, type)):
+        assert o1 is not o2
+    assert o1 == o2
+    assert o2 == o1
+
+def assert_inequivalent(o1, o2):
+    '''Asserts that o1 and o2 are distinct and inequivalent objects
+    '''
+    if not (isinstance(o1, type) and isinstance(o2, type)):
+        assert o1 is not o2
+    assert not o1 == o2 and o1 != o2
+    assert not o2 == o1 and o2 != o1
+
+def assert_deepcopy_idempotent(obj):
+    '''Assert that obj does not change (w.r.t. ==) under repeated deepcopies
+    '''
+    from copy import deepcopy
+    obj1 = deepcopy(obj)
+    obj2 = deepcopy(obj1)
+    obj3 = deepcopy(obj2)
+    assert_equivalent(obj, obj1)
+    assert_equivalent(obj, obj2)
+    assert_equivalent(obj, obj3)
+    assert type(obj) is type(obj3)
+
+def assert_pickle_idempotent(obj):
+    '''Assert that obj does not change (w.r.t. ==) under repeated picklings
+    '''
+    from six.moves.cPickle import dumps, loads
+    obj1 = loads(dumps(obj))
+    obj2 = loads(dumps(obj1))
+    obj3 = loads(dumps(obj2))
+    assert_equivalent(obj, obj1)
+    assert_equivalent(obj, obj2)
+    assert_equivalent(obj, obj3)
+    assert type(obj) is type(obj3)
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests')
+__all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
+           'assert_equivalent', 'assert_inequivalent',
+           'assert_pickle_idempotent', 'assert_deepcopy_idempotent')
 
 #-------------------------------------------------------------------------------

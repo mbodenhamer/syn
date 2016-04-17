@@ -1,4 +1,5 @@
 import six
+from nose.tools import assert_raises
 from syn.base_utils import hasmethod, mro, import_module, message
 
 #-------------------------------------------------------------------------------
@@ -99,6 +100,71 @@ def test_run_all_tests():
         raise TypeError('Testing exception trace printing')
 
     run_all_tests(locals(), verbose=True, print_errors=True)
+
+#-------------------------------------------------------------------------------
+# Testing utilities
+
+
+class EquivObj(object):
+    def __init__(self, value):
+        self.value = value
+    def __eq__(self, x):
+        return (self.value == x.value)
+
+class DeepcopyEquivObj(EquivObj):
+    def __deepcopy__(self, memo):
+        return self
+    
+class PickleEquivObj(EquivObj):
+    def __getstate__(self):
+        state = dict(value = self.value + 1)
+        return state
+
+    def __setstate__(self, state):
+        self.value = state['value']
+    
+
+def test_assert_equivalent():
+    from syn.base_utils import assert_equivalent
+
+    e1 = EquivObj(1)
+    e2 = EquivObj(1)
+    e3 = EquivObj(2)
+
+    assert_equivalent(e1, e2)
+    assert_raises(AssertionError, assert_equivalent, e1, e3)
+    assert_raises(AssertionError, assert_equivalent, e2, e3)
+    assert_raises(AssertionError, assert_equivalent, e1, e1)
+
+def test_assert_inequivalent():
+    from syn.base_utils import assert_inequivalent
+
+    e1 = EquivObj(1)
+    e2 = EquivObj(1)
+    e3 = EquivObj(2)
+
+    assert_raises(AssertionError, assert_inequivalent, e1, e2)
+    assert_inequivalent(e1, e3)
+    assert_inequivalent(e2, e3)
+    assert_raises(AssertionError, assert_inequivalent, e1, e1)
+
+def test_assert_deepcopy_idempotent():
+    from syn.base_utils import assert_deepcopy_idempotent
+
+    e1 = EquivObj(1)
+    e2 = DeepcopyEquivObj(1)
+
+    assert_deepcopy_idempotent(e1)
+    assert_raises(AssertionError, assert_deepcopy_idempotent, e2)
+
+def test_assert_pickle_idempotent():
+    from syn.base_utils import assert_pickle_idempotent
+
+    e1 = EquivObj(1)
+    e2 = PickleEquivObj(1)
+
+    assert_pickle_idempotent(e1)
+    assert_raises(AssertionError, assert_pickle_idempotent, e2)
 
 #-------------------------------------------------------------------------------
 
