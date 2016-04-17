@@ -1,6 +1,8 @@
 import six
 from nose.tools import assert_raises
 from syn.base.a import Base, Attr
+from syn.base_utils import assert_equivalent, assert_pickle_idempotent, \
+    assert_deepcopy_idempotent, assert_inequivalent
 
 if six.PY2:
     str = unicode
@@ -28,13 +30,13 @@ def test_base():
     assert obj._to_dict(exclude=['a', 'b']) == dict(c=u'abc')
 
     assert obj != 5
-    assert obj == A(**kwargs)
-    assert obj != A(a=6, b=3.4, c=u'abc')
+    assert_equivalent(obj, A(**kwargs))
+    assert_inequivalent(obj, A(a=6, b=3.4, c=u'abc'))
 
     assert A(a=5, b=3.4)._to_dict() == dict(a=5, b=3.4)
 
-    # TODO: test pickle equivalence
-    # TODO: test deepcopy equivalence
+    assert_deepcopy_idempotent(obj)
+    assert_pickle_idempotent(obj)
 
     assert_raises(TypeError, A, a=5.1, b=3.4)
     assert_raises(AttributeError, A, a=5)
