@@ -5,6 +5,7 @@ fmap
 lxml
 nose
 pip-tools
+Sphinx
 twine
 tox
 xunitmerge

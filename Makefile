@@ -41,7 +41,8 @@ build: check
 # Documentation
 
 docs:
-	@$(MAKE) -C docs html
+	@$(PYDEV) sphinx-apidoc -f -o docs/ syn/ $$(find syn -name tests)
+	@$(PYDEV) make -C docs html
 
 view:
 	@python -c "import webbrowser as wb; \
@@ -77,7 +78,7 @@ show:
 clean:
 	@$(PYDEV) fmap 'rm -f' '*.py[co]'
 	@$(PYDEV) fmap -d rmdir __pycache__
-	@$(MAKE) -C docs clean
+	@$(PYDEV) make -C docs clean
 
 .PHONY: clean
 #-------------------------------------------------------------------------------

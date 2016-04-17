@@ -10,6 +10,7 @@ if six.PY2:
 
 
 class Type(object):
+    '''A representation for various possible types syn supports.'''
     __slots__ = ()
 
     def check(self, value):
@@ -69,7 +70,6 @@ class AnyType(Type):
 
 
 class TypeType(Type):
-    '''A representation for various possible types syntagmathon supports.'''
     __slots__ = ('type', 'call_coerce', 'call_validate')
 
     def __init__(self, typ):
