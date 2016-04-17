@@ -54,11 +54,6 @@ class Base(object):
         for attr, val in state.items():
             setattr(self, attr, val)
 
-    def to_dict(self, exclude=()):
-        exclude = set(exclude)
-        return {attr: getattr(self, attr) for attr in self._attrs.types
-                if attr not in exclude and hasattr(self, attr)}
-
     def __eq__(self, other):
         if type(self) is not type(other):
             return False
@@ -70,7 +65,18 @@ class Base(object):
     def __ne__(self, other):
         return not (self == other)
 
+    def to_dict(self, exclude=()):
+        '''Convert the object into a dict of its declared attributes.
+        
+        May exclude certain attributes by listing them in exclude.
+        '''
+        exclude = set(exclude)
+        return {attr: getattr(self, attr) for attr in self._attrs.types
+                if attr not in exclude and hasattr(self, attr)}
+
     def validate(self):
+        '''Raise an exception if the object is missing required attributes, or if the attributes are of an invalid type.
+        '''
         optional = self._attrs.optional
         optional_none = self._opts.optional_none
 
