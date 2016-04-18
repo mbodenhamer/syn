@@ -15,7 +15,7 @@ setup(
     version = version('version.txt'),
     author = 'Matt Bodenhamer',
     author_email = 'mbodenhamer@mbodenhamer.com',
-    description = 'Python metaprogramming, typing, and compilation facilities.',
+    description = 'Python metaprogramming, typing, and compilation facilities',
     long_description = read('README.rst'),
     url = 'https://github.com/mbodenhamer/syn',
     packages = find_packages(),
