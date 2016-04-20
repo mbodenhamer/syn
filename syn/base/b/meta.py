@@ -1,10 +1,11 @@
 import six
+from copy import deepcopy
 from collections import defaultdict
 import syn.base.a.meta as meta
 from syn.base.a import Base
 from syn.type.a import Type
 from syn.type.a.ext import Callable, Sequence
-from syn.base_utils import GroupDict, AttrDict
+from syn.base_utils import GroupDict, AttrDict, ReflexiveDict
 from functools import partial
 
 STR = six.string_types
@@ -16,7 +17,7 @@ _OAttr = partial(_Attr, optional=True)
 # Utilities
 
 def group_combine(A, B):
-    ret = type(A)(A)
+    ret = deepcopy(A) # Because the sets in the dict need to be copied
     ret.combine(B)
     return ret
 
@@ -97,9 +98,11 @@ class Meta(meta.Meta):
         groups = self._attrs.groups
         for base in self._class_data.bases:
             if hasattr(base, '_groups'):
-                vals = base._groups
-                groups = group_combine(vals, groups)
+                groups = group_combine(base._groups, groups)
         self._groups = groups
+
+    def groups_enum(self):
+        return ReflexiveDict(*self._groups.keys())
 
 
 #-------------------------------------------------------------------------------

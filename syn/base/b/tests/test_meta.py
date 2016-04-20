@@ -1,5 +1,6 @@
 import six
-from syn.base_utils import GroupDict, AttrDict, assert_type_equivalent
+from syn.base_utils import (GroupDict, AttrDict, assert_type_equivalent,
+                            ReflexiveDict)
 from syn.type.a import AnyType, TypeType
 from syn.base.b.meta import Attr, Attrs, Meta
 from syn.base.a.meta import mro
@@ -60,15 +61,16 @@ def test_attrs():
 def test_meta():
     @six.add_metaclass(Meta)
     class A(object):
-        _attrs = Attrs(a = Attr(int, doc='value 1'),
-                       b = Attr(float, 3.4),
+        _groups = ReflexiveDict('g1', 'g2')
+        _attrs = Attrs(a = Attr(int, doc='value 1', group=_groups.g1),
+                       b = Attr(float, 3.4, group=_groups.g2),
                        c = Attr(str, doc='value 2', optional=True)
                       )
         _opts = AttrDict(x = 1,
                          y = 2.3)
 
     class B(A):
-        _attrs = dict(c = Attr(dict),
+        _attrs = dict(c = Attr(dict, group=A.groups_enum().g1),
                       d = Attr(list, default=[1, 2]))
         _opts = dict(y = 3.4,
                      z = 'abc')
@@ -82,6 +84,9 @@ def test_meta():
     assert A._attrs.defaults == dict(b = 3.4)
     assert A._attrs.doc == dict(a = 'value 1',
                                 c = 'value 2')
+    assert_type_equivalent(A._groups,
+                           GroupDict(g1 = set(['a']),
+                                     g2 = set(['b'])))
 
     assert B._attrs.types['a'].type is int
     assert B._attrs.types['b'].type is float
@@ -93,6 +98,10 @@ def test_meta():
     assert B._attrs.defaults == dict(b = 3.4,
                                      d = [1, 2])
     assert B._attrs.doc == dict(a = 'value 1')
+
+    assert_type_equivalent(B._groups,
+                           GroupDict(g1 = set(['a', 'c']),
+                                     g2 = set(['b'])))
 
 
     assert A._opts == dict(x = 1, y = 2.3)

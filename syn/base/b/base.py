@@ -6,7 +6,6 @@ from syn.base_utils import AttrDict, ReflexiveDict
 # Base
 
 
-#import pdb; pdb.set_trace()
 @six.add_metaclass(Meta)
 class Base(object):
     _attrs = Attrs()
@@ -17,10 +16,6 @@ class Base(object):
                      id_equality = False,
                      init_validate = False,
                      optional_none = False)
-
-    @classmethod
-    def groups_enum(cls):
-        return ReflexiveDict(cls._groups)
 
 
 #-------------------------------------------------------------------------------
