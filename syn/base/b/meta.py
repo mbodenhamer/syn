@@ -59,7 +59,7 @@ class Attrs(meta.Attrs):
     def _update(self):
         super(Attrs, self)._update()
         self.call = {attr: spec.call for attr, spec in self.items() 
-                     if spec.call}
+                     if spec.call is not None}
 
         # Process attr groups
         self.groups = defaultdict(set)
