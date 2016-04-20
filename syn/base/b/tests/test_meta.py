@@ -1,5 +1,5 @@
 import six
-from syn.base_utils import GroupDict, AttrDict
+from syn.base_utils import GroupDict, AttrDict, assert_type_equivalent
 from syn.type.a import AnyType, TypeType
 from syn.base.b.meta import Attr, Attrs, Meta
 from syn.base.a.meta import mro
@@ -125,7 +125,16 @@ def test_meta():
                                      d = [1, 2])
     assert D._attrs.doc == dict(a = 'value 1')
 
-    assert D._opts == dict(x = 1, y = 3.4, z = 'abc')
+    assert_type_equivalent(D._opts, AttrDict(x = 1, y = 3.4, z = 'abc'))
+
+    # Test default blank attrs
+    @six.add_metaclass(Meta)
+    class E(object):
+        pass
+
+    assert_type_equivalent(E._opts, AttrDict())
+    assert_type_equivalent(E._attrs, Attrs())
+    assert_type_equivalent(E._groups, GroupDict())
 
 #-------------------------------------------------------------------------------
 

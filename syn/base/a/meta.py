@@ -97,7 +97,8 @@ class Attrs(UpdateDict):
 
 
 class Meta(type):
-    _metaclass_data = AttrDict(attrs_type = Attrs)
+    _metaclass_data = AttrDict(attrs_type = Attrs,
+                               opts_type = AttrDict)
 
     def __init__(self, clsname, bases, dct):
         super(Meta, self).__init__(clsname, bases, dct)
@@ -110,15 +111,17 @@ class Meta(type):
 
         self._combine_attr_fast_update('_attrs', 
                                        self._metaclass_data.attrs_type)
-        self._combine_attr('_opts')
+        self._combine_attr('_opts', self._metaclass_data.opts_type)
 
-    def _combine_attr(self, attr):
+    def _combine_attr(self, attr, typ=None):
         values = getattr(self, attr, {})
         
         for base in self._class_data.bases:
             vals = getattr(base, attr, {})
             values = combine(vals, values)
-            
+
+        if typ is not None:
+            values = typ(values)
         setattr(self, attr, values)
 
     def _combine_attr_fast_update(self, attr, typ):

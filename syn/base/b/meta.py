@@ -76,7 +76,8 @@ class Attrs(meta.Attrs):
 
 
 class Meta(meta.Meta):
-    _metaclass_data = AttrDict(attrs_type = Attrs)
+    _metaclass_data = AttrDict(attrs_type = Attrs,
+                               opts_type = AttrDict)
 
     def __init__(self, clsname, bases, dct):
         super(Meta, self).__init__(clsname, bases, dct)
