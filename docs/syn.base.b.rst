@@ -4,6 +4,14 @@ syn.base.b package
 Submodules
 ----------
 
+syn.base.b.base module
+----------------------
+
+.. automodule:: syn.base.b.base
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 syn.base.b.meta module
 ----------------------
 
