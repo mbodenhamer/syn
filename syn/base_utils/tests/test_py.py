@@ -185,7 +185,8 @@ def test_assert_inequivalent():
 
 def test_assert_type_equivalent():
     from syn.base_utils import assert_type_equivalent, assert_equivalent
-    
+    from syn.base_utils.dict import AttrDict
+
     e1 = EquivObj(1)
     e2 = EquivObj(1)
     e3 = EquivObj2(1)
@@ -193,6 +194,12 @@ def test_assert_type_equivalent():
     assert_type_equivalent(e1, e2)
     assert_equivalent(e1, e3)
     assert_raises(AssertionError, assert_type_equivalent, e1, e3)
+
+    d1 = dict(a = 1, b = 2)
+    d2 = AttrDict(a = 1, b = 2)
+
+    assert_equivalent(d1, d2)
+    assert_raises(AssertionError, assert_type_equivalent, d1, d2)
 
 def test_assert_deepcopy_idempotent():
     from syn.base_utils import assert_deepcopy_idempotent
