@@ -4,13 +4,21 @@ import syn.base.a.meta as meta
 from syn.base.a import Base
 from syn.type.a import Type
 from syn.type.a.ext import Callable, Sequence
-from syn.base_utils import GroupDict
+from syn.base_utils import GroupDict, AttrDict
 from functools import partial
 
 STR = six.string_types
 
 _Attr = meta.Attr
 _OAttr = partial(_Attr, optional=True)
+
+#-------------------------------------------------------------------------------
+# Utilities
+
+def group_combine(A, B):
+    ret = type(A)(A)
+    ret.combine(B)
+    return ret
 
 #-------------------------------------------------------------------------------
 # Attr attrs
@@ -68,7 +76,29 @@ class Attrs(meta.Attrs):
 
 
 class Meta(meta.Meta):
-    pass
+    _metaclass_data = AttrDict(attrs_type = Attrs)
+
+    def __init__(self, clsname, bases, dct):
+        super(Meta, self).__init__(clsname, bases, dct)
+        self._combine_groups()
+
+    def _combine_groups(self):
+        if not hasattr(self, '_groups'):
+            self._groups = GroupDict()
+            return
+        
+        groups = self._groups
+        if not isinstance(groups, GroupDict):
+            for name in groups:
+                if name not in self._attrs.groups:
+                    self._attrs.groups[name] = set()
+
+        groups = self._attrs.groups
+        for base in self._class_data.bases:
+            if hasattr(base, '_groups'):
+                vals = base._groups
+                groups = group_combine(vals, groups)
+        self._groups = groups
 
 
 #-------------------------------------------------------------------------------
