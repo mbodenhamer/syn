@@ -85,7 +85,8 @@ def test_meta():
     assert A._attrs.doc == dict(a = 'value 1',
                                 c = 'value 2')
     assert_type_equivalent(A._groups,
-                           GroupDict(g1 = set(['a']),
+                           GroupDict(_all = set(['a', 'b', 'c']),
+                                     g1 = set(['a']),
                                      g2 = set(['b'])))
 
     assert B._attrs.types['a'].type is int
@@ -100,7 +101,8 @@ def test_meta():
     assert B._attrs.doc == dict(a = 'value 1')
 
     assert_type_equivalent(B._groups,
-                           GroupDict(g1 = set(['a', 'c']),
+                           GroupDict(_all = set(['a', 'b', 'c', 'd']),
+                                     g1 = set(['a', 'c']),
                                      g2 = set(['b'])))
 
 
@@ -135,7 +137,8 @@ def test_meta():
     assert D._attrs.doc == dict(a = 'value 1')
 
     assert_type_equivalent(D._groups,
-                           GroupDict(g1 = set(['a', 'c']),
+                           GroupDict(_all = set(['a', 'b', 'c', 'd', 'e']),
+                                     g1 = set(['a', 'c']),
                                      g2 = set(['b']),
                                      g3 = set()))
 
