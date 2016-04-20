@@ -13,7 +13,8 @@ def test_callable():
     t = Callable()
     t.check(Foo())
     t.check(test_callable)
-    assert_raises(TypeError, t.validate, 1)
+    t.check(int)
+    assert_raises(TypeError, t.check, 1)
 
 #-------------------------------------------------------------------------------
 # Sequence

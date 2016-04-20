@@ -1,8 +1,17 @@
+import six
 import types
 from functools import partial
 from collections import Sequence
 from .type import TypeExtension, Type
 from syn.base_utils import hasmethod
+
+#-------------------------------------------------------------------------------
+# Builtin functions
+
+builtin_funcs = [val for key, val in vars(six.moves.builtins).items()
+                 if key.islower() and not key.startswith('_')]
+builtin_funcs.remove(copyright)
+builtin_funcs.remove(credits)
 
 #-------------------------------------------------------------------------------
 # Callable
@@ -15,7 +24,8 @@ class Callable(TypeExtension):
     def check(self, value):
         if (not hasmethod(value, '__call__') and 
             not isinstance(value, (types.FunctionType, 
-                                   types.BuiltinFunctionType))):
+                                   types.BuiltinFunctionType))
+            and value not in builtin_funcs):
             raise TypeError('Value is not callable: {}'.format(value))
 
 
