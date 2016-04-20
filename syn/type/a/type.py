@@ -28,9 +28,12 @@ class Type(object):
             return AnyType()
 
         if isinstance(obj, type):
+            if issubclass(obj, TypeExtension):
+                return obj()
             return TypeType(obj)
 
         if isinstance(obj, tuple):
+            # Treat a singleton tuple as its element
             if len(obj) == 1:
                 return cls.dispatch(obj[0])
             return MultiType(obj)
@@ -195,8 +198,21 @@ class MultiType(Type):
         
 
 #-------------------------------------------------------------------------------
+# TypeExtension
+
+
+class TypeExtension(Type):
+    '''For extending the type system.
+    '''
+
+    def validate(self, value):
+        self.check(value)
+
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Type', 'AnyType', 'TypeType', 'ValuesType', 'MultiType')
+__all__ = ('Type', 'AnyType', 'TypeType', 'ValuesType', 'MultiType', 
+           'TypeExtension')
 
 #-------------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 import six
 from nose.tools import assert_raises
-from syn.type.a import Type, ValuesType, MultiType, TypeType, AnyType
+from syn.type.a import (Type, ValuesType, MultiType, TypeType, AnyType,
+                        TypeExtension)
 
 #-------------------------------------------------------------------------------
 # Type
@@ -173,6 +174,11 @@ def test_dispatch_type():
     t.validate('abc')
     t.validate(u'abc')
     assert_raises(TypeError, t.validate, 1)
+
+    te = TypeExtension()
+    assert Type.dispatch(te) is te
+    assert Type.dispatch(TypeExtension) is not TypeExtension
+    assert isinstance(Type.dispatch(TypeExtension), TypeExtension)
 
     assert_raises(TypeError, Type.dispatch, 1)
     assert_raises(TypeError, Type.dispatch, b'abc')
