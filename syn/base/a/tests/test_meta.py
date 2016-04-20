@@ -132,7 +132,6 @@ def test_attrs():
     attrs = Attrs(a = Attr(int, doc='value 1'),
                   b = Attr(float, 3.4),
                   c = Attr(str, doc='value 2', optional=True),
-                  # TODO: add instantiation option in a higher level
                   d = Attr(list, [1, 2], doc='value 3', optional=True)
                  )
 
@@ -152,7 +151,7 @@ def test_attrs():
 #-------------------------------------------------------------------------------
 # Metaclass
 
-def test_meta():
+def test_meta(Meta=Meta):
     @six.add_metaclass(Meta)
     class A(object):
         _attrs = Attrs(a = Attr(int, doc='value 1'),
