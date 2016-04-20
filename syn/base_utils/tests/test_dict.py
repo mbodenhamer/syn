@@ -1,5 +1,5 @@
 from nose.tools import assert_raises
-from syn.base_utils import AttrDict, UpdateDict, GroupDict
+from syn.base_utils import AttrDict, UpdateDict, GroupDict, ReflexiveDict
 
 #-------------------------------------------------------------------------------
 # AttrDict
@@ -74,6 +74,18 @@ def test_groupdict():
     assert dct.intersection() == set([3])
     assert dct.complement('a') == set([4, 5])
     assert dct.complement('b') == set([1, 2])
+
+#-------------------------------------------------------------------------------
+# ReflexiveDict
+
+def test_reflexivedict():
+    dct = ReflexiveDict('a', 'b', 'c')
+    assert dct == dict(a = 'a',
+                       b = 'b',
+                       c = 'c')
+
+    dct.d = 1
+    assert dct.d == 'd'
 
 #-------------------------------------------------------------------------------
 

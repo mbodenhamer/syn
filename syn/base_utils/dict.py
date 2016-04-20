@@ -73,8 +73,25 @@ class GroupDict(AttrDict):
 
 
 #-------------------------------------------------------------------------------
+# ReflexiveDict
+
+
+class ReflexiveDict(AttrDict):
+    '''An AttrDict for which each key == the associated value.
+    '''
+    def __init__(self, *args, **kwargs):
+        if args and not kwargs:
+            kwargs = {arg: arg for arg in args}
+            args = ()
+        super(ReflexiveDict, self).__init__(*args, **kwargs)
+
+    def __setitem__(self, key, value):
+        super(ReflexiveDict, self).__setitem__(key, key)
+
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('AttrDict', 'UpdateDict', 'GroupDict')
+__all__ = ('AttrDict', 'UpdateDict', 'GroupDict', 'ReflexiveDict')
 
 #-------------------------------------------------------------------------------
