@@ -89,7 +89,7 @@ def test_groupdict():
     assert dct.intersection('a', 'b') == set([3])
 
     assert dct.complement('a') == set(range(4, 8))
-    assert dct.complement('a', 'b') == set([4, 5, 6])
+    assert dct.complement('a', 'b') == set([7])
 
 #-------------------------------------------------------------------------------
 # ReflexiveDict
