@@ -102,6 +102,8 @@ class Meta(meta.Meta):
         self._groups = groups
 
     def groups_enum(self):
+        '''Returns an enum-ish dict with the names of the groups defined for this class.
+        '''
         return ReflexiveDict(*self._groups.keys())
 
 
