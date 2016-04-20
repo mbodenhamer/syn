@@ -68,15 +68,21 @@ class GroupDict(AttrDict):
             else:
                 self[key].update(val)
 
-    def complement(self, key):
-        universe = self.union()
+    def complement(self, key, *args):
+        universe = self.union(*args)
         return universe.difference(self[key])
 
-    def intersection(self):
-        return set(reduce(set.intersection, self.values()))
+    def intersection(self, *args):
+        values = self.values()
+        if args:
+            values = [val for key,val in self.items() if key in args]
+        return set(reduce(set.intersection, values))
 
-    def union(self):
-        return set(reduce(set.union, self.values()))
+    def union(self, *args):
+        values = self.values()
+        if args:
+            values = [val for key,val in self.items() if key in args]
+        return set(reduce(set.union, values))
 
 
 #-------------------------------------------------------------------------------
