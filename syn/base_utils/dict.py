@@ -1,11 +1,14 @@
 ''' Various dict extensions.
 '''
+from functools import reduce
 
 #-------------------------------------------------------------------------------
 # AttrDict
 
 
 class AttrDict(dict):
+    '''A dict whose items can be accessed as attributes.
+    '''
     __slots__ = ()
 
     def __getattr__(self, attr):
@@ -27,6 +30,9 @@ class AttrDict(dict):
 
 
 class UpdateDict(dict):
+    '''A dict with an extensible update() hook.
+    '''
+
     def __init__(self, *args, **kwargs):
         super(UpdateDict, self).__init__(*args, **kwargs)
         self._update()
@@ -48,8 +54,27 @@ class UpdateDict(dict):
 
 
 #-------------------------------------------------------------------------------
+# GroupDict
+
+
+class GroupDict(AttrDict):
+    '''An AttrDict whose items are treated as sets.
+    '''
+
+    def complement(self, key):
+        universe = self.union()
+        return universe.difference(self[key])
+
+    def intersection(self):
+        return set(reduce(set.intersection, self.values()))
+
+    def union(self):
+        return set(reduce(set.union, self.values()))
+
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('AttrDict', 'UpdateDict')
+__all__ = ('AttrDict', 'UpdateDict', 'GroupDict')
 
 #-------------------------------------------------------------------------------

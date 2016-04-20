@@ -1,5 +1,5 @@
 from nose.tools import assert_raises
-from syn.base_utils import AttrDict, UpdateDict
+from syn.base_utils import AttrDict, UpdateDict, GroupDict
 
 #-------------------------------------------------------------------------------
 # AttrDict
@@ -62,6 +62,18 @@ def test_updatedict():
     d.update(dict(a = 1, c = 3))
     assert d == dict(a = 1, b = 2, c = 3)
     assert d.count == 3
+
+#-------------------------------------------------------------------------------
+# GroupDict
+
+def test_groupdict():
+    dct = GroupDict(a = set([1, 2, 3]),
+                    b = set([3, 4, 5]))
+
+    assert dct.union() == set([1, 2, 3, 4, 5])
+    assert dct.intersection() == set([3])
+    assert dct.complement('a') == set([4, 5])
+    assert dct.complement('b') == set([1, 2])
 
 #-------------------------------------------------------------------------------
 
