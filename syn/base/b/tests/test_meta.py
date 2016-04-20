@@ -118,7 +118,7 @@ def test_meta():
 
     class M2(Meta, M1): pass
     class D(six.with_metaclass(M2, B, C)):
-        pass
+        _groups = ReflexiveDict('g3')
 
     assert mro(D) == [D, B, A, C, object]
 
@@ -133,6 +133,11 @@ def test_meta():
     assert D._attrs.defaults == dict(b = 3.4,
                                      d = [1, 2])
     assert D._attrs.doc == dict(a = 'value 1')
+
+    assert_type_equivalent(D._groups,
+                           GroupDict(g1 = set(['a', 'c']),
+                                     g2 = set(['b']),
+                                     g3 = set()))
 
     assert_type_equivalent(D._opts, AttrDict(x = 1, y = 3.4, z = 'abc'))
 
