@@ -75,6 +75,13 @@ def test_groupdict():
     assert dct.complement('a') == set([4, 5])
     assert dct.complement('b') == set([1, 2])
 
+    dct2 = GroupDict(b = set([5, 6]),
+                     c = set([6, 7]))
+    dct.combine(dct2)
+    assert dct == dict(a = set([1, 2, 3]),
+                       b = set([3, 4, 5, 6]),
+                       c = set([6, 7]))
+
 #-------------------------------------------------------------------------------
 # ReflexiveDict
 

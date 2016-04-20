@@ -61,6 +61,13 @@ class GroupDict(AttrDict):
     '''An AttrDict whose items are treated as sets.
     '''
 
+    def combine(self, other):
+        for key, val in other.items():
+            if key not in self:
+                self[key] = val
+            else:
+                self[key].update(val)
+
     def complement(self, key):
         universe = self.union()
         return universe.difference(self[key])
