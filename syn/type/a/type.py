@@ -1,6 +1,6 @@
 import six
 from collections import Iterable
-from syn.base_utils import hasmethod, message
+from syn.base_utils import hasmethod, message, nearest_base
 
 if six.PY2:
     str = unicode # pylint: disable=W0622
@@ -161,7 +161,7 @@ class MultiType(Type):
     def check(self, value):
         if self.is_typelist:
             if isinstance(value, self.typelist):
-                return self.typemap[type(value)]
+                return self.typemap[nearest_base(type(value), self.typelist)]
         
         else:
             for typ in self.types:

@@ -1,3 +1,4 @@
+import six
 from nose.tools import assert_raises
 from syn.type.a import Type, ValuesType, MultiType, TypeType, AnyType
 
@@ -141,6 +142,12 @@ def test_multitype():
     t.validate(Foo(6))
     assert_raises(TypeError, t.validate, 3.4)
     assert_raises(AssertionError, t.validate, Foo(5))
+
+    t = MultiType(six.string_types)
+    t.validate('abc')
+    t.validate('abc')
+    t.validate(u'abc')
+    assert_raises(TypeError, t.validate, 3.4)
 
 #-------------------------------------------------------------------------------
 # dispatch_type

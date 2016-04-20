@@ -48,6 +48,38 @@ def test_hasmethod():
     else:
         assert hasmethod(Foo, 'sbar')
 
+def test_nearest_base():
+    from syn.base_utils import nearest_base
+
+    class A(object):
+        pass
+
+    class B(A):
+        pass
+
+    class C(B):
+        pass
+
+    class D(object):
+        pass
+
+    assert nearest_base(C, [A, B, C]) is C
+    assert nearest_base(C, [A, B]) is B
+    assert nearest_base(C, [A]) is A
+    assert nearest_base(C, [D]) is None
+    assert nearest_base(D, [A, B, C]) is None
+
+#-------------------------------------------------------------------------------
+# Sequence utilities
+
+def test_index():
+    from syn.base_utils import index
+    
+    lst = list(range(10))
+    assert index(lst, 0) == 0
+    assert index(lst, 9) == 9
+    assert index(lst, 10) is None
+
 #-------------------------------------------------------------------------------
 # Module utilities
 

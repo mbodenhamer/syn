@@ -35,6 +35,26 @@ def hasmethod(x, name):
         return isinstance(val, METHOD_TYPES)
     return inspect.ismethod(val)
 
+def nearest_base(cls, bases):
+    '''Returns the closest ancestor to cls in bases.
+    '''
+    if cls in bases:
+        return cls
+
+    dists = {base: index(mro(cls), base) for base in bases}
+    dists2 = {dist: base for base, dist in dists.items() if dist is not None}
+    if not dists2:
+        return None
+    return dists2[min(dists2)] 
+
+#-------------------------------------------------------------------------------
+# Sequence utilities
+
+def index(seq, elem):
+    if elem in seq:
+        return seq.index(elem)
+    return None
+
 #-------------------------------------------------------------------------------
 # Module utilities
 
@@ -138,6 +158,7 @@ def assert_pickle_idempotent(obj):
 # __all__
 
 __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
+           'index', 'nearest_base',
            'assert_equivalent', 'assert_inequivalent',
            'assert_pickle_idempotent', 'assert_deepcopy_idempotent')
 
