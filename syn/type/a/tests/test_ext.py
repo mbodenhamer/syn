@@ -14,7 +14,9 @@ def test_callable():
     t.check(Foo())
     t.check(test_callable)
     t.check(int)
+    t.validate(int)
     assert_raises(TypeError, t.check, 1)
+    assert_raises(TypeError, t.validate, 1)
 
 #-------------------------------------------------------------------------------
 # Sequence
