@@ -57,7 +57,7 @@ def test_positional_args():
 
     assert B(5).to_dict() == dict(a=5, b=1.2)
 
-    assert_raises(ValueError, B, 1, 2, 3)
+    assert_raises(TypeError, B, 1, 2, 3)
 
 #-------------------------------------------------------------------------------
 # Test arg coercion

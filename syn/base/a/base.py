@@ -26,7 +26,7 @@ class Base(object):
         
         if _args:
             if len(args) > len(_args):
-                raise ValueError('Too many positional arguments')
+                raise TypeError('Too many positional arguments')
 
             for k, arg in enumerate(args):
                 kwargs[_args[k]] = arg
