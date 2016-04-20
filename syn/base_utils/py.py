@@ -130,6 +130,13 @@ def assert_inequivalent(o1, o2):
     assert not o1 == o2 and o1 != o2
     assert not o2 == o1 and o2 != o1
 
+def assert_type_equivalent(o1, o2):
+    '''Asserts that o1 and o2 are distinct, yet equivalent objects of the same type
+    '''
+    assert o1 == o2
+    assert o2 == o1
+    assert type(o1) is type(o2)
+
 def assert_deepcopy_idempotent(obj):
     '''Assert that obj does not change (w.r.t. ==) under repeated deepcopies
     '''
@@ -159,7 +166,7 @@ def assert_pickle_idempotent(obj):
 
 __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'index', 'nearest_base',
-           'assert_equivalent', 'assert_inequivalent',
+           'assert_equivalent', 'assert_inequivalent', 'assert_type_equivalent',
            'assert_pickle_idempotent', 'assert_deepcopy_idempotent')
 
 #-------------------------------------------------------------------------------

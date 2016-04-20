@@ -143,6 +143,9 @@ class EquivObj(object):
     def __eq__(self, x):
         return (self.value == x.value)
 
+class EquivObj2(EquivObj):
+    pass
+
 class DeepcopyEquivObj(EquivObj):
     def __deepcopy__(self, memo):
         return self
@@ -179,6 +182,17 @@ def test_assert_inequivalent():
     assert_inequivalent(e1, e3)
     assert_inequivalent(e2, e3)
     assert_raises(AssertionError, assert_inequivalent, e1, e1)
+
+def test_assert_type_equivalent():
+    from syn.base_utils import assert_type_equivalent, assert_equivalent
+    
+    e1 = EquivObj(1)
+    e2 = EquivObj(1)
+    e3 = EquivObj2(1)
+
+    assert_type_equivalent(e1, e2)
+    assert_equivalent(e1, e3)
+    assert_raises(AssertionError, assert_type_equivalent, e1, e3)
 
 def test_assert_deepcopy_idempotent():
     from syn.base_utils import assert_deepcopy_idempotent
