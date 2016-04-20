@@ -1,5 +1,3 @@
-# pylint: disable=W0212
-
 from nose.tools import assert_raises
 from syn.base_utils import AttrDict, UpdateDict
 

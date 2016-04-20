@@ -2,8 +2,11 @@ import six
 from collections import Iterable
 from syn.base_utils import hasmethod, message, nearest_base
 
+STR = six.string_types
 if six.PY2:
-    str = unicode # pylint: disable=W0622
+    _str = unicode
+else:
+    _str = str
 
 #-------------------------------------------------------------------------------
 # Base Class
@@ -30,7 +33,7 @@ class Type(object):
         if isinstance(obj, tuple):
             return MultiType(obj)
 
-        if isinstance(obj, Iterable) and not isinstance(obj, (str, bytes)):
+        if isinstance(obj, Iterable) and not isinstance(obj, STR + (bytes,)):
             return ValuesType(obj)
 
         raise TypeError('Unable to dispatch appropriate type represetation'
@@ -154,7 +157,7 @@ class MultiType(Type):
             self.is_typelist = True
             self.typelist = types
             
-        self.typestr = ', '.join(map(str, types))
+        self.typestr = ', '.join(map(_str, types))
         self.types = [Type.dispatch(typ) for typ in types]
         self.typemap = dict(zip(types, self.types))
 

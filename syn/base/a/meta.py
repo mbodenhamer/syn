@@ -1,9 +1,5 @@
-import six
 from syn.type.a import Type
 from syn.base_utils import UpdateDict, AttrDict, mro
-
-if six.PY2: # pylint: disable=W0622
-    str = unicode
 
 #-------------------------------------------------------------------------------
 # Utilities
