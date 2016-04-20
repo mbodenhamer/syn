@@ -151,7 +151,7 @@ def test_attrs():
 #-------------------------------------------------------------------------------
 # Metaclass
 
-def test_meta(Meta=Meta):
+def test_meta():
     @six.add_metaclass(Meta)
     class A(object):
         _attrs = Attrs(a = Attr(int, doc='value 1'),
