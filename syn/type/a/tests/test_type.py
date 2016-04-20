@@ -168,6 +168,12 @@ def test_dispatch_type():
     assert isinstance(t, ValuesType)
     assert t.values == [1, 2]
     
+    t = Type.dispatch(six.string_types)
+    assert isinstance(t, TypeType)
+    t.validate('abc')
+    t.validate(u'abc')
+    assert_raises(TypeError, t.validate, 1)
+
     assert_raises(TypeError, Type.dispatch, 1)
     assert_raises(TypeError, Type.dispatch, b'abc')
     assert_raises(TypeError, Type.dispatch, u'abc')

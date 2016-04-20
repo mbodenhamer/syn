@@ -31,6 +31,8 @@ class Type(object):
             return TypeType(obj)
 
         if isinstance(obj, tuple):
+            if len(obj) == 1:
+                return cls.dispatch(obj[0])
             return MultiType(obj)
 
         if isinstance(obj, Iterable) and not isinstance(obj, STR + (bytes,)):
