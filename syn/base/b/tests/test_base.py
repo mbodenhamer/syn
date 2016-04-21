@@ -74,6 +74,8 @@ def test_positional_args():
     assert_raises(TypeError, B, 1, 2, 3)
     assert_raises(TypeError, B, 1, 2, a=1)
 
+    check_idempotence(obj)
+
 #-------------------------------------------------------------------------------
 # Test arg coercion
 
@@ -89,6 +91,8 @@ def test_arg_coercion():
     assert isinstance(obj.a, int)
     assert isinstance(obj.b, float)
 
+    check_idempotence(obj)
+
 #-------------------------------------------------------------------------------
 # Test optional None
 
@@ -102,6 +106,8 @@ def test_optional_none():
     assert obj.b == 3.4
     assert obj.c is None
     obj.validate()
+
+    check_idempotence(obj)
 
 #-------------------------------------------------------------------------------
 # Test call
@@ -121,6 +127,7 @@ def test_call():
                                                  b = 2.1,
                                                  d = [1, 2])
     
+    check_idempotence(obj)
 
 #-------------------------------------------------------------------------------
 # Test init
@@ -141,10 +148,14 @@ def test_init():
     assert obj.d == 8.4
     assert obj.e == 13.4
 
+    check_idempotence(obj)
+
     obj = G(5, 3.4)
     assert obj.d == 8.4
     assert obj.e == 13.4
     assert obj.f == 10.0
+
+    check_idempotence(obj)
 
 #-------------------------------------------------------------------------------
 # Test repr
@@ -156,6 +167,8 @@ class H(Base):
 def test_repr():
     obj = H(a = 1, b = 2)
     assert repr(obj) == "<{}.H {{'a': 1}}>".format(get_mod(H))
+
+    check_idempotence(obj)
 
 #-------------------------------------------------------------------------------
 # Test coerce classmethod
@@ -198,6 +211,9 @@ def test_coerce_classmethod():
     assert_raises(TypeError, t3.coerce, dict(a=1, b=dict(a=2, b=3.1), c=4))
     assert t3.coerce(dict(a=1, b=dict(a=2, b=dict(a=3.1)), c=4)) == \
         CT3(a=1, b=CT2(a=2, b=CT1(3)), c=CT1(4))
+
+    obj = t3.coerce(dict(a=1, b=dict(a=2, b=3), c=4))
+    check_idempotence(obj)
 
 #-------------------------------------------------------------------------------
 
