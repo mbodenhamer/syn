@@ -2,7 +2,8 @@ import six
 from nose.tools import assert_raises
 from syn.base.b import Base, Attr
 from syn.base_utils import assert_equivalent, assert_pickle_idempotent, \
-    assert_deepcopy_idempotent, assert_inequivalent, assert_type_equivalent
+    assert_deepcopy_idempotent, assert_inequivalent, assert_type_equivalent, \
+    get_mod
 
 if six.PY2:
     str = unicode
@@ -140,6 +141,17 @@ def test_init():
     assert obj.d == 8.4
     assert obj.e == 13.4
     assert obj.f == 10.0
+
+#-------------------------------------------------------------------------------
+# Test repr
+
+class H(Base):
+    _attrs = dict(a = Attr(int),
+                  b = Attr(int, group='repr_exclude'))
+
+def test_repr():
+    obj = H(a = 1, b = 2)
+    assert repr(obj) == "<{}.H {{'a': 1}}>".format(get_mod(H))
 
 #-------------------------------------------------------------------------------
 

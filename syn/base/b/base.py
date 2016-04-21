@@ -1,6 +1,7 @@
 import six
 from .meta import Attrs, Meta
-from syn.base_utils import AttrDict, ReflexiveDict, message
+from syn.base_utils import (AttrDict, ReflexiveDict, message, get_mod,
+                            get_typename)
 
 #-------------------------------------------------------------------------------
 # Base
@@ -97,10 +98,10 @@ class Base(object):
         return not (self == other)
 
     def __repr__(self):
-        pass
-
-    def __str__(self):
-        pass
+        out = '<' + get_mod(self) + '.' + get_typename(self) + ' '
+        out += str(self.to_dict('repr_exclude'))
+        out += '>'
+        return out
 
     def to_dict(self, *groups, **kwargs):
         '''Convert the object into a dict of its declared attributes.
