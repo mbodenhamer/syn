@@ -4,6 +4,7 @@ Changelog
 0.0.3 (2016-04-21)
 ~~~~~~~~~~~~~~~~~~
 
+- Added syn.five module
 - Added coerce() classmethod to base.Base
 - Added Mapping Type extension
 
