@@ -8,6 +8,7 @@ Subpackages
 
     syn.base
     syn.base_utils
+    syn.conf
     syn.cython
     syn.five
     syn.python
