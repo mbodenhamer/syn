@@ -1,4 +1,5 @@
 import six
+from collections import Mapping
 from .meta import Attrs, Meta
 from syn.base_utils import (AttrDict, ReflexiveDict, message, get_mod,
                             get_typename)
@@ -102,6 +103,18 @@ class Base(object):
         out += str(self.to_dict('repr_exclude'))
         out += '>'
         return out
+
+    @classmethod
+    def coerce(cls, value):
+        if isinstance(value, Mapping):
+            if cls._opts.coerce_args:
+                return cls(**value)
+            
+            types = cls._attrs.types
+            attrs = {attr: types[attr].coerce(val) 
+                     for attr, val in value.items()}
+            return cls(**attrs)
+        return cls(value)
 
     def to_dict(self, *groups, **kwargs):
         '''Convert the object into a dict of its declared attributes.

@@ -1,12 +1,20 @@
 import six
 from nose.tools import assert_raises
 from syn.base.b import Base, Attr
+from syn.type.a import Type
 from syn.base_utils import assert_equivalent, assert_pickle_idempotent, \
     assert_deepcopy_idempotent, assert_inequivalent, assert_type_equivalent, \
     get_mod
 
 if six.PY2:
     str = unicode
+
+#-------------------------------------------------------------------------------
+# Utilities
+
+def check_idempotence(obj):
+    assert_deepcopy_idempotent(obj)
+    assert_pickle_idempotent(obj)
 
 #-------------------------------------------------------------------------------
 # Test basic functionality
@@ -37,8 +45,7 @@ def test_base():
 
     assert A(a=5, b=3.4).to_dict() == dict(a=5, b=3.4)
 
-    assert_deepcopy_idempotent(obj)
-    assert_pickle_idempotent(obj)
+    check_idempotence(obj)
 
     assert_raises(TypeError, A, a=5.1, b=3.4)
     assert_raises(AttributeError, A, a=5)
@@ -152,6 +159,48 @@ class H(Base):
 def test_repr():
     obj = H(a = 1, b = 2)
     assert repr(obj) == "<{}.H {{'a': 1}}>".format(get_mod(H))
+
+#-------------------------------------------------------------------------------
+# Test coerce classmethod
+
+class CT1(Base):
+    _opts = dict(args = ('a',),
+                 init_validate = True)
+    _attrs = dict(a = Attr(int))
+
+class CT2(Base):
+    _opts = dict(init_validate = True,
+                 coerce_args = True)
+    _attrs = dict(a = Attr(int),
+                  b = Attr(CT1))
+
+class CT3(Base):
+    _opts = dict(init_validate = True)
+    _attrs = dict(a = Attr(int),
+                  b = Attr(CT2),
+                  c = Attr(CT1))
+
+def test_coerce_classmethod():
+    t1 = Type.dispatch(CT1)
+    assert t1.coerce(1) == CT1(1)
+    assert t1.coerce({'a': 1}) == CT1(1)
+    assert t1.coerce({'a': 1.2}) == CT1(1)
+    assert_raises(TypeError, t1.coerce, [1, 2])
+
+    t2 = Type.dispatch(CT2)
+    assert t2.coerce(dict(a=1, b=2)) == CT2(a=1, b=CT1(2))
+    assert t2.coerce(dict(a=1, b=CT1(2))) == CT2(a=1, b=CT1(2))
+    assert_raises(TypeError, t2.coerce, dict(a=1, b=2.3))
+    assert t2.coerce(dict(a=1, b=dict(a=2.3))) == CT2(a=1, b=CT1(2))
+
+    t3 = Type.dispatch(CT3)
+    assert t3.coerce(dict(a=1, b=dict(a=2, b=3), c=4)) == \
+        CT3(a=1, b=CT2(a=2, b=CT1(3)), c=CT1(4))
+    assert t3.coerce(dict(a=1, b=dict(a=2, b=CT1(3)), c=4)) == \
+        CT3(a=1, b=CT2(a=2, b=CT1(3)), c=CT1(4))
+    assert_raises(TypeError, t3.coerce, dict(a=1, b=dict(a=2, b=3.1), c=4))
+    assert t3.coerce(dict(a=1, b=dict(a=2, b=dict(a=3.1)), c=4)) == \
+        CT3(a=1, b=CT2(a=2, b=CT1(3)), c=CT1(4))
 
 #-------------------------------------------------------------------------------
 
