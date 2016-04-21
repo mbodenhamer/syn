@@ -9,6 +9,7 @@ Subpackages
     syn.base
     syn.base_utils
     syn.cython
+    syn.five
     syn.python
     syn.serialize
     syn.tree
