@@ -1,16 +1,18 @@
 import six
 from copy import deepcopy
 from collections import defaultdict
-import syn.base.a.meta as meta
 from syn.base.a import Base
 from syn.type.a import Type
 from syn.type.a.ext import Callable, Sequence
 from syn.base_utils import GroupDict, AttrDict, ReflexiveDict
 from functools import partial
 
+from syn.base.a.meta import Attr as _Attr
+from syn.base.a.meta import Attrs as _Attrs
+from syn.base.a.meta import Meta as _Meta
+
 STR = six.string_types
 
-_Attr = meta.Attr
 _OAttr = partial(_Attr, optional=True)
 
 #-------------------------------------------------------------------------------
@@ -58,7 +60,7 @@ class Attr(Base):
 # Object Attrs Bookkeeping
 
 
-class Attrs(meta.Attrs):
+class Attrs(_Attrs):
     def _update(self):
         super(Attrs, self)._update()
         self.call = {attr: spec.call for attr, spec in self.items() 
@@ -82,7 +84,7 @@ class Attrs(meta.Attrs):
 # Metaclass
 
 
-class Meta(meta.Meta):
+class Meta(_Meta):
     _metaclass_opts = AttrDict(attrs_type = Attrs,
                                opts_type = AttrDict)
 

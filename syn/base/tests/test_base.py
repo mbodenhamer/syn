@@ -1,12 +1,12 @@
 import syn.base
-import syn.base.a
+import syn.base.b
 
 #-------------------------------------------------------------------------------
 # Base imports
 
 def test_base_imports():
-    assert syn.base.Base is syn.base.a.Base
-    assert syn.base.Attr is syn.base.a.Attr
+    assert syn.base.Base is syn.base.b.Base
+    assert syn.base.Attr is syn.base.b.Attr
 
 #-------------------------------------------------------------------------------
 
