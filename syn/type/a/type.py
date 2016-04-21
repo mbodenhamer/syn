@@ -32,6 +32,7 @@ class Type(object):
                 return cls.dispatch(obj[0])
             return MultiType(obj)
 
+        # Exclude bytes b/c it is more closely related to string than list
         if isinstance(obj, Iterable) and not isinstance(obj, STR + (bytes,)):
             return ValuesType(obj)
 
