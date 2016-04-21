@@ -98,10 +98,9 @@ class TypeType(Type):
                             .format(self.type, value))
 
     def coerce(self, value):
-        if self.call_coerce:
-            return self.type.coerce(value)
-
         try:
+            if self.call_coerce:
+                return self.type.coerce(value)
             return self.type(value)
         except Exception as e:
             raise TypeError('Cannot coerce {} to type {}: {}'
