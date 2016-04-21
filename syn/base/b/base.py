@@ -9,7 +9,9 @@ from syn.base_utils import AttrDict, ReflexiveDict, message
 @six.add_metaclass(Meta)
 class Base(object):
     _attrs = Attrs()
-    _groups = ReflexiveDict('eq_exclude',
+    _groups = ReflexiveDict('_all',
+                            'eq_exclude',
+                            'getstate_exclude',
                             'repr_exclude')
     _opts = AttrDict(args = (),
                      coerce_args = False,
@@ -50,7 +52,7 @@ class Base(object):
                 if attr not in kwargs:
                     kwargs[attr] = None
 
-        for attr, call in self._attrs.call:
+        for attr, call in self._attrs.call.items():
             value = kwargs.get(attr, None)
             if value is None:
                 kwargs[attr] = call()
@@ -63,7 +65,7 @@ class Base(object):
             self.validate()
 
     def __getstate__(self):
-        return self.to_dict()
+        return self.to_dict('getstate_exclude')
 
     def __setstate__(self, state):
         for attr, val in state.items():
