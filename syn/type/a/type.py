@@ -98,6 +98,9 @@ class TypeType(Type):
                             .format(self.type, value))
 
     def coerce(self, value):
+        if self.query(value):
+            return value
+
         try:
             if self.call_coerce:
                 return self.type.coerce(value)
