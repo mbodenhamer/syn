@@ -1,5 +1,5 @@
 from functools import partial
-from collections import Sequence
+from collections import Sequence, Mapping
 from .type import TypeExtension, Type
 
 #-------------------------------------------------------------------------------
@@ -40,6 +40,7 @@ class Sequence(TypeExtension):
             return self.seq_type.coerce(newvals)
         return values
 
+
 #-------------------------------------------------------------------------------
 # Sequence types
 
@@ -49,8 +50,41 @@ Set = partial(Sequence, seq_type=set)
 FrozenSet = partial(Sequence, seq_type=frozenset)
 
 #-------------------------------------------------------------------------------
+# Maping
+
+
+class Mapping(TypeExtension):
+    '''The value must be a mapping whose values are the provided type.
+    '''
+    __slots__ = ('value_type', 'map_type')
+
+    def __init__(self, value_type, map_type=Mapping):
+        self.value_type = Type.dispatch(value_type)
+        self.map_type = Type.dispatch(map_type)
+
+    def check(self, dct):
+        self.map_type.check(dct)
+
+        for value in dct.values():
+            self.value_type.check(value)
+
+    def coerce(self, dct):
+        if not self.query(dct):
+            newdct = {key:self.value_type.coerce(value) for key,value in
+                      dct.items()}
+            return self.map_type.coerce(newdct)
+        return dct
+
+
+#-------------------------------------------------------------------------------
+# Mapping types
+
+Dict = partial(Mapping, map_type=dict)
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Callable', 'Sequence', 'List', 'Tuple', 'Set', 'FrozenSet')
+__all__ = ('Callable', 'Sequence', 'List', 'Tuple', 'Set', 'FrozenSet',
+           'Mapping', 'Dict')
 
 #-------------------------------------------------------------------------------
