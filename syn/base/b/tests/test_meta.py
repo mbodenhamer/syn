@@ -86,6 +86,7 @@ def test_meta():
                                 c = 'value 2')
     assert_type_equivalent(A._groups,
                            GroupDict(_all = set(['a', 'b', 'c']),
+                                     _internal = set([]),
                                      g1 = set(['a']),
                                      g2 = set(['b'])))
 
@@ -102,6 +103,7 @@ def test_meta():
 
     assert_type_equivalent(B._groups,
                            GroupDict(_all = set(['a', 'b', 'c', 'd']),
+                                     _internal = set([]),
                                      g1 = set(['a', 'c']),
                                      g2 = set(['b'])))
 
@@ -116,7 +118,7 @@ def test_meta():
     @six.add_metaclass(M1)
     class C(object):
         _attrs = Attrs(a = Attr(float),
-                       e = Attr(set))
+                       e = Attr(set, internal=True))
 
     class M2(Meta, M1): pass
     class D(six.with_metaclass(M2, B, C)):
@@ -138,6 +140,7 @@ def test_meta():
 
     assert_type_equivalent(D._groups,
                            GroupDict(_all = set(['a', 'b', 'c', 'd', 'e']),
+                                     _internal = set(['e']),
                                      g1 = set(['a', 'c']),
                                      g2 = set(['b']),
                                      g3 = set()))

@@ -10,6 +10,7 @@ from syn.base_utils import AttrDict, ReflexiveDict, message
 class Base(object):
     _attrs = Attrs()
     _groups = ReflexiveDict('_all',
+                            '_internal',
                             'eq_exclude',
                             'getstate_exclude',
                             'repr_exclude')
@@ -84,6 +85,12 @@ class Base(object):
 
     def __ne__(self, other):
         return not (self == other)
+
+    def __repr__(self, other):
+        pass
+
+    def __str__(self, other):
+        pass
 
     def to_dict(self, *groups, **kwargs):
         '''Convert the object into a dict of its declared attributes.

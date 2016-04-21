@@ -34,6 +34,7 @@ dict(type = _OAttr(None, doc='Type of the attribute'),
                    'called on the default (if given), othewise with no arguments'),
      group = _OAttr(STR, doc='Name of the group this attribute belongs to'),
      groups = _OAttr(Sequence(STR), doc='Groups this attribute beongs to'),
+     internal = _Attr(bool, False, 'Not treated as a constructor argument'),
     )
 
 #-------------------------------------------------------------------------------
@@ -60,6 +61,7 @@ class Attrs(meta.Attrs):
         super(Attrs, self)._update()
         self.call = {attr: spec.call for attr, spec in self.items() 
                      if spec.call is not None}
+        self.internal = {attr for attr, spec in self.items() if spec.internal}
 
         # Process attr groups
         self.groups = defaultdict(set)
@@ -101,6 +103,7 @@ class Meta(meta.Meta):
                 groups = group_combine(base._groups, groups)
         self._groups = groups
         self._groups['_all'] = set(self._attrs.types)
+        self._groups['_internal'] = set(self._attrs.internal)
 
     def groups_enum(self):
         '''Returns an enum-ish dict with the names of the groups defined for this class.
