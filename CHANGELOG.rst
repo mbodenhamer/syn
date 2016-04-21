@@ -1,6 +1,12 @@
 Changelog
 ---------
 
+0.0.3 (2016-04-21)
+~~~~~~~~~~~~~~~~~~
+
+- Added coerce() classmethod to base.Base
+- Added Mapping Type extension
+
 0.0.2 (2016-04-21)
 ~~~~~~~~~~~~~~~~~~
 
