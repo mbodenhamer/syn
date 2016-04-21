@@ -39,6 +39,7 @@ def test_attrs():
                   d = Attr(list, doc='value 3', optional=True, call=list)
                  )
 
+    assert attrs.attrs == set(['a', 'b', 'c', 'd'])
     assert attrs.types['a'].type is int
     assert attrs.types['b'].type is float
     assert attrs.types['c'].type is str
@@ -84,6 +85,7 @@ def test_meta():
     assert A._attrs.defaults == dict(b = 3.4)
     assert A._attrs.doc == dict(a = 'value 1',
                                 c = 'value 2')
+    assert A._attrs.attrs == set(['a', 'b', 'c'])
     assert_type_equivalent(A._groups,
                            GroupDict(_all = set(['a', 'b', 'c']),
                                      _internal = set([]),
@@ -100,7 +102,7 @@ def test_meta():
     assert B._attrs.defaults == dict(b = 3.4,
                                      d = [1, 2])
     assert B._attrs.doc == dict(a = 'value 1')
-
+    assert B._attrs.attrs == set(['a', 'b', 'c', 'd'])
     assert_type_equivalent(B._groups,
                            GroupDict(_all = set(['a', 'b', 'c', 'd']),
                                      _internal = set([]),

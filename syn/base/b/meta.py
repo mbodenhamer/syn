@@ -102,8 +102,8 @@ class Meta(meta.Meta):
             if hasattr(base, '_groups'):
                 groups = group_combine(base._groups, groups)
         self._groups = groups
-        self._groups['_all'] = set(self._attrs.types)
-        self._groups['_internal'] = set(self._attrs.internal)
+        self._groups['_all'] = self._attrs.attrs
+        self._groups['_internal'] = self._attrs.internal
 
     def groups_enum(self):
         '''Returns an enum-ish dict with the names of the groups defined for this class.

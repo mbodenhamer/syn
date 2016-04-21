@@ -83,6 +83,7 @@ class Attr(object):
 
 class Attrs(UpdateDict):
     def _update(self):
+        self.attrs = set(self.keys())
         self.types = {attr: spec.type for attr, spec in self.items()}
         self.required = {attr for attr, spec in self.items() 
                          if not spec.optional}

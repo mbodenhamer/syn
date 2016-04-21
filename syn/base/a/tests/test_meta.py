@@ -135,6 +135,7 @@ def test_attrs():
                   d = Attr(list, [1, 2], doc='value 3', optional=True)
                  )
 
+    assert attrs.attrs == set(['a', 'b', 'c', 'd'])
     assert attrs.types['a'].type is int
     assert attrs.types['b'].type is float
     assert attrs.types['c'].type is str
@@ -176,6 +177,7 @@ def test_meta():
     assert A._attrs.defaults == dict(b = 3.4)
     assert A._attrs.doc == dict(a = 'value 1',
                                 c = 'value 2')
+    assert A._attrs.attrs == set(['a', 'b', 'c'])
 
     assert B._attrs.types['a'].type is int
     assert B._attrs.types['b'].type is float
@@ -187,6 +189,7 @@ def test_meta():
     assert B._attrs.defaults == dict(b = 3.4,
                                      d = [1, 2])
     assert B._attrs.doc == dict(a = 'value 1')
+    assert B._attrs.attrs == set(['a', 'b', 'c', 'd'])
 
 
     assert A._opts == dict(x = 1, y = 2.3)
