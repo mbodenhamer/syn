@@ -69,6 +69,15 @@ def test_nearest_base():
     assert nearest_base(C, [D]) is None
     assert nearest_base(D, [A, B, C]) is None
 
+def test_get_typename():
+    from syn.base_utils import get_typename
+
+    class Foo(object):
+        pass
+
+    assert get_typename(Foo) == 'Foo'
+    assert get_typename(Foo()) == 'Foo'
+
 #-------------------------------------------------------------------------------
 # Sequence utilities
 
@@ -82,6 +91,13 @@ def test_index():
 
 #-------------------------------------------------------------------------------
 # Module utilities
+
+def test_get_mod():
+    from syn.base_utils import get_mod
+    from syn.base.a import Base
+
+    assert get_mod(Base) == 'syn.base.a.base'
+    assert get_mod(Base()) == 'syn.base.a.base'
 
 def test_import_module():
     import os

@@ -47,6 +47,15 @@ def nearest_base(cls, bases):
         return None
     return dists2[min(dists2)] 
 
+def get_typename(x):
+    '''Returns the name of the type of x, if x is an object.  Otherwise, returns the name of x.
+    '''
+    if isinstance(x, type):
+        ret = x.__name__
+    else:
+        ret = x.__class__.__name__
+    return ret
+
 #-------------------------------------------------------------------------------
 # Sequence utilities
 
@@ -57,6 +66,16 @@ def index(seq, elem):
 
 #-------------------------------------------------------------------------------
 # Module utilities
+
+def get_mod(cls):
+
+    '''Returns the string identifying the module that cls is defined in.
+    '''
+    if isinstance(cls, (type, types.FunctionType)):
+        ret = cls.__module__
+    else:
+        ret = cls.__class__.__module__
+    return ret
 
 def import_module(modname):
     if '.' in modname:
@@ -165,7 +184,7 @@ def assert_pickle_idempotent(obj):
 # __all__
 
 __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
-           'index', 'nearest_base',
+           'index', 'nearest_base', 'get_typename', 'get_mod',
            'assert_equivalent', 'assert_inequivalent', 'assert_type_equivalent',
            'assert_pickle_idempotent', 'assert_deepcopy_idempotent')
 
