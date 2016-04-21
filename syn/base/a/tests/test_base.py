@@ -1,11 +1,8 @@
-import six
 from nose.tools import assert_raises
+from syn.five import STR
 from syn.base.a import Base, Attr
 from syn.base_utils import assert_equivalent, assert_pickle_idempotent, \
     assert_deepcopy_idempotent, assert_inequivalent
-
-if six.PY2:
-    str = unicode
 
 #-------------------------------------------------------------------------------
 # Test basic functionality
@@ -14,7 +11,7 @@ if six.PY2:
 class A(Base):
     _attrs = dict(a = Attr(int),
                   b = Attr(float),
-                  c = Attr(str, optional=True))
+                  c = Attr(STR, optional=True))
     _opts = dict(init_validate = True)
 
 

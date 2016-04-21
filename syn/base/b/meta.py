@@ -1,6 +1,6 @@
-import six
 from copy import deepcopy
 from collections import defaultdict
+from syn.five import STR
 from syn.base.a import Base
 from syn.type.a import Type
 from syn.type.a.ext import Callable, Sequence
@@ -11,7 +11,6 @@ from syn.base.a.meta import Attr as _Attr
 from syn.base.a.meta import Attrs as _Attrs
 from syn.base.a.meta import Meta as _Meta
 
-STR = six.string_types
 
 _OAttr = partial(_Attr, optional=True)
 

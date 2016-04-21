@@ -1,13 +1,10 @@
-import six
 from nose.tools import assert_raises
+from syn.five import STR
 from syn.base.b import Base, Attr
 from syn.type.a import Type
 from syn.base_utils import assert_equivalent, assert_pickle_idempotent, \
     assert_deepcopy_idempotent, assert_inequivalent, assert_type_equivalent, \
     get_mod
-
-if six.PY2:
-    str = unicode
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -22,7 +19,7 @@ def check_idempotence(obj):
 class A(Base):
     _attrs = dict(a = Attr(int),
                   b = Attr(float),
-                  c = Attr(str, optional=True))
+                  c = Attr(STR, optional=True))
     _opts = dict(init_validate = True)
 
 class A2(A):

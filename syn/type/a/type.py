@@ -1,12 +1,6 @@
-import six
+from syn.five import STR, strf
 from collections import Iterable
 from syn.base_utils import hasmethod, message, nearest_base
-
-STR = six.string_types
-if six.PY2:
-    _str = unicode
-else:
-    _str = str
 
 #-------------------------------------------------------------------------------
 # Base Class
@@ -164,7 +158,7 @@ class MultiType(Type):
             self.is_typelist = True
             self.typelist = types
             
-        self.typestr = ', '.join(map(_str, types))
+        self.typestr = ', '.join(map(strf, types))
         self.types = [Type.dispatch(typ) for typ in types]
         self.typemap = dict(zip(types, self.types))
 

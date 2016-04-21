@@ -1,11 +1,8 @@
 import six
+from syn.five import STR, xrange
 from syn.type.a import AnyType, TypeType
 from syn.base.a.meta import combine, graft, AttrDict, sorted_bases, \
     metaclasses, mro, Attr, Attrs, Meta
-
-if six.PY2: # pylint: disable=W0622
-    range = xrange 
-    str = unicode
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -27,7 +24,7 @@ def test_combine():
     assert d4['c'] == 4
 
 def test_graft():
-    lst = list(range(0,5))
+    lst = list(xrange(0,5))
     branch = [6,7,8]
     
     g1 = graft(lst, branch, 2)
@@ -131,14 +128,14 @@ def test_attr():
 def test_attrs():
     attrs = Attrs(a = Attr(int, doc='value 1'),
                   b = Attr(float, 3.4),
-                  c = Attr(str, doc='value 2', optional=True),
+                  c = Attr(STR, doc='value 2', optional=True),
                   d = Attr(list, [1, 2], doc='value 3', optional=True)
                  )
 
     assert attrs.attrs == set(['a', 'b', 'c', 'd'])
     assert attrs.types['a'].type is int
     assert attrs.types['b'].type is float
-    assert attrs.types['c'].type is str
+    assert attrs.types['c'].type is STR[0]
     assert attrs.types['d'].type is list
 
     assert attrs.required == {'a', 'b'}
@@ -157,7 +154,7 @@ def test_meta():
     class A(object):
         _attrs = Attrs(a = Attr(int, doc='value 1'),
                        b = Attr(float, 3.4),
-                       c = Attr(str, doc='value 2', optional=True)
+                       c = Attr(STR, doc='value 2', optional=True)
                       )
         _opts = AttrDict(x = 1,
                          y = 2.3)
@@ -170,7 +167,7 @@ def test_meta():
 
     assert A._attrs.types['a'].type is int
     assert A._attrs.types['b'].type is float
-    assert A._attrs.types['c'].type is str
+    assert A._attrs.types['c'].type is STR[0]
 
     assert A._attrs.required == {'a', 'b'}
     assert A._attrs.optional == {'c'}
