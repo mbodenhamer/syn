@@ -35,6 +35,8 @@ dict(type = _OAttr(None, doc='Type of the attribute'),
      group = _OAttr(STR, doc='Name of the group this attribute belongs to'),
      groups = _OAttr(Sequence(STR), doc='Groups this attribute beongs to'),
      internal = _Attr(bool, False, 'Not treated as a constructor argument'),
+     init = _OAttr(Callable, doc='Will be called with the object as the only '
+                   'parameter for initializing the attribute'),
     )
 
 #-------------------------------------------------------------------------------
@@ -61,6 +63,8 @@ class Attrs(meta.Attrs):
         super(Attrs, self)._update()
         self.call = {attr: spec.call for attr, spec in self.items() 
                      if spec.call is not None}
+        self.init = {attr: spec.init for attr, spec in self.items()
+                     if spec.init is not None}
         self.internal = {attr for attr, spec in self.items() if spec.internal}
 
         # Process attr groups

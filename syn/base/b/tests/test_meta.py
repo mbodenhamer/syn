@@ -33,19 +33,22 @@ def test_attr():
 # Attrs
 
 def test_attrs():
+    fe = lambda self: self.a + 1
     attrs = Attrs(a = Attr(int, doc='value 1', group='a'),
                   b = Attr(float, 3.4, group='b'),
                   c = Attr(str, doc='value 2', optional=True, groups=['a', 'b']),
-                  d = Attr(list, doc='value 3', optional=True, call=list)
+                  d = Attr(list, doc='value 3', optional=True, call=list),
+                  e = Attr(int, internal=True, init=fe),
                  )
 
-    assert attrs.attrs == set(['a', 'b', 'c', 'd'])
+    assert attrs.attrs == set(['a', 'b', 'c', 'd', 'e'])
     assert attrs.types['a'].type is int
     assert attrs.types['b'].type is float
     assert attrs.types['c'].type is str
     assert attrs.types['d'].type is list
+    assert attrs.types['e'].type is int
 
-    assert attrs.required == {'a', 'b'}
+    assert attrs.required == {'a', 'b', 'e'}
     assert attrs.optional == {'c', 'd'}
     assert attrs.defaults == dict(b = 3.4)
     assert attrs.doc == dict(a = 'value 1',
@@ -53,6 +56,8 @@ def test_attrs():
                              d = 'value 3')
 
     assert attrs.call == dict(d = list)
+    assert attrs.init == dict(e = fe)
+    assert attrs.internal == set(['e'])
     assert attrs.groups == GroupDict(a = set(['a', 'c']),
                                      b = set(['b', 'c']))
 

@@ -118,6 +118,30 @@ def test_call():
     
 
 #-------------------------------------------------------------------------------
+# Test init
+
+class F(B):
+    _opts = dict(init_order = ('d', 'e'))
+    _attrs = dict(d = Attr(float, internal=True, 
+                           init=lambda self: self.a + self.b),
+                  e = Attr(float, internal=True,
+                           init=lambda self: self.d + self.a))
+
+class G(F):
+    _attrs = dict(f = Attr(float, internal=True,
+                           init=lambda self: 2.0 * self.a))
+
+def test_init():
+    obj = F(5, 3.4)
+    assert obj.d == 8.4
+    assert obj.e == 13.4
+
+    obj = G(5, 3.4)
+    assert obj.d == 8.4
+    assert obj.e == 13.4
+    assert obj.f == 10.0
+
+#-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
     from syn.base_utils import run_all_tests

@@ -17,6 +17,7 @@ class Base(object):
     _opts = AttrDict(args = (),
                      coerce_args = False,
                      id_equality = False,
+                     init_order = (),
                      init_validate = False,
                      optional_none = False)
 
@@ -53,14 +54,23 @@ class Base(object):
                 if attr not in kwargs:
                     kwargs[attr] = None
 
-        for attr, call in self._attrs.call.items():
-            value = kwargs.get(attr, None)
-            if value is None:
-                kwargs[attr] = call()
-            else:
-                kwargs[attr] = call(value)
+        if self._attrs.call:
+            for attr, call in self._attrs.call.items():
+                value = kwargs.get(attr, None)
+                if value is None:
+                    kwargs[attr] = call()
+                else:
+                    kwargs[attr] = call(value)
 
         self.__setstate__(kwargs)
+
+        if self._opts.init_order:
+            for attr in self._opts.init_order:
+                setattr(self, attr, self._attrs.init[attr](self))
+
+        if self._attrs.init:
+            for attr in set(self._attrs.init).difference(self._opts.init_order):
+                setattr(self, attr, self._attrs.init[attr](self))
 
         if self._opts.init_validate:
             self.validate()
@@ -86,10 +96,10 @@ class Base(object):
     def __ne__(self, other):
         return not (self == other)
 
-    def __repr__(self, other):
+    def __repr__(self):
         pass
 
-    def __str__(self, other):
+    def __str__(self):
         pass
 
     def to_dict(self, *groups, **kwargs):
