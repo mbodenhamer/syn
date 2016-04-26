@@ -4,7 +4,7 @@ from syn.base.b import Base, Attr
 from syn.type.a import Type
 from syn.base_utils import assert_equivalent, assert_pickle_idempotent, \
     assert_deepcopy_idempotent, assert_inequivalent, assert_type_equivalent, \
-    get_mod
+    get_mod, AttrDict
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -213,6 +213,29 @@ def test_coerce_classmethod():
         CT3(a=1, b=CT2(a=2, b=CT1(3)), c=CT1(4))
 
     obj = t3.coerce(dict(a=1, b=dict(a=2, b=3), c=4))
+    check_idempotence(obj)
+
+#-------------------------------------------------------------------------------
+# Init hooks
+
+class I(B):
+    _opts = AttrDict()
+    _attrs = dict(d = Attr(float, internal=True),
+                  e = Attr(float, internal=True))
+    
+    def _foo(self):
+        self.d = self.a * self.b
+
+    def _bar(self):
+        self.e = self.d + 2
+
+    _opts.init_hooks = (_foo, _bar)
+
+def test_init_hooks():
+    obj = I(5, 2.5)
+    assert obj.d == 12.5
+    assert obj.e == 14.5
+
     check_idempotence(obj)
 
 #-------------------------------------------------------------------------------

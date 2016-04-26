@@ -19,6 +19,7 @@ class Base(object):
     _opts = AttrDict(args = (),
                      coerce_args = False,
                      id_equality = False,
+                     init_hooks = (),
                      init_order = (),
                      init_validate = False,
                      optional_none = False)
@@ -73,6 +74,10 @@ class Base(object):
         if self._attrs.init:
             for attr in set(self._attrs.init).difference(self._opts.init_order):
                 setattr(self, attr, self._attrs.init[attr](self))
+
+        if self._opts.init_hooks:
+            for hook in self._opts.init_hooks:
+                hook(self)
 
         if self._opts.init_validate:
             self.validate()
