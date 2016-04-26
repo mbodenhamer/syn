@@ -1,5 +1,6 @@
 from nose.tools import assert_raises
-from syn.type.a.ext import Callable, List, Sequence, Mapping, Dict, Hashable
+from syn.type.a.ext import (Callable, List, Sequence, Mapping, Dict, Hashable,
+                            Tuple)
 
 #-------------------------------------------------------------------------------
 # Callable
@@ -47,6 +48,41 @@ def test_sequence():
     good_list = [1, 2, 3]
     assert int_list.coerce(bad_list) == [1, 3, 4]
     assert int_list.coerce(good_list) is good_list
+
+#-------------------------------------------------------------------------------
+# Tuple
+
+def test_tuple():
+    t = Tuple(int)
+    assert t.types.type is int
+    assert t.uniform
+    assert t.length is None
+
+    assert t.query((1, 2, 3))
+    assert t.query((1,))
+    assert not t.query([1, 2])
+    assert not t.query((1, 2.3, 3))
+    assert t.coerce([1, 2.3, '3']) == (1, 2, 3)
+
+    t = Tuple(int, 2)
+    assert t.types.type is int
+    assert t.uniform
+    assert t.length == 2
+
+    assert t.query((1, 2))
+    assert not t.query((1, 2.3))
+    assert not t.query((1, 2, 3))
+    assert t.coerce((1, 2)) == (1, 2)
+    assert t.coerce([1.2, '2']) == (1, 2)
+    assert_raises(TypeError, t.coerce, [1, 2.3, '3'])
+
+    t = Tuple((int, float))
+    assert not t.uniform
+    assert t.length == 2
+
+    assert t.query((1, 2.3))
+    assert not t.query((2.3, 1))
+    assert t.coerce((2.3, 1)) == (2, 1.0)
 
 #-------------------------------------------------------------------------------
 # Mapping

@@ -1,5 +1,6 @@
 from functools import partial
-from collections import Sequence, Mapping
+from collections import Sequence as _Sequence
+from collections import Mapping as _Mapping
 from .type import TypeExtension, Type
 from syn.base_utils import is_hashable
 
@@ -38,7 +39,7 @@ class Sequence(TypeExtension):
     '''
     __slots__ = ('item_type', 'seq_type')
 
-    def __init__(self, item_type, seq_type=Sequence):
+    def __init__(self, item_type, seq_type=_Sequence):
         self.item_type = Type.dispatch(item_type)
         self.seq_type = Type.dispatch(seq_type)
 
@@ -56,10 +57,62 @@ class Sequence(TypeExtension):
 
 
 #-------------------------------------------------------------------------------
+# Tuple
+
+
+class Tuple(TypeExtension):
+    '''For defining tuple types.
+    '''
+    __slots__ = ('types', 'length', 'uniform')
+
+    def __init__(self, types, length=None, uniform=False):
+        self.uniform = True
+        if isinstance(types, _Sequence) and not uniform:
+            length = len(types)
+            self.uniform = False
+
+        if self.uniform:
+            types = Type.dispatch(types)
+        else:
+            types = [Type.dispatch(typ) for typ in types]
+
+        self.types = types
+        self.length = length
+
+    def check(self, values):
+        if not isinstance(values, tuple):
+            raise TypeError('Value must be type tuple')
+
+        if self.length is not None:
+            if len(values) != self.length:
+                raise TypeError('Tuple must be length {}'.format(self.length))
+
+        if self.uniform:
+            for value in values:
+                self.types.check(value)
+        else:
+            for k, typ in enumerate(self.types):
+                typ.check(values[k])
+
+    def coerce(self, values):
+        if self.query(values):
+            return values
+
+        if self.length is not None:
+            if len(values) != self.length:
+                raise TypeError('Tuple must be length {}'.format(self.length))
+
+        if self.uniform:
+            values = [self.types.coerce(value) for value in values]
+        else:
+            values = [typ.coerce(values[k]) for k, typ in enumerate(self.types)]
+        return tuple(values)
+
+
+#-------------------------------------------------------------------------------
 # Sequence types
 
 List = partial(Sequence, seq_type=list)
-Tuple = partial(Sequence, seq_type=tuple)
 Set = partial(Sequence, seq_type=set)
 FrozenSet = partial(Sequence, seq_type=frozenset)
 
@@ -72,7 +125,7 @@ class Mapping(TypeExtension):
     '''
     __slots__ = ('value_type', 'map_type')
 
-    def __init__(self, value_type, map_type=Mapping):
+    def __init__(self, value_type, map_type=_Mapping):
         self.value_type = Type.dispatch(value_type)
         self.map_type = Type.dispatch(map_type)
 
