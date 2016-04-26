@@ -1,5 +1,5 @@
 from nose.tools import assert_raises
-from syn.type.a.ext import Callable, List, Sequence, Mapping, Dict
+from syn.type.a.ext import Callable, List, Sequence, Mapping, Dict, Hashable
 
 #-------------------------------------------------------------------------------
 # Callable
@@ -17,6 +17,14 @@ def test_callable():
     t.validate(int)
     assert_raises(TypeError, t.check, 1)
     assert_raises(TypeError, t.validate, 1)
+
+#-------------------------------------------------------------------------------
+# Hashable
+
+def test_hashable():
+    t = Hashable()
+    assert t.query(3)
+    assert not t.query(dict(a = 3))
 
 #-------------------------------------------------------------------------------
 # Sequence

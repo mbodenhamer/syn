@@ -1,6 +1,7 @@
 from functools import partial
 from collections import Sequence, Mapping
 from .type import TypeExtension, Type
+from syn.base_utils import is_hashable
 
 #-------------------------------------------------------------------------------
 # Callable
@@ -13,6 +14,19 @@ class Callable(TypeExtension):
     def check(self, value):
         if not callable(value):
             raise TypeError('Value is not callable: {}'.format(value))
+
+
+#-------------------------------------------------------------------------------
+# Hashable
+
+
+class Hashable(TypeExtension):
+    '''The value must be hashable.
+    '''
+
+    def check(self, value):
+        if not is_hashable(value):
+            raise TypeError('Value is not hashable: {}'.format(value))
 
 
 #-------------------------------------------------------------------------------
@@ -85,6 +99,6 @@ Dict = partial(Mapping, map_type=dict)
 # __all__
 
 __all__ = ('Callable', 'Sequence', 'List', 'Tuple', 'Set', 'FrozenSet',
-           'Mapping', 'Dict')
+           'Mapping', 'Dict', 'Hashable')
 
 #-------------------------------------------------------------------------------
