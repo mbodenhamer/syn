@@ -1,1 +1,1 @@
-from .b import Base, Attr
+from .b import Base, Attr, Attrs
