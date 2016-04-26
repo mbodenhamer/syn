@@ -84,6 +84,15 @@ def test_tuple():
     assert not t.query((2.3, 1))
     assert t.coerce((2.3, 1)) == (2, 1.0)
 
+    t = Tuple((int, float), uniform=True)
+    assert t.uniform
+    assert t.length is None
+
+    assert t.query((2.3, 2.3))
+    assert t.query((1, 1))
+    assert t.query((2.3, 1))
+    assert not t.query(('abc', 1))
+
 #-------------------------------------------------------------------------------
 # Mapping
 
