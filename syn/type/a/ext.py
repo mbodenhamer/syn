@@ -115,6 +115,7 @@ class Tuple(TypeExtension):
 List = partial(Sequence, seq_type=list)
 Set = partial(Sequence, seq_type=set)
 FrozenSet = partial(Sequence, seq_type=frozenset)
+AssocList = List(Tuple((None, None)))
 
 #-------------------------------------------------------------------------------
 # Maping
@@ -152,6 +153,6 @@ Dict = partial(Mapping, map_type=dict)
 # __all__
 
 __all__ = ('Callable', 'Sequence', 'List', 'Tuple', 'Set', 'FrozenSet',
-           'Mapping', 'Dict', 'Hashable')
+           'Mapping', 'Dict', 'Hashable', 'AssocList')
 
 #-------------------------------------------------------------------------------

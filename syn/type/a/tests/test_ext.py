@@ -1,6 +1,6 @@
 from nose.tools import assert_raises
 from syn.type.a.ext import (Callable, List, Sequence, Mapping, Dict, Hashable,
-                            Tuple)
+                            Tuple, AssocList)
 
 #-------------------------------------------------------------------------------
 # Callable
@@ -92,6 +92,14 @@ def test_tuple():
     assert t.query((1, 1))
     assert t.query((2.3, 1))
     assert not t.query(('abc', 1))
+
+#-------------------------------------------------------------------------------
+# AssocList
+
+def test_assoclist():
+    t = AssocList
+    assert t.query([('a', 2), ('b', 3)])
+    assert not t.query([('a', 2), ('b', 3, 4)])
 
 #-------------------------------------------------------------------------------
 # Mapping
