@@ -1,6 +1,6 @@
 import six
 from .meta import Attrs, Meta
-from syn.base_utils import AttrDict, message
+from syn.base_utils import AttrDict, SeqDict, message
 
 #-------------------------------------------------------------------------------
 # Base
@@ -13,6 +13,7 @@ class Base(object):
                      coerce_args = False,
                      init_validate = False,
                      optional_none = False)
+    _seq_opts = SeqDict()
 
     def __init__(self, *args, **kwargs):
         _args = self._opts.args

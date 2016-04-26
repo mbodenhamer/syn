@@ -1,6 +1,6 @@
 from copy import deepcopy
 from syn.type.a import Type
-from syn.base_utils import UpdateDict, AttrDict, mro
+from syn.base_utils import UpdateDict, AttrDict, SeqDict, mro
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -100,7 +100,8 @@ class Attrs(UpdateDict):
 
 class Meta(type):
     _metaclass_opts = AttrDict(attrs_type = Attrs,
-                               opts_type = AttrDict)
+                               opts_type = AttrDict,
+                               seq_opts_type = SeqDict)
 
     def __init__(self, clsname, bases, dct):
         super(Meta, self).__init__(clsname, bases, dct)
@@ -114,6 +115,7 @@ class Meta(type):
         self._combine_attr_fast_update('_attrs', 
                                        self._metaclass_opts.attrs_type)
         self._combine_attr('_opts', self._metaclass_opts.opts_type)
+        self._combine_attr('_seq_opts', self._metaclass_opts.seq_opts_type)
 
     def _combine_attr(self, attr, typ=None):
         values = getattr(self, attr, {})

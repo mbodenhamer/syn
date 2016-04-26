@@ -3,7 +3,7 @@ from syn.five import STR
 from syn.base.a import Base
 from syn.type.a import Type
 from syn.type.a.ext import Callable, Sequence
-from syn.base_utils import GroupDict, AttrDict, ReflexiveDict
+from syn.base_utils import GroupDict, AttrDict, SeqDict, ReflexiveDict
 from functools import partial
 
 from syn.base.a.meta import Attr as _Attr
@@ -76,7 +76,8 @@ class Attrs(_Attrs):
 
 class Meta(_Meta):
     _metaclass_opts = AttrDict(attrs_type = Attrs,
-                               opts_type = AttrDict)
+                               opts_type = AttrDict,
+                               seq_opts_type = SeqDict)
 
     def __init__(self, clsname, bases, dct):
         super(Meta, self).__init__(clsname, bases, dct)

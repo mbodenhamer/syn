@@ -2,7 +2,7 @@ import six
 from collections import Mapping
 from .meta import Attrs, Meta
 from syn.base_utils import (AttrDict, ReflexiveDict, message, get_mod,
-                            get_typename)
+                            get_typename, SeqDict)
 
 #-------------------------------------------------------------------------------
 # Base
@@ -19,10 +19,10 @@ class Base(object):
     _opts = AttrDict(args = (),
                      coerce_args = False,
                      id_equality = False,
-                     init_hooks = (),
-                     init_order = (),
                      init_validate = False,
                      optional_none = False)
+    _seq_opts = SeqDict(init_hooks = (),
+                        init_order = ())
 
     def __init__(self, *args, **kwargs):
         _args = self._opts.args
@@ -67,16 +67,17 @@ class Base(object):
 
         self.__setstate__(kwargs)
 
-        if self._opts.init_order:
-            for attr in self._opts.init_order:
+        if self._seq_opts.init_order:
+            for attr in self._seq_opts.init_order:
                 setattr(self, attr, self._attrs.init[attr](self))
 
         if self._attrs.init:
-            for attr in set(self._attrs.init).difference(self._opts.init_order):
+            for attr in (set(self._attrs.init) - 
+                         set(self._seq_opts.init_order)):
                 setattr(self, attr, self._attrs.init[attr](self))
 
-        if self._opts.init_hooks:
-            for hook in self._opts.init_hooks:
+        if self._seq_opts.init_hooks:
+            for hook in self._seq_opts.init_hooks:
                 hook(self)
 
         if self._opts.init_validate:

@@ -1,6 +1,12 @@
 Changelog
 ---------
 
+0.0.4 (2016-04-28)
+~~~~~~~~~~~~~~~~~~
+
+- Added init_hooks to base.Base
+- Refactored sequence-based options to be defined in Base._seq_opts
+
 0.0.3 (2016-04-21)
 ~~~~~~~~~~~~~~~~~~
 

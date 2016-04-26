@@ -4,7 +4,7 @@ from syn.base.b import Base, Attr
 from syn.type.a import Type
 from syn.base_utils import assert_equivalent, assert_pickle_idempotent, \
     assert_deepcopy_idempotent, assert_inequivalent, assert_type_equivalent, \
-    get_mod, AttrDict
+    get_mod, SeqDict
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -133,7 +133,7 @@ def test_call():
 # Test init
 
 class F(B):
-    _opts = dict(init_order = ('d', 'e'))
+    _seq_opts = dict(init_order = ('d', 'e'))
     _attrs = dict(d = Attr(float, internal=True, 
                            init=lambda self: self.a + self.b),
                   e = Attr(float, internal=True,
@@ -219,7 +219,7 @@ def test_coerce_classmethod():
 # Init hooks
 
 class I(B):
-    _opts = AttrDict()
+    _seq_opts = SeqDict()
     _attrs = dict(d = Attr(float, internal=True),
                   e = Attr(float, internal=True))
     
@@ -229,7 +229,15 @@ class I(B):
     def _bar(self):
         self.e = self.d + 2
 
-    _opts.init_hooks = (_foo, _bar)
+    _seq_opts.init_hooks = (_foo, _bar)
+
+class I2(I):
+    _attrs = dict(f = Attr(float, internal=True))
+
+    def _baz(self):
+        self.f = self.d + self.e
+
+    _seq_opts = dict(init_hooks = [_baz])
 
 def test_init_hooks():
     obj = I(5, 2.5)
@@ -237,6 +245,11 @@ def test_init_hooks():
     assert obj.e == 14.5
 
     check_idempotence(obj)
+
+    obj = I2(5, 2.5)
+    assert obj.d == 12.5
+    assert obj.e == 14.5
+    assert obj.f == 27.0
 
 #-------------------------------------------------------------------------------
 
