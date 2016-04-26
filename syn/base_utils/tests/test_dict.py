@@ -1,18 +1,24 @@
 from nose.tools import assert_raises
 from syn.base_utils import (AttrDict, UpdateDict, GroupDict, ReflexiveDict,
                             SeqDict)
-from syn.base_utils.dict import dict_from_args
+from syn.base_utils.dict import dict_arg, is_assoc_list
 
 #-------------------------------------------------------------------------------
 # Utilities
 
-def test_dict_from_args():
-    assert dict_from_args(dict) == {}
-    assert dict_from_args(dict, dict(a = 1, b = 2)) == dict(a = 1, b = 2)
-    assert dict_from_args(dict, a = 1, b = 2) == dict(a = 1, b = 2)
-    assert dict_from_args(dict, [('a', 1), ('b', 2)]) == dict(a = 1, b = 2)
-    assert_raises(TypeError, dict_from_args, dict, 1)
-    assert_raises(TypeError, dict_from_args, dict, 1, 2)
+def test_is_assoc_list():
+    assert not is_assoc_list((1, 2))
+    assert not is_assoc_list([1, 2])
+    assert not is_assoc_list([(1, 2, 3)])
+    assert is_assoc_list([(1, 2), (3, 4)])
+
+def test_dict_arg():
+    assert dict_arg() == {}
+    assert dict_arg(dict(a = 1, b = 2)) == dict(a = 1, b = 2)
+    assert dict_arg(a = 1, b = 2) == dict(a = 1, b = 2)
+    assert dict_arg([('a', 1), ('b', 2)]) == [('a', 1), ('b', 2)]
+    assert_raises(TypeError, dict_arg, 1)
+    assert_raises(TypeError, dict_arg, 1, 2)
 
 #-------------------------------------------------------------------------------
 # AttrDict

@@ -5,24 +5,33 @@ from functools import reduce
 #-------------------------------------------------------------------------------
 # Utilities
 
-def dict_from_args(typ, *args, **kwargs):
-    from syn.type import AssocList
+def is_assoc_list(lst):
+    if not isinstance(lst, list):
+        return False
 
+    if not all(isinstance(val, tuple) for val in lst):
+        return False
+
+    if not all(len(val) == 2 for val in lst):
+        return False
+
+    return True
+
+def dict_arg(*args, **kwargs):
     if len(args) == 1:
         if isinstance(args[0], dict):
-            dct = typ(args[0])
-        elif AssocList.query(args[0]):
-            dct = typ(args[0])
+            return args[0]
+        elif is_assoc_list(args[0]):
+            return args[0]
         else:
             raise TypeError('Invalid arguments')
     elif len(args) == 0:
-        dct = typ()
+        if kwargs:
+            return kwargs
+        return {}
     else:
         raise TypeError('expected at most 1 arguments, got {}'
                         .format(len(args)))
-
-    dct.update(**kwargs)
-    return dct
 
 #-------------------------------------------------------------------------------
 # AttrDict
@@ -106,7 +115,9 @@ class GroupDict(AttrDict):
             values = [val for key,val in self.items() if key in args]
         return set(reduce(set.union, values))
 
-    def update(self, other):
+    def update(self, *args, **kwargs):
+        other = dict(dict_arg(*args, **kwargs))
+
         for key, val in other.items():
             if key not in self:
                 self[key] = val
@@ -139,7 +150,9 @@ class SeqDict(AttrDict):
     '''An AttrDict whose items are treated as sequences.
     '''
 
-    def update(self, other):
+    def update(self, *args, **kwargs):
+        other = dict(dict_arg(*args, **kwargs))
+
         for key, val in other.items():
             if key not in self:
                 self[key] = val
