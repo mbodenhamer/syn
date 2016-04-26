@@ -7,6 +7,7 @@ import syn.base.b
 def test_base_imports():
     assert syn.base.Base is syn.base.b.Base
     assert syn.base.Attr is syn.base.b.Attr
+    assert syn.base.Attrs is syn.base.b.Attrs
 
 #-------------------------------------------------------------------------------
 
