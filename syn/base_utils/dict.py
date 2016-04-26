@@ -114,12 +114,21 @@ class ReflexiveDict(AttrDict):
 
 
 class SeqDict(AttrDict):
-    pass
+    '''An AttrDict whose items are treated as sequences.
+    '''
+
+    def update(self, other):
+        for key, val in other.items():
+            if key not in self:
+                self[key] = val
+            else:
+                typ = type(self[key])
+                self[key] += typ(val)
 
 
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('AttrDict', 'UpdateDict', 'GroupDict', 'ReflexiveDict')
+__all__ = ('AttrDict', 'UpdateDict', 'GroupDict', 'ReflexiveDict', 'SeqDict')
 
 #-------------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 from nose.tools import assert_raises
-from syn.base_utils import AttrDict, UpdateDict, GroupDict, ReflexiveDict
+from syn.base_utils import (AttrDict, UpdateDict, GroupDict, ReflexiveDict,
+                            SeqDict)
 
 #-------------------------------------------------------------------------------
 # AttrDict
@@ -102,6 +103,22 @@ def test_reflexivedict():
 
     dct.d = 1
     assert dct.d == 'd'
+
+#-------------------------------------------------------------------------------
+# SeqDict
+
+
+def test_seqdict():
+    dct = SeqDict(a = [1, 2],
+                  b = (10, 11))
+
+    assert dct.a == [1, 2]
+    assert dct.b == (10, 11)
+
+    dct.update(dict(a = (3, 4),
+                    b = [12, 13]))
+    assert dct.a == [1, 2, 3, 4]
+    assert dct.b == (10, 11, 12, 13)
 
 #-------------------------------------------------------------------------------
 
