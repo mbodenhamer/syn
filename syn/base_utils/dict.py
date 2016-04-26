@@ -3,6 +3,28 @@
 from functools import reduce
 
 #-------------------------------------------------------------------------------
+# Utilities
+
+def dict_from_args(typ, *args, **kwargs):
+    from syn.type import AssocList
+
+    if len(args) == 1:
+        if isinstance(args[0], dict):
+            dct = typ(args[0])
+        elif AssocList.query(args[0]):
+            dct = typ(args[0])
+        else:
+            raise TypeError('Invalid arguments')
+    elif len(args) == 0:
+        dct = typ()
+    else:
+        raise TypeError('expected at most 1 arguments, got {}'
+                        .format(len(args)))
+
+    dct.update(**kwargs)
+    return dct
+
+#-------------------------------------------------------------------------------
 # AttrDict
 
 

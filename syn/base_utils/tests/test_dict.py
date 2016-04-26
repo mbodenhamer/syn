@@ -1,6 +1,18 @@
 from nose.tools import assert_raises
 from syn.base_utils import (AttrDict, UpdateDict, GroupDict, ReflexiveDict,
                             SeqDict)
+from syn.base_utils.dict import dict_from_args
+
+#-------------------------------------------------------------------------------
+# Utilities
+
+def test_dict_from_args():
+    assert dict_from_args(dict) == {}
+    assert dict_from_args(dict, dict(a = 1, b = 2)) == dict(a = 1, b = 2)
+    assert dict_from_args(dict, a = 1, b = 2) == dict(a = 1, b = 2)
+    assert dict_from_args(dict, [('a', 1), ('b', 2)]) == dict(a = 1, b = 2)
+    assert_raises(TypeError, dict_from_args, dict, 1)
+    assert_raises(TypeError, dict_from_args, dict, 1, 2)
 
 #-------------------------------------------------------------------------------
 # AttrDict
