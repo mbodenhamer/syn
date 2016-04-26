@@ -1,6 +1,6 @@
 from nose.tools import assert_raises
 from syn.base_utils import (AttrDict, UpdateDict, GroupDict, ReflexiveDict,
-                            SeqDict)
+                            SeqDict, AssocDict)
 from syn.base_utils.dict import dict_arg, is_assoc_list
 
 #-------------------------------------------------------------------------------
@@ -138,6 +138,27 @@ def test_seqdict():
     assert dct.a == [1, 2, 3, 4]
     assert dct.b == (10, 11, 12, 13)
     assert dct.c == [20]
+
+#-------------------------------------------------------------------------------
+# AssocDict
+
+def test_assocdict():
+    dct = AssocDict(a = 1, b = 1.2)
+    assert dct == dict(a = 1, b = 1.2)
+
+    dct = AssocDict([('a', 1), ('b', 2), ('c', 3)])
+    assert list(dct) == ['a', 'b', 'c']
+    assert len(dct) == 3
+    dct.update([('d', 4), ('c', 5), ('e', 6)])
+    assert list(dct) == ['a', 'b', 'c', 'd', 'e']
+    assert dct == dict(a = 1, b = 2, c = 5, d = 4, e = 6)
+    del dct['b']
+    assert list(dct) == ['a', 'c', 'd', 'e']
+    assert dct == dict(a = 1, c = 5, d = 4, e = 6)
+    assert 'b' not in dct
+    
+    dct = AssocDict(a = 1)
+    assert repr(dct) == "{'a': 1}"
 
 #-------------------------------------------------------------------------------
 

@@ -1,5 +1,6 @@
 ''' Various dict extensions.
 '''
+import collections
 from functools import reduce
 
 #-------------------------------------------------------------------------------
@@ -162,8 +163,60 @@ class SeqDict(AttrDict):
 
 
 #-------------------------------------------------------------------------------
+# AssocDict
+
+
+class AssocDict(collections.MutableMapping):
+    '''Mapping maintained via an assoc list.
+    '''
+    __slots__ = ('_data')
+
+    def __init__(self, *args, **kwargs):
+        self._data = []
+        self.update(*args, **kwargs)
+
+    def __repr__(self):
+        return repr(dict(self))
+
+    def __getitem__(self, key):
+        for _key, val in self._data:
+            if key == _key:
+                return val
+        raise KeyError("Key '%s' not present" % str(key))
+
+    def __setitem__(self, key, val):
+        for k,(_key, _val) in enumerate(self._data):
+            if key == _key:
+                self._data[k] = (key, val)
+                return
+        self._data.append((key, val))
+
+    def __delitem__(self, key):
+        val = self[key]
+        self._data.remove((key, val))
+
+    def __iter__(self):
+        keys = (key for key, val in self._data)
+        return iter(keys)
+
+    def __len__(self):
+        return len(self._data)
+
+    def update(self, *args, **kwargs):
+        '''Preserves order if given an assoc list.
+        '''
+        arg = dict_arg(*args, **kwargs)
+        if isinstance(arg, list):
+          for key, val in arg:
+              self[key] = val
+        else:
+            super(AssocDict, self).update(arg)
+
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('AttrDict', 'UpdateDict', 'GroupDict', 'ReflexiveDict', 'SeqDict')
+__all__ = ('AttrDict', 'UpdateDict', 'GroupDict', 'ReflexiveDict', 'SeqDict',
+           'AssocDict')
 
 #-------------------------------------------------------------------------------
