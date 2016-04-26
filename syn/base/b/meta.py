@@ -1,4 +1,3 @@
-from copy import deepcopy
 from collections import defaultdict
 from syn.five import STR
 from syn.base.a import Base
@@ -10,17 +9,9 @@ from functools import partial
 from syn.base.a.meta import Attr as _Attr
 from syn.base.a.meta import Attrs as _Attrs
 from syn.base.a.meta import Meta as _Meta
-
+from syn.base.a.meta import combine
 
 _OAttr = partial(_Attr, optional=True)
-
-#-------------------------------------------------------------------------------
-# Utilities
-
-def group_combine(A, B):
-    ret = deepcopy(A) # Because the sets in the dict need to be copied
-    ret.combine(B)
-    return ret
 
 #-------------------------------------------------------------------------------
 # Attr attrs
@@ -105,7 +96,7 @@ class Meta(_Meta):
         groups = self._attrs.groups
         for base in self._class_data.bases:
             if hasattr(base, '_groups'):
-                groups = group_combine(base._groups, groups)
+                groups = combine(base._groups, groups)
         self._groups = groups
         self._groups['_all'] = self._attrs.attrs
         self._groups['_internal'] = self._attrs.internal

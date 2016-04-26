@@ -61,13 +61,6 @@ class GroupDict(AttrDict):
     '''An AttrDict whose items are treated as sets.
     '''
 
-    def combine(self, other):
-        for key, val in other.items():
-            if key not in self:
-                self[key] = val
-            else:
-                self[key].update(val)
-
     def complement(self, *args):
         '''Returns the difference of the union of all values and the union of the values in *args.
         '''
@@ -91,6 +84,13 @@ class GroupDict(AttrDict):
             values = [val for key,val in self.items() if key in args]
         return set(reduce(set.union, values))
 
+    def update(self, other):
+        for key, val in other.items():
+            if key not in self:
+                self[key] = val
+            else:
+                self[key].update(val)
+
 
 #-------------------------------------------------------------------------------
 # ReflexiveDict
@@ -107,6 +107,14 @@ class ReflexiveDict(AttrDict):
 
     def __setitem__(self, key, value):
         super(ReflexiveDict, self).__setitem__(key, key)
+
+
+#-------------------------------------------------------------------------------
+# SeqDict
+
+
+class SeqDict(AttrDict):
+    pass
 
 
 #-------------------------------------------------------------------------------

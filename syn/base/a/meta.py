@@ -1,3 +1,4 @@
+from copy import deepcopy
 from syn.type.a import Type
 from syn.base_utils import UpdateDict, AttrDict, mro
 
@@ -5,7 +6,7 @@ from syn.base_utils import UpdateDict, AttrDict, mro
 # Utilities
 
 def combine(A, B):
-    ret = type(A)(A)
+    ret = deepcopy(A)
     ret.update(B)
     return ret
 
