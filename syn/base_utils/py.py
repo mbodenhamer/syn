@@ -2,6 +2,7 @@ import re
 import six
 import types
 import inspect
+from functools import reduce
 
 #-------------------------------------------------------------------------------
 
@@ -55,6 +56,12 @@ def get_typename(x):
     else:
         ret = x.__class__.__name__
     return ret
+
+#-------------------------------------------------------------------------------
+# Function utilities
+
+def compose(*funcs):
+    return reduce(lambda f, g: lambda x: f(g(x)), funcs, lambda x: x)
 
 #-------------------------------------------------------------------------------
 # Sequence utilities
@@ -184,7 +191,7 @@ def assert_pickle_idempotent(obj):
 # __all__
 
 __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
-           'index', 'nearest_base', 'get_typename', 'get_mod',
+           'index', 'nearest_base', 'get_typename', 'get_mod', 'compose',
            'assert_equivalent', 'assert_inequivalent', 'assert_type_equivalent',
            'assert_pickle_idempotent', 'assert_deepcopy_idempotent')
 

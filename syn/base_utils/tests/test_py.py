@@ -79,6 +79,24 @@ def test_get_typename():
     assert get_typename(Foo()) == 'Foo'
 
 #-------------------------------------------------------------------------------
+# Function utilities
+
+def test_compose():
+    from syn.base_utils import compose
+
+    def f(x): return x + 2
+    def g(x): return 2 * x
+    def h(x): return x - 2
+
+    f1 = compose(g, f)
+    f2 = compose(f, g)
+    f3 = compose(f, g, h)
+
+    assert f1(3) == 10
+    assert f2(3) == 8
+    assert f3(3) == 4
+
+#-------------------------------------------------------------------------------
 # Sequence utilities
 
 def test_index():
