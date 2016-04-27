@@ -26,6 +26,7 @@ def test_dictify_strings():
     assert dictify_strings(['a,b', 'c,d'], sep=',', empty=True) == \
         {'a,b': '', 'c,d': ''}
     assert dictify_strings(dict(a = 'b')) == dict(a = 'b')
+    assert_raises(ValueError, dictify_strings, ['ab', 'c,d'], sep=',')
 
 #-------------------------------------------------------------------------------
 

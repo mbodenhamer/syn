@@ -22,14 +22,14 @@ def join(obj, sep=' '):
         return sep.join(obj)
     return obj
 
-def dictify_strings(obj, empty=None, sep=None):
+def dictify_strings(obj, empty=None, sep=None, typ=dict):
     if not isinstance(obj, Mapping):
         if empty is None and sep is not None:
             empty = False
         elif empty is None:
             empty = True
 
-        ret = {}
+        ret = typ()
         for s in obj:
             if empty:
                 name = s
