@@ -6,6 +6,9 @@ Changelog
 
 - Added init_hooks to base.Base
 - Refactored sequence-based options to be defined in Base._seq_opts
+- Added Type extensions:
+    - Hashable
+    - Tuple
 
 0.0.3 (2016-04-21)
 ~~~~~~~~~~~~~~~~~~

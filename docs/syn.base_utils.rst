@@ -12,6 +12,14 @@ syn.base_utils.dict module
     :undoc-members:
     :show-inheritance:
 
+syn.base_utils.hash module
+--------------------------
+
+.. automodule:: syn.base_utils.hash
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 syn.base_utils.py module
 ------------------------
 
