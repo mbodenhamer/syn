@@ -38,7 +38,7 @@ def dictify_strings(obj, empty=None, sep=None, typ=dict):
                 name, val = split(s, sep)
             ret[name.strip()] = val.strip()
         return ret
-    return obj
+    return typ(obj)
 
 #-------------------------------------------------------------------------------
 # __all__

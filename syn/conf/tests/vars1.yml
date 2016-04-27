@@ -1,0 +1,9 @@
+vars:
+  - PWD
+  - foo
+  - bar=abc
+  - baz={{ bar }}
+
+a: 1
+b: 2.3
+
