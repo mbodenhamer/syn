@@ -190,6 +190,13 @@ class CT3(Base):
                   b = Attr(CT2),
                   c = Attr(CT1))
 
+class CT4(Base):
+    _attrs = dict(a = Attr(int))
+    
+    def _coerce_hook(cls, value):
+        value['a'] += 1
+    _seq_opts = dict(coerce_hooks = (_coerce_hook,))
+
 def test_coerce_classmethod():
     t1 = Type.dispatch(CT1)
     assert t1.coerce(1) == CT1(1)
@@ -214,6 +221,9 @@ def test_coerce_classmethod():
 
     obj = t3.coerce(dict(a=1, b=dict(a=2, b=3), c=4))
     check_idempotence(obj)
+
+    t4 = Type.dispatch(CT4)
+    assert t4.coerce(dict(a = 1)) == CT4(a = 2)
 
 #-------------------------------------------------------------------------------
 # Init hooks

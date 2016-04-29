@@ -21,7 +21,8 @@ class Base(object):
                      id_equality = False,
                      init_validate = False,
                      optional_none = False)
-    _seq_opts = SeqDict(init_hooks = (),
+    _seq_opts = SeqDict(coerce_hooks = (),
+                        init_hooks = (),
                         init_order = ())
 
     def __init__(self, *args, **kwargs):
@@ -113,6 +114,10 @@ class Base(object):
     @classmethod
     def coerce(cls, value):
         if isinstance(value, Mapping):
+            if cls._seq_opts.coerce_hooks:
+                for hook in cls._seq_opts.coerce_hooks:
+                    hook(cls, value)
+
             if cls._opts.coerce_args:
                 return cls(**value)
             
