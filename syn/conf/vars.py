@@ -2,14 +2,11 @@ import os
 import collections
 from functools import partial
 from jinja2 import Template
-from syn.base_utils import (AttrDict, SeqDict, dictify_strings, AssocDict,
-                            GroupDict, compose)
+from syn.base_utils import AttrDict, SeqDict, dictify_strings, AssocDict
 from syn.base import Base, Attrs, Attr
-from syn.type import Mapping, Dict
 from syn.five import STR
 
 dictify = partial(dictify_strings, sep='=', typ=AssocDict)
-ADict = partial(Mapping, map_type=AssocDict)
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -25,11 +22,32 @@ def add_eq(lst):
     return lst
         
 #-------------------------------------------------------------------------------
-# Vars Context
+# Vars
 
 
-class VarsContext(Base):
-    pass
+class Vars(Base):
+    _opts = AttrDict(env_default = False)
+
+    @classmethod
+    def coerce(cls, value):
+        if not isinstance(value, collections.Mapping):
+            value = dictify(add_eq(value))
+
+        env = {}
+        if cls._opts.env_default:
+            env.update(os.environ)
+
+        types = cls._attrs.types
+        for var, val in list(value.items()):
+            if not isinstance(val, STR):
+                env[var] = val
+            else:
+                template = Template(val)
+                newval = template.render(env)
+                env[var] = types[var].coerce(newval)
+                value[var] = newval
+            
+        return super(Vars, cls).coerce(value)
 
 
 #-------------------------------------------------------------------------------
@@ -37,36 +55,33 @@ class VarsContext(Base):
 
 
 class VarsMixin(object):
-    _attrs = Attrs(vars = Attr(ADict(STR), call=compose(dictify, add_eq),
-                               default={}, doc='A dictionary of variables'),
-                   _env = Attr(Dict(None), doc='Variable environment',
-                               internal=True),
-                  )
+    _attrs = Attrs(vars = Attr(Vars, optional=True))
     _opts = AttrDict(env_default = False)
-    _groups = GroupDict(vars = set(['vars']),
-                        internal = set(['_env']))
 
-    def _populate_environment(self):
+    def _resolve_vars(cls, dct):
+        types = cls._attrs.types
+        if 'vars' in dct:
+            dct['vars'] = types['vars'].coerce(dct['vars'])
+
         env = {}
-        if self._opts.env_default:
+        if cls._opts.env_default:
             env.update(os.environ)
-        env.update(self.to_dict('vars', 'internal'))
+        env.update(dct['vars'].to_dict())
 
-        for var, val in list(self.vars.items()):
-            if not isinstance(val, STR):
-                env[var] = val
+        for var, val in list(dct.items()):
+            if var == 'vars':
+                continue
 
-            template = Template(val)
-            env[var] = template.render(env)
+            if isinstance(val, STR):
+                template = Template(val)
+                dct[var] = template.render(env)
 
-        self._env = env
-
-    _seq_opts = SeqDict(init_hooks = (_populate_environment,))
+    _seq_opts = SeqDict(coerce_hooks = (_resolve_vars,))
 
 
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('VarsMixin',)
+__all__ = ('Vars', 'VarsMixin')
 
 #-------------------------------------------------------------------------------

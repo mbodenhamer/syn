@@ -1,22 +1,39 @@
+import os
 from syn.base import Base, Attr
-from syn.conf import VarsMixin
+from syn.conf import Vars, VarsMixin
 from syn.five import STR
 
 #-------------------------------------------------------------------------------
-# VarsMixin
+# Vars
 
-def test_varsmixin():
-    class A(Base, VarsMixin):
+def test_vars():
+    class A(Vars):
         _opts = dict(init_validate = True)
         _attrs = dict(a = Attr(int),
                       b = Attr(float),
                       c = Attr(STR))
 
-    a = A(a = 1, b = 1.2, c = 'abc')
-    assert a.to_dict('vars', 'internal') == dict(a = 1, b = 1.2, c = 'abc')
-    assert a._groups['internal'] == set(['_env'])
-    assert a._groups['vars'] == set(['vars'])
-    assert a._env == a.to_dict('vars', 'internal')
+    a1 = ['a=1', 'b=2.3', 'c=abc']
+    assert A.coerce(a1) == A(a = 1, b = 2.3, c = 'abc')
+
+    a2 = ['a=1', 'b={{ a + 2 }}', 'c=ab{{ b + 2 }}']
+    assert A.coerce(a2) == A(a = 1, b = 3.0, c = 'ab5.0')
+
+    class B(Vars):
+        _opts = dict(init_validate = True)
+        _attrs = dict(foo = Attr(STR))
+
+    os.environ['FOO'] = 'bar'
+    assert B.coerce(['foo={{ FOO }}']) == B(foo = '')
+    
+    B._opts.env_default = True
+    assert B.coerce(['foo={{ FOO }}']) == B(foo = 'bar')
+
+#-------------------------------------------------------------------------------
+# VarsMixin
+
+def test_varsmixin():
+    pass
 
 #-------------------------------------------------------------------------------
 
