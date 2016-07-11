@@ -2,7 +2,7 @@ import six
 from syn.five import STR, xrange
 from syn.type.a import AnyType, TypeType
 from syn.base.a.meta import combine, graft, AttrDict, sorted_bases, \
-    metaclasses, mro, Attr, Attrs, Meta, SeqDict
+    metaclasses, mro, Attr, Attrs, Meta, SeqDict, Data
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -105,6 +105,16 @@ def test_sorted_bases():
 
     assert sorted_bases([type]) == []
     
+#-------------------------------------------------------------------------------
+# Data Object
+
+def test_data():
+    d = Data()
+    d.a = 1
+
+    assert d.a == 1
+    assert d.b is None
+
 #-------------------------------------------------------------------------------
 # Object Attribute
 
