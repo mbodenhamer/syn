@@ -1,5 +1,5 @@
 import six
-from collections import Mapping, Sequence
+from collections import Mapping
 from .meta import Attrs, Meta
 from syn.base_utils import (AttrDict, ReflexiveDict, message, get_mod,
                             get_typename, SeqDict)
@@ -15,7 +15,8 @@ class Base(object):
                             '_internal',
                             'eq_exclude',
                             'getstate_exclude',
-                            'repr_exclude')
+                            'repr_exclude',
+                            'update_trigger')
     _opts = AttrDict(args = (),
                      coerce_args = False,
                      id_equality = False,

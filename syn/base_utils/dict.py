@@ -126,6 +126,8 @@ class GroupDict(AttrDict):
                 self[key].update(val)
 
 
+SetDict = GroupDict # Alias
+
 #-------------------------------------------------------------------------------
 # ReflexiveDict
 
@@ -217,6 +219,6 @@ class AssocDict(collections.MutableMapping):
 # __all__
 
 __all__ = ('AttrDict', 'UpdateDict', 'GroupDict', 'ReflexiveDict', 'SeqDict',
-           'AssocDict')
+           'AssocDict', 'SetDict')
 
 #-------------------------------------------------------------------------------

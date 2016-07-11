@@ -307,6 +307,15 @@ def test_sequence_conversion():
     assert_raises(ValueError, ConvTest.from_sequence, seq2)
 
 #-------------------------------------------------------------------------------
+# Update functionality
+
+class TestUpdate(Base):
+    pass
+
+def test_update():
+    pass
+
+#-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
     from syn.base_utils import run_all_tests
