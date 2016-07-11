@@ -157,6 +157,12 @@ def test_init():
 
     check_idempotence(obj)
 
+    obj = F(5, 3.4, d=2.0)
+    assert obj.d == 2.0
+    assert obj.e == 7.0
+
+    check_idempotence(obj)
+
 #-------------------------------------------------------------------------------
 # Test repr
 

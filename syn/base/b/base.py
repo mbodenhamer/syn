@@ -70,12 +70,14 @@ class Base(object):
 
         if self._seq_opts.init_order:
             for attr in self._seq_opts.init_order:
-                setattr(self, attr, self._attrs.init[attr](self))
+                if not hasattr(self, attr):
+                    setattr(self, attr, self._attrs.init[attr](self))
 
         if self._attrs.init:
             for attr in (set(self._attrs.init) - 
                          set(self._seq_opts.init_order)):
-                setattr(self, attr, self._attrs.init[attr](self))
+                if not hasattr(self, attr):
+                    setattr(self, attr, self._attrs.init[attr](self))
 
         if self._seq_opts.init_hooks:
             for hook in self._seq_opts.init_hooks:
