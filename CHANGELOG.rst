@@ -1,6 +1,14 @@
 Changelog
 ---------
 
+0.0.5 (2016-07-18)
+~~~~~~~~~~~~~~~~~~
+
+- Added conversion classmethods to Base:
+    - from_object
+    - from_mapping
+    - from_sequence
+
 0.0.4 (2016-07-11)
 ~~~~~~~~~~~~~~~~~~
 

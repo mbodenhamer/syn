@@ -268,6 +268,45 @@ def test_init_hooks():
     assert obj.f == 27.0
 
 #-------------------------------------------------------------------------------
+# Conversion classmethods
+
+class ConvTest(Base):
+    _attrs = dict(a = Attr(int),
+                  b = Attr(float),
+                  c = Attr(STR))
+    _opts = dict(args = ('a', 'b', 'c'),
+                 init_validate = True)
+
+def test_mapping_conversion():
+    dct = dict(a = 1, b = 2.3, c = 'abc')
+    assert_equivalent(Base._dict_from_mapping(dct), dct)
+
+    ct1 = ConvTest(1, 2.3, 'abc')
+    assert_equivalent(ConvTest.from_mapping(dct), ct1)
+
+def test_object_conversion():
+    class Foo(object): pass
+    obj = Foo()
+    obj.a = 1
+    obj.b = 2.3
+    obj.c = 'abc'
+    obj.d = 'def'
+    
+    ct1 = ConvTest(1, 2.3, 'abc')
+    ct2 = ConvTest.from_object(obj)
+    assert_equivalent(ct2, ct1)
+    assert not hasattr(ct2, 'd')
+
+def test_sequence_conversion():
+    seq = [1, 2.3, 'abc']
+    seq2 = seq + ['def']
+    assert ConvTest._dict_from_sequence(seq) == dict(a = 1, b = 2.3, c = 'abc')
+
+    ct1 = ConvTest(1, 2.3, 'abc')
+    assert_equivalent(ConvTest.from_sequence(seq), ct1)
+    assert_raises(ValueError, ConvTest.from_sequence, seq2)
+
+#-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
     from syn.base_utils import run_all_tests

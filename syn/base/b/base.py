@@ -1,5 +1,5 @@
 import six
-from collections import Mapping
+from collections import Mapping, Sequence
 from .meta import Attrs, Meta
 from syn.base_utils import (AttrDict, ReflexiveDict, message, get_mod,
                             get_typename, SeqDict)
@@ -114,20 +114,51 @@ class Base(object):
         return out
 
     @classmethod
+    def _dict_from_mapping(cls, value):
+        return dict(value)
+
+    @classmethod
+    def _dict_from_object(cls, obj):
+        return {attr: getattr(obj, attr) for attr in cls._attrs.types
+                if hasattr(obj, attr)}
+
+    @classmethod
+    def _dict_from_sequence(cls, seq):
+        return {cls._opts.args[k]: val for k, val in enumerate(seq)}
+
+    @classmethod
     def coerce(cls, value):
         if isinstance(value, Mapping):
-            if cls._seq_opts.coerce_hooks:
-                for hook in cls._seq_opts.coerce_hooks:
-                    hook(cls, value)
+            dct = cls._dict_from_mapping(value)
+        else:
+            return cls(value)
 
-            if cls._opts.coerce_args:
-                return cls(**value)
-            
-            types = cls._attrs.types
-            attrs = {attr: types[attr].coerce(val) 
-                     for attr, val in value.items()}
-            return cls(**attrs)
-        return cls(value)
+        if cls._seq_opts.coerce_hooks:
+            for hook in cls._seq_opts.coerce_hooks:
+                hook(cls, dct)
+
+        if cls._opts.coerce_args:
+            return cls(**dct)
+
+        types = cls._attrs.types
+        attrs = {attr: types[attr].coerce(val) 
+                 for attr, val in dct.items()}
+        return cls(**attrs)
+
+    @classmethod
+    def from_mapping(cls, value):
+        return cls(**cls._dict_from_mapping(value))
+
+    @classmethod
+    def from_object(cls, obj):
+        return cls(**cls._dict_from_object(obj))
+
+    @classmethod
+    def from_sequence(cls, seq):
+        if len(seq) > len(cls._opts.args):
+            raise ValueError("More elements in sequence than in object "
+                             "positional args")
+        return cls(**cls._dict_from_sequence(seq))
 
     def to_dict(self, *groups, **kwargs):
         '''Convert the object into a dict of its declared attributes.
