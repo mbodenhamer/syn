@@ -130,24 +130,28 @@ class Meta(type):
 
     def _combine_attr(self, attr, typ=None):
         values = getattr(self, attr, {})
+        if typ is not None:
+            values = typ(values)
         
         for base in self._class_data.bases:
             vals = getattr(base, attr, {})
+            if typ is not None:
+                vals = typ(vals)
             values = combine(vals, values)
 
-        if typ is not None:
-            values = typ(values)
         setattr(self, attr, values)
 
     def _combine_attr_dct(self, attr, typ=None):
         values = self._class_data.dct.get(attr, {})
+        if typ is not None:
+            values = typ(values)
         
         for base in self._class_data.bases:
             vals = rgetattr(base, '_class_data.dct', {}).get(attr, {})
+            if typ is not None:
+                vals = typ(vals)
             values = combine(vals, values)
 
-        if typ is not None:
-            values = typ(values)
         setattr(self, attr, values)
 
     def _combine_attr_fast_update(self, attr, typ):

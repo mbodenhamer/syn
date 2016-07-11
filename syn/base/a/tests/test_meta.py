@@ -236,15 +236,15 @@ def test_meta():
 
 @six.add_metaclass(Meta)
 class SeqOpts(object):
-    _seq_opts = SeqDict(a = [1, 2, 3],
-                        b = ('a', 'b'))
+    _seq_opts = dict(a = [1, 2, 3],
+                     b = ('a', 'b'))
 
 class SOA(SeqOpts):
     pass
 
 class SOB(SOA):
-    _seq_opts = SeqDict(a = (4,),
-                        b = ['c'])
+    _seq_opts = dict(a = (4,),
+                     b = ['c'])
 
 def test__seq_opts():
     assert SeqOpts._seq_opts == dict(a = [1, 2, 3],
