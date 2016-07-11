@@ -2,9 +2,8 @@ import os
 import collections
 from functools import partial
 from jinja2 import Template
-from syn.base_utils import AttrDict, SeqDict, dictify_strings, AssocDict
-from syn.base import Base, Attrs, Attr
-from syn.five import STR
+from syn.base_utils import AttrDict, dictify_strings, AssocDict
+from syn.base import Base
 
 dictify = partial(dictify_strings, sep='=', typ=AssocDict)
 
@@ -12,14 +11,12 @@ dictify = partial(dictify_strings, sep='=', typ=AssocDict)
 # Utilities
 
 def add_eq(lst):
-    if isinstance(lst, collections.Sequence):
-        ret = []
-        for val in lst:
-            if '=' not in val:
-                val += '='
-            ret.append(val)
-        return ret
-    return lst
+    ret = []
+    for val in lst:
+        if '=' not in val:
+            val += '='
+        ret.append(val)
+    return ret
         
 #-------------------------------------------------------------------------------
 # Vars
@@ -39,13 +36,10 @@ class Vars(Base):
 
         types = cls._attrs.types
         for var, val in list(value.items()):
-            if not isinstance(val, STR):
-                env[var] = val
-            else:
-                template = Template(val)
-                newval = template.render(env)
-                env[var] = types[var].coerce(newval)
-                value[var] = newval
+            template = Template(val)
+            newval = template.render(env)
+            env[var] = types[var].coerce(newval)
+            value[var] = newval
             
         return super(Vars, cls).coerce(value)
 
@@ -54,34 +48,34 @@ class Vars(Base):
 # Vars Mixin
 
 
-class VarsMixin(object):
-    _attrs = Attrs(vars = Attr(Vars, optional=True))
-    _opts = AttrDict(env_default = False)
+# class VarsMixin(object):
+#     _attrs = Attrs(vars = Attr(Vars, optional=True))
+#     _opts = AttrDict(env_default = False)
 
-    def _resolve_vars(cls, dct):
-        types = cls._attrs.types
-        if 'vars' in dct:
-            dct['vars'] = types['vars'].coerce(dct['vars'])
+#     def _resolve_vars(cls, dct):
+#         types = cls._attrs.types
+#         if 'vars' in dct:
+#             dct['vars'] = types['vars'].coerce(dct['vars'])
 
-        env = {}
-        if cls._opts.env_default:
-            env.update(os.environ)
-        env.update(dct['vars'].to_dict())
+#         env = {}
+#         if cls._opts.env_default:
+#             env.update(os.environ)
+#         env.update(dct['vars'].to_dict())
 
-        for var, val in list(dct.items()):
-            if var == 'vars':
-                continue
+#         for var, val in list(dct.items()):
+#             if var == 'vars':
+#                 continue
 
-            if isinstance(val, STR):
-                template = Template(val)
-                dct[var] = template.render(env)
+#             if isinstance(val, STR):
+#                 template = Template(val)
+#                 dct[var] = template.render(env)
 
-    _seq_opts = SeqDict(coerce_hooks = (_resolve_vars,))
+#     _seq_opts = SeqDict(coerce_hooks = (_resolve_vars,))
 
 
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Vars', 'VarsMixin')
+__all__ = ('Vars',)
 
 #-------------------------------------------------------------------------------

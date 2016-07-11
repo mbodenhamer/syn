@@ -1,6 +1,6 @@
 import os
-from syn.base import Base, Attr
-from syn.conf import Vars, VarsMixin
+from syn.base import Attr
+from syn.conf import Vars
 from syn.five import STR
 
 #-------------------------------------------------------------------------------
@@ -11,10 +11,11 @@ def test_vars():
         _opts = dict(init_validate = True)
         _attrs = dict(a = Attr(int),
                       b = Attr(float),
-                      c = Attr(STR))
+                      c = Attr(STR),
+                      d = Attr(STR, optional=True))
 
-    a1 = ['a=1', 'b=2.3', 'c=abc']
-    assert A.coerce(a1) == A(a = 1, b = 2.3, c = 'abc')
+    a1 = ['a=1', 'b=2.3', 'c=abc', 'd']
+    assert A.coerce(a1) == A(a = 1, b = 2.3, c = 'abc', d = '')
 
     a2 = ['a=1', 'b={{ a + 2 }}', 'c=ab{{ b + 2 }}']
     assert A.coerce(a2) == A(a = 1, b = 3.0, c = 'ab5.0')
