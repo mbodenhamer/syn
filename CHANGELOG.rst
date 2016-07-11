@@ -1,7 +1,7 @@
 Changelog
 ---------
 
-0.0.4 (2016-04-28)
+0.0.4 (2016-07-11)
 ~~~~~~~~~~~~~~~~~~
 
 - Added init_hooks to base.Base
@@ -9,6 +9,8 @@ Changelog
 - Added Type extensions:
     - Hashable
     - Tuple
+- Added conf.vars
+- Added coerce_hooks to base.Base
 
 0.0.3 (2016-04-21)
 ~~~~~~~~~~~~~~~~~~
