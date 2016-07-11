@@ -234,8 +234,27 @@ def test_meta():
 #-------------------------------------------------------------------------------
 # Test _seq_opts propagation
 
-def test__seq_opts():
+@six.add_metaclass(Meta)
+class SeqOpts(object):
+    _seq_opts = SeqDict(a = [1, 2, 3],
+                        b = ('a', 'b'))
+
+class SOA(SeqOpts):
     pass
+
+class SOB(SOA):
+    _seq_opts = SeqDict(a = (4,),
+                        b = ['c'])
+
+def test__seq_opts():
+    assert SeqOpts._seq_opts == dict(a = [1, 2, 3],
+                                     b = ('a', 'b'))
+
+    assert SOA._seq_opts == dict(a = [1, 2, 3],
+                                 b = ('a', 'b'))
+
+    assert SOB._seq_opts == dict(a = [1, 2, 3, 4],
+                                 b = ('a', 'b', 'c'))
 
 #-------------------------------------------------------------------------------
 # Test _populate_data
