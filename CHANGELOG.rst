@@ -8,6 +8,10 @@ Changelog
     - from_object()
     - from_mapping()
     - from_sequence()
+- Added _data member to Base for metaclass-populated values
+- Fixed bug in _seq_opts propagation
+- Added _seq_opts.metaclass_lookup functionality
+- Changed init_hooks and coerce_hooks over to metaclass_lookup (allows subclasses to override hooks)
 
 0.0.4 (2016-07-11)
 ~~~~~~~~~~~~~~~~~~

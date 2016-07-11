@@ -199,9 +199,16 @@ class CT3(Base):
 class CT4(Base):
     _attrs = dict(a = Attr(int))
     
+    @classmethod
     def _coerce_hook(cls, value):
         value['a'] += 1
-    _seq_opts = dict(coerce_hooks = (_coerce_hook,))
+    _seq_opts = dict(coerce_hooks = ('_coerce_hook',))
+
+class CT5(CT4):
+    @classmethod
+    def _coerce_hook(cls, value):
+        super(CT5, cls)._coerce_hook(value)
+        value['a'] += 2
 
 def test_coerce_classmethod():
     t1 = Type.dispatch(CT1)
@@ -231,6 +238,9 @@ def test_coerce_classmethod():
     t4 = Type.dispatch(CT4)
     assert t4.coerce(dict(a = 1)) == CT4(a = 2)
 
+    t5 = Type.dispatch(CT5)
+    assert t5.coerce(dict(a = 1)) == CT5(a = 4)
+
 #-------------------------------------------------------------------------------
 # Init hooks
 
@@ -245,7 +255,7 @@ class I(B):
     def _bar(self):
         self.e = self.d + 2
 
-    _seq_opts.init_hooks = (_foo, _bar)
+    _seq_opts.init_hooks = ('_foo', '_bar')
 
 class I2(I):
     _attrs = dict(f = Attr(float, internal=True))
@@ -253,7 +263,7 @@ class I2(I):
     def _baz(self):
         self.f = self.d + self.e
 
-    _seq_opts = dict(init_hooks = [_baz])
+    _seq_opts = dict(init_hooks = ['_baz'])
 
 def test_init_hooks():
     obj = I(5, 2.5)

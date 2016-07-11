@@ -79,6 +79,28 @@ def test_get_typename():
     assert get_typename(Foo()) == 'Foo'
 
 #-------------------------------------------------------------------------------
+# Object utilities
+
+def test_rgetattr():
+    from syn.base_utils import rgetattr, AttrDict
+    obj = AttrDict(a = AttrDict(b = AttrDict(c = 1,
+                                             d = 2),
+                                e = AttrDict(f = 3)),
+                   g = 4)
+    
+    assert rgetattr(obj, 'a.b.c') == 1
+    assert rgetattr(obj, 'a.b.d') == 2
+    assert rgetattr(obj, 'a.e.f') == 3
+    assert rgetattr(obj, 'a.b.f', 7) == 7
+
+    assert rgetattr(obj, 'g') == 4
+    assert rgetattr(obj, 'g', 5) == 4
+    assert rgetattr(obj, 'h', 5) == 5
+
+    assert_raises(TypeError, rgetattr, obj, 'a', 3, 4)
+    assert_raises(AttributeError, rgetattr, obj, 'h')
+
+#-------------------------------------------------------------------------------
 # Function utilities
 
 def test_compose():

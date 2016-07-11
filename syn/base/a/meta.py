@@ -1,6 +1,6 @@
 from copy import deepcopy
 from syn.type.a import Type
-from syn.base_utils import UpdateDict, AttrDict, SeqDict, mro
+from syn.base_utils import UpdateDict, AttrDict, SeqDict, mro, rgetattr
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -67,6 +67,15 @@ def sorted_bases(bases):
     return ret
 
 #-------------------------------------------------------------------------------
+# Data Object (for metaclass-populated values)
+
+
+class Data(object):
+    def __getattr__(self, attr):
+        return None
+
+
+#-------------------------------------------------------------------------------
 # Object Attribute
 
 
@@ -115,13 +124,26 @@ class Meta(type):
         self._combine_attr_fast_update('_attrs', 
                                        self._metaclass_opts.attrs_type)
         self._combine_attr('_opts', self._metaclass_opts.opts_type)
-        self._combine_attr('_seq_opts', self._metaclass_opts.seq_opts_type)
+        self._combine_attr_dct('_seq_opts', self._metaclass_opts.seq_opts_type)
+
+        self._populate_data()
 
     def _combine_attr(self, attr, typ=None):
         values = getattr(self, attr, {})
         
         for base in self._class_data.bases:
             vals = getattr(base, attr, {})
+            values = combine(vals, values)
+
+        if typ is not None:
+            values = typ(values)
+        setattr(self, attr, values)
+
+    def _combine_attr_dct(self, attr, typ=None):
+        values = self._class_data.dct.get(attr, {})
+        
+        for base in self._class_data.bases:
+            vals = rgetattr(base, '_class_data.dct', {}).get(attr, {})
             values = combine(vals, values)
 
         if typ is not None:
@@ -141,10 +163,20 @@ class Meta(type):
             
         setattr(self, attr, typ(values))
 
+    def _populate_data(self):
+        self._data = Data()
+
+        if 'metaclass_lookup' in self._seq_opts:
+            for attr in self._seq_opts.metaclass_lookup:
+                attrs = self._seq_opts[attr]
+                values = [getattr(self, attr_) for attr_ in attrs]
+                values = type(attrs)(values)
+                setattr(self._data, attr, values)
+
 
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Attr', 'Attrs', 'Meta')
+__all__ = ('Attr', 'Attrs', 'Meta', 'Data')
 
 #-------------------------------------------------------------------------------

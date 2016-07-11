@@ -58,6 +58,34 @@ def get_typename(x):
     return ret
 
 #-------------------------------------------------------------------------------
+# Object utilities
+
+def rgetattr(obj, attr, *args):
+    if args:
+        default = args[0]
+        default_given = True
+        if len(args) > 1:
+            raise TypeError("rgetattr() takes at most 3 arguments; "
+                            "{} given".format(len(args) + 2))
+    else:
+        default = None
+        default_given = False
+
+    attrs = attr.split('.')
+    attr = attrs[0]
+    rest = '.'.join(attrs[1:])
+
+    if hasattr(obj, attr):
+        value = getattr(obj, attr)
+        if rest:
+            return rgetattr(value, rest, *args)
+        return value
+
+    if default_given:
+        return default
+    raise AttributeError("Cannot resolve {}.{}".format(obj, attr))
+
+#-------------------------------------------------------------------------------
 # Function utilities
 
 def compose(*funcs):
@@ -193,6 +221,7 @@ def assert_pickle_idempotent(obj):
 __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'index', 'nearest_base', 'get_typename', 'get_mod', 'compose',
            'assert_equivalent', 'assert_inequivalent', 'assert_type_equivalent',
-           'assert_pickle_idempotent', 'assert_deepcopy_idempotent')
+           'assert_pickle_idempotent', 'assert_deepcopy_idempotent',
+           'rgetattr',)
 
 #-------------------------------------------------------------------------------

@@ -24,7 +24,9 @@ class Base(object):
                      optional_none = False)
     _seq_opts = SeqDict(coerce_hooks = (),
                         init_hooks = (),
-                        init_order = ())
+                        init_order = (),
+                        metaclass_lookup = ('coerce_hooks',
+                                            'init_hooks'))
 
     def __init__(self, *args, **kwargs):
         _args = self._opts.args
@@ -80,8 +82,8 @@ class Base(object):
                 if not hasattr(self, attr):
                     setattr(self, attr, self._attrs.init[attr](self))
 
-        if self._seq_opts.init_hooks:
-            for hook in self._seq_opts.init_hooks:
+        if self._data.init_hooks:
+            for hook in self._data.init_hooks:
                 hook(self)
 
         if self._opts.init_validate:
@@ -134,9 +136,9 @@ class Base(object):
         else:
             return cls(value)
 
-        if cls._seq_opts.coerce_hooks:
-            for hook in cls._seq_opts.coerce_hooks:
-                hook(cls, dct)
+        if cls._data.coerce_hooks:
+            for hook in cls._data.coerce_hooks:
+                hook(dct)
 
         if cls._opts.coerce_args:
             return cls(**dct)

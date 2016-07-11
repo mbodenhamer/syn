@@ -2,7 +2,7 @@ import six
 from syn.five import STR, xrange
 from syn.type.a import AnyType, TypeType
 from syn.base.a.meta import combine, graft, AttrDict, sorted_bases, \
-    metaclasses, mro, Attr, Attrs, Meta
+    metaclasses, mro, Attr, Attrs, Meta, SeqDict
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -220,6 +220,73 @@ def test_meta():
     assert D._attrs.doc == dict(a = 'value 1')
 
     assert D._opts == dict(x = 1, y = 3.4, z = 'abc')
+
+#-------------------------------------------------------------------------------
+# Test _seq_opts propagation
+
+def test__seq_opts():
+    pass
+
+#-------------------------------------------------------------------------------
+# Test _populate_data
+
+@six.add_metaclass(Meta)
+class PopTest(object):
+    _seq_opts = SeqDict(a = ('a1', 'a2'),
+                        b = ['b1', 'b2'],
+                        metaclass_lookup = ('a', 'b'))
+
+    a1 = 1
+    def a2(self):
+        return self.a1 + 1
+
+    @classmethod
+    def b1(cls):
+        return cls.a1 + 2
+
+    @staticmethod
+    def b2(x):
+        return x + 3
+
+class PopTest2(PopTest):
+    @classmethod
+    def b1(cls):
+        return super(PopTest2, cls).b1() + 4
+
+def test__populate_data():
+    pt = PopTest()
+    assert isinstance(PopTest._data.a, tuple)
+    assert len(PopTest._data.a) == 2
+    assert PopTest._data.a[0] == 1 == PopTest.a1
+
+    a2 = PopTest._data.a[1]
+    assert a2(pt) == 2
+
+    assert isinstance(PopTest._data.b, list)
+    assert len(PopTest._data.b) == 2
+    b1 = PopTest._data.b[0]
+    b2 = PopTest._data.b[1]
+
+    assert b1() == 3
+    assert b2(3) == 6
+
+    
+    pt = PopTest2()
+    assert isinstance(PopTest2._data.a, tuple)
+    assert len(PopTest2._data.a) == 2
+    assert PopTest2._data.a[0] == 1 == PopTest2.a1
+
+    a2 = PopTest2._data.a[1]
+    assert a2(pt) == 2
+
+    assert isinstance(PopTest2._data.b, list)
+    assert len(PopTest2._data.b) == 2
+    b1 = PopTest2._data.b[0]
+    b2 = PopTest2._data.b[1]
+
+    assert b1() == 7
+    assert b2(3) == 6
+
 
 #-------------------------------------------------------------------------------
 
