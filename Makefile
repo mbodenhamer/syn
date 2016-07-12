@@ -5,7 +5,7 @@ VERSION = `cat version.txt | xargs`
 IMAGE = syn-dev
 PYDEV = docker run --rm -it -e BE_UID=`id -u` -e BE_GID=`id -g` \
 	-v $(CURDIR):/app $(IMAGE)
-VERSIONS = 2.7.11,3.3.6,3.4.4,3.5.1
+VERSIONS = 2.7.11,3.4.4,3.5.1
 
 #-------------------------------------------------------------------------------
 # Docker image management

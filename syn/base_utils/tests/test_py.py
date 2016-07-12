@@ -1,5 +1,4 @@
 import six
-import sys
 from nose.tools import assert_raises
 from syn.base_utils import hasmethod, mro, import_module, message
 
@@ -61,12 +60,7 @@ def test_callables():
     f.b = 2
     f.c = lambda x: x + 2
     assert set(callables(f).keys()) == {'bar', 'cbar', 'c', 'sbar'}
-
-    ver = sys.version.split(' ')[0]
-    if '3.3' <= ver <= '3.4':
-        assert set(callables(Foo).keys()) == {'bar'}
-    else:
-        assert set(callables(Foo).keys()) == {'bar', 'cbar', 'sbar'}
+    assert set(callables(Foo).keys()) == {'bar', 'cbar', 'sbar'}
 
 def test_nearest_base():
     from syn.base_utils import nearest_base
