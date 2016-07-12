@@ -1,4 +1,5 @@
 import six
+import sys
 from nose.tools import assert_raises
 from syn.base_utils import hasmethod, mro, import_module, message
 
@@ -13,20 +14,24 @@ def test_mro():
     assert mro(1) == [int, object]
     assert mro(abc.ABCMeta) == [abc.ABCMeta]
 
+
+class Methods(object):
+    a = 1
+
+    def bar(self):
+        pass
+
+    @classmethod
+    def cbar(cls):
+        pass
+
+    @staticmethod
+    def sbar():
+        pass
+
+
 def test_hasmethod():
-    class Foo(object):
-        a = 1
-        
-        def bar(self):
-            pass
-
-        @classmethod
-        def cbar(cls):
-            pass
-
-        @staticmethod
-        def sbar():
-            pass
+    Foo = Methods
 
     f = Foo()
     f.bar()
@@ -47,6 +52,21 @@ def test_hasmethod():
         assert not hasmethod(Foo, 'sbar')
     else:
         assert hasmethod(Foo, 'sbar')
+
+def test_callables():
+    from syn.base_utils import callables
+    Foo = Methods
+
+    f = Foo()
+    f.b = 2
+    f.c = lambda x: x + 2
+    assert set(callables(f).keys()) == {'bar', 'cbar', 'c', 'sbar'}
+
+    ver = sys.version.split(' ')[0]
+    if '3.3' <= ver <= '3.4':
+        assert set(callables(Foo).keys()) == {'bar'}
+    else:
+        assert set(callables(Foo).keys()) == {'bar', 'cbar', 'sbar'}
 
 def test_nearest_base():
     from syn.base_utils import nearest_base

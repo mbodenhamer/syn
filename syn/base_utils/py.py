@@ -36,6 +36,16 @@ def hasmethod(x, name):
         return isinstance(val, METHOD_TYPES)
     return inspect.ismethod(val)
 
+def callables(obj, exclude_sys=True):
+    dct = dict(inspect.getmembers(obj))
+
+    if exclude_sys:
+        dct = {key: val for key,val in dct.items() if not
+               key.startswith('__')}
+
+    ret = {key: val for key,val in dct.items() if hasattr(val, '__call__')}
+    return ret
+
 def nearest_base(cls, bases):
     '''Returns the closest ancestor to cls in bases.
     '''
@@ -222,6 +232,6 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'index', 'nearest_base', 'get_typename', 'get_mod', 'compose',
            'assert_equivalent', 'assert_inequivalent', 'assert_type_equivalent',
            'assert_pickle_idempotent', 'assert_deepcopy_idempotent',
-           'rgetattr',)
+           'rgetattr', 'callables')
 
 #-------------------------------------------------------------------------------
