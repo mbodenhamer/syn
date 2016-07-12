@@ -4,6 +4,7 @@ from syn.base_utils import (GroupDict, AttrDict, assert_type_equivalent,
 from syn.type.a import AnyType, TypeType
 from syn.base.b.meta import Attr, Attrs, Meta
 from syn.base.a.meta import mro
+from syn.base.b.base import create_hook
 
 #-------------------------------------------------------------------------------
 # Attr
@@ -162,6 +163,26 @@ def test_meta():
     assert_type_equivalent(E._opts, AttrDict())
     assert_type_equivalent(E._attrs, Attrs())
     assert_type_equivalent(E._groups, GroupDict())
+
+#-------------------------------------------------------------------------------
+# Test create hooks
+
+#import ipdb; ipdb.set_trace()
+@six.add_metaclass(Meta)
+class CreateHooks(object):
+    a = 1
+
+    @classmethod
+    @create_hook
+    def hook1(cls):
+        cls.a *= 2
+
+class CHA(CreateHooks):
+    a = 3
+
+def test_create_hooks():
+    assert CreateHooks.a == 2
+    assert CHA.a == 6
 
 #-------------------------------------------------------------------------------
 

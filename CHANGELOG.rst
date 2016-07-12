@@ -1,7 +1,7 @@
 Changelog
 ---------
 
-0.0.5 (2016-07-18)
+0.0.5 (2016-07-13)
 ~~~~~~~~~~~~~~~~~~
 
 - Added conversion classmethods to Base:
@@ -12,6 +12,12 @@ Changelog
 - Fixed bug in _seq_opts propagation
 - Added _seq_opts.metaclass_lookup functionality
 - Changed init_hooks and coerce_hooks over to metaclass_lookup (allows subclasses to override hooks)
+- Added create_hook functionality
+- Added hook decorators:
+    - init_hook
+    - coerce_hook
+    - create_hook
+- Removed 3.3 as a supported version
 
 0.0.4 (2016-07-11)
 ~~~~~~~~~~~~~~~~~~

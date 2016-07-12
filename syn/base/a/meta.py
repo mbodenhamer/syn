@@ -1,6 +1,6 @@
 from copy import deepcopy
 from syn.type.a import Type
-from syn.base_utils import UpdateDict, AttrDict, SeqDict, mro, rgetattr
+from syn.base_utils import UpdateDict, AttrDict, SeqDict, mro, rgetattr, callables
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -127,6 +127,8 @@ class Meta(type):
         self._combine_attr_dct('_seq_opts', self._metaclass_opts.seq_opts_type)
 
         self._populate_data()
+        self._find_create_hooks()
+        self._call_create_hooks()
 
     def _combine_attr(self, attr, typ=None):
         values = getattr(self, attr, {})
@@ -176,6 +178,20 @@ class Meta(type):
                 values = [getattr(self, attr_) for attr_ in attrs]
                 values = type(attrs)(values)
                 setattr(self._data, attr, values)
+
+    def _find_create_hooks(self):
+        funcs = callables(self)
+        hooks = [f for f in funcs.values() if getattr(f, 'create_hook', False)]
+
+        if self._data.create_hooks:
+            self._data.create_hooks = list(self._data.create_hooks) + hooks
+        else:
+            self._data.create_hooks = hooks
+
+    def _call_create_hooks(self):
+        if self._data.create_hooks:
+            for hook in self._data.create_hooks:
+                hook()
 
 
 #-------------------------------------------------------------------------------

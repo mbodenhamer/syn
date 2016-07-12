@@ -5,6 +5,21 @@ from syn.base_utils import (AttrDict, ReflexiveDict, message, get_mod,
                             get_typename, SeqDict)
 
 #-------------------------------------------------------------------------------
+# Hook Decorators
+
+def init_hook(f):
+    f.init_hook = True
+    return f
+
+def coerce_hook(f):
+    f.coerce_hook = True
+    return f
+
+def create_hook(f):
+    f.create_hook = True
+    return f
+
+#-------------------------------------------------------------------------------
 # Base
 
 
@@ -25,8 +40,10 @@ class Base(object):
     _seq_opts = SeqDict(coerce_hooks = (),
                         init_hooks = (),
                         init_order = (),
+                        create_hooks = (),
                         metaclass_lookup = ('coerce_hooks',
-                                            'init_hooks'))
+                                            'init_hooks',
+                                            'create_hooks'))
 
     def __init__(self, *args, **kwargs):
         _args = self._opts.args
@@ -115,6 +132,8 @@ class Base(object):
         out += str(self.to_dict('repr_exclude'))
         out += '>'
         return out
+
+    # Write init and coerce hook processing functions as create hooks in Base
 
     @classmethod
     def _dict_from_mapping(cls, value):
@@ -210,6 +229,6 @@ class Base(object):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Base',)
+__all__ = ('Base', 'init_hook', 'coerce_hook', 'create_hook')
 
 #-------------------------------------------------------------------------------
