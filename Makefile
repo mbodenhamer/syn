@@ -2,7 +2,7 @@ all: test
 
 VERSION = `cat version.txt | xargs`
 
-IMAGE = syn-dev
+IMAGE = mbodenhamer/syn-dev
 PYDEV = docker run --rm -it -e BE_UID=`id -u` -e BE_GID=`id -g` \
 	-v $(CURDIR):/app $(IMAGE)
 VERSIONS = 2.7.11,3.4.4,3.5.1
@@ -22,6 +22,12 @@ docker-first-build:
 
 docker-rmi:
 	@docker rmi $(IMAGE)
+
+docker-push:
+	@docker push ${IMAGE}:latest
+
+docker-pull:
+	@docker pull ${IMAGE}:latest
 
 docker-shell:
 	@$(PYDEV) bash
