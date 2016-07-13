@@ -167,7 +167,6 @@ def test_meta():
 #-------------------------------------------------------------------------------
 # Test create hooks
 
-#import ipdb; ipdb.set_trace()
 @six.add_metaclass(Meta)
 class CreateHooks(object):
     a = 1

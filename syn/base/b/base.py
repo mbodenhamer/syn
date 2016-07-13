@@ -2,7 +2,7 @@ import six
 from collections import Mapping
 from .meta import Attrs, Meta
 from syn.base_utils import (AttrDict, ReflexiveDict, message, get_mod,
-                            get_typename, SeqDict)
+                            get_typename, SeqDict, callables)
 
 #-------------------------------------------------------------------------------
 # Hook Decorators
@@ -106,6 +106,29 @@ class Base(object):
         if self._opts.init_validate:
             self.validate()
 
+    @classmethod
+    def _find_hooks(cls, hook_attr):
+        funcs = callables(cls)
+        return [f for f in funcs.values() if getattr(f, hook_attr, False)]
+
+    @classmethod
+    @create_hook
+    def _create_init_hooks(cls):
+        hooks = cls._find_hooks('init_hook')
+        if cls._data.init_hooks:
+            cls._data.init_hooks = list(cls._data.init_hooks) + hooks
+        else:
+            cls._data.init_hooks = hooks
+
+    @classmethod
+    @create_hook
+    def _create_coerce_hooks(cls):
+        hooks = cls._find_hooks('coerce_hook')
+        if cls._data.coerce_hooks:
+            cls._data.coerce_hooks = list(cls._data.coerce_hooks) + hooks
+        else:
+            cls._data.coerce_hooks = hooks
+
     def __getstate__(self):
         return self.to_dict('getstate_exclude')
 
@@ -132,8 +155,6 @@ class Base(object):
         out += str(self.to_dict('repr_exclude'))
         out += '>'
         return out
-
-    # Write init and coerce hook processing functions as create hooks in Base
 
     @classmethod
     def _dict_from_mapping(cls, value):

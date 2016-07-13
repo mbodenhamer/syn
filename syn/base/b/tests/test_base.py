@@ -1,6 +1,6 @@
 from nose.tools import assert_raises
 from syn.five import STR
-from syn.base.b import Base, Attr
+from syn.base.b import Base, Attr, init_hook, coerce_hook
 from syn.type.a import Type
 from syn.base_utils import assert_equivalent, assert_pickle_idempotent, \
     assert_deepcopy_idempotent, assert_inequivalent, assert_type_equivalent, \
@@ -210,6 +210,12 @@ class CT5(CT4):
         super(CT5, cls)._coerce_hook(value)
         value['a'] += 2
 
+class CT6(CT5):
+    @classmethod
+    @coerce_hook
+    def _hook2(cls, value):
+        value['a'] += 1
+
 def test_coerce_classmethod():
     t1 = Type.dispatch(CT1)
     assert t1.coerce(1) == CT1(1)
@@ -241,6 +247,9 @@ def test_coerce_classmethod():
     t5 = Type.dispatch(CT5)
     assert t5.coerce(dict(a = 1)) == CT5(a = 4)
 
+    t6 = Type.dispatch(CT6)
+    assert t6.coerce(dict(a = 1)) == CT6(a = 5)
+
 #-------------------------------------------------------------------------------
 # Init hooks
 
@@ -260,10 +269,9 @@ class I(B):
 class I2(I):
     _attrs = dict(f = Attr(float, internal=True))
 
+    @init_hook
     def _baz(self):
         self.f = self.d + self.e
-
-    _seq_opts = dict(init_hooks = ['_baz'])
 
 def test_init_hooks():
     obj = I(5, 2.5)
