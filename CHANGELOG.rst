@@ -1,7 +1,7 @@
 Changelog
 ---------
 
-0.0.5 (2016-07-13)
+0.0.5 (2016-07-12)
 ~~~~~~~~~~~~~~~~~~
 
 - Added conversion classmethods to Base:
