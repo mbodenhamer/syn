@@ -178,11 +178,18 @@ class CreateHooks(object):
         cls.a *= 2
 
 class CHA(CreateHooks):
+    _seq_opts = dict(create_hooks = ['hook2'],
+                     metaclass_lookup = ['create_hooks'])
     a = 3
+
+    @classmethod
+    def hook2(cls):
+        cls.b = 5
 
 def test_create_hooks():
     assert CreateHooks.a == 2
     assert CHA.a == 6
+    assert CHA.b == 5
 
 #-------------------------------------------------------------------------------
 
