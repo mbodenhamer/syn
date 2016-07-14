@@ -45,6 +45,10 @@ class Base(object):
 
         self.__setstate__(kwargs)
 
+        for attr in self._attrs.init:
+            if not hasattr(self, attr):
+                setattr(self, attr, self._attrs.init[attr](self))
+
         if self._opts.init_validate:
             self.validate()
 

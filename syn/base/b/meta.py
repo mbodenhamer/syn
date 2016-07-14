@@ -64,8 +64,6 @@ class Attrs(_Attrs):
         super(Attrs, self)._update()
         self.call = {attr: spec.call for attr, spec in self.items() 
                      if spec.call is not None}
-        self.init = {attr: spec.init for attr, spec in self.items()
-                     if spec.init is not None}
         self.internal = {attr for attr, spec in self.items() if spec.internal}
 
         # Process attr groups

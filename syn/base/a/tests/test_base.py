@@ -86,6 +86,26 @@ def test_optional_none():
     obj.validate()
 
 #-------------------------------------------------------------------------------
+# Test init
+
+class F(B):
+    _attrs = dict(d = Attr(float, init=lambda self: self.a + self.b))
+
+class G(F):
+    _attrs = dict(e = Attr(int, init=lambda self: 2*self.a))
+
+def test_init():
+    obj = F(5, 3.4)
+    assert obj.d == 8.4
+
+    assert_deepcopy_idempotent(obj)
+    assert_pickle_idempotent(obj)
+
+    obj = G(5, 3.4)
+    assert obj.d == 8.4
+    assert obj.e == 10
+
+#-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
     from syn.base_utils import run_all_tests

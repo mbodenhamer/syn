@@ -71,11 +71,12 @@ def sorted_bases(bases):
 
 
 class Attr(object):
-    def __init__(self, typ=None, default=None, doc='', optional=False):
+    def __init__(self, typ=None, default=None, doc='', optional=False, init=None):
         self.type = Type.dispatch(typ)
         self.default = default
         self.doc = doc
         self.optional = optional
+        self.init = init
 
 
 #-------------------------------------------------------------------------------
@@ -92,6 +93,8 @@ class Attrs(UpdateDict):
         self.defaults = {attr: spec.default for attr, spec in self.items()
                          if spec.default is not None}
         self.doc = {attr: spec.doc for attr, spec in self.items() if spec.doc}
+        self.init = {attr: spec.init for attr, spec in self.items()
+                     if spec.init is not None}
 
 
 #-------------------------------------------------------------------------------
