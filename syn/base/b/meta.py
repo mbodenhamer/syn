@@ -3,13 +3,13 @@ from syn.five import STR
 from syn.base.a import Base
 from syn.type.a import Type
 from syn.type.a.ext import Callable, Sequence
-from syn.base_utils import GroupDict, AttrDict, SeqDict, ReflexiveDict
+from syn.base_utils import GroupDict, AttrDict, SeqDict, ReflexiveDict, callables
 from functools import partial
 
 from syn.base.a.meta import Attr as _Attr
 from syn.base.a.meta import Attrs as _Attrs
 from syn.base.a.meta import Meta as _Meta
-from syn.base.a.meta import combine, Data
+from syn.base.a.meta import combine
 
 _OAttr = partial(_Attr, optional=True)
 
@@ -30,6 +30,15 @@ dict(type = _OAttr(None, doc='Type of the attribute'),
      init = _OAttr(Callable, doc='Will be called with the object as the only '
                    'parameter for initializing the attribute'),
     )
+
+#-------------------------------------------------------------------------------
+# Data Object (for metaclass-populated values)
+
+
+class Data(object):
+    def __getattr__(self, attr):
+        return None
+
 
 #-------------------------------------------------------------------------------
 # Attr
@@ -81,7 +90,36 @@ class Meta(_Meta):
 
     def __init__(self, clsname, bases, dct):
         super(Meta, self).__init__(clsname, bases, dct)
+
+        self._populate_data()
+        self._find_create_hooks()
+        self._call_create_hooks()
+
         self._combine_groups()
+
+    def _populate_data(self):
+        self._data = Data()
+
+        if 'metaclass_lookup' in self._seq_opts:
+            for attr in self._seq_opts.metaclass_lookup:
+                attrs = self._seq_opts[attr]
+                values = [getattr(self, attr_) for attr_ in attrs]
+                values = type(attrs)(values)
+                setattr(self._data, attr, values)
+
+    def _find_create_hooks(self):
+        funcs = callables(self)
+        hooks = [f for f in funcs.values() if getattr(f, 'create_hook', False)]
+
+        if self._data.create_hooks:
+            self._data.create_hooks = list(self._data.create_hooks) + hooks
+        else:
+            self._data.create_hooks = hooks
+
+    def _call_create_hooks(self):
+        if self._data.create_hooks:
+            for hook in self._data.create_hooks:
+                hook()
 
     def _combine_groups(self):
         if not hasattr(self, '_groups'):

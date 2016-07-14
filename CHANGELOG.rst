@@ -5,6 +5,7 @@ Changelog
 ~~~~~~~~~~~~~~~~~~
 
 - Added context management utilities to base_utils
+- Moved metaclass data population code to base.b.meta
 
 0.0.5 (2016-07-12)
 ~~~~~~~~~~~~~~~~~~

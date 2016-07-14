@@ -1,6 +1,6 @@
 from copy import deepcopy
 from syn.type.a import Type
-from syn.base_utils import UpdateDict, AttrDict, SeqDict, mro, rgetattr, callables
+from syn.base_utils import UpdateDict, AttrDict, SeqDict, mro, rgetattr
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -67,15 +67,6 @@ def sorted_bases(bases):
     return ret
 
 #-------------------------------------------------------------------------------
-# Data Object (for metaclass-populated values)
-
-
-class Data(object):
-    def __getattr__(self, attr):
-        return None
-
-
-#-------------------------------------------------------------------------------
 # Object Attribute
 
 
@@ -126,10 +117,6 @@ class Meta(type):
         self._combine_attr('_opts', self._metaclass_opts.opts_type)
         self._combine_attr_dct('_seq_opts', self._metaclass_opts.seq_opts_type)
 
-        self._populate_data()
-        self._find_create_hooks()
-        self._call_create_hooks()
-
     def _combine_attr(self, attr, typ=None):
         values = getattr(self, attr, {})
         if typ is not None:
@@ -169,34 +156,10 @@ class Meta(type):
             
         setattr(self, attr, typ(values))
 
-    def _populate_data(self):
-        self._data = Data()
-
-        if 'metaclass_lookup' in self._seq_opts:
-            for attr in self._seq_opts.metaclass_lookup:
-                attrs = self._seq_opts[attr]
-                values = [getattr(self, attr_) for attr_ in attrs]
-                values = type(attrs)(values)
-                setattr(self._data, attr, values)
-
-    def _find_create_hooks(self):
-        funcs = callables(self)
-        hooks = [f for f in funcs.values() if getattr(f, 'create_hook', False)]
-
-        if self._data.create_hooks:
-            self._data.create_hooks = list(self._data.create_hooks) + hooks
-        else:
-            self._data.create_hooks = hooks
-
-    def _call_create_hooks(self):
-        if self._data.create_hooks:
-            for hook in self._data.create_hooks:
-                hook()
-
 
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Attr', 'Attrs', 'Meta', 'Data')
+__all__ = ('Attr', 'Attrs', 'Meta')
 
 #-------------------------------------------------------------------------------
