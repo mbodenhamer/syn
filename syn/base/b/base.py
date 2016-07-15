@@ -115,19 +115,13 @@ class Base(object):
     @create_hook
     def _create_init_hooks(cls):
         hooks = cls._find_hooks('init_hook')
-        if cls._data.init_hooks:
-            cls._data.init_hooks = list(cls._data.init_hooks) + hooks
-        else:
-            cls._data.init_hooks = hooks
+        cls._data.init_hooks = list(cls._data.init_hooks) + hooks
 
     @classmethod
     @create_hook
     def _create_coerce_hooks(cls):
         hooks = cls._find_hooks('coerce_hook')
-        if cls._data.coerce_hooks:
-            cls._data.coerce_hooks = list(cls._data.coerce_hooks) + hooks
-        else:
-            cls._data.coerce_hooks = hooks
+        cls._data.coerce_hooks = list(cls._data.coerce_hooks) + hooks
 
     def __getstate__(self):
         return self.to_dict('getstate_exclude')

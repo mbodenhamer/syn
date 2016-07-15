@@ -37,7 +37,7 @@ dict(type = _OAttr(None, doc='Type of the attribute'),
 
 class Data(object):
     def __getattr__(self, attr):
-        return None
+        return list()
 
 
 #-------------------------------------------------------------------------------
@@ -108,16 +108,11 @@ class Meta(_Meta):
     def _find_create_hooks(self):
         funcs = callables(self)
         hooks = [f for f in funcs.values() if getattr(f, 'create_hook', False)]
-
-        if self._data.create_hooks:
-            self._data.create_hooks = list(self._data.create_hooks) + hooks
-        else:
-            self._data.create_hooks = hooks
+        self._data.create_hooks = list(self._data.create_hooks) + hooks
 
     def _call_create_hooks(self):
-        if self._data.create_hooks:
-            for hook in self._data.create_hooks:
-                hook()
+        for hook in self._data.create_hooks:
+            hook()
 
     def _combine_groups(self):
         if not hasattr(self, '_groups'):

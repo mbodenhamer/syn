@@ -1,7 +1,7 @@
 Changelog
 ---------
 
-0.0.6 (2016-07-14)
+0.0.6 (2016-07-15)
 ~~~~~~~~~~~~~~~~~~
 
 - Added context management utilities to base_utils
