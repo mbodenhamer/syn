@@ -3,7 +3,8 @@ from syn.five import STR
 from syn.base.a import Base
 from syn.type.a import Type
 from syn.type.a.ext import Callable, Sequence
-from syn.base_utils import GroupDict, AttrDict, SeqDict, ReflexiveDict, callables
+from syn.base_utils import (GroupDict, AttrDict, SeqDict, ReflexiveDict, 
+                            callables, rgetattr)
 from functools import partial
 
 from syn.base.a.meta import Attr as _Attr
@@ -90,27 +91,44 @@ class Meta(_Meta):
         super(Meta, self).__init__(clsname, bases, dct)
 
         self._populate_data()
-        self._find_create_hooks()
-        self._call_create_hooks()
+        self._process_create_hooks()
 
         self._combine_groups()
 
+    def _getopt(self, name='', default=None, opts='_opts'):
+        attr = '{}.{}'.format(opts, name)
+        if default is not None:
+            if callable(default):
+                return rgetattr(self, attr, default())
+            return rgetattr(self, attr, default)
+        return rgetattr(self, attr)
+        
     def _populate_data(self):
         self._data = Data()
+        opt = Meta._getopt
 
-        if 'metaclass_lookup' in self._seq_opts:
-            for attr in self._seq_opts.metaclass_lookup:
-                attrs = self._seq_opts[attr]
-                values = [getattr(self, attr_) for attr_ in attrs]
-                values = type(attrs)(values)
-                setattr(self._data, attr, values)
+        # def scls(cls):
+        #     pass
 
-    def _find_create_hooks(self):
+        # Process metaclass_lookup
+        sopt = partial(opt, opts='_seq_opts', default=list)
+        for attr in sopt(self, 'metaclass_lookup'):
+            attrs = sopt(self, attr)
+            values = [getattr(self, attr_) for attr_ in attrs]
+            values = type(attrs)(values)
+            setattr(self._data, attr, values)
+
+        # Register subclasses
+        reg = partial(opt, name='register_subclasses', default=False)
+        if reg(self):
+            for c in self.mro():
+                pass
+
+    def _process_create_hooks(self):
         funcs = callables(self)
         hooks = [f for f in funcs.values() if getattr(f, 'create_hook', False)]
         self._data.create_hooks = list(self._data.create_hooks) + hooks
 
-    def _call_create_hooks(self):
         for hook in self._data.create_hooks:
             hook()
 

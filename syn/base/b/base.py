@@ -36,7 +36,8 @@ class Base(object):
                      coerce_args = False,
                      id_equality = False,
                      init_validate = False,
-                     optional_none = False)
+                     optional_none = False,
+                     register_subclasses = False)
     _seq_opts = SeqDict(coerce_hooks = (),
                         init_hooks = (),
                         init_order = (),

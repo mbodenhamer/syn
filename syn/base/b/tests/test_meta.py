@@ -1,4 +1,5 @@
 import six
+from nose.tools import assert_raises
 from syn.base_utils import (GroupDict, AttrDict, assert_type_equivalent,
                             ReflexiveDict, SeqDict)
 from syn.type.a import AnyType, TypeType
@@ -173,6 +174,23 @@ def test_meta():
     assert_type_equivalent(E._opts, AttrDict())
     assert_type_equivalent(E._attrs, Attrs())
     assert_type_equivalent(E._groups, GroupDict())
+
+#-------------------------------------------------------------------------------
+# Test _getopt
+
+@six.add_metaclass(Meta)
+class GetOpt(object):
+    _opts = dict(a = 1,
+                 b = 2)
+    _seq_opts = dict(a = [1, 2],
+                     b = (3, 4))
+
+def test_getopt():
+    assert GetOpt._getopt('a') == 1
+    assert GetOpt._getopt('b') == 2
+    assert_raises(AttributeError, GetOpt._getopt, 'c')
+    assert GetOpt._getopt('c', default=1) == 1
+    assert GetOpt._getopt('c', default=list) == []
 
 #-------------------------------------------------------------------------------
 # Test _populate_data
