@@ -7,7 +7,8 @@ Changelog
 - Added context management utilities to base_utils
 - Moved metaclass data population code to base.b.meta
 - Added rudimentary init functionality to base.a.Attr and base.a.Base
-- Added register_metaclass functionality
+- Added register_subclass functionality
+- Added syn.tree functionality (syn.tree.b)
 
 0.0.5 (2016-07-12)
 ~~~~~~~~~~~~~~~~~~
