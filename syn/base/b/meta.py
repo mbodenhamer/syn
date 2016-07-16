@@ -4,7 +4,7 @@ from syn.base.a import Base
 from syn.type.a import Type
 from syn.type.a.ext import Callable, Sequence
 from syn.base_utils import (GroupDict, AttrDict, SeqDict, ReflexiveDict, 
-                            callables, rgetattr)
+                            callables, rgetattr, hasmethod)
 from functools import partial
 
 from syn.base.a.meta import Attr as _Attr
@@ -107,9 +107,6 @@ class Meta(_Meta):
         self._data = Data()
         opt = Meta._getopt
 
-        # def scls(cls):
-        #     pass
-
         # Process metaclass_lookup
         sopt = partial(opt, opts='_seq_opts', default=list)
         for attr in sopt(self, 'metaclass_lookup'):
@@ -122,7 +119,13 @@ class Meta(_Meta):
         reg = partial(opt, name='register_subclasses', default=False)
         if reg(self):
             for c in self.mro():
-                pass
+                if hasmethod(c, '_getopt'):
+                    if reg(c):
+                        if issubclass(self, c):
+                            lst = rgetattr(c, '_data.subclasses')
+                            if self not in lst:
+                                lst.append(self)
+                            c._data.subclasses = lst
 
     def _process_create_hooks(self):
         funcs = callables(self)

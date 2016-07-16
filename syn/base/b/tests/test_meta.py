@@ -279,6 +279,42 @@ def test_create_hooks():
     assert CHA.b == 5
 
 #-------------------------------------------------------------------------------
+# Test register_subclasses
+
+@six.add_metaclass(Meta)
+class Reg1(object):
+    _opts = dict(register_subclasses = True)
+
+class Reg2(Reg1):
+    pass
+
+class Reg3(Reg2):
+    _opts = dict(register_subclasses = False)
+
+@six.add_metaclass(Meta)
+class Reg4(object):
+    pass
+
+class Reg5(Reg4):
+    _opts = dict(register_subclasses = True)
+
+class Reg6(object):
+    pass
+
+class Reg7(Reg5, Reg6):
+    pass
+
+def test_register_subclasses():
+    assert Reg1._data.subclasses == [Reg1, Reg2]
+    assert Reg2._data.subclasses == [Reg2]
+    assert Reg3._data.subclasses == []
+
+    assert Reg4._data.subclasses == []
+    assert Reg5._data.subclasses == [Reg5, Reg7]
+    assert not hasattr(Reg6, '_data')
+    assert Reg7._data.subclasses == [Reg7]
+
+#-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
     from syn.base_utils import run_all_tests
