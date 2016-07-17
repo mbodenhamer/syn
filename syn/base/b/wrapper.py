@@ -79,8 +79,8 @@ class ListWrapper(Base):
     def validate(self):
         super(ListWrapper, self).validate()
         
-        max_len = type(self)._max_len
-        min_len = type(self)._min_len
+        max_len = self._opts.max_len
+        min_len = self._opts.min_len
 
         if max_len is not None:
             if len(self._list) > max_len:

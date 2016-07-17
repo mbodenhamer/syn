@@ -1,7 +1,7 @@
 import collections
 from copy import deepcopy
 from nose.tools import assert_raises
-from syn.base.b import ListWrapper
+from syn.base.b import ListWrapper, Attr
 from syn.base.b.tests.test_base import check_idempotence
 
 #-------------------------------------------------------------------------------
@@ -46,15 +46,40 @@ def test_listwrapper():
     assert list(cobj) == [11] + _list
     
     class LW1(type(obj)):
-        _max_len = 1
-        _min_len = None
+        _opts = dict(max_len = 1,
+                     min_len = None)
 
     class LW2(type(obj)):
-        _max_len = None
-        _min_len = 50
+        _opts = dict(max_len = None,
+                     min_len = 50)
 
     assert_raises(ValueError, LW1(_list=_list).validate)
     assert_raises(ValueError, LW2(_list=_list).validate)
+
+#-------------------------------------------------------------------------------
+# Test ListWrapper Positional Args
+
+class LWPA(ListWrapper):
+    _opts = dict(max_len = 3,
+                 args = ['a', 'b'],
+                 init_validate = True)
+    _attrs = dict(a = Attr(int),
+                  b = Attr(float, default=3.2))
+
+def test_listwrapper_positional_args():
+    lw = LWPA(1, 1.2, 'abc', 4)
+    assert list(lw) == [1, 1.2, 'abc']
+    assert lw.a == 4
+    assert lw.b == 3.2
+    check_idempotence(lw)
+
+    lw = LWPA(1, 1.2, 'abc', 4, 5.3)
+    assert list(lw) == [1, 1.2, 'abc']
+    assert lw.a == 4
+    assert lw.b == 5.3
+    check_idempotence(lw)
+
+    assert_raises(TypeError, LWPA, 1, 1.2, 'abc', 4, 5.3, 6.5)
 
 #-------------------------------------------------------------------------------
 
