@@ -95,7 +95,7 @@ class Meta(_Meta):
 
         self._combine_groups()
 
-    def _getopt(self, name='', default=None, opts='_opts'):
+    def _get_opt(self, name='', default=None, opts='_opts'):
         attr = '{}.{}'.format(opts, name)
         if default is not None:
             if callable(default):
@@ -105,7 +105,7 @@ class Meta(_Meta):
         
     def _populate_data(self):
         self._data = Data()
-        opt = Meta._getopt
+        opt = Meta._get_opt
 
         # Process metaclass_lookup
         sopt = partial(opt, opts='_seq_opts', default=list)
@@ -119,7 +119,7 @@ class Meta(_Meta):
         reg = partial(opt, name='register_subclasses', default=False)
         if reg(self):
             for c in self.mro():
-                if hasmethod(c, '_getopt'):
+                if hasmethod(c, '_get_opt'):
                     if reg(c):
                         if issubclass(self, c):
                             lst = rgetattr(c, '_data.subclasses')

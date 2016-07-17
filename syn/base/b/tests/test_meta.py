@@ -176,7 +176,7 @@ def test_meta():
     assert_type_equivalent(E._groups, GroupDict())
 
 #-------------------------------------------------------------------------------
-# Test _getopt
+# Test _get_opt
 
 @six.add_metaclass(Meta)
 class GetOpt(object):
@@ -186,11 +186,11 @@ class GetOpt(object):
                      b = (3, 4))
 
 def test_getopt():
-    assert GetOpt._getopt('a') == 1
-    assert GetOpt._getopt('b') == 2
-    assert_raises(AttributeError, GetOpt._getopt, 'c')
-    assert GetOpt._getopt('c', default=1) == 1
-    assert GetOpt._getopt('c', default=list) == []
+    assert GetOpt._get_opt('a') == 1
+    assert GetOpt._get_opt('b') == 2
+    assert_raises(AttributeError, GetOpt._get_opt, 'c')
+    assert GetOpt._get_opt('c', default=1) == 1
+    assert GetOpt._get_opt('c', default=list) == []
 
 #-------------------------------------------------------------------------------
 # Test _populate_data
