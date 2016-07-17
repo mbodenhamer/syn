@@ -8,6 +8,7 @@ def test_base_imports():
     assert syn.base.Base is syn.base.b.Base
     assert syn.base.Attr is syn.base.b.Attr
     assert syn.base.Attrs is syn.base.b.Attrs
+    assert syn.base.ListWrapper is syn.base.b.ListWrapper
 
     assert syn.base.create_hook is syn.base.b.create_hook
     assert syn.base.init_hook is syn.base.b.init_hook
