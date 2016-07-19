@@ -36,7 +36,7 @@ dict(type = _OAttr(None, doc='Type of the attribute'),
 # Create Hook
 
 class _CreateHook(object):
-    '''Dummy object to ensure that callable is really a create hook.'''
+    '''Dummy class to ensure that callable is really a create hook.'''
     pass
 
 def create_hook(f):

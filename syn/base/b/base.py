@@ -7,12 +7,20 @@ from syn.base_utils import (AttrDict, ReflexiveDict, message, get_mod,
 #-------------------------------------------------------------------------------
 # Hook Decorators
 
+class _InitHook(object):
+    '''Dummy class to ensure that callable is really an init hook.'''
+    pass
+
+class _CoerceHook(object):
+    '''Dummy class to ensure that callable is really a coerce hook.'''
+    pass
+
 def init_hook(f):
-    f.init_hook = True
+    f.is_init_hook = _InitHook
     return f
 
 def coerce_hook(f):
-    f.coerce_hook = True
+    f.is_coerce_hook = _CoerceHook
     return f
 
 #-------------------------------------------------------------------------------
@@ -104,20 +112,21 @@ class Base(object):
             self.validate()
 
     @classmethod
-    def _find_hooks(cls, hook_attr):
+    def _find_hooks(cls, hook_attr, hook_type):
         funcs = callables(cls)
-        return [f for f in funcs.values() if getattr(f, hook_attr, False)]
+        return [f for f in funcs.values() 
+                if getattr(f, hook_attr, None) is hook_type]
 
     @classmethod
     @create_hook
     def _create_init_hooks(cls):
-        hooks = cls._find_hooks('init_hook')
+        hooks = cls._find_hooks('is_init_hook', _InitHook)
         cls._data.init_hooks = list(cls._data.init_hooks) + hooks
 
     @classmethod
     @create_hook
     def _create_coerce_hooks(cls):
-        hooks = cls._find_hooks('coerce_hook')
+        hooks = cls._find_hooks('is_coerce_hook', _CoerceHook)
         cls._data.coerce_hooks = list(cls._data.coerce_hooks) + hooks
 
     def __getstate__(self):
