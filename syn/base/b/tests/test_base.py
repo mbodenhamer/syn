@@ -1,6 +1,7 @@
+import six.moves.cPickle as pickle
 from nose.tools import assert_raises
 from syn.five import STR
-from syn.base.b import Base, Attr, init_hook, coerce_hook
+from syn.base.b import Base, Attr, init_hook, coerce_hook, setstate_hook
 from syn.type.a import Type
 from syn.base_utils import assert_equivalent, assert_pickle_idempotent, \
     assert_deepcopy_idempotent, assert_inequivalent, assert_type_equivalent, \
@@ -251,7 +252,7 @@ def test_coerce_classmethod():
     assert t6.coerce(dict(a = 1)) == CT6(a = 5)
 
 #-------------------------------------------------------------------------------
-# Init hooks
+# Init & setstate hooks
 
 class I(B):
     _seq_opts = SeqDict()
@@ -273,7 +274,12 @@ class I2(I):
     def _baz(self):
         self.f = self.d + self.e
 
-def test_init_hooks():
+class I3(I2):
+    @setstate_hook
+    def _foobaz(self):
+        self.f += 1
+
+def test_init_setstate_hooks():
     obj = I(5, 2.5)
     assert obj.d == 12.5
     assert obj.e == 14.5
@@ -284,6 +290,14 @@ def test_init_hooks():
     assert obj.d == 12.5
     assert obj.e == 14.5
     assert obj.f == 27.0
+
+    check_idempotence(obj)
+
+    obj = I3(5, 2.5)
+    assert obj.f == 27.0
+
+    obj2 = pickle.loads(pickle.dumps(obj))
+    assert obj2.f == 28.0
 
 #-------------------------------------------------------------------------------
 # Conversion classmethods

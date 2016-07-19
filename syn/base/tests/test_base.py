@@ -13,6 +13,7 @@ def test_base_imports():
     assert syn.base.create_hook is syn.base.b.create_hook
     assert syn.base.init_hook is syn.base.b.init_hook
     assert syn.base.coerce_hook is syn.base.b.coerce_hook
+    assert syn.base.setstate_hook is syn.base.b.setstate_hook
 
 #-------------------------------------------------------------------------------
 

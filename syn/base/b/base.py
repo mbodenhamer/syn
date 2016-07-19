@@ -15,12 +15,20 @@ class _CoerceHook(object):
     '''Dummy class to ensure that callable is really a coerce hook.'''
     pass
 
+class _SetstateHook(object):
+    '''Dummy class to ensure that callable is really a setstate hook.'''
+    pass
+
 def init_hook(f):
     f.is_init_hook = _InitHook
     return f
 
 def coerce_hook(f):
     f.is_coerce_hook = _CoerceHook
+    return f
+
+def setstate_hook(f):
+    f.is_setstate_hook = _SetstateHook
     return f
 
 #-------------------------------------------------------------------------------
@@ -46,9 +54,11 @@ class Base(object):
                         init_hooks = (),
                         init_order = (),
                         create_hooks = (),
+                        setstate_hooks = (),
                         metaclass_lookup = ('coerce_hooks',
                                             'init_hooks',
-                                            'create_hooks'))
+                                            'create_hooks',
+                                            'setstate_hooks'))
 
     def __init__(self, *args, **kwargs):
         _args = self._opts.args
@@ -91,7 +101,8 @@ class Base(object):
                 else:
                     kwargs[attr] = call(value)
 
-        self.__setstate__(kwargs)
+        for attr, val in kwargs.items():
+            setattr(self, attr, val)
 
         if self._seq_opts.init_order:
             for attr in self._seq_opts.init_order:
@@ -129,12 +140,22 @@ class Base(object):
         hooks = cls._find_hooks('is_coerce_hook', _CoerceHook)
         cls._data.coerce_hooks = list(cls._data.coerce_hooks) + hooks
 
+    @classmethod
+    @create_hook
+    def _create_setstate_hooks(cls):
+        hooks = cls._find_hooks('is_setstate_hook', _SetstateHook)
+        cls._data.setstate_hooks = list(cls._data.setstate_hooks) + hooks
+
     def __getstate__(self):
         return self.to_dict('getstate_exclude')
 
     def __setstate__(self, state):
         for attr, val in state.items():
             setattr(self, attr, val)
+
+        if self._data.setstate_hooks:
+            for hook in self._data.setstate_hooks:
+                hook(self)
 
     def __eq__(self, other):
         if self._opts.id_equality:
@@ -250,6 +271,6 @@ class Base(object):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Base', 'init_hook', 'coerce_hook')
+__all__ = ('Base', 'init_hook', 'coerce_hook', 'setstate_hook')
 
 #-------------------------------------------------------------------------------
