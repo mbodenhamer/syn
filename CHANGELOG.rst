@@ -9,6 +9,7 @@ Changelog
 - Added rudimentary init functionality to base.a.Attr and base.a.Base
 - Added register_subclass functionality
 - Refactoring (improving) internal hook processing
+- Added setstate_hook functionality
 - Added syn.tree functionality (syn.tree.b)
 
 0.0.5 (2016-07-12)
