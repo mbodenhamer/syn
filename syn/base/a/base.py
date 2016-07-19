@@ -9,6 +9,7 @@ from syn.base_utils import AttrDict, SeqDict, message
 @six.add_metaclass(Meta)
 class Base(object):
     _attrs = Attrs()
+    _aliases = SeqDict()
     _opts = AttrDict(args = (),
                      coerce_args = False,
                      init_validate = False,

@@ -38,6 +38,7 @@ def setstate_hook(f):
 @six.add_metaclass(Meta)
 class Base(object):
     _attrs = Attrs()
+    _aliases = SeqDict()
     _groups = ReflexiveDict('_all',
                             '_internal',
                             'eq_exclude',

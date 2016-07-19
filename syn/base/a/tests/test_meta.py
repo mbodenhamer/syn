@@ -3,6 +3,7 @@ from syn.five import STR, xrange
 from syn.type.a import AnyType, TypeType
 from syn.base.a.meta import combine, graft, AttrDict, sorted_bases, \
     metaclasses, mro, Attr, Attrs, Meta
+from syn.base.a.base import Base
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -245,6 +246,40 @@ def test__seq_opts():
 
     assert SOB._seq_opts == dict(a = [1, 2, 3, 4],
                                  b = ('a', 'b', 'c'))
+
+#-------------------------------------------------------------------------------
+# Test Aliases
+
+class AliasTest(Base):
+    _attrs = dict(a = Attr(list))
+    _aliases = dict(a = ('b', 'c'))
+
+class AT2(AliasTest):
+    _aliases = dict(a = ['d'])
+
+def test_aliases():
+    obj = AliasTest(a = [1, 2])
+    assert obj.a == [1, 2]
+    assert obj.b is obj.a
+    assert obj.c is obj.a
+
+    obj = AT2(a = [1, 2])
+    assert obj.a == [1, 2]
+    assert obj.b is obj.a
+    assert obj.c is obj.a
+    assert obj.d is obj.a
+
+    obj.c = [2, 3]
+    assert obj.a == [2, 3]
+    assert obj.b is obj.a
+    assert obj.c is obj.a
+    assert obj.d is obj.a
+
+    del obj.d
+    assert not hasattr(obj, 'a')
+    assert not hasattr(obj, 'b')
+    assert not hasattr(obj, 'c')
+    assert not hasattr(obj, 'd')
 
 #-------------------------------------------------------------------------------
 

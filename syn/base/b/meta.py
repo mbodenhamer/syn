@@ -95,6 +95,7 @@ class Attrs(_Attrs):
 
 class Meta(_Meta):
     _metaclass_opts = AttrDict(attrs_type = Attrs,
+                               aliases_type = SeqDict,
                                opts_type = AttrDict,
                                seq_opts_type = SeqDict)
 

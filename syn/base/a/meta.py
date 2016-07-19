@@ -67,6 +67,19 @@ def sorted_bases(bases):
     return ret
 
 #-------------------------------------------------------------------------------
+# Alias Property
+
+def alias_property(attr):
+    def getter(self):
+        return getattr(self, attr)
+    def setter(self, value):
+        return setattr(self, attr, value)
+    def deller(self):
+        return delattr(self, attr)
+    ret = property(getter, setter, deller)
+    return ret
+
+#-------------------------------------------------------------------------------
 # Object Attribute
 
 
@@ -103,6 +116,7 @@ class Attrs(UpdateDict):
 
 class Meta(type):
     _metaclass_opts = AttrDict(attrs_type = Attrs,
+                               aliases_type = SeqDict,
                                opts_type = AttrDict,
                                seq_opts_type = SeqDict)
 
@@ -119,6 +133,9 @@ class Meta(type):
                                        self._metaclass_opts.attrs_type)
         self._combine_attr('_opts', self._metaclass_opts.opts_type)
         self._combine_attr_dct('_seq_opts', self._metaclass_opts.seq_opts_type)
+        self._combine_attr_dct('_aliases', self._metaclass_opts.aliases_type)
+
+        self._resolve_aliases()
 
     def _combine_attr(self, attr, typ=None):
         values = getattr(self, attr, {})
@@ -158,6 +175,12 @@ class Meta(type):
             values = combine(vals, values)
             
         setattr(self, attr, typ(values))
+
+    def _resolve_aliases(self):
+        for attr, aliases in self._aliases.items():
+            for alias in aliases:
+                if not isinstance(getattr(self, alias, None), property):
+                    setattr(self, alias, alias_property(attr))
 
 
 #-------------------------------------------------------------------------------
