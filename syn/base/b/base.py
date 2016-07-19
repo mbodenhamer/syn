@@ -1,6 +1,6 @@
 import six
 from collections import Mapping
-from .meta import Attrs, Meta
+from .meta import Attrs, Meta, create_hook
 from syn.base_utils import (AttrDict, ReflexiveDict, message, get_mod,
                             get_typename, SeqDict, callables)
 
@@ -13,10 +13,6 @@ def init_hook(f):
 
 def coerce_hook(f):
     f.coerce_hook = True
-    return f
-
-def create_hook(f):
-    f.create_hook = True
     return f
 
 #-------------------------------------------------------------------------------
@@ -245,6 +241,6 @@ class Base(object):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Base', 'init_hook', 'coerce_hook', 'create_hook')
+__all__ = ('Base', 'init_hook', 'coerce_hook')
 
 #-------------------------------------------------------------------------------

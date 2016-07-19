@@ -33,6 +33,13 @@ dict(type = _OAttr(None, doc='Type of the attribute'),
     )
 
 #-------------------------------------------------------------------------------
+# Create Hook
+
+def create_hook(f):
+    f.create_hook = True
+    return f
+
+#-------------------------------------------------------------------------------
 # Data Object (for metaclass-populated values)
 
 
@@ -164,6 +171,6 @@ class Meta(_Meta):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Attr', 'Attrs', 'Meta', 'Data')
+__all__ = ('Attr', 'Attrs', 'Meta', 'Data', 'create_hook')
 
 #-------------------------------------------------------------------------------
