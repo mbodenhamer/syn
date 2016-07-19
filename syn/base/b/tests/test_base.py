@@ -299,6 +299,8 @@ def test_init_setstate_hooks():
     obj2 = pickle.loads(pickle.dumps(obj))
     assert obj2.f == 28.0
 
+    assert_raises(TypeError, I, 5.2, 2) # Sanity check for init_validate
+
 #-------------------------------------------------------------------------------
 # Conversion classmethods
 
