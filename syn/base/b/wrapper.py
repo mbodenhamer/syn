@@ -13,7 +13,7 @@ _LIST = '_list'
 
 
 class ListWrapper(Base):
-    _attrs = dict(_list = Attr(list, doc='The wrapped list'))
+    _attrs = dict(_list = Attr(list, internal=True, doc='The wrapped list'))
     _opts = dict(max_len = None,
                  min_len = None)
     
