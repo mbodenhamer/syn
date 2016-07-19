@@ -356,6 +356,33 @@ def test_sequence_conversion():
     assert_raises(ValueError, ConvTest.from_sequence, seq2)
 
 #-------------------------------------------------------------------------------
+# getstate_exclude
+
+class GSEx(Base):
+    _attrs = dict(a = Attr(int),
+                  b = Attr(int, groups = ('getstate_exclude',),
+                           init = lambda self: self.a + 1))
+    _opts = dict(init_validate = True,
+                 args = ('a',))
+
+class GSEx2(GSEx):
+    @init_hook
+    @setstate_hook
+    def _set_b(self):
+        self.b = self.a + 1
+
+def test_getstate_exclude():
+    obj = GSEx(1)
+    assert obj.a == 1
+    assert obj.b == 2
+    assert_raises(AssertionError, check_idempotence, obj)
+
+    obj = GSEx2(1)
+    assert obj.a == 1
+    assert obj.b == 2
+    check_idempotence(obj)
+
+#-------------------------------------------------------------------------------
 # Update functionality
 
 class TestUpdate(Base):
