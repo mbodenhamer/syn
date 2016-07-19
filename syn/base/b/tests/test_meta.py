@@ -273,10 +273,28 @@ class CHA(CreateHooks):
     def hook2(cls):
         cls.b = 5
 
+class PseudoHook(object):
+    def __getattr__(self, attr):
+        return type(self)
+
+    def __call__(self):
+        raise TypeError("Not Callable!!")
+
+class CHBad(CreateHooks):
+    a = 5
+    b = PseudoHook()
+
 def test_create_hooks():
     assert CreateHooks.a == 2
     assert CHA.a == 6
     assert CHA.b == 5
+
+    ph = PseudoHook()
+    assert_raises(TypeError, ph)
+    assert ph.foobar is PseudoHook
+
+    assert CHBad.a == 10
+    assert isinstance(CHBad.b, PseudoHook)
 
 #-------------------------------------------------------------------------------
 # Test register_subclasses

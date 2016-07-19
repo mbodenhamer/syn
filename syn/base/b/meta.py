@@ -129,7 +129,8 @@ class Meta(_Meta):
 
     def _process_create_hooks(self):
         funcs = callables(self)
-        hooks = [f for f in funcs.values() if getattr(f, 'create_hook', False)]
+        hooks = [f for f in funcs.values() 
+                 if getattr(f, 'create_hook', False) is True]
         self._data.create_hooks = list(self._data.create_hooks) + hooks
 
         for hook in self._data.create_hooks:
