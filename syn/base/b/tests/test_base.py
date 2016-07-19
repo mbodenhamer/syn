@@ -279,6 +279,17 @@ class I3(I2):
     def _foobaz(self):
         self.f += 1
 
+class I4(I):
+    _attrs = dict(f = Attr(int))
+
+    @init_hook
+    @setstate_hook
+    def _baz(self):
+        if not hasattr(self, 'f'):
+            self.f = self.a
+        else:
+            self.f += 1
+
 def test_init_setstate_hooks():
     obj = I(5, 2.5)
     assert obj.d == 12.5
@@ -295,9 +306,13 @@ def test_init_setstate_hooks():
 
     obj = I3(5, 2.5)
     assert obj.f == 27.0
-
     obj2 = pickle.loads(pickle.dumps(obj))
     assert obj2.f == 28.0
+
+    obj = I4(5, 2.5)
+    assert obj.f == 5
+    obj2 = pickle.loads(pickle.dumps(obj))
+    assert obj2.f == 6
 
     assert_raises(TypeError, I, 5.2, 2) # Sanity check for init_validate
 
