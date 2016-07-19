@@ -35,8 +35,12 @@ dict(type = _OAttr(None, doc='Type of the attribute'),
 #-------------------------------------------------------------------------------
 # Create Hook
 
+class _CreateHook(object):
+    '''Dummy object to ensure that callable is really a create hook.'''
+    pass
+
 def create_hook(f):
-    f.create_hook = True
+    f.is_create_hook = _CreateHook
     return f
 
 #-------------------------------------------------------------------------------
@@ -137,7 +141,7 @@ class Meta(_Meta):
     def _process_create_hooks(self):
         funcs = callables(self)
         hooks = [f for f in funcs.values() 
-                 if getattr(f, 'create_hook', False) is True]
+                 if getattr(f, 'is_create_hook', None) is _CreateHook]
         self._data.create_hooks = list(self._data.create_hooks) + hooks
 
         for hook in self._data.create_hooks:
