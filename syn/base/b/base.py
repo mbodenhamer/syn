@@ -182,6 +182,18 @@ class Base(object):
     def __str__(self):
         return self.istr()
 
+    def _istr_attrs(self, base, pretty, indent):
+        strs = []
+        attrs = self.to_dict('str_exclude')
+        for attr, val in sorted(attrs.items(), 
+                                key=lambda x: \
+                                self._data.attr_display_order.index(x[0])):
+            start = '{} = '.format(attr)
+            val_indent = indent + len(start)
+            tmp = start + istr(val, pretty, val_indent)
+            strs.append(tmp)
+        return base.join(strs)
+
     def istr(self, pretty=False, indent=0):
         '''Returns a string that, if evaluated, produces an equivalent object.'''
         ret = '{}('.format(get_typename(self))
@@ -192,17 +204,7 @@ class Base(object):
         else:
             base += ' '
 
-        strs = []
-        attrs = self.to_dict('str_exclude')
-        for attr, val in sorted(attrs.items(), 
-                                key=lambda x: \
-                                self._data.attr_display_order.index(x[0])):
-            start = '{} = '.format(attr)
-            val_indent = indent + len(start)
-            tmp = start + istr(val, pretty, val_indent)
-            strs.append(tmp)
-
-        ret += base.join(strs) + ')'
+        ret += self._istr_attrs(base, pretty, indent) + ')'
         return ret
         
     def pretty(self, indent=0):

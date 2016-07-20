@@ -1,4 +1,5 @@
 import collections
+from syn.base_utils import istr
 
 from .base import Base
 from .meta import Attr
@@ -13,7 +14,8 @@ _LIST = '_list'
 
 
 class ListWrapper(Base):
-    _attrs = dict(_list = Attr(list, internal=True, doc='The wrapped list'))
+    _attrs = dict(_list = Attr(list, internal=True, groups=('str_exclude',),
+                               doc='The wrapped list'))
     _opts = dict(max_len = None,
                  min_len = None)
     
@@ -33,6 +35,13 @@ class ListWrapper(Base):
 
         kwargs[_LIST] = _list
         super(ListWrapper, self).__init__(*args, **kwargs)
+
+    def _istr_attrs(self, base, pretty, indent):
+        attrs = super(ListWrapper, self)._istr_attrs(base, pretty, indent)
+        strs = [istr(val, pretty, indent) for val in self]
+        ret = base.join(strs)
+        ret = base.join([ret, attrs])
+        return ret
 
     def __iter__(self):
         return iter(self._list)

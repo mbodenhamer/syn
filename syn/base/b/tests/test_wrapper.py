@@ -45,16 +45,29 @@ def test_listwrapper():
     _list.reverse()
     assert list(cobj) == [11] + _list
     
-    class LW1(type(obj)):
+    class LW1(ListWrapper):
         _opts = dict(max_len = 1,
                      min_len = None)
 
-    class LW2(type(obj)):
+    class LW2(ListWrapper):
         _opts = dict(max_len = None,
                      min_len = 50)
 
     assert_raises(ValueError, LW1(_list=_list).validate)
     assert_raises(ValueError, LW2(_list=_list).validate)
+
+    class LW3(ListWrapper):
+        _attrs = dict(a = Attr(int),
+                      b = Attr(float))
+
+    lw = LW3(1, 2, 3, a = 1, b = 1.2)
+    assert str(lw) == "LW3(1, 2, 3, a = 1, b = 1.2)"
+    pretty_lw = '''LW3(1,
+    2,
+    3,
+    a = 1,
+    b = 1.2)'''
+    assert lw.pretty() == pretty_lw
 
 #-------------------------------------------------------------------------------
 # Test ListWrapper Positional Args
