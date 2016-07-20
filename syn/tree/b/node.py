@@ -1,5 +1,6 @@
 from functools import partial
 from syn.five import STR
+from syn.type.a import This
 from syn.base.b import Base, ListWrapper, Attr, init_hook, setstate_hook
 
 #-------------------------------------------------------------------------------
@@ -23,7 +24,7 @@ class TreeError(Exception):
 
 
 class Node(ListWrapper):
-    _attrs = dict(_parent = IAttr(None, optional=True,
+    _attrs = dict(_parent = IAttr(This, optional=True,
                                   groups=(REPREX, STREX, EQEX, GSEX),
                                   doc='Parent of this node'),
                   _name = IAttr(STR, optional=True,

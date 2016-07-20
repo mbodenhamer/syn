@@ -31,8 +31,7 @@ def treenode_tst_1(cls):
     n1.set_child_parents(1, True)
     assert all(c._parent == 1 for c in n1._children)
     assert all(c._parent == 1 for c in n2._children)
-    n1.validate()
-    #assert_raises(TypeError, n1.validate)
+    assert_raises(TypeError, n1.validate)
 
 #-------------------------------------------------------------------------------
 # Tree Node Test 2
