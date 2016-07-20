@@ -7,6 +7,7 @@ import syn.tree.b
 def test_tree_imports():
     assert syn.tree.Node is syn.tree.b.Node
     assert syn.tree.Tree is syn.tree.b.Tree
+    assert syn.tree.TreeError is syn.tree.b.TreeError
 
 #-------------------------------------------------------------------------------
 

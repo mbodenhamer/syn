@@ -1,1 +1,1 @@
-from .b import Node, Tree
+from .b import Node, Tree, TreeError

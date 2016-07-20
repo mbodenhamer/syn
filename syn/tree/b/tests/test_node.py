@@ -4,7 +4,12 @@ from syn.tree.b import Node
 # Tree Node
 
 def test_node():
-    Node
+    n = Node()
+    assert n._children == []
+    assert n._parent is None
+    assert n._id is None
+    assert n._name is None
+    assert bool(n) is True
 
 #-------------------------------------------------------------------------------
 
