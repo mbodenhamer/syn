@@ -387,14 +387,16 @@ def test_getstate_exclude():
 
 class StrTest(Base):
     _attrs = dict(a = Attr(list),
-                  b = Attr(float, group='str_exclude'))
+                  b = Attr(float, group='str_exclude'),
+                  c = Attr(str))
 
 def test_base_str():
-    obj = StrTest(a = [1, 2], b = 1.2)
-    assert str(obj) == 'StrTest(a = [1, 2])'
+    obj = StrTest(a = [1, 2], b = 1.2, c = 'abc')
+    assert str(obj) == "StrTest(a = [1, 2], c = 'abc')"
 
     pretty_str = '''StrTest(a = [1,
-             2])'''
+             2],
+        c = 'abc')'''
     assert obj.pretty() == pretty_str
 
 #-------------------------------------------------------------------------------

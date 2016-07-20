@@ -194,7 +194,9 @@ class Base(object):
 
         strs = []
         attrs = self.to_dict('str_exclude')
-        for attr, val in attrs.items():
+        for attr, val in sorted(attrs.items(), 
+                                key=lambda x: \
+                                self._data.attr_display_order.index(x[0])):
             start = '{} = '.format(attr)
             val_indent = indent + len(start)
             tmp = start + istr(val, pretty, val_indent)

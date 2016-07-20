@@ -119,6 +119,9 @@ class Meta(_Meta):
         self._data = Data()
         opt = Meta._get_opt
 
+        # Generate attr display order
+        self._data.attr_display_order = sorted(self._attrs.keys())
+
         # Process metaclass_lookup
         sopt = partial(opt, opts='_seq_opts', default=list)
         for attr in sopt(self, 'metaclass_lookup'):
