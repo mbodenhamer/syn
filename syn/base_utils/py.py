@@ -30,6 +30,11 @@ def mro(cls):
     else:
         return type(cls).mro()
 
+def is_subclass(x, typ):
+    if not isinstance(x, type):
+        return False
+    return issubclass(x, typ)
+
 def hasmethod(x, name):
     val = getattr(x, name, None)
     if isinstance(x, type):
@@ -232,6 +237,6 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'index', 'nearest_base', 'get_typename', 'get_mod', 'compose',
            'assert_equivalent', 'assert_inequivalent', 'assert_type_equivalent',
            'assert_pickle_idempotent', 'assert_deepcopy_idempotent',
-           'rgetattr', 'callables')
+           'rgetattr', 'callables', 'is_subclass')
 
 #-------------------------------------------------------------------------------

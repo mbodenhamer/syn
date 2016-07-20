@@ -13,6 +13,19 @@ def test_mro():
     assert mro(1) == [int, object]
     assert mro(abc.ABCMeta) == [abc.ABCMeta]
 
+def test_is_subclass():
+    from syn.base_utils import is_subclass
+
+    class Foo(object):
+        pass
+
+    class Bar(Foo):
+        pass
+
+    assert is_subclass(Bar, Foo)
+    assert not is_subclass(Foo, Bar)
+    assert not is_subclass(Foo(), Bar)
+    assert_raises(TypeError, is_subclass, Foo, Bar())
 
 class Methods(object):
     a = 1
