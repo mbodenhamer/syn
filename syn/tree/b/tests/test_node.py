@@ -1,4 +1,5 @@
 from nose.tools import assert_raises
+from syn.base.b import Attr
 from syn.tree.b import Node, TreeError
 from syn.base.b.tests.test_base import check_idempotence
 from syn.base_utils import assert_equivalent, assert_inequivalent
@@ -33,8 +34,41 @@ def treenode_tst_1(cls):
     n1.validate()
     #assert_raises(TypeError, n1.validate)
 
+class Test1(Node):
+    _attrs = dict(value = Attr(int))
+
+def tree_node_from_nested_list(x, lst):
+    ret = Test1(_name= 'n{}'.format(x), value = x)
+    assert len(lst) % 2 == 0 or not any(isinstance(x, list) for x in lst)
+    
+    if not any(isinstance(x, list) for x in lst):
+        for x in lst:
+            child = Test1(_name = 'n{}'.format(x), value = x)
+            ret.add_child(child)
+    else:
+        for i in range(0, len(lst), 2):
+            x, sublst = lst[i], lst[i+1]
+            child = tree_node_from_nested_list(x, sublst)
+            ret.add_child(child)
+
+    return ret
+
 def treenode_tst_2(cls):
-    pass
+    import math
+    from syn.base_utils import seq_list_nested
+
+    b = 3
+    d = 4 # 121 nodes
+
+    lst, N = seq_list_nested(b, d, top_level=False)
+
+    root = tree_node_from_nested_list(lst[0], lst[1])
+    assert isinstance(root, Node)
+    assert isinstance(root, Test1)
+
+    nodes = root.collect_nodes()
+    assert len(nodes) == N
+    check_idempotence(root)
 
 def treenode_tst_3(cls):
     n5 = cls(_id = 5)
