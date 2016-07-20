@@ -19,6 +19,8 @@ def test_base_imports():
 
     assert syn.base.Counter is syn.base.b.Counter
 
+    assert syn.base.check_idempotence is syn.base.b.check_idempotence
+
 #-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
