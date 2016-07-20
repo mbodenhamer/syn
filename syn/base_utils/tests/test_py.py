@@ -157,6 +157,25 @@ def test_index():
     assert index(lst, 10) is None
 
 #-------------------------------------------------------------------------------
+# Mapping utilities
+
+def test_getitem():
+    from syn.base_utils import getitem
+
+    dct = dict(a = 1, b = 1.2, c = 'abc')
+    for key, val in dct.items():
+        assert getitem(dct, key) == val
+    
+    ukey = 'd'
+    uval = 5
+    assert ukey not in dct
+    
+    assert_raises(KeyError, getitem, dct, ukey)
+    assert_raises(KeyError, getitem, dct, ukey, None)
+    assert getitem(dct, ukey, uval) == uval
+    assert getitem(dct, ukey, None, True) is None
+
+#-------------------------------------------------------------------------------
 # Module utilities
 
 def test_get_mod():

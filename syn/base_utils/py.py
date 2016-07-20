@@ -115,6 +115,18 @@ def index(seq, elem):
     return None
 
 #-------------------------------------------------------------------------------
+# Mapping utilities
+
+def getitem(mapping, item, default=None, allow_none_default=False):
+    try:
+        ret = mapping[item]
+    except (KeyError, IndexError) as e:
+        if default is not None or allow_none_default:
+            return default
+        raise e
+    return ret
+
+#-------------------------------------------------------------------------------
 # Module utilities
 
 def get_mod(cls):
@@ -237,6 +249,6 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'index', 'nearest_base', 'get_typename', 'get_mod', 'compose',
            'assert_equivalent', 'assert_inequivalent', 'assert_type_equivalent',
            'assert_pickle_idempotent', 'assert_deepcopy_idempotent',
-           'rgetattr', 'callables', 'is_subclass')
+           'rgetattr', 'callables', 'is_subclass', 'getitem')
 
 #-------------------------------------------------------------------------------
