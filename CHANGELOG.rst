@@ -13,7 +13,7 @@ Changelog
 - Moved metaclass data population code to base.b.meta
 - Added rudimentary init functionality to base.a.Attr and base.a.Base
 - Added register_subclass functionality
-- Refactoring (improving) internal hook processing
+- Refactored (improved) internal hook processing
 - Added setstate_hook functionality
 - Added _aliases functionality
 - Added base.b.Base.istr()
