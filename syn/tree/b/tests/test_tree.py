@@ -1,8 +1,10 @@
+from operator import attrgetter
 from nose.tools import assert_raises
 from syn.tree.b import Tree, Node, TreeError, do_nothing
 from syn.base.b import check_idempotence
 from syn.base_utils import get_typename
-from syn.tree.b.tests.test_node import Tst2
+from syn.tree.b.tests.test_node import Tst2, tree_node_from_nested_list,\
+    tree_node_from_nested_list_types
 
 #-------------------------------------------------------------------------------
 # Tree
@@ -177,7 +179,64 @@ def tree_tst_1(treecls):
 # Tree Test 2
 
 def tree_tst_2(treecls):
-    pass
+    from syn.base_utils import seq_list_nested
+
+    b = 3
+    d = 4 # 121 nodes
+    # d = 6 # 1093 nodes
+    # d = 7 # 3280 nodes
+    # d = 8 # Almost 10,000 nodes
+
+    lst, N = seq_list_nested(b, d, top_level=False)
+
+    root = tree_node_from_nested_list(lst[0], lst[1])
+    assert isinstance(root, Node)
+
+    tree1 = treecls(root)
+    base_id = 0
+
+    check_idempotence(tree1)
+
+    assert len(tree1.nodes) == N
+    assert tree1.node_types == ['Tst1',]
+    assert sorted(tree1.id_dict.keys()) == list(range(base_id,base_id + N))
+    assert list(tree1.type_dict.keys()) == ['Tst1']
+    assert sorted(tree1.type_dict['Tst1'], key=attrgetter('_id')) == \
+        sorted(tree1.nodes, key=attrgetter('_id'))
+
+    accum = []
+    def collect(node):
+        accum.append(node.value)
+    tree1.depth_first(collect)
+    assert sum(accum) == sum(range(1, N+1))
+
+    while tree1.root._children:
+        tree1.remove_node(tree1.root._children[0])
+
+    assert tree1.nodes == [tree1.root]
+    assert tree1.root._children == []
+
+    mod = 4
+    base_id = 0
+    sproot = tree_node_from_nested_list_types(lst[0], lst[1], mod)
+    tree2 = Tree(sproot)
+    
+    assert len(tree2.nodes) == N
+    assert tree2.node_types == ['Tst1', 'Tst2']
+    assert sorted(tree2.id_dict.keys()) == list(range(base_id,base_id+N))
+    assert sorted(tree2.type_dict.keys()) == sorted(['Tst1', 'Tst2'])
+    assert sorted(tree2.type_dict['Tst1'] + 
+                  tree2.type_dict['Tst2'], key=attrgetter('_id')) == \
+        sorted(tree2.nodes, key=attrgetter('_id'))
+
+    accum = []
+    tree2.depth_first(collect)
+    assert sum(accum) == sum(range(1, N+1))
+    
+    accum = []
+    tree2.depth_first(Tst2 = collect)
+    if N % mod != 0:
+        assert sum(accum) == sum(range(mod, N, mod))
 
 #-----------------------------------------------------------
 # Tree
