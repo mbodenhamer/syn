@@ -2,7 +2,7 @@ import six
 from collections import Mapping
 from .meta import Attrs, Meta, create_hook
 from syn.base_utils import (AttrDict, ReflexiveDict, message, get_mod,
-                            get_typename, SeqDict, callables)
+                            get_typename, SeqDict, callables, istr)
 
 #-------------------------------------------------------------------------------
 # Hook Decorators
@@ -44,6 +44,7 @@ class Base(object):
                             'eq_exclude',
                             'getstate_exclude',
                             'repr_exclude',
+                            'str_exclude',
                             'update_trigger')
     _opts = AttrDict(args = (),
                      coerce_args = False,
@@ -177,6 +178,33 @@ class Base(object):
         out += str(self.to_dict('repr_exclude'))
         out += '>'
         return out
+
+    def __str__(self):
+        return self.istr()
+
+    def istr(self, pretty=False, indent=0):
+        '''Returns a string that, if evaluated, produces an equivalent object.'''
+        ret = '{}('.format(get_typename(self))
+        base = ','
+        if pretty:
+            indent += len(ret)
+            base += '\n' + ' ' * indent
+        else:
+            base += ' '
+
+        strs = []
+        attrs = self.to_dict('str_exclude')
+        for attr, val in attrs.items():
+            start = '{} = '.format(attr)
+            val_indent = indent + len(start)
+            tmp = start + istr(val, pretty, val_indent)
+            strs.append(tmp)
+
+        ret += base.join(strs) + ')'
+        return ret
+        
+    def pretty(self, indent=0):
+        return self.istr(pretty=True, indent=indent)
 
     @classmethod
     def _dict_from_mapping(cls, value):

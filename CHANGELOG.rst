@@ -10,6 +10,8 @@ Changelog
 - Added register_subclass functionality
 - Refactoring (improving) internal hook processing
 - Added setstate_hook functionality
+- Added _aliases functionality
+- Added base.b.Base.istr()
 - Added syn.tree functionality (syn.tree.b)
 
 0.0.5 (2016-07-12)

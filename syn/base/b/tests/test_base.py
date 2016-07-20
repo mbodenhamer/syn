@@ -383,6 +383,21 @@ def test_getstate_exclude():
     check_idempotence(obj)
 
 #-------------------------------------------------------------------------------
+# Test str
+
+class StrTest(Base):
+    _attrs = dict(a = Attr(list),
+                  b = Attr(float, group='str_exclude'))
+
+def test_base_str():
+    obj = StrTest(a = [1, 2], b = 1.2)
+    assert str(obj) == 'StrTest(a = [1, 2])'
+
+    pretty_str = '''StrTest(a = [1,
+             2])'''
+    assert obj.pretty() == pretty_str
+
+#-------------------------------------------------------------------------------
 # Update functionality
 
 class TestUpdate(Base):
