@@ -129,6 +129,7 @@ class Meta(type):
         self._class_data.clsname = clsname
         self._class_data.dct = dict(dct)
 
+        self._resolve_this()
         self._combine_attr_fast_update('_attrs', 
                                        self._metaclass_opts.attrs_type)
         self._combine_attr('_opts', self._metaclass_opts.opts_type)
@@ -136,7 +137,12 @@ class Meta(type):
         self._combine_attr_dct('_aliases', self._metaclass_opts.aliases_type)
 
         self._resolve_aliases()
-        self._resolve_this()
+
+    def _resolve_this(self):
+        attrs = getattr(self, '_attrs', {}).values()
+        for attr in attrs:
+            if isinstance(attr.type, This):
+                attr.type = Type.dispatch(self)
 
     def _combine_attr(self, attr, typ=None):
         values = getattr(self, attr, {})
@@ -183,11 +189,6 @@ class Meta(type):
                 if not isinstance(getattr(self, alias, None), property):
                     setattr(self, alias, alias_property(attr))
 
-    def _resolve_this(self):
-        types = self._attrs.types
-        for attr in types:
-            if isinstance(types[attr], This):
-                types[attr] = Type.dispatch(self)
 
 
 #-------------------------------------------------------------------------------

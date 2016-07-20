@@ -288,6 +288,12 @@ class ThisTest(Base):
     _attrs = dict(a = Attr(int),
                   b = Attr(This, optional=True))
 
+class This2(ThisTest):
+    pass
+
+class This3(This2):
+    _attrs = dict(b = Attr(This, optional=True))
+
 def test_this():
     assert ThisTest._attrs.types['b'].type is ThisTest
 
@@ -300,6 +306,9 @@ def test_this():
     tt.validate()
     assert tt.a == 1
     assert tt.b is tt
+
+    assert This2._attrs.types['b'].type is ThisTest
+    assert This3._attrs.types['b'].type is This3
 
 #-------------------------------------------------------------------------------
 
