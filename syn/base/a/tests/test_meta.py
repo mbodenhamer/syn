@@ -1,6 +1,6 @@
 import six
 from syn.five import STR, xrange
-from syn.type.a import AnyType, TypeType
+from syn.type.a import AnyType, TypeType, This
 from syn.base.a.meta import combine, graft, AttrDict, sorted_bases, \
     metaclasses, mro, Attr, Attrs, Meta
 from syn.base.a.base import Base
@@ -280,6 +280,26 @@ def test_aliases():
     assert not hasattr(obj, 'b')
     assert not hasattr(obj, 'c')
     assert not hasattr(obj, 'd')
+
+#-------------------------------------------------------------------------------
+# Test This
+
+class ThisTest(Base):
+    _attrs = dict(a = Attr(int),
+                  b = Attr(This, optional=True))
+
+def test_this():
+    assert ThisTest._attrs.types['b'].type is ThisTest
+
+    tt = ThisTest(a = 1)
+    tt.validate()
+    assert tt.a == 1
+    assert not hasattr(tt, 'b')
+
+    tt.b = tt
+    tt.validate()
+    assert tt.a == 1
+    assert tt.b is tt
 
 #-------------------------------------------------------------------------------
 

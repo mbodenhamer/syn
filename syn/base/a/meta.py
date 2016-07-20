@@ -1,5 +1,5 @@
 from copy import deepcopy
-from syn.type.a import Type
+from syn.type.a import Type, This
 from syn.base_utils import UpdateDict, AttrDict, SeqDict, mro, rgetattr
 
 #-------------------------------------------------------------------------------
@@ -136,6 +136,7 @@ class Meta(type):
         self._combine_attr_dct('_aliases', self._metaclass_opts.aliases_type)
 
         self._resolve_aliases()
+        self._resolve_this()
 
     def _combine_attr(self, attr, typ=None):
         values = getattr(self, attr, {})
@@ -182,10 +183,16 @@ class Meta(type):
                 if not isinstance(getattr(self, alias, None), property):
                     setattr(self, alias, alias_property(attr))
 
+    def _resolve_this(self):
+        types = self._attrs.types
+        for attr in types:
+            if isinstance(types[attr], This):
+                types[attr] = Type.dispatch(self)
+
 
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Attr', 'Attrs', 'Meta')
+__all__ = ('Attr', 'Attrs', 'Meta',)
 
 #-------------------------------------------------------------------------------

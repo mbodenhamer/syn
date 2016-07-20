@@ -150,9 +150,17 @@ class Mapping(TypeExtension):
 Dict = partial(Mapping, map_type=dict)
 
 #-------------------------------------------------------------------------------
+# This (for recursive type definitions)
+
+
+class This(TypeExtension):
+    pass
+
+
+#-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('Callable', 'Sequence', 'List', 'Tuple', 'Set', 'FrozenSet',
-           'Mapping', 'Dict', 'Hashable', 'AssocList')
+           'Mapping', 'Dict', 'Hashable', 'AssocList', 'This')
 
 #-------------------------------------------------------------------------------

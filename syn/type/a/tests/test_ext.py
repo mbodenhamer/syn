@@ -1,6 +1,6 @@
 from nose.tools import assert_raises
 from syn.type.a.ext import (Callable, List, Sequence, Mapping, Dict, Hashable,
-                            Tuple, AssocList)
+                            Tuple, AssocList, This)
 
 #-------------------------------------------------------------------------------
 # Callable
@@ -120,6 +120,13 @@ def test_mapping():
     good_dict = dict(a=1, b=2, c=3)
     assert int_dict.coerce(bad_dict) == dict(a=1, b=3, c=4)
     assert int_dict.coerce(good_dict) is good_dict
+
+#-------------------------------------------------------------------------------
+# This
+
+def test_this():
+    t = This()
+    assert_raises(NotImplementedError, t.check, 1)
 
 #-------------------------------------------------------------------------------
 

@@ -13,6 +13,7 @@ Changelog
 - Added _aliases functionality
 - Added base.b.Base.istr()
 - Added syn.tree functionality (syn.tree.b)
+- Added syn.type.This type for recursive type definitions
 
 0.0.5 (2016-07-12)
 ~~~~~~~~~~~~~~~~~~
