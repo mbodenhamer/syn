@@ -116,6 +116,8 @@ def treenode_tst_2(cls):
     assert len(gt50l) == N - 50
     assert all(n.value > 50 for n in gt50l)
 
+    assert_raises(TypeError, sproot.collect_nodes, key=1)
+
 #-------------------------------------------------------------------------------
 # Tree Node Test 3
 
@@ -182,6 +184,23 @@ def test_tree_node():
     treenode_tst_1(Node)
     treenode_tst_2(Node)
     treenode_tst_3(Node)
+
+#-------------------------------------------------------------------------------
+# must_be_root
+
+class Root1(Node):
+    _opts = dict(must_be_root = True)
+
+def test_node_must_be_root():
+    n2 = Node(_id = 2)
+    r1 = Root1(n2, _id = 1)
+
+    r1.validate()
+
+    r2 = Root1(_id = 3)
+    r1.add_child(r2)
+    assert_raises(TreeError, r2.validate)
+    assert_raises(TreeError, r1.validate)
 
 #-------------------------------------------------------------------------------
 
