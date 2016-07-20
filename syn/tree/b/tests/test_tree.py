@@ -1,6 +1,6 @@
 from operator import attrgetter
 from nose.tools import assert_raises
-from syn.tree.b import Tree, Node, TreeError, do_nothing
+from syn.tree.b import Tree, Node, TreeError, do_nothing, identity
 from syn.base.b import check_idempotence
 from syn.base_utils import get_typename
 from syn.tree.b.tests.test_node import Tst2, tree_node_from_nested_list,\
@@ -244,7 +244,7 @@ def tree_tst_2(treecls):
 def test_tree():
     # Test that inequal roots mean inequal Trees
     n1 = Node()
-    n2 = Node(_id=5)
+    n2 = Node(_id=2)
 
     t1 = Tree(n1)
     t2 = Tree(n2)
@@ -256,8 +256,18 @@ def test_tree():
     t3.validate()
     assert t3 == t1
 
-    tree_tst_1(Tree)
-    tree_tst_2(Tree)
+    # In-depth tree tests
+    tree_tst_1(Tree) # basic tree operations
+    tree_tst_2(Tree) # test with a moderate/large number of nodes
+
+    # Miscellaneous tests
+    assert identity(5) == 5
+
+    n3 = Node(_id = 3)
+    t2.add_node(n3, parent=n2)
+    n3._parent = None
+    assert_raises(TreeError, t2.remove_node, n3)
+    assert_raises(TreeError, t2.replace_node, n3, n1)
 
 #-------------------------------------------------------------------------------
 
