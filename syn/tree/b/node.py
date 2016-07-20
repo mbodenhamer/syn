@@ -29,12 +29,11 @@ class Node(ListWrapper):
                   _name = IAttr(STR, optional=True,
                                 doc='Name of the node (for display purposes)'),
                   _id = IAttr(int, optional=True, doc='Integer id of the node'),
-                  _list = IAttr(list, groups = (EQEX, REPREX),
+                  _list = IAttr(list, groups = (REPREX,),
                                 doc='Child nodes')
                  )
     _aliases = dict(_list = ['_children'])
     _opts = dict(init_validate = False,
-                 id_equality = True,
                  optional_none = True,
                  must_be_root = False)
 
@@ -81,33 +80,6 @@ class Node(ListWrapper):
 
     def get_name(self):
         return self._name
-
-    def pretty(self, indent=0, show_internal=False, params = None):
-        ret = '{}('.format(type(self).__name__)
-        indent += len(ret)
-        base = '\n' + ' ' * indent
-
-        if params is not None:
-            params['indent'] = indent
-
-        excludes = ['str_exclude']
-        if not show_internal:
-            excludes += ['internal']
-
-        attrs = self.to_dict(*excludes)
-        attrdata = ['{} = {}'.format(attr, val)
-                    for attr,val in attrs.items() if val is not None]
-        attrstr = '{' + ', '.join(attrdata) + '}'
-        ret += attrstr
- 
-        if self._children:
-            ret += base
-            chdata = [c.pretty(indent, show_internal) 
-                      for c in self._children]
-            ret += base.join(chdata)
-            
-        ret += ')'
-        return ret
 
     def collect_nodes(self, attr=None, val=None, key=None):
         nodes = []
