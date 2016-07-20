@@ -12,6 +12,14 @@ syn.base.b.base module
     :undoc-members:
     :show-inheritance:
 
+syn.base.b.examine module
+-------------------------
+
+.. automodule:: syn.base.b.examine
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 syn.base.b.meta module
 ----------------------
 
