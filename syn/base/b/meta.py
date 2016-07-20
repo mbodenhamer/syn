@@ -1,7 +1,7 @@
 from collections import defaultdict
 from syn.five import STR
 from syn.base.a import Base
-from syn.type.a import Type
+from syn.type.a import Type, This
 from syn.type.a.ext import Callable, Sequence
 from syn.base_utils import (GroupDict, AttrDict, SeqDict, ReflexiveDict, 
                             callables, rgetattr, hasmethod)
@@ -179,6 +179,6 @@ class Meta(_Meta):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Attr', 'Attrs', 'Meta', 'Data', 'create_hook')
+__all__ = ('Attr', 'Attrs', 'Meta', 'Data', 'create_hook', 'This')
 
 #-------------------------------------------------------------------------------
