@@ -5,7 +5,7 @@ from syn.base.b.tests.test_base import check_idempotence
 from syn.base_utils import assert_equivalent, assert_inequivalent
 
 #-------------------------------------------------------------------------------
-# Tree Node
+# Tree Node Test 1
 
 def treenode_tst_1(cls):
     n1 = cls(_name='n1')
@@ -34,21 +34,49 @@ def treenode_tst_1(cls):
     n1.validate()
     #assert_raises(TypeError, n1.validate)
 
-class Test1(Node):
+#-------------------------------------------------------------------------------
+# Tree Node Test 2
+
+class Tst1(Node):
     _attrs = dict(value = Attr(int))
 
 def tree_node_from_nested_list(x, lst):
-    ret = Test1(_name= 'n{}'.format(x), value = x)
+    ret = Tst1(_name= 'n{}'.format(x), value = x)
     assert len(lst) % 2 == 0 or not any(isinstance(x, list) for x in lst)
     
     if not any(isinstance(x, list) for x in lst):
         for x in lst:
-            child = Test1(_name = 'n{}'.format(x), value = x)
+            child = Tst1(_name = 'n{}'.format(x), value = x)
             ret.add_child(child)
     else:
         for i in range(0, len(lst), 2):
             x, sublst = lst[i], lst[i+1]
             child = tree_node_from_nested_list(x, sublst)
+            ret.add_child(child)
+
+    return ret
+
+class Tst2(Tst1):
+    pass
+
+def tree_node_from_nested_list_types(x, lst, mod=4):
+    if x % mod == 0:
+        ret = Tst2(_name= 'n{}'.format(x), value = x)
+    else:
+        ret = Tst1(_name= 'n{}'.format(x), value = x)
+    assert len(lst) % 2 == 0 or not any(isinstance(x, list) for x in lst)
+    
+    if not any(isinstance(x, list) for x in lst):
+        for x in lst:
+            if x % mod == 0:
+                child = Tst2(_name = 'n{}'.format(x), value = x)
+            else:
+                child = Tst1(_name = 'n{}'.format(x), value = x)
+            ret.add_child(child)
+    else:
+        for i in range(0, len(lst), 2):
+            x, sublst = lst[i], lst[i+1]
+            child = tree_node_from_nested_list_types(x, sublst, mod)
             ret.add_child(child)
 
     return ret
@@ -64,11 +92,32 @@ def treenode_tst_2(cls):
 
     root = tree_node_from_nested_list(lst[0], lst[1])
     assert isinstance(root, Node)
-    assert isinstance(root, Test1)
+    assert isinstance(root, Tst1)
 
     nodes = root.collect_nodes()
     assert len(nodes) == N
     check_idempotence(root)
+
+    mod = 4
+    sproot = tree_node_from_nested_list_types(lst[0], lst[1], mod)
+    specials = sproot.collect_by_type(Tst2)
+
+    assert len(specials) == int(math.floor(N/mod))
+
+    special = sproot.find_type(Tst2)
+    assert special.value == 16
+    assert sproot.find_type(Tst2, True) is None
+
+    n79l = sproot.collect_nodes('value', 79)
+    assert len(n79l) == 1
+    assert n79l[0].value == 79
+
+    gt50l = sproot.collect_nodes(key = lambda n: n.value > 50)
+    assert len(gt50l) == N - 50
+    assert all(n.value > 50 for n in gt50l)
+
+#-------------------------------------------------------------------------------
+# Tree Node Test 3
 
 def treenode_tst_3(cls):
     n5 = cls(_id = 5)
@@ -106,7 +155,10 @@ def treenode_tst_3(cls):
     
     assert_raises(TreeError, n1.remove_child, n5)
 
-def test_node():
+#-------------------------------------------------------------------------------
+# Tree Node
+
+def test_tree_node():
     n = Node()
     assert n._children == []
     assert n._parent is None
