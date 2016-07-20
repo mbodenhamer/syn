@@ -1,7 +1,7 @@
 from operator import attrgetter
 from nose.tools import assert_raises
 from syn.tree.b import Tree, Node, TreeError, do_nothing, identity
-from syn.base.b import check_idempotence
+from syn.base.b import check_idempotence, Attr
 from syn.base_utils import get_typename
 from syn.tree.b.tests.test_node import Tst2, tree_node_from_nested_list,\
     tree_node_from_nested_list_types
@@ -268,6 +268,22 @@ def test_tree():
     n3._parent = None
     assert_raises(TreeError, t2.remove_node, n3)
     assert_raises(TreeError, t2.replace_node, n3, n1)
+
+#-------------------------------------------------------------------------------
+# Test root node validation
+
+rnv_accum = []
+class Root1(Node):
+    def validate(self):
+        super(Root1, self).validate()
+        rnv_accum.append(1)
+
+class RNVTree(Tree):
+    _attrs = dict(root = Attr(Root1))
+
+def test_root_validation():
+    RNVTree(Root1())
+    assert sum(rnv_accum) == len(rnv_accum) == 1 # just a sanity check
 
 #-------------------------------------------------------------------------------
 
