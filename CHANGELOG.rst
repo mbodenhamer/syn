@@ -1,6 +1,11 @@
 Changelog
 ---------
 
+0.0.8 (2016-07-23)
+~~~~~~~~~~~~~~~~~~
+
+
+
 0.0.7 (2016-07-20)
 ~~~~~~~~~~~~~~~~~~
 - Moved check_idempotence to syn.base.b.examine
