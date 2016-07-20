@@ -4,15 +4,9 @@ from syn.five import STR
 from syn.base.b import Base, Attr, init_hook, coerce_hook, setstate_hook
 from syn.type.a import Type
 from syn.base_utils import assert_equivalent, assert_pickle_idempotent, \
-    assert_deepcopy_idempotent, assert_inequivalent, assert_type_equivalent, \
+    assert_inequivalent, assert_type_equivalent, \
     get_mod, SeqDict
-
-#-------------------------------------------------------------------------------
-# Utilities
-
-def check_idempotence(obj):
-    assert_deepcopy_idempotent(obj)
-    assert_pickle_idempotent(obj)
+from syn.base.b import check_idempotence
 
 #-------------------------------------------------------------------------------
 # Test basic functionality
