@@ -166,8 +166,8 @@ class Base(object):
         if type(self) is not type(other):
             return False
 
-        dct1 = self.to_dict()
-        dct2 = other.to_dict()
+        dct1 = self.to_dict('eq_exclude')
+        dct2 = other.to_dict('eq_exclude')
         return dct1 == dct2
 
     def __ne__(self, other):
@@ -206,6 +206,7 @@ class Base(object):
         return ret
         
     def pretty(self, indent=0):
+        '''Returns a pretty-printed version if istr().'''
         return self.istr(pretty=True, indent=indent)
 
     @classmethod

@@ -387,7 +387,7 @@ def test_getstate_exclude():
 
 class StrTest(Base):
     _attrs = dict(a = Attr(list),
-                  b = Attr(float, group='str_exclude'),
+                  b = Attr(float, groups=('str_exclude', 'eq_exclude')),
                   c = Attr(str))
 
 def test_base_str():
@@ -398,6 +398,7 @@ def test_base_str():
              2],
         c = 'abc')'''
     assert obj.pretty() == pretty_str
+    assert_equivalent(eval(obj.pretty()), obj)
 
 #-------------------------------------------------------------------------------
 # Update functionality
