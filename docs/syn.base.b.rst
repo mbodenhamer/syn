@@ -20,6 +20,22 @@ syn.base.b.meta module
     :undoc-members:
     :show-inheritance:
 
+syn.base.b.utils module
+-----------------------
+
+.. automodule:: syn.base.b.utils
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+syn.base.b.wrapper module
+-------------------------
+
+.. automodule:: syn.base.b.wrapper
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------
