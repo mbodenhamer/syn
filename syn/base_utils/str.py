@@ -1,9 +1,180 @@
-def istr(obj):
-    pass
+from functools import partial
+from syn.five import STR, PY2
+from .py import get_typename, hasmethod
+
+#-------------------------------------------------------------------------------
+# String-Quoting Utils
+
+def quote_string(obj):
+    ret_type = type(obj)
+    quotes = ["'", '"', "'''", '"""']
+    quotes = [ret_type(q) for q in quotes]
+
+    for quote in quotes:
+        if quote not in obj:
+            ret = quote + obj + quote
+            return ret
+
+    q = quotes[0]
+    ret = obj.replace(q, ret_type("\'"))
+    ret = q + ret + q
+    return ret
+
+#-------------------------------------------------------------------------------
+# istr
+
+#-----------------------------------------------------------
+# _istr_sequence
+
+def _istr_sequence(seq, ret, pretty, indent):
+    base = ','
+    if pretty:
+        indent += len(ret)
+        base += '\n' + ' ' * indent
+    else:
+        base += ' '
+
+    strs = [istr(val, pretty, indent) for val in seq]
+    ret += base.join(strs)
+    return ret
+
+#-----------------------------------------------------------
+# _istr_mapping
+
+def _istr_mapping(dct, ret, pretty, indent):
+    base = ','
+    if pretty:
+        indent += len(ret)
+        base += '\n' + ' ' * indent
+    else:
+        base += ' '
+
+    strs = []
+    for key, val in dct.items():
+        start = '{}: '.format(istr(key, pretty, indent))
+        val_indent = indent + len(start)
+        tmp = start + istr(val, pretty, val_indent)
+        strs.append(tmp)
+
+    ret += base.join(strs)
+    return ret
+
+#-----------------------------------------------------------
+# istr_list
+
+def _istr_list(lst, pretty, indent):
+    if type(lst) is not list:
+        ret = '{}(['.format(get_typename(lst))
+        end = '])'
+    else:
+        ret = '['
+        end = ']'
+
+    ret = _istr_sequence(lst, ret, pretty, indent) + end
+    return ret
+
+#-----------------------------------------------------------
+# istr_dict
+
+def _istr_dict(dct, pretty, indent):
+    if type(dct) is not dict:
+        ret = '{}({{'.format(get_typename(dct))
+        end = '})'
+    else:
+        ret = '{'
+        end = '}'
+
+    ret = _istr_mapping(dct, ret, pretty, indent) + end
+    return ret
+
+#-----------------------------------------------------------
+# istr_set
+
+def _istr_set(obj, pretty, indent):
+    if type(obj) is not set:
+        ret = '{}(['.format(get_typename(obj))
+        end = '])'
+    else:
+        if len(obj) == 1:
+            ret = 'set(['
+            end = '])'
+        else:
+            ret = '{'
+            end = '}'
+
+    ret = _istr_sequence(obj, ret, pretty, indent) + end
+    return ret
+
+#-----------------------------------------------------------
+# istr_tuple
+
+def _istr_tuple(tup, pretty, indent):
+    if type(tup) is not tuple:
+        ret = '{}(['.format(get_typename(tup))
+        end = '])'
+    else:
+        ret = '('
+        end = ')'
+
+    ret = _istr_sequence(tup, ret, pretty, indent) + end
+    return ret
+
+#-----------------------------------------------------------
+# istr_str
+
+def _istr_str(s, pretty, indent):
+    ret = quote_string(s)
+    if PY2:
+        if isinstance(s, unicode):
+            ret = 'u' + ret
+    return ret
+
+#-----------------------------------------------------------
+# istr_type
+
+def _istr_type(obj, pretty, indent):
+    return get_typename(obj)
+
+#-----------------------------------------------------------
+# istr_object
+
+def _istr_object(obj, pretty, indent):
+    if hasmethod(obj, 'istr'):
+        return obj.istr(pretty, indent)
+    return str(obj)
+
+#-----------------------------------------------------------
+# istr
+
+def istr(obj, pretty=False, indent=0):
+    if isinstance(obj, list):
+        return _istr_list(obj, pretty, indent)
+
+    if isinstance(obj, dict):
+        return _istr_dict(obj, pretty, indent)
+
+    if isinstance(obj, set):
+        return _istr_set(obj, pretty, indent)
+
+    if isinstance(obj, tuple):
+        return _istr_tuple(obj, pretty, indent)
+
+    if isinstance(obj, STR):
+        return _istr_str(obj, pretty, indent)
+
+    if isinstance(obj, type):
+        return _istr_type(obj, pretty, indent)
+
+    return _istr_object(obj, pretty, indent)
+        
+#-------------------------------------------------------------------------------
+# pretty
+
+pretty = partial(istr, pretty=True)
 
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('istr',)
+__all__ = ('quote_string', 'istr', 'pretty')
 
 #-------------------------------------------------------------------------------
