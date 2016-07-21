@@ -3,7 +3,7 @@ Changelog
 
 0.0.8 (2016-07-23)
 ~~~~~~~~~~~~~~~~~~
-
+- Added class member documentation generation
 
 
 0.0.7 (2016-07-20)

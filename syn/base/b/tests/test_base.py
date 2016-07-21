@@ -395,6 +395,21 @@ def test_base_str():
     assert_equivalent(eval(obj.pretty()), obj)
 
 #-------------------------------------------------------------------------------
+# Test attr_documentation_order
+
+class ADO(Base):
+    _attrs = dict(a = Attr(int),
+                  b = Attr(int),
+                  c = Attr(int))
+
+class ADO2(ADO):
+    _opts = dict(args = ('b',))
+
+def test_attr_documentation_order():
+    assert ADO._data.attr_documentation_order == ['a', 'b', 'c']
+    assert ADO2._data.attr_documentation_order == ['b', 'a', 'c']
+
+#-------------------------------------------------------------------------------
 # Update functionality
 
 class TestUpdate(Base):

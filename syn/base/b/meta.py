@@ -1,3 +1,5 @@
+import os
+from jinja2 import Template
 from collections import defaultdict
 from syn.five import STR
 from syn.base.a import Base
@@ -13,6 +15,17 @@ from syn.base.a.meta import Meta as _Meta
 from syn.base.a.meta import combine
 
 _OAttr = partial(_Attr, optional=True)
+
+#-------------------------------------------------------------------------------
+# Templates
+
+DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATES = os.path.join(DIR, 'templates')
+
+with open(os.path.join(TEMPLATES, 'class.j2'), 'r') as f:
+    CLASS_TEMPLATE = Template(f.read())
+    CLASS_TEMPLATE.environment.trim_blocks = True
+    CLASS_TEMPLATE.environment.lstrip_blocks = True
 
 #-------------------------------------------------------------------------------
 # Attr attrs
@@ -106,6 +119,7 @@ class Meta(_Meta):
         self._process_create_hooks()
 
         self._combine_groups()
+        self._generate_documentation()
 
     def _get_opt(self, name='', default=None, opts='_opts'):
         attr = '{}.{}'.format(opts, name)
@@ -118,9 +132,17 @@ class Meta(_Meta):
     def _populate_data(self):
         self._data = Data()
         opt = Meta._get_opt
-
         # Generate attr display order
         self._data.attr_display_order = sorted(self._attrs.keys())
+        
+        # Generate attr documentation order
+        tmp = []
+        attrs = list(self._data.attr_display_order)
+        for attr in opt(self, 'args', default=()):
+            tmp.append(attr)
+            attrs.remove(attr)
+        tmp += attrs
+        self._data.attr_documentation_order = tmp
 
         # Process metaclass_lookup
         sopt = partial(opt, opts='_seq_opts', default=list)
@@ -169,6 +191,13 @@ class Meta(_Meta):
         self._groups = groups
         self._groups['_all'] = self._attrs.attrs
         self._groups['_internal'] = self._attrs.internal
+
+    def _generate_documentation(self):
+        data = dict(attrs = dict(self._attrs))
+        data['doc'] = self.__doc__ if self.__doc__ is not None else ''
+        data['order'] = self._data.attr_documentation_order
+        doc = CLASS_TEMPLATE.render(data)
+        self.__doc__ = doc
 
     def groups_enum(self):
         '''Returns an enum-ish dict with the names of the groups defined for this class.
