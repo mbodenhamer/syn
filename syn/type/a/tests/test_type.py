@@ -113,6 +113,11 @@ def test_valuestype():
     t.validate(1)
     assert_raises(TypeError, t.validate, 2)
 
+    t = ValuesType({1, 1.2})
+    assert t.display() in ('[1, 1.2]', '[1.2, 1]')
+    assert t.rst() in ('[1, 1.2]', '[1.2, 1]')
+    assert t.display() == t.rst()
+
 #-------------------------------------------------------------------------------
 # MultiType
 
@@ -128,6 +133,9 @@ def test_multitype():
     assert t.coerce(1.2) == 1
     assert t.coerce(u'inf') == float(u'inf')
     assert_raises(TypeError, t.coerce, u'abc')
+
+    assert t.display() == 'int | float'
+    assert t.rst() == '*int* | *float*'
 
     t.validate(1)
     assert_raises(TypeError, t.validate, u'abc')

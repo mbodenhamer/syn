@@ -15,6 +15,7 @@ def test_callable():
     t.check(Foo())
     t.check(test_callable)
     t.check(int)
+    assert t.display() == t.rst() == '<callable>'
     t.validate(int)
     assert_raises(TypeError, t.check, 1)
     assert_raises(TypeError, t.validate, 1)
@@ -26,6 +27,7 @@ def test_hashable():
     t = Hashable()
     assert t.query(3)
     assert not t.query(dict(a = 3))
+    assert t.display() == t.rst() == '<hashable>'
 
 #-------------------------------------------------------------------------------
 # Sequence
@@ -48,6 +50,9 @@ def test_sequence():
     good_list = [1, 2, 3]
     assert int_list.coerce(bad_list) == [1, 3, 4]
     assert int_list.coerce(good_list) is good_list
+
+    assert int_list.display() == 'list(int)'
+    assert int_list.rst() == '*list*(*int*)'
 
 #-------------------------------------------------------------------------------
 # Tuple
@@ -93,6 +98,9 @@ def test_tuple():
     assert t.query((2.3, 1))
     assert not t.query(('abc', 1))
 
+    # TODO: update when implementing better display() and rst() methods
+    assert t.display() == t.rst() == '<tuple>'
+
 #-------------------------------------------------------------------------------
 # AssocList
 
@@ -120,6 +128,9 @@ def test_mapping():
     good_dict = dict(a=1, b=2, c=3)
     assert int_dict.coerce(bad_dict) == dict(a=1, b=3, c=4)
     assert int_dict.coerce(good_dict) is good_dict
+
+    assert int_dict.display() == 'dict(any => int)'
+    assert int_dict.rst() == '*dict*(any => *int*)'
 
 #-------------------------------------------------------------------------------
 # This
