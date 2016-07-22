@@ -1,6 +1,6 @@
 from syn.five import STR, strf
 from collections import Iterable
-from syn.base_utils import hasmethod, message, nearest_base
+from syn.base_utils import hasmethod, message, nearest_base, get_typename, istr
 
 #-------------------------------------------------------------------------------
 # Base Class
@@ -42,6 +42,10 @@ class Type(object):
     def coerce(self, value):
         raise NotImplementedError
 
+    def display(self):
+        '''Returns a quasi-intuitive string representation of the type.'''
+        raise NotImplementedError
+
     def query(self, value):
         try:
             self.check(value)
@@ -55,6 +59,10 @@ class Type(object):
             return True, None
         except TypeError as e:
             return False, e
+
+    def rst(self):
+        '''Returns a string representation of the type for RST documentation.'''
+        return self.display()
 
     def validate(self, value):
         raise NotImplementedError
@@ -70,6 +78,9 @@ class AnyType(Type):
 
     def coerce(self, value):
         return value
+
+    def display(self):
+        return 'any'
 
     def validate(self, value):
         pass
@@ -103,6 +114,12 @@ class TypeType(Type):
         except Exception as e:
             raise TypeError('Cannot coerce {} to type {}: {}'
                             .format(value, self.type, message(e)))
+
+    def display(self):
+        return get_typename(self.type)
+
+    def rst(self):
+        return '*' +  self.display() + '*'
 
     def validate(self, value):
         self.check(value)
@@ -139,6 +156,9 @@ class ValuesType(Type):
         except TypeError as e:
             raise TypeError('Cannot coerce {}: {}'.format(value, message(e)))
         return value
+
+    def display(self):
+        return istr(list(self.values))
 
     def validate(self, value):
         self.check(value)
@@ -188,6 +208,14 @@ class MultiType(Type):
 
         raise TypeError('Cannot coerce {} to any valid type: {}'
                         .format(value, self.typestr))
+
+    def display(self):
+        strs = [typ.display() for typ in self.types]
+        return ' | '.join(strs)
+
+    def rst(self):
+        strs = [typ.rst() for typ in self.types]
+        return ' | '.join(strs)
 
     def validate(self, value):
         typ = self.check(value)

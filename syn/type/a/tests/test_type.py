@@ -11,6 +11,8 @@ def test_type():
 
     assert_raises(NotImplementedError, t.check, 1)
     assert_raises(NotImplementedError, t.coerce, 1)
+    assert_raises(NotImplementedError, t.display)
+    assert_raises(NotImplementedError, t.rst)
     assert_raises(NotImplementedError, t.validate, 1)
 
 #-------------------------------------------------------------------------------
@@ -21,6 +23,7 @@ def test_anytype():
 
     t.check(1)
     assert t.coerce(1) == 1
+    assert t.display() == t.rst() == 'any'
     t.validate(1)
 
 #-------------------------------------------------------------------------------
@@ -56,6 +59,8 @@ def test_typetype():
     assert isinstance(e, TypeError)
     assert t.coerce(1.2) == 1
     assert_raises(TypeError, t.coerce, 'abc')
+    assert t.display() == 'int'
+    assert t.rst() == '*int*'
     t.validate(1)
     assert_raises(TypeError, t.validate, 1.2)
 
@@ -72,6 +77,8 @@ def test_typetype():
     assert f1.value == 1
     assert_raises(TypeError, f.validate, 6)
     assert_raises(AssertionError, f.validate, Foo(5))
+    assert f.display() == 'Foo'
+    assert f.rst() == '*Foo*'
     f.validate(Foo(6))
 
 

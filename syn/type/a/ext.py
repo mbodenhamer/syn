@@ -1,7 +1,7 @@
 from functools import partial
 from collections import Sequence as _Sequence
 from collections import Mapping as _Mapping
-from .type import TypeExtension, Type
+from .type import TypeExtension, Type, AnyType
 from syn.base_utils import is_hashable
 
 #-------------------------------------------------------------------------------
@@ -16,6 +16,9 @@ class Callable(TypeExtension):
         if not callable(value):
             raise TypeError('Value is not callable: {}'.format(value))
 
+    def display(self):
+        return '<callable>'
+
 
 #-------------------------------------------------------------------------------
 # Hashable
@@ -28,6 +31,9 @@ class Hashable(TypeExtension):
     def check(self, value):
         if not is_hashable(value):
             raise TypeError('Value is not hashable: {}'.format(value))
+
+    def display(self):
+        return '<hashable>'
 
 
 #-------------------------------------------------------------------------------
@@ -54,6 +60,16 @@ class Sequence(TypeExtension):
             newvals = [self.item_type.coerce(value) for value in values]
             return self.seq_type.coerce(newvals)
         return values
+        
+    def display(self):
+        seq = self.seq_type.display()
+        item = self.item_type.display()
+        return '{}({})'.format(seq, item)
+
+    def rst(self):
+        seq = self.seq_type.rst()
+        item = self.item_type.rst()
+        return '{}({})'.format(seq, item)
 
 
 #-------------------------------------------------------------------------------
@@ -108,6 +124,10 @@ class Tuple(TypeExtension):
             values = [typ.coerce(values[k]) for k, typ in enumerate(self.types)]
         return tuple(values)
 
+    def display(self):
+        # TODO: integrate type information
+        return '<tuple>'
+
 
 #-------------------------------------------------------------------------------
 # Sequence types
@@ -142,6 +162,16 @@ class Mapping(TypeExtension):
                       dct.items()}
             return self.map_type.coerce(newdct)
         return dct
+
+    def display(self):
+        map_ = self.map_type.display()
+        value = self.value_type.display()
+        return '{}({} => {})'.format(map_, AnyType().display(), value)
+        
+    def rst(self):
+        map_ = self.map_type.rst()
+        value = self.value_type.rst()
+        return '{}({} => {})'.format(map_, AnyType().rst(), value)
 
 
 #-------------------------------------------------------------------------------
