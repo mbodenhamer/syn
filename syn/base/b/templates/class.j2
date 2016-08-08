@@ -1,0 +1,16 @@
+{{ signature }}
+{% if doc %}
+{{ doc }}
+{% endif %}
+{% if attrspec %}
+**Positional Arguments**:
+{{ attrspec }}
+{% endif %}
+{% if kwattrspec %}
+**Keyword-Only Arguments**:
+{{ kwattrspec }}
+{% endif %}
+{% if optspec %}
+**Class Options**:
+{{ optspec }}
+{% endif %}

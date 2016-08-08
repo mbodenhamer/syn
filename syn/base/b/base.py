@@ -42,11 +42,13 @@ class Base(object):
     _groups = ReflexiveDict('_all',
                             '_internal',
                             'eq_exclude',
+                            'hash_exclude',
                             'getstate_exclude',
                             'repr_exclude',
                             'str_exclude',
                             'update_trigger')
     _opts = AttrDict(args = (),
+                     autodoc = True,
                      coerce_args = False,
                      id_equality = False,
                      init_validate = False,
@@ -277,6 +279,27 @@ class Base(object):
 
         return {attr: getattr(self, attr) for attr in self._attrs.types
                 if attr not in exclude and hasattr(self, attr)}
+
+    def to_tuple(self, *groups, **kwargs):
+        '''Convert the object into a tuple of its declared attribute values.
+
+        May exclude certain attribute groups by listing them in *groups.
+        
+        May include certain attribute groups (to the exclusion of all others) by listing them in *groups and supplying the include=True keyword argument.
+
+        If hash=True is included as a keyword argument, then the class name will be prepended to the beginning of the tuple.
+        '''
+        hash_mode = kwargs.get('hash', False)
+        if hash_mode:
+            if 'hash_exclude' not in groups \
+               and not kwargs.get('include', False):
+                groups += ('hash_exclude',)
+
+        dct = self.to_dict(*groups, **kwargs)
+        values = [dct[attr] for attr in sorted(dct.keys())]
+        if hash_mode:
+            values.insert(0, get_typename(self))
+        return tuple(values)
 
     def validate(self):
         '''Raise an exception if the object is missing required attributes, or if the attributes are of an invalid type.

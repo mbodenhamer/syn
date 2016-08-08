@@ -6,7 +6,7 @@ from syn.base.a import Base
 from syn.type.a import Type, This
 from syn.type.a.ext import Callable, Sequence
 from syn.base_utils import (GroupDict, AttrDict, SeqDict, ReflexiveDict, 
-                            callables, rgetattr, hasmethod)
+                            callables, rgetattr, hasmethod, get_typename)
 from functools import partial
 
 from syn.base.a.meta import Attr as _Attr
@@ -142,6 +142,7 @@ class Meta(_Meta):
             tmp.append(attr)
             attrs.remove(attr)
         tmp += attrs
+        self._data.kw_attrs = attrs
         self._data.attr_documentation_order = tmp
 
         # Process metaclass_lookup
@@ -192,12 +193,66 @@ class Meta(_Meta):
         self._groups['_all'] = self._attrs.attrs
         self._groups['_internal'] = self._attrs.internal
 
+    def _generate_documentation_signature(self, attrs):
+        sig = get_typename(self) + '('
+
+        strs = []
+        for attr in attrs:
+            obj = self._attrs[attr]
+            s = attr
+            if obj.default:
+                s += '=' + str(obj.default)
+            if obj.optional:
+                s = '[' + s + ']'
+            strs.append(s)
+        strs.append('\*\*kwargs')
+
+        sig += ', '.join(strs)
+        sig += ')'
+        return sig
+
+    def _generate_documentation_attrspec(self, attrs):
+        specs = []
+        for attr in attrs:
+            obj = self._attrs[attr]
+            spec = ':param {}: '.format(attr)
+            if obj.optional:
+                spec += '[**Optional**] '
+            spec += obj.doc
+            if obj.default is not None:
+                spec += ' (*default* = {})'.format(obj.default)
+            
+            spec += '\n'
+            spec += ':type {}: {}'.format(attr, obj.type.rst())    
+            
+            specs.append(spec)
+
+        return '\n'.join(specs)
+
+    def _generate_documentation_optspec(self):
+        spec = ''
+        return spec
+
     def _generate_documentation(self):
-        data = dict(attrs = dict(self._attrs))
-        data['doc'] = self.__doc__ if self.__doc__ is not None else ''
-        data['order'] = self._data.attr_documentation_order
+        if not self._get_opt('autodoc', default=True):
+            return
+
+        if rgetattr(self, '__init__.__func__', False) is False:
+            return
+        args = self._get_opt('args', default=())
+        kw_attrs = self._data.kw_attrs
+
+        data = {}
+        data['signature'] = self._generate_documentation_signature(args)
+        # data['doc'] = self.__doc__
+        data['doc'] = self.__init__.__func__.__doc__
+        data['attrspec'] = self._generate_documentation_attrspec(args)
+        data['kwattrspec'] = self._generate_documentation_attrspec(kw_attrs)
+        data['optspec'] = self._generate_documentation_optspec()
+
         doc = CLASS_TEMPLATE.render(data)
-        self.__doc__ = doc
+        # self.__doc__ = doc
+        self.__init__.__func__.__doc__ = doc
 
     def groups_enum(self):
         '''Returns an enum-ish dict with the names of the groups defined for this class.

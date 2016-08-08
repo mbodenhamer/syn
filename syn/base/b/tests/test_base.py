@@ -30,13 +30,15 @@ def test_base():
     assert obj.c == u'abc'
     
     assert obj.to_dict() == kwargs
+    assert obj.to_tuple() == (5, 3.4, u'abc')
+    assert obj.to_tuple(hash=True) == ('A', 5, 3.4, u'abc')
 
     assert obj != 5
     assert_equivalent(obj, A(**kwargs))
     assert_inequivalent(obj, A(a=6, b=3.4, c=u'abc'))
 
     assert A(a=5, b=3.4).to_dict() == dict(a=5, b=3.4)
-
+    
     check_idempotence(obj)
 
     assert_raises(TypeError, A, a=5.1, b=3.4)
@@ -408,6 +410,15 @@ class ADO2(ADO):
 def test_attr_documentation_order():
     assert ADO._data.attr_documentation_order == ['a', 'b', 'c']
     assert ADO2._data.attr_documentation_order == ['b', 'a', 'c']
+
+    assert ADO._data.kw_attrs == ['a', 'b', 'c']
+    assert ADO2._data.kw_attrs == ['a', 'c']
+
+#-------------------------------------------------------------------------------
+# Test class auto-documentation
+
+def test_class_auto_documentation():
+    pass
 
 #-------------------------------------------------------------------------------
 # Update functionality
