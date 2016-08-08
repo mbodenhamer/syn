@@ -69,7 +69,7 @@ class Sequence(TypeExtension):
     def rst(self):
         seq = self.seq_type.rst()
         item = self.item_type.rst()
-        return '{}({})'.format(seq, item)
+        return '{} ({})'.format(seq, item)
 
 
 #-------------------------------------------------------------------------------
@@ -171,7 +171,7 @@ class Mapping(TypeExtension):
     def rst(self):
         map_ = self.map_type.rst()
         value = self.value_type.rst()
-        return '{}({} => {})'.format(map_, AnyType().rst(), value)
+        return '{} ({} => {})'.format(map_, AnyType().rst(), value)
 
 
 #-------------------------------------------------------------------------------

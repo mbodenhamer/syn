@@ -52,7 +52,7 @@ def test_sequence():
     assert int_list.coerce(good_list) is good_list
 
     assert int_list.display() == 'list(int)'
-    assert int_list.rst() == '*list*(*int*)'
+    assert int_list.rst() == '*list* (*int*)'
 
 #-------------------------------------------------------------------------------
 # Tuple
@@ -130,7 +130,7 @@ def test_mapping():
     assert int_dict.coerce(good_dict) is good_dict
 
     assert int_dict.display() == 'dict(any => int)'
-    assert int_dict.rst() == '*dict*(any => *int*)'
+    assert int_dict.rst() == '*dict* (any => *int*)'
 
 #-------------------------------------------------------------------------------
 # This
