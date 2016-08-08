@@ -1,8 +1,21 @@
+import os
 import six
+from jinja2 import Template
 from collections import Mapping
 from .meta import Attrs, Meta, create_hook
-from syn.base_utils import (AttrDict, ReflexiveDict, message, get_mod,
-                            get_typename, SeqDict, callables, istr)
+from syn.base_utils import AttrDict, ReflexiveDict, message, get_mod, \
+    get_typename, SeqDict, callables, istr, rgetattr
+
+#-------------------------------------------------------------------------------
+# Templates
+
+DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATES = os.path.join(DIR, 'templates')
+
+with open(os.path.join(TEMPLATES, 'class.j2'), 'r') as f:
+    CLASS_TEMPLATE = Template(f.read())
+    CLASS_TEMPLATE.environment.trim_blocks = True
+    CLASS_TEMPLATE.environment.lstrip_blocks = True
 
 #-------------------------------------------------------------------------------
 # Hook Decorators
@@ -126,6 +139,72 @@ class Base(object):
 
         if self._opts.init_validate:
             self.validate()
+
+    @classmethod
+    def _generate_documentation_signature(cls, attrs):
+        sig = get_typename(cls) + '('
+
+        strs = []
+        for attr in attrs:
+            obj = cls._attrs[attr]
+            s = attr
+            if obj.default:
+                s += '=' + str(obj.default)
+            if obj.optional:
+                s = '[' + s + ']'
+            strs.append(s)
+        strs.append('\*\*kwargs')
+
+        sig += ', '.join(strs)
+        sig += ')'
+        return sig
+
+    @classmethod
+    def _generate_documentation_attrspec(cls, attrs):
+        specs = []
+        for attr in attrs:
+            obj = cls._attrs[attr]
+            spec = ':param {}: '.format(attr)
+            if obj.optional:
+                spec += '[**Optional**] '
+            spec += obj.doc
+            if obj.default is not None:
+                spec += ' (*default* = {})'.format(obj.default)
+            
+            spec += '\n'
+            spec += ':type {}: {}'.format(attr, obj.type.rst())    
+            
+            specs.append(spec)
+
+        return '\n'.join(specs)
+
+    @classmethod
+    def _generate_documentation_optspec(cls):
+        spec = ''
+        return spec
+
+    @classmethod
+    @create_hook
+    def _generate_documentation(cls):
+        if not cls._get_opt('autodoc', default=True):
+            return
+
+        if rgetattr(cls, '__init__.__func__', False) is False:
+            return
+        args = cls._get_opt('args', default=())
+        kw_attrs = cls._data.kw_attrs
+
+        data = {}
+        data['signature'] = cls._generate_documentation_signature(args)
+        data['doc'] = cls.__doc__
+        if cls.__init__.__func__.__doc__:
+            data['doc'] += '\n\n' + cls.__init__.__func__.__doc__
+        data['attrspec'] = cls._generate_documentation_attrspec(args)
+        data['kwattrspec'] = cls._generate_documentation_attrspec(kw_attrs)
+        data['optspec'] = cls._generate_documentation_optspec()
+
+        doc = CLASS_TEMPLATE.render(data)
+        cls.__doc__ = doc
 
     @classmethod
     def _find_hooks(cls, hook_attr, hook_type):
