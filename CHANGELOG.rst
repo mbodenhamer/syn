@@ -3,7 +3,7 @@ Changelog
 
 0.0.8 (2016-07-23)
 ~~~~~~~~~~~~~~~~~~
-- Added class member documentation generation
+- Added class member/invocation auto-documentation
 - Added diplay() and rst() methods to Type classes (syn.type.a)
 - Added make_hashable functionality to Base
 
