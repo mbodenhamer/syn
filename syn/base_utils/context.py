@@ -19,10 +19,11 @@ def assign(A, attr, B):
 
 @contextmanager
 def chdir(path):
-    pwd = os.getcwd()
-    os.chdir(path)
-    yield
-    os.chdir(pwd)
+    with threading.Lock():
+        pwd = os.getcwd()
+        os.chdir(path)
+        yield
+        os.chdir(pwd)
 
 #-------------------------------------------------------------------------------
 # __all__
