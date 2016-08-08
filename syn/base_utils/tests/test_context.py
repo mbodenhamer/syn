@@ -1,3 +1,7 @@
+import os
+
+DIR = os.path.dirname(os.path.abspath(__file__))
+FOO = os.path.join(DIR, 'foo')
 
 #-------------------------------------------------------------------------------
 # Temporary assignment
@@ -12,6 +16,20 @@ def test_assign():
     with assign(Foo, 'lst', [3, 4, 5]):
         assert Foo.lst == [3, 4, 5]
     assert Foo.lst == [1, 2, 3]
+
+#-------------------------------------------------------------------------------
+# cd
+
+def test_chdir():
+    from syn.base_utils import chdir
+
+    pwd = os.getcwd()
+    assert pwd != FOO
+    with chdir(FOO):
+        assert os.getcwd() == FOO != pwd
+        with open('foo', 'rt') as f:
+            assert f.read() == 'foo'
+    assert pwd == os.getcwd() != FOO
 
 #-------------------------------------------------------------------------------
 

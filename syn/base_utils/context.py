@@ -1,3 +1,4 @@
+import os
 import threading
 from contextlib import contextmanager
 
@@ -14,8 +15,18 @@ def assign(A, attr, B):
         setattr(A, attr, tmp)
 
 #-------------------------------------------------------------------------------
+# cd
+
+@contextmanager
+def chdir(path):
+    pwd = os.getcwd()
+    os.chdir(path)
+    yield
+    os.chdir(pwd)
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('assign',)
+__all__ = ('assign', 'chdir')
 
 #-------------------------------------------------------------------------------
