@@ -104,9 +104,8 @@ class Meta(_Meta):
 
         self._set_hash()
         self._populate_data()
-        self._process_create_hooks()
-
         self._combine_groups()
+        self._process_create_hooks()
 
     def _get_opt(self, name='', default=None, opts='_opts'):
         attr = '{}.{}'.format(opts, name)
