@@ -105,6 +105,26 @@ def test_get_typename():
     assert get_typename(Foo) == 'Foo'
     assert get_typename(Foo()) == 'Foo'
 
+def test_same_lineage():
+    from syn.base_utils import same_lineage
+
+    class A(object): pass
+    class B(object): pass
+    class A1(A): pass
+    class A2(A): pass
+    class A11(A1): pass
+
+    assert not same_lineage(A, B)
+    assert not same_lineage(A(), B())
+    assert_raises(TypeError, same_lineage, A, B())
+    assert_raises(TypeError, same_lineage, A(), B)
+
+    assert same_lineage(A, A)
+    assert same_lineage(A, A1)
+    assert same_lineage(A1, A11)
+
+    assert not same_lineage(A11, A2)
+
 #-------------------------------------------------------------------------------
 # Object utilities
 

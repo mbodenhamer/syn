@@ -72,6 +72,17 @@ def get_typename(x):
         ret = x.__class__.__name__
     return ret
 
+def same_lineage(o1, o2):
+    '''Returns True iff o1 and o2 are of the same class lineage.'''
+    def comp(x, y):
+        return issubclass(x, y) or issubclass(y, x)
+
+    if isinstance(o1, type) and isinstance(o2, type):
+        return comp(o1, o2)
+    elif not (isinstance(o1, type) or isinstance(o2, type)):
+        return comp(type(o1), type(o2))
+    raise TypeError("Cannot compare type and object")
+
 #-------------------------------------------------------------------------------
 # Object utilities
 
@@ -249,6 +260,6 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'index', 'nearest_base', 'get_typename', 'get_mod', 'compose',
            'assert_equivalent', 'assert_inequivalent', 'assert_type_equivalent',
            'assert_pickle_idempotent', 'assert_deepcopy_idempotent',
-           'rgetattr', 'callables', 'is_subclass', 'getitem')
+           'rgetattr', 'callables', 'is_subclass', 'getitem', 'same_lineage')
 
 #-------------------------------------------------------------------------------
