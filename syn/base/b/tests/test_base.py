@@ -433,11 +433,15 @@ class ADOC(Base):
                   b = Attr(float, optional=True))
     _opts = dict(args = ('a', 'b'))
     
+    def __init__(self, *args, **kwargs):
+        '''Some more documentation.'''
+        super(ADOC, self).__init__(*args, **kwargs)
+
 class ADOC2(Base):
     _opts = dict(autodoc = False)
 
 def test_class_auto_documentation():
-    pass
+    ADOC(1, 1.2)
 
 #-------------------------------------------------------------------------------
 # Update functionality

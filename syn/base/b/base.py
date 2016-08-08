@@ -196,7 +196,7 @@ class Base(object):
 
         data = {}
         data['signature'] = cls._generate_documentation_signature(args)
-        data['doc'] = cls.__doc__
+        data['doc'] = cls.__doc__ if cls.__doc__ else ''
         if cls.__init__.__func__.__doc__:
             data['doc'] += '\n\n' + cls.__init__.__func__.__doc__
         data['attrspec'] = cls._generate_documentation_attrspec(args)
