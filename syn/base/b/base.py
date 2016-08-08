@@ -1,6 +1,7 @@
 import os
 import six
 from jinja2 import Template
+from operator import itemgetter
 from collections import Mapping
 from .meta import Attrs, Meta, create_hook
 from syn.base_utils import AttrDict, ReflexiveDict, message, get_mod, \
@@ -164,24 +165,45 @@ class Base(object):
         specs = []
         for attr in attrs:
             obj = cls._attrs[attr]
-            spec = ':param {}: '.format(attr)
+            spec = attr
             if obj.optional:
-                spec += '[**Optional**] '
-            spec += obj.doc
+                spec += ' [**Optional**]'
             if obj.default is not None:
                 spec += ' (*default* = {})'.format(obj.default)
             
-            spec += '\n'
-            spec += ':type {}: {}'.format(attr, obj.type.rst())    
-            
+            spec += ': {}'.format(obj.type.rst())    
+            spec += '\n    '
+            spec += obj.doc
             specs.append(spec)
 
         return '\n'.join(specs)
 
     @classmethod
     def _generate_documentation_optspec(cls):
-        spec = ''
-        return spec
+        specs = []
+        for opt, val in sorted(cls._opts.items(), key=itemgetter(0)):
+            specs.append('* {}: {}'.format(opt, val))
+        for opt, val in sorted(cls._seq_opts.items(), key=itemgetter(0)):
+            specs.append('* {}: {}'.format(opt, val))
+
+        return '\n'.join(specs)
+
+    @classmethod
+    def _generate_documentation_aliasspec(cls):
+        specs = []
+        for attr, als in cls._aliases.items():
+            specs.append('* {}: {}'.format(attr, ', '.join(als)))
+
+        return '\n'.join(specs)
+
+    @classmethod
+    def _generate_documentation_groupspec(cls):
+        specs = []
+        for attr, group in cls._groups.items():
+            if group:
+                specs.append('* {}: {}'.format(attr, ', '.join(sorted(group))))
+
+        return '\n'.join(specs)
 
     @classmethod
     @create_hook
@@ -202,6 +224,8 @@ class Base(object):
         data['attrspec'] = cls._generate_documentation_attrspec(args)
         data['kwattrspec'] = cls._generate_documentation_attrspec(kw_attrs)
         data['optspec'] = cls._generate_documentation_optspec()
+        data['aliasspec'] = cls._generate_documentation_aliasspec()
+        data['groupspec'] = cls._generate_documentation_groupspec()
 
         doc = CLASS_TEMPLATE.render(data)
         cls.__doc__ = doc

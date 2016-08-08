@@ -4,13 +4,26 @@
 {% endif %}
 {% if attrspec %}
 **Positional Arguments**:
+
 {{ attrspec }}
 {% endif %}
 {% if kwattrspec %}
 **Keyword-Only Arguments**:
+
 {{ kwattrspec }}
 {% endif %}
 {% if optspec %}
 **Class Options**:
+
 {{ optspec }}
+{% endif %}
+{% if aliasspec %}
+**Aliases**:
+
+{{ aliasspec }}
+{% endif %}
+{% if groupspec %}
+**Groups**:
+
+{{ groupspec }}
 {% endif %}
