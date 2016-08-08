@@ -5,7 +5,7 @@ from syn.base.b import Base, Attr, init_hook, coerce_hook, setstate_hook
 from syn.type.a import Type
 from syn.base_utils import assert_equivalent, assert_pickle_idempotent, \
     assert_inequivalent, assert_type_equivalent, \
-    get_mod, SeqDict
+    get_mod, SeqDict, is_hashable
 from syn.base.b import check_idempotence
 
 #-------------------------------------------------------------------------------
@@ -21,6 +21,10 @@ class A2(A):
     _opts = dict(id_equality = True)
     _attrs = dict(b = Attr(float, group=A.groups_enum().getstate_exclude))
 
+class A3(A):
+    _opts = dict(make_hashable = True)
+    _attrs = dict(b = Attr(float, group=A.groups_enum().hash_exclude))
+
 def test_base():
     kwargs = dict(a=5, b=3.4, c=u'abc')
     obj = A(**kwargs)
@@ -32,6 +36,7 @@ def test_base():
     assert obj.to_dict() == kwargs
     assert obj.to_tuple() == (5, 3.4, u'abc')
     assert obj.to_tuple(hash=True) == ('A', 5, 3.4, u'abc')
+    assert not is_hashable(obj)
 
     assert obj != 5
     assert_equivalent(obj, A(**kwargs))
@@ -51,6 +56,11 @@ def test_base():
     obj2 = A2(**kwargs)
     assert_type_equivalent(obj2.to_dict(), dict(a=5, b=3.4, c=u'abc'))
     assert obj2.to_dict('getstate_exclude', include=True) == dict(b=3.4)
+
+    obj3 = A3(**kwargs)
+    assert obj3.to_tuple() == (5, 3.4, u'abc')
+    assert obj3.to_tuple(hash=True) == ('A3', 5, u'abc')
+    assert is_hashable(obj3)
 
 #-------------------------------------------------------------------------------
 # Test Positional Args
