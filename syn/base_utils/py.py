@@ -73,7 +73,7 @@ def get_typename(x):
     return ret
 
 def same_lineage(o1, o2):
-    '''Returns True iff o1 and o2 are of the same class lineage.'''
+    '''Returns True iff o1 and o2 are of the same class lineage (that is, a direct line of descent, without branches).'''
     def comp(x, y):
         return issubclass(x, y) or issubclass(y, x)
 

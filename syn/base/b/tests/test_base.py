@@ -427,6 +427,15 @@ def test_attr_documentation_order():
 #-------------------------------------------------------------------------------
 # Test class auto-documentation
 
+
+class ADOC(Base):
+    _attrs = dict(a = Attr(int),
+                  b = Attr(float, optional=True))
+    _opts = dict(args = ('a', 'b'))
+    
+class ADOC2(Base):
+    _opts = dict(autodoc = False)
+
 def test_class_auto_documentation():
     pass
 
