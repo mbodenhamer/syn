@@ -154,7 +154,7 @@ class Base(object):
             if obj.optional:
                 s = '[' + s + ']'
             strs.append(s)
-        strs.append('\*\*kwargs')
+        strs.append('**kwargs')
 
         sig += ', '.join(strs)
         sig += ')'
@@ -171,9 +171,10 @@ class Base(object):
             if obj.default is not None:
                 spec += ' (*default* = {})'.format(obj.default)
             
-            spec += ': {}'.format(obj.type.rst())    
-            spec += '\n    '
-            spec += obj.doc
+            spec += ': {}'.format(obj.type.rst())
+            if obj.doc:
+                spec += '\n    '
+                spec += obj.doc
             specs.append(spec)
 
         return '\n'.join(specs)

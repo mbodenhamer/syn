@@ -429,9 +429,11 @@ def test_attr_documentation_order():
 
 
 class ADOC(Base):
-    _attrs = dict(a = Attr(int),
-                  b = Attr(float, optional=True))
-    _opts = dict(args = ('a', 'b'))
+    '''Some documentation.'''
+    _attrs = dict(a = Attr(int, doc='attr a'),
+                  b = Attr(float, optional=True),
+                  c = Attr(int, 2, optional=True, doc='attr c'))
+    _opts = dict(args = ('a', 'b', 'c'))
     
     def __init__(self, *args, **kwargs):
         '''Some more documentation.'''
@@ -441,6 +443,16 @@ class ADOC2(Base):
     _opts = dict(autodoc = False)
 
 def test_class_auto_documentation():
+    assert ADOC._generate_documentation_signature(ADOC._opts.args) == \
+        'ADOC(a, [b], [c=2], **kwargs)'
+
+    assert ADOC._generate_documentation_attrspec(ADOC._opts.args) == \
+        ('a: *int*\n'
+         '    attr a\n'
+         'b [**Optional**]: *float*\n'
+         'c [**Optional**] (*default* = 2): *int*\n'
+         '    attr c')
+
     ADOC(1, 1.2)
 
 #-------------------------------------------------------------------------------
