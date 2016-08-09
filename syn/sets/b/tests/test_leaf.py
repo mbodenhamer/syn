@@ -1,5 +1,6 @@
 from nose.tools import assert_raises
-from syn.sets.b import SetWrapper, NULL, TypeWrapper, ClassWrapper
+from syn.sets.b import SetWrapper, NULL, TypeWrapper, ClassWrapper, Empty
+from syn.base_utils import rand_int
 
 SAMPLES = 10
 
@@ -89,6 +90,28 @@ def test_classwrapper():
     assert len(cwlist) == 2
     assert all(issubclass(x, Foo) for x in cwlist)
     assert all(issubclass(x, Foo) for x in cw.to_set())
+
+#-------------------------------------------------------------------------------
+# Empty
+
+def test_empty():
+    e = Empty()
+    s = SetWrapper([1, 2, 3])
+    
+    assert e.issubset(s)
+    assert e.issubset(e)
+    
+    assert not e.issuperset(s)
+    assert e.issuperset(e)
+    
+    assert not e.hasmember(rand_int())
+    
+    assert not e.overlaps(s)
+    assert not e.overlaps(e)
+
+    assert list(e.enumerate()) == []
+    assert e.to_set() == set()
+
 
 #-------------------------------------------------------------------------------
 

@@ -136,7 +136,6 @@ def test_intrange():
 # StrRange
 
 def test_strrange():
-    #import ipdb; ipdb.set_trace()
     s = StrRange('a', u'c')
     assert s.lb == 97
     assert s.ub == 99
