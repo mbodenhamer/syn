@@ -1,6 +1,10 @@
 Changelog
 ---------
 
+0.0.9 (2016-08-09)
+~~~~~~~~~~~~~~~~~~
+- Fixed setup.py for wheel
+
 0.0.8 (2016-08-09)
 ~~~~~~~~~~~~~~~~~~
 - Added display() and rst() methods to Type classes (syn.type.a)
