@@ -1,3 +1,5 @@
+from functools import reduce
+
 #-------------------------------------------------------------------------------
 # defer_reduce
 
@@ -6,7 +8,7 @@ def test_defer_reduce():
     from operator import add
 
     true = lambda *args: True
-    xs = range(10)
+    xs = list(range(10))
     assert defer_reduce(add, xs, true) == (reduce(add, xs), [])
 
     silly = lambda item, accum: item > 5 or accum > 10

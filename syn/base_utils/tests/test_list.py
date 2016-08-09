@@ -66,12 +66,12 @@ def test_listview():
 def test_indices_removed():
     from syn.base_utils import indices_removed
     
-    lst = range(10)
+    lst = list(range(10))
     assert indices_removed(lst, (0, 5, 9)) == [1, 2, 3, 4, 6, 7, 8]
     assert indices_removed(tuple(lst), (0, 5, 9)) == (1, 2, 3, 4, 6, 7, 8)
     assert indices_removed(lst, lst) == []
 
-    assert lst == range(10)
+    assert lst == list(range(10))
 
 #-------------------------------------------------------------------------------
 
