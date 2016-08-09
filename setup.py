@@ -19,6 +19,7 @@ setup(
     long_description = read('README.rst'),
     url = 'https://github.com/mbodenhamer/syn',
     packages = find_packages(),
+    include_package_data = True,
     install_requires = requirements('requirements.in'),
     namespace_packages = ['syn'],
     license = 'MIT',
