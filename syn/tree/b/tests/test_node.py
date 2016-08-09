@@ -203,37 +203,6 @@ def test_node_must_be_root():
     assert_raises(TreeError, r1.validate)
 
 #-------------------------------------------------------------------------------
-# convertmap
-
-class CM(Node):
-    _opts = dict(init_validate = True)
-
-class CM1(CM):
-    _attrs = dict(a = Attr(None))
-    _opts = dict(args = ('a',),
-                 convertmap = {},
-                 max_len = 0)
-
-class CM2(CM):
-    _attrs = dict(b = Attr(float))
-    _opts = dict(args = ('b',),
-                 convertmap = {},
-                 max_len = 0)
-
-CM._opts.convertmap = {None: CM1,
-                       int: CM1,
-                       float: CM2}
-
-def test_node_convertmap():
-    assert_type_equivalent(CM(1)[0], CM1(1))
-    assert_type_equivalent(CM(1.2)[0], CM2(1.2))
-    assert_type_equivalent(CM('abc')[0], CM1('abc'))
-
-    assert CM(CM1(1), CM2(1.2), 'abc') == CM(CM1(1), CM2(1.2), CM1('abc'))
-    assert CM(CM1(1), CM2(1.2), 'abc').node_count() == 4 
-    assert CM(CM1(1), CM2(1.2), CM1('abc')).node_count() == 4
-
-#-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
     from syn.base_utils import run_all_tests

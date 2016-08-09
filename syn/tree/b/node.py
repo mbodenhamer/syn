@@ -36,35 +36,7 @@ class Node(ListWrapper):
     _aliases = dict(_list = ['_children'])
     _opts = dict(init_validate = False,
                  optional_none = True,
-                 must_be_root = False,
-                 convertmap = {})
-
-    def __init__(self, *args, **kwargs):
-        cls = type(self)
-        if cls._opts.convertmap:
-            lst = []
-            for arg in args:
-                if isinstance(arg, cls):
-                    lst.append(arg)
-                else:
-                    lst.append(cls._convert_arg(arg))
-        else:
-            lst = args
-        super(Node, self).__init__(*lst, **kwargs)
-
-    @classmethod
-    def _convert_arg(cls, arg):
-        convertmap = cls._opts.convertmap
-        objmap = dict(convertmap)
-        if None in objmap:
-            del objmap[None]
-
-        for key, typ in objmap.items():
-            if isinstance(key, type):
-                if isinstance(arg, key):
-                    return typ(arg)
-
-        return convertmap.get(None, lambda x: x)(arg)
+                 must_be_root = False)
 
     def __nonzero__(self):
         return True
