@@ -12,6 +12,30 @@ syn.sets.b.base module
     :undoc-members:
     :show-inheritance:
 
+syn.sets.b.leaf module
+----------------------
+
+.. automodule:: syn.sets.b.leaf
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+syn.sets.b.operators module
+---------------------------
+
+.. automodule:: syn.sets.b.operators
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+syn.sets.b.range module
+-----------------------
+
+.. automodule:: syn.sets.b.range
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------

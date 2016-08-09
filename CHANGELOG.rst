@@ -1,10 +1,10 @@
 Changelog
 ---------
 
-0.0.8 (2016-07-23)
+0.0.8 (2016-08-09)
 ~~~~~~~~~~~~~~~~~~
+- Added display() and rst() methods to Type classes (syn.type.a)
 - Added class member/invocation auto-documentation
-- Added diplay() and rst() methods to Type classes (syn.type.a)
 - Added make_hashable functionality to Base
 - Added syn.sets (syn.sets.b)
 

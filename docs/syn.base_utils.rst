@@ -4,6 +4,14 @@ syn.base_utils package
 Submodules
 ----------
 
+syn.base_utils.alg module
+-------------------------
+
+.. automodule:: syn.base_utils.alg
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 syn.base_utils.context module
 -----------------------------
 
@@ -48,6 +56,14 @@ syn.base_utils.py module
 ------------------------
 
 .. automodule:: syn.base_utils.py
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+syn.base_utils.rand module
+--------------------------
+
+.. automodule:: syn.base_utils.rand
     :members:
     :undoc-members:
     :show-inheritance:
