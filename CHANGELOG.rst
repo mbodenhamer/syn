@@ -1,6 +1,10 @@
 Changelog
 ---------
 
+0.0.10 (2016-08-11)
+~~~~~~~~~~~~~~~~~~
+- Added lazy sampling and enumeration to syn.sets
+
 0.0.9 (2016-08-09)
 ~~~~~~~~~~~~~~~~~~
 - Fixed setup.py for wheel

@@ -1,5 +1,6 @@
 from random import choice
 from operator import itemgetter
+from syn.five import xrange
 from syn.base_utils import type_partition, getitem
 
 from .range import Range
@@ -95,6 +96,34 @@ class Intersection(SetOperator):
                 return False
         return True
 
+    def sample(self, **kwargs):
+        if not kwargs.get('lazy', False):
+            return super(Intersection, self).sample(**kwargs)
+
+        iters = 0
+        args = Args(**kwargs)
+        while iters < args.max_attempts:
+            item = choice(self).sample(**kwargs)
+            if self.hasmember(item):
+                return item
+            iters += 1
+
+        raise ValueError("Unable to lazy-sample value")
+
+    def enumerate(self, **kwargs):
+        if not kwargs.get('lazy', False):
+            for item in super(Intersection, self).enumerate(**kwargs):
+                yield item
+            
+        else:
+            buf = set()
+            for c in self:
+                for item in c.enumerate(**kwargs):
+                    if item not in buf:
+                        if self.hasmember(item):
+                            buf.add(item)
+                            yield item
+
     def to_set(self, **kwargs):
         ret = set()
         part = type_partition(self, Range, SetWrapper)
@@ -136,6 +165,30 @@ class Difference(SetOperator):
     def hasmember(self, other):
         return self.A.hasmember(other) and not self.B.hasmember(other)
 
+    def sample(self, **kwargs):
+        if not kwargs.get('lazy', False):
+            return super(Difference, self).sample(**kwargs)
+
+        iters = 0
+        args = Args(**kwargs)
+        while iters < args.max_attempts:
+            item = self.A.sample(**kwargs)
+            if self.hasmember(item):
+                return item
+            iters += 1
+
+        raise ValueError("Unable to lazy-sample value")
+
+    def enumerate(self, **kwargs):
+        if not kwargs.get('lazy', False):
+            for item in super(Difference, self).enumerate(**kwargs):
+                yield item
+            
+        else:
+            for item in self.A.enumerate(**kwargs):
+                if self.hasmember(item):
+                    yield item
+
     def to_set(self, **kwargs):
         if isinstance(self.A, Range) and isinstance(self.B, Range):
             A, B = self.A.difference(self.B)
@@ -162,6 +215,32 @@ class Complement(SetOperator):
 
     def hasmember(self, item):
         return not self.A.hasmember(item)
+
+    def sample(self, **kwargs):
+        if not kwargs.get('lazy', False):
+            return super(Complement, self).sample(**kwargs)
+
+        iters = 0
+        args = Args(**kwargs)
+        universe = getitem(kwargs, 'universe', self.A.default_universe())
+        while iters < args.max_attempts:
+            item = universe.sample(**kwargs)
+            if self.hasmember(item):
+                return item
+            iters += 1
+
+        raise ValueError("Unable to lazy-sample value")
+
+    def enumerate(self, **kwargs):
+        if not kwargs.get('lazy', False):
+            for item in super(Complement, self).enumerate(**kwargs):
+                yield item
+            
+        else:
+            universe = getitem(kwargs, 'universe', self.A.default_universe())
+            for item in universe.enumerate(**kwargs):
+                if self.hasmember(item):
+                    yield item
 
     def to_set(self, **kwargs):
         universe = getitem(kwargs, 'universe', self.A.default_universe())

@@ -1,4 +1,3 @@
-from random import choice
 from syn.tree import Node
 from syn.base import Base, Attr
 
@@ -9,7 +8,9 @@ from syn.base import Base, Attr
 class Args(Base):
     _attrs = dict(max_enumerate = Attr(int, 1000, ''),
                   type_enumerate = Attr(int, 50, ''),
-                  enumerated = Attr(int, 0, ''))
+                  enumerated = Attr(int, 0, ''),
+                  lazy = Attr(bool, False, ''),
+                  max_attempts = Attr(int, 500, ''))
 
 
 #-------------------------------------------------------------------------------
@@ -58,9 +59,18 @@ class SetNode(Node):
     def sample(self, **kwargs):
         raise NotImplementedError()
 
+    def lazy_sample(self, **kwargs):
+        kwargs['lazy'] = True
+        return self.sample(**kwargs)
+
     def enumerate(self, **kwargs):
         raise NotImplementedError()
 
+    def lazy_enumerate(self, **kwargs):
+        kwargs['lazy'] = True
+        for item in self.enumerate(**kwargs):
+            yield item
+        
     def to_set(self, **kwargs):
         return set(self.enumerate(**kwargs))
 
