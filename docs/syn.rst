@@ -12,7 +12,9 @@ Subpackages
     syn.cython
     syn.five
     syn.python
+    syn.schema
     syn.serialize
+    syn.sets
     syn.tree
     syn.type
 
