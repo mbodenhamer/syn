@@ -5,6 +5,21 @@ from syn.base_utils import hasmethod, mro, import_module, message
 #-------------------------------------------------------------------------------
 # Class utilities
 
+def test_subclasses():
+    from syn.base_utils import subclasses
+
+    class A(object): pass
+    class B(A): pass
+    class C(A): pass
+    class D(B): pass
+    class E(B): pass
+    class F(D): pass
+    class G(C): pass
+
+    assert subclasses(A) == [B, D, F, E, C, G]
+    assert subclasses(G) == []
+    assert subclasses(C) == [G]
+
 def test_mro():
     import abc
 

@@ -20,6 +20,17 @@ else:
 #-------------------------------------------------------------------------------
 # Class utilities
 
+def subclasses(cls, lst=None):
+    '''Recursively gather subclasses of cls.
+    '''
+    if lst is None:
+        lst = []
+    for sc in cls.__subclasses__():
+        if sc not in lst:
+            lst.append(sc)
+        subclasses(sc, lst=lst)
+    return lst
+
 def mro(cls):
     if cls is type:
         return [type]
@@ -279,6 +290,6 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'assert_equivalent', 'assert_inequivalent', 'assert_type_equivalent',
            'assert_pickle_idempotent', 'assert_deepcopy_idempotent',
            'rgetattr', 'callables', 'is_subclass', 'getitem', 'same_lineage',
-           'type_partition')
+           'type_partition', 'subclasses')
 
 #-------------------------------------------------------------------------------
