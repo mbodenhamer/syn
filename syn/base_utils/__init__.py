@@ -1,3 +1,4 @@
+from .rand import *
 from .hash import *
 from .dict import *
 from .list import *
