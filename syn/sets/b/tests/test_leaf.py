@@ -69,10 +69,11 @@ def test_typewrapper():
 # ClassWrapper
 
 def test_classwrapper():
-    class Int1(int): pass
-    class Int2(Int1): pass
+    class Foo(object): pass
+    class F1(Foo): pass
+    class F2(F1): pass
 
-    cw = ClassWrapper(int)
+    cw = ClassWrapper(Foo)
     
     for k in range(SAMPLES):
         item = cw.sample()
@@ -80,14 +81,14 @@ def test_classwrapper():
 
     cwset = cw.to_set()
     assert len(cwset) >= 3
-    assert int in cwset
-    assert Int1 in cwset
-    assert Int2 in cwset
+    assert Foo in cwset
+    assert F1 in cwset
+    assert F2 in cwset
 
     cwlist = list(cw.enumerate(max_enumerate = 2))
     assert len(cwlist) == 2
-    assert all(issubclass(x, int) for x in cwlist)
-    assert all(issubclass(x, int) for x in cw.to_set())
+    assert all(issubclass(x, Foo) for x in cwlist)
+    assert all(issubclass(x, Foo) for x in cw.to_set())
 
 #-------------------------------------------------------------------------------
 

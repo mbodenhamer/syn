@@ -160,7 +160,7 @@ Integers = IntRange(MIN_INT, MAX_INT)
 class StrRange(Range):
     _attrs = dict(lb = Attr(int, 0x20, doc='The lower bound'),
                   ub = Attr(int, 0x7e, doc='The upper bound'))
-    _opts = dict(coerce_args = True)
+    _opts = dict(coerce_args = False)
 
     @init_hook
     def _ensure_ints(self):
