@@ -1,5 +1,5 @@
 from nose.tools import assert_raises
-from syn.sets.b import SetWrapper, NULL
+from syn.sets.b import SetWrapper, NULL, TypeWrapper, ClassWrapper
 
 SAMPLES = 10
 
@@ -49,6 +49,45 @@ def test_setwrapper():
     assert sorted(list(s1.enumerate())) == [1, 2, 3]
     assert s1.to_set() == {1, 2, 3}    
     assert len(list(s1.enumerate(max_enumerate = 2))) == 2
+
+#-------------------------------------------------------------------------------
+# TypeWrapper
+
+def test_typewrapper():
+    tw = TypeWrapper(int)
+    
+    for k in range(SAMPLES):
+        item = tw.sample()
+        assert tw.hasmember(item)
+
+    twlist = list(tw.enumerate(max_enumerate = 30))
+    assert len(twlist) == 30
+    assert all(isinstance(x, int) for x in twlist)
+    assert all(isinstance(x, int) for x in tw.to_set())
+
+#-------------------------------------------------------------------------------
+# ClassWrapper
+
+def test_classwrapper():
+    class Int1(int): pass
+    class Int2(Int1): pass
+
+    cw = ClassWrapper(int)
+    
+    for k in range(SAMPLES):
+        item = cw.sample()
+        assert cw.hasmember(item)
+
+    cwset = cw.to_set()
+    assert len(cwset) >= 3
+    assert int in cwset
+    assert Int1 in cwset
+    assert Int2 in cwset
+
+    cwlist = list(cw.enumerate(max_enumerate = 2))
+    assert len(cwlist) == 2
+    assert all(issubclass(x, int) for x in cwlist)
+    assert all(issubclass(x, int) for x in cw.to_set())
 
 #-------------------------------------------------------------------------------
 
