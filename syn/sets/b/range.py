@@ -1,4 +1,5 @@
 from random import randint
+from functools import reduce
 from syn.base import Attr, init_hook
 from syn.five import xrange, unichr, STR
 from syn.base_utils import defer_reduce
@@ -122,7 +123,7 @@ class Range(SetLeaf):
         return ret
 
     def enumerate(self, **kwargs):
-        args = Args(kwargs)
+        args = Args(**kwargs)
         maxenum = args.max_enumerate
 
         for k,item in enumerate(xrange(self.lb, self.ub + 1)):
@@ -131,7 +132,7 @@ class Range(SetLeaf):
             yield item
 
     def to_set(self, **kwargs):
-        args = Args(kwargs)
+        args = Args(**kwargs)
         N = self.ub - self.lb
         ub = self.lb + min(N, args.max_enumerate - 1)
 

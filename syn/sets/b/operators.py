@@ -25,7 +25,7 @@ class Union(SetOperator):
         return ret
 
     def enumerate(self, **kwargs):
-        args = Args(kwargs)
+        args = Args(**kwargs)
         maxenum = args.max_enumerate
 
         buf = set()

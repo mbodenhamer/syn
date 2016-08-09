@@ -1,4 +1,5 @@
 from random import choice
+from functools import reduce
 from syn.base import Attr
 from syn.type import List
 from syn.base_utils import subclasses, rand_dispatch
@@ -70,7 +71,7 @@ class SetWrapper(SetLeaf):
         return ret
 
     def enumerate(self, **kwargs):
-        args = Args(kwargs)
+        args = Args(**kwargs)
         maxenum = args.max_enumerate
 
         for k,item in enumerate(self.set):
@@ -101,7 +102,7 @@ class TypeWrapper(SetLeaf):
         return ret
 
     def enumerate(self, **kwargs):
-        args = Args(kwargs)
+        args = Args(**kwargs)
         maxenum = min(args.max_enumerate, args.type_enumerate)
 
         for k in range(maxenum):
@@ -139,7 +140,7 @@ class ClassWrapper(SetLeaf):
         return ret
 
     def enumerate(self, **kwargs):
-        args = Args(kwargs)
+        args = Args(**kwargs)
         maxenum = min(args.max_enumerate, len(self.subclasses))
 
         for k, item in enumerate(self.subclasses):
