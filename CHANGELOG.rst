@@ -6,6 +6,7 @@ Changelog
 - Added class member/invocation auto-documentation
 - Added diplay() and rst() methods to Type classes (syn.type.a)
 - Added make_hashable functionality to Base
+- Added convertmap functionality to syn.tree.b.Node
 
 0.0.7 (2016-07-20)
 ~~~~~~~~~~~~~~~~~~
