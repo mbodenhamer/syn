@@ -125,6 +125,18 @@ def test_same_lineage():
 
     assert not same_lineage(A11, A2)
 
+def test_type_partition():
+    from syn.base_utils import type_partition
+
+    l = [1, 3.4, 5, 'a', 6.7, 'b', 8, {}]
+    assert type_partition(l) == {int: [1, 5, 8],
+                                 float: [3.4, 6.7],
+                                 str: ['a', 'b'],
+                                 dict: [{}]}
+    assert type_partition(l, int, float) == {int: [1, 5, 8],
+                                             float: [3.4, 6.7],
+                                             None: ['a', 'b', {}]}
+
 #-------------------------------------------------------------------------------
 # Object utilities
 

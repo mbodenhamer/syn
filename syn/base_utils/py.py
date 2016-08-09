@@ -3,6 +3,7 @@ import six
 import types
 import inspect
 from functools import reduce
+from collections import defaultdict
 
 #-------------------------------------------------------------------------------
 
@@ -82,6 +83,23 @@ def same_lineage(o1, o2):
     elif not (isinstance(o1, type) or isinstance(o2, type)):
         return comp(type(o1), type(o2))
     raise TypeError("Cannot compare type and object")
+
+def type_partition(lst, *types):
+    ret = defaultdict(list)
+    for item in lst:
+        if not types:
+            ret[type(item)].append(item)
+            continue
+
+        matched = False
+        for typ in types:
+            if isinstance(item, typ):
+                ret[typ].append(item)
+                matched = True
+                break
+        if not matched:
+            ret[None].append(item)
+    return ret
 
 #-------------------------------------------------------------------------------
 # Object utilities
@@ -260,6 +278,7 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'index', 'nearest_base', 'get_typename', 'get_mod', 'compose',
            'assert_equivalent', 'assert_inequivalent', 'assert_type_equivalent',
            'assert_pickle_idempotent', 'assert_deepcopy_idempotent',
-           'rgetattr', 'callables', 'is_subclass', 'getitem', 'same_lineage')
+           'rgetattr', 'callables', 'is_subclass', 'getitem', 'same_lineage',
+           'type_partition')
 
 #-------------------------------------------------------------------------------
