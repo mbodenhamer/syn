@@ -31,6 +31,10 @@ def test_range():
     assert r1.to_set() == {1, 2, 3, 4, 5}
     assert len(list(r1.enumerate(max_enumerate = 3))) == 3
 
+    r1.validate()
+    r2.validate()
+    assert_raises(ValueError, Range(2, 1).validate)
+
 def test_range_overlap():
     r = Range(1, 4)
     assert not r.overlaps(Range(5, 6))

@@ -19,7 +19,7 @@ class SetOperator(SetNode):
         return ret
 
     def enumerate(self, **kwargs):
-        args = Args(kwargs)
+        args = Args(**kwargs)
         maxenum = args.max_enumerate
 
         buf = self.to_set(**kwargs)
