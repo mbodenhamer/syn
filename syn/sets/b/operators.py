@@ -4,7 +4,30 @@ from syn.base_utils import type_partition, getitem
 
 from .range import Range
 from .leaf import SetWrapper, Empty
-from .base import SetOperator, Args
+from .base import SetNode, Args
+
+#-------------------------------------------------------------------------------
+# Set Operator
+
+
+class SetOperator(SetNode):
+    _opts = dict(min_len = 1)
+
+    def sample(self, **kwargs):
+        buf = list(self.to_set(**kwargs))
+        ret = choice(buf)
+        return ret
+
+    def enumerate(self, **kwargs):
+        args = Args(kwargs)
+        maxenum = args.max_enumerate
+
+        buf = self.to_set(**kwargs)
+        for k,item in enumerate(buf):
+            if k >= maxenum:
+                break
+            yield item
+
 
 #-------------------------------------------------------------------------------
 # Union
@@ -160,6 +183,6 @@ class Complement(SetOperator):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Union', 'Intersection', 'Difference', 'Complement')
+__all__ = ('SetOperator', 'Union', 'Intersection', 'Difference', 'Complement')
 
 #-------------------------------------------------------------------------------

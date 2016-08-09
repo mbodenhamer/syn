@@ -3,7 +3,7 @@ from functools import reduce
 from syn.base import Attr
 from syn.type import List
 from syn.base_utils import subclasses, rand_dispatch
-from .base import SetNode, SetLeaf, Args
+from .base import SetNode, Args
 
 #-------------------------------------------------------------------------------
 # Decorators
@@ -26,6 +26,21 @@ def _set_wrapper(f):
         ret = f(self, *lst, **kwargs)
         return ret
     return func
+
+#-------------------------------------------------------------------------------
+# Set Leaf
+
+
+class SetLeaf(SetNode):
+    _opts = dict(coerce_args = True,
+                 max_len = 0)
+
+    def __init__(self, *args, **kwargs):
+        super(SetNode, self).__init__(*args, **kwargs)
+
+    def simplify(self):
+        return self
+
 
 #-------------------------------------------------------------------------------
 # Set Wrapper
@@ -191,13 +206,9 @@ class Empty(Special):
 NULL = Empty()
 
 #-------------------------------------------------------------------------------
-
-SetNode._opts.convertmap = {None: SetWrapper}
-
-#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('SetWrapper', 'TypeWrapper', 'ClassWrapper',
+__all__ = ('SetLeaf', 'SetWrapper', 'TypeWrapper', 'ClassWrapper',
            'Special', 'Empty', 'NULL')
 
 #-------------------------------------------------------------------------------

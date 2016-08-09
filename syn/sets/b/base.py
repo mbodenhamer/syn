@@ -17,6 +17,17 @@ class Args(Base):
 
 
 class SetNode(Node):
+    def __init__(self, *args, **kwargs):
+        from .leaf import SetWrapper
+
+        lst = []
+        for arg in args:
+            if isinstance(arg, SetNode):
+                lst.append(arg)
+            else:
+                lst.append(SetWrapper(arg))
+        super(SetNode, self).__init__(*lst, **kwargs)
+
     def union(self, *args):
         raise NotImplementedError()
 
@@ -55,45 +66,8 @@ class SetNode(Node):
 
 
 #-------------------------------------------------------------------------------
-# Set Operator
-
-
-class SetOperator(SetNode):
-    _opts = dict(min_len = 1,
-                 convertmap = {})
-
-    def sample(self, **kwargs):
-        buf = list(self.to_set(**kwargs))
-        ret = choice(buf)
-        return ret
-
-    def enumerate(self, **kwargs):
-        args = Args(kwargs)
-        maxenum = args.max_enumerate
-
-        buf = self.to_set(**kwargs)
-        for k,item in enumerate(buf):
-            if k >= maxenum:
-                break
-            yield item
-
-
-#-------------------------------------------------------------------------------
-# Set Leaf
-
-
-class SetLeaf(SetNode):
-    _opts = dict(coerce_args = True,
-                 convertmap = {},
-                 max_len = 0)
-
-    def simplify(self):
-        return self
-
-
-#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('SetNode', 'SetOperator', 'SetLeaf')
+__all__ = ('SetNode',)
 
 #-------------------------------------------------------------------------------
