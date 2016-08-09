@@ -54,9 +54,49 @@ def test_rand_complex():
 #-------------------------------------------------------------------------------
 # String
 
+def test_randstr():
+    from syn.base_utils import rand_str
+
+    strs = [rand_str() for k in range(SAMPLES)]
+    assert all(isinstance(s, str) for s in strs)
+    assert any(len(s) > 0 for s in strs)
+
+
+def test_rand_unicode():
+    from syn.base_utils import rand_unicode
+
+    if PY2:
+        strs = [rand_unicode(min_len=1) for k in range(SAMPLES)]
+        assert all(isinstance(s, unicode) for s in strs)
+        assert any(len(s) > 0 for s in strs)
+
 #-------------------------------------------------------------------------------
 # Misc
 
+def test_rand_none():
+    from syn.base_utils import rand_none
+
+    nones = [rand_none() for k in range(SAMPLES)]
+    assert all(s is None for s in nones)
+
+#-------------------------------------------------------------------------------
+# Dispatch
+
+def test_rand_dispatch():
+    from syn.base_utils import rand_dispatch
+
+    assert isinstance(rand_dispatch(int), int)
+    assert isinstance(rand_dispatch(float), float)
+    assert isinstance(rand_dispatch(complex), complex)
+    assert isinstance(rand_dispatch(str), str)
+    assert isinstance(rand_dispatch(bool), bool)
+    
+    if PY2:
+        assert isinstance(rand_dispatch(long), long)
+        assert isinstance(rand_dispatch(unicode), (str, unicode))
+
+    class Foo(object): pass
+    assert_raises(TypeError, rand_dispatch, Foo)
 
 #-------------------------------------------------------------------------------
 
