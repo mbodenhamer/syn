@@ -62,6 +62,8 @@ def test_intersection():
     
     item = i.lazy_sample()
     assert i.hasmember(item)
+    item = i.get_one()
+    assert i.hasmember(item)
 
     assert i.to_set() == {2, 3}
 
@@ -90,6 +92,7 @@ def test_intersection():
     i4 = Intersection({1, 2}, {3, 4})
     assert i4.to_set() == set()
     assert_raises(ValueError, i4.lazy_sample)
+
 
 #-------------------------------------------------------------------------------
 # Difference

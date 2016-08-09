@@ -47,6 +47,9 @@ def test_setwrapper():
         samp = s1.sample()
         assert s1.hasmember(samp)
 
+    item = s1.get_one()
+    assert s1.hasmember(item)
+
     assert sorted(list(s1.enumerate())) == [1, 2, 3]
     assert s1.to_set() == {1, 2, 3}    
     assert len(list(s1.enumerate(max_enumerate = 2))) == 2

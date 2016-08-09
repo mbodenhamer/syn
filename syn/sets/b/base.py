@@ -57,9 +57,19 @@ class SetNode(Node):
         raise NotImplementedError()
 
     def sample(self, **kwargs):
+        '''Return a random element from the set.  Method should try to avoid introducing a sampling bias.
+        '''
         raise NotImplementedError()
 
+    def get_one(self, **kwargs):
+        '''Return one element from the set, regardless of sampling bias, without evaluating any sets.
+        '''
+        kwargs['lazy'] = True
+        return self.sample(**kwargs)
+
     def lazy_sample(self, **kwargs):
+        '''Sample without evaluating any sets.
+        '''
         kwargs['lazy'] = True
         return self.sample(**kwargs)
 
@@ -67,6 +77,8 @@ class SetNode(Node):
         raise NotImplementedError()
 
     def lazy_enumerate(self, **kwargs):
+        '''Enumerate without evaluating any sets.
+        '''
         kwargs['lazy'] = True
         for item in self.enumerate(**kwargs):
             yield item

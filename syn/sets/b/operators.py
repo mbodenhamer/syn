@@ -19,6 +19,10 @@ class SetOperator(SetNode):
         ret = choice(buf)
         return ret
 
+    def get_one(self, **kwargs):
+        kwargs['lazy'] = True
+        return next(self.enumerate(**kwargs))
+
     def enumerate(self, **kwargs):
         args = Args(**kwargs)
         maxenum = args.max_enumerate
