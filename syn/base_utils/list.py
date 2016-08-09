@@ -64,8 +64,17 @@ class ListView(MutableSequence):
 
 
 #-------------------------------------------------------------------------------
+# Non-Modification Utilities
+
+def indices_removed(lst, idxs):
+    '''Returns a copy of lst with each index in idxs removed.'''
+    ret = [item for k,item in enumerate(lst) if k not in idxs]
+    return type(lst)(ret)
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('ListView',)
+__all__ = ('ListView',
+           'indices_removed')
 
 #-------------------------------------------------------------------------------

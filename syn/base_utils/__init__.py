@@ -7,3 +7,4 @@ from .filters import *
 from .context import *
 from .str import *
 from .tree import *
+from .alg import *

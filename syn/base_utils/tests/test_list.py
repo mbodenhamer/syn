@@ -61,6 +61,19 @@ def test_listview():
     assert_raises(ValueError, ListView, [1, 2, 3], 0, 7)
 
 #-------------------------------------------------------------------------------
+# Non-Modification Utilities
+
+def test_indices_removed():
+    from syn.base_utils import indices_removed
+    
+    lst = range(10)
+    assert indices_removed(lst, (0, 5, 9)) == [1, 2, 3, 4, 6, 7, 8]
+    assert indices_removed(tuple(lst), (0, 5, 9)) == (1, 2, 3, 4, 6, 7, 8)
+    assert indices_removed(lst, lst) == []
+
+    assert lst == range(10)
+
+#-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
     from syn.base_utils import run_all_tests
