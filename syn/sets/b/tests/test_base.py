@@ -1,10 +1,25 @@
-from syn.sets.b import SetNode
+from nose.tools import assert_raises
+from syn.sets.b import SetNode, SetWrapper
 
 #-------------------------------------------------------------------------------
 # SetNode
 
 def test_setnode():
-    SetNode
+    obj = SetNode([1,2,3])
+    assert isinstance(obj[0], SetWrapper)
+    assert obj[0].set == {1, 2, 3}
+
+    assert_raises(NotImplementedError, obj.union)
+    assert_raises(NotImplementedError, obj.intersection)
+    assert_raises(NotImplementedError, obj.difference, None)
+    assert_raises(NotImplementedError, obj.complement, None)
+    assert_raises(NotImplementedError, obj.issubset, None)
+    assert_raises(NotImplementedError, obj.issuperset, None)
+    assert_raises(NotImplementedError, obj.hasmember, None)
+    assert_raises(NotImplementedError, obj.simplify)
+    assert_raises(NotImplementedError, obj.sample)
+    assert_raises(NotImplementedError, obj.enumerate)
+    assert_raises(NotImplementedError, obj.to_set)
 
 #-------------------------------------------------------------------------------
 
