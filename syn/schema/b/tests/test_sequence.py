@@ -1,9 +1,9 @@
 from syn.schema.b import Sequence
 
 #-------------------------------------------------------------------------------
-# Base imports
+# Sequence
 
-def test_base_imports():
+def test_sequence():
     Sequence
 
 #-------------------------------------------------------------------------------
