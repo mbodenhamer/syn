@@ -2,9 +2,9 @@ import syn.schema
 import syn.schema.b
 
 #-------------------------------------------------------------------------------
-# Base imports
+# Schema imports
 
-def test_base_imports():
+def test_schema_imports():
     assert syn.schema.Sequence is syn.schema.b.Sequence
 
 #-------------------------------------------------------------------------------
