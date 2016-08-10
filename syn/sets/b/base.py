@@ -39,6 +39,10 @@ class SetNode(Node):
         '''
         return (self.size(), self.size())
 
+    def expected_size(self):
+        lb, ub = self.size_limits()
+        return (ub + lb) / 2.0
+
     def union(self, *args):
         raise NotImplementedError()
 

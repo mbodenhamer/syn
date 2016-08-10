@@ -1,5 +1,6 @@
 from nose.tools import assert_raises
 from syn.five import xrange
+from syn.base_utils import feq
 from syn.sets.b import Union, SetWrapper, Range, NULL, Intersection, \
     Difference
 
@@ -17,6 +18,7 @@ def test_union():
 
     assert u.size() == 5
     assert u.size_limits() == (3, 6)
+    assert feq(u.expected_size(), 4.5)
 
     assert u.hasmember(1)
     assert u.hasmember(5)
