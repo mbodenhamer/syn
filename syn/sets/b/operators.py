@@ -237,67 +237,8 @@ class Difference(SetOperator):
     
 
 #-------------------------------------------------------------------------------
-# Complement
-
-
-class Complement(SetOperator):
-    '''Use is discouraged in favor of Difference, as that is more explicit.
-    '''
-    
-    _opts = dict(min_len = 1,
-                 max_len = 1)
-
-    A = property(itemgetter(0))
-
-    def hasmember(self, item):
-        return not self.A.hasmember(item)
-
-    def sample(self, **kwargs):
-        if not kwargs.get('lazy', False):
-            return super(Complement, self).sample(**kwargs)
-
-        iters = 0
-        args = Args(**kwargs)
-        universe = getitem(kwargs, 'universe', self.A.default_universe())
-        while iters < args.max_attempts:
-            item = universe.sample(**kwargs)
-            if self.hasmember(item):
-                return item
-            iters += 1
-
-        raise ValueError("Unable to lazy-sample value")
-
-    def enumerate(self, **kwargs):
-        if not kwargs.get('lazy', False):
-            for item in super(Complement, self).enumerate(**kwargs):
-                yield item
-            
-        else:
-            universe = getitem(kwargs, 'universe', self.A.default_universe())
-            for item in universe.enumerate(**kwargs):
-                if self.hasmember(item):
-                    yield item
-
-    def to_set(self, **kwargs):
-        universe = getitem(kwargs, 'universe', self.A.default_universe())
-        
-        if isinstance(self.A, Range):
-            A, B = self.A.complement(universe)
-            ret = A.to_set(**kwargs)
-            if B:
-                ret = ret.union(B.to_set(**kwargs))
-        else:
-            A = self.A.to_set(**kwargs)
-            if not isinstance(universe, set):
-                universe = universe.to_set(**kwargs)
-            ret = universe.difference(A)
-
-        return ret
-
-
-#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('SetOperator', 'Union', 'Intersection', 'Difference', 'Complement')
+__all__ = ('SetOperator', 'Union', 'Intersection', 'Difference')
 
 #-------------------------------------------------------------------------------

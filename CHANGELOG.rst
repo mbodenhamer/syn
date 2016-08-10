@@ -4,6 +4,7 @@ Changelog
 0.0.10 (2016-08-11)
 ~~~~~~~~~~~~~~~~~~
 - Added lazy sampling and enumeration to syn.sets
+- Removed syn.sets.Complement
 
 0.0.9 (2016-08-09)
 ~~~~~~~~~~~~~~~~~~

@@ -1,8 +1,7 @@
 from nose.tools import assert_raises
 from syn.five import xrange
 from syn.sets.b import Union, SetWrapper, Range, NULL, Intersection, \
-    Difference, StrRange, Complement
-from syn.sets.b.base import Args
+    Difference
 
 SAMPLES = 10
 range = lambda *args: list(xrange(*args))
@@ -141,50 +140,6 @@ def test_difference():
     d = Difference({1, 2}, {1, 2, 3})
     assert d.to_set() == set()
     assert_raises(ValueError, d.lazy_sample)
-
-#-------------------------------------------------------------------------------
-# Complement
-
-def test_complement():
-    c = Complement([1, 2, 3])
-
-    assert c.hasmember(4)
-    assert not c.hasmember(1)
-    assert c.to_set() == set()
-    assert c.to_set(universe = set(range(5))) == {0, 4}
-    
-    c = Complement(Union([1], [2, 3]))
-
-    assert c.hasmember(4)
-    assert not c.hasmember(1)
-    assert c.to_set() == set()
-    assert c.to_set(universe = SetWrapper(range(5))) == {0, 4}
-
-    U = SetWrapper(range(10))
-    assert sorted(c.lazy_enumerate(universe=U)) == [0] + range(4, 10)
-    assert sorted(c.enumerate(universe=U)) == [0] + range(4, 10)
-    item = c.lazy_sample(universe=U)
-    assert c.hasmember(item)
-    item = c.sample(universe=U)
-    assert c.hasmember(item)
-
-    r = Range(1, 4)
-    rc = Complement(r)
-    assert rc.hasmember(0)
-    assert not rc.hasmember(1)
-    assert not rc.hasmember(4)
-    assert rc.hasmember(5)
-
-    assert len(rc.to_set()) == Args._attrs['max_enumerate'].default
-
-    from syn.sets.b.range import ASCII
-    r = StrRange(97, 98)
-    rc = Complement(r)
-    assert len(rc.to_set()) == ASCII.ub - ASCII.lb - 1
-
-    c = Complement([1, 2])
-    assert c.to_set(universe=SetWrapper({1, 2})) == set()
-    assert_raises(ValueError, c.lazy_sample, universe=SetWrapper({1, 2}))
 
 #-------------------------------------------------------------------------------
 
