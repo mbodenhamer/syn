@@ -108,6 +108,10 @@ def test_intersection():
     i6 = Intersection(Range(0, 100), Range(10, 90))
     assert list(i6.lazy_enumerate(max_enumerate=10)) == range(10, 20)
 
+    # Sanity check
+    i7 = Intersection(range(10), Range(0, 50))
+    assert i7.to_set() == set(range(10))
+
 #-------------------------------------------------------------------------------
 # Difference
 
