@@ -17,6 +17,9 @@ class Range(SetLeaf):
                   ub = Attr(int, doc='The upper bound'))
     _opts = dict(args = ('lb', 'ub'))
 
+    def size(self):
+        return self.ub - self.lb + 1
+
     def validate(self):
         super(Range, self).validate()
 

@@ -11,6 +11,8 @@ def test_range():
     r1 = Range(1, 5)
     r2 = Range(2, 5)
     
+    assert r1.size() == 5
+
     assert r2.issubset(r1)
     assert r1.issuperset(r2)
     assert not r1.issubset(r2)
