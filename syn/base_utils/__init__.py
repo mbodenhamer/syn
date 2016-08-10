@@ -1,5 +1,6 @@
 from .rand import *
 from .hash import *
+from .logic import *
 from .float import *
 from .dict import *
 from .list import *
