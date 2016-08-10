@@ -1,7 +1,7 @@
 from random import choice
 from itertools import product
 from operator import itemgetter
-from syn.base_utils import type_partition, prod
+from syn.base_utils import type_partition, prod, unzip
 
 from .range import Range
 from .leaf import SetWrapper, Empty
@@ -43,7 +43,7 @@ class SetOperator(SetNode):
 
 class Union(SetOperator):
     def size_limits(self):
-        lbs, ubs = zip(*[c.size_limits() for c in self])
+        lbs, ubs = unzip(c.size_limits() for c in self)
         # Union can't be any smaller than the biggest set (at its smallest)
         lb = max(lbs)
         # Union can't be bigger than the sum of all the sets (at their biggest)
@@ -102,7 +102,7 @@ class Union(SetOperator):
 
 class Intersection(SetOperator):
     def size_limits(self):
-        lbs, ubs = zip(*[c.size_limits() for c in self])
+        lbs, ubs = unzip(c.size_limits() for c in self)
         lb = 0
         ub = min(ubs) # Intersection can't be any bigger than its smallest set
         return (lb, ub)
@@ -240,7 +240,7 @@ class Product(SetOperator):
     '''Cartesian Product'''
 
     def size_limits(self):
-        lbs, ubs = zip(*[c.size_limits() for c in self])
+        lbs, ubs = unzip(c.size_limits() for c in self)
         lb = prod(lbs)
         ub = prod(ubs)
         return (lb, ub)
