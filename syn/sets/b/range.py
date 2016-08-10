@@ -33,9 +33,6 @@ class Range(SetLeaf):
 
         return False
 
-    def default_universe(self):
-        return Integers
-
     @classmethod
     def _union(cls, a, b):
         if a is NULL and b is NULL:
@@ -171,9 +168,6 @@ class StrRange(Range):
         if isinstance(self.ub, STR):
             self.ub = ord(self.ub)
     
-    def default_universe(self):
-        return ASCII
-
     def hasmember(self, other):
         return super(StrRange, self).hasmember(ord(other))
 

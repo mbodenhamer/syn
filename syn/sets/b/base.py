@@ -55,9 +55,6 @@ class SetNode(Node):
     def complement(self, universe):
         raise NotImplementedError()
 
-    def default_universe(self):
-        return self
-
     def issubset(self, other):
         raise NotImplementedError()
 
