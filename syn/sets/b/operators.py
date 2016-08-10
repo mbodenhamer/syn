@@ -137,13 +137,13 @@ class Intersection(SetOperator):
                 yield item
             
         else:
-            buf = set()
-            for c in self:
-                for item in c.enumerate(**kwargs):
-                    if item not in buf:
-                        if self.hasmember(item):
-                            buf.add(item)
-                            yield item
+            sets = list(self)
+            sets.sort(key=lambda s: s.expected_size())
+
+            # Enumerate over the smallest set
+            for item in sets[0].enumerate(**kwargs):
+                if self.hasmember(item):
+                    yield item
 
     def to_set(self, **kwargs):
         ret = set()
