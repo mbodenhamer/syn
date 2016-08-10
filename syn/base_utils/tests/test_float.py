@@ -1,3 +1,5 @@
+import math
+
 #-------------------------------------------------------------------------------
 # Comparison
 
@@ -12,6 +14,17 @@ def test_feq():
 
     assert feq('abc', 'abc')
     assert not feq('abc', 'ab')
+
+#-------------------------------------------------------------------------------
+# Math
+
+def test_prod():
+    from syn.base_utils import prod, feq
+
+    assert prod(2, 3, 4) == 24
+    assert feq(prod(2, 3, 4, log=True), 24)
+
+    assert prod(*list(range(1, 21))) == math.factorial(20)
 
 #-------------------------------------------------------------------------------
 
