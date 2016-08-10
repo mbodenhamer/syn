@@ -12,6 +12,9 @@ def test_setwrapper():
     s2 = {3, 4, 5}
     s3 = SetWrapper(s2)
 
+    assert s1.size() == s3.size() == 3
+    assert s1.size_limits() == (3, 3)
+
     assert s1.union(s3) == SetWrapper([1,2,3,4,5])
     assert s1.union(s2) == SetWrapper([1,2,3,4,5])
     assert s1.union(s2, NULL) == SetWrapper([1,2,3,4,5])
@@ -41,8 +44,6 @@ def test_setwrapper():
     assert s1.hasmember(3)
     assert not s1.hasmember(4)
 
-    assert s1.simplify() is s1
-
     for k in range(SAMPLES):
         samp = s1.sample()
         assert s1.hasmember(samp)
@@ -59,6 +60,8 @@ def test_setwrapper():
 
 def test_typewrapper():
     tw = TypeWrapper(int)
+
+    assert tw.size() == float('inf')
     
     for k in range(SAMPLES):
         item = tw.sample()
@@ -79,6 +82,8 @@ def test_classwrapper():
 
     cw = ClassWrapper(Foo)
     
+    assert cw.size() == 3
+
     for k in range(SAMPLES):
         item = cw.sample()
         assert cw.hasmember(item)
@@ -101,12 +106,15 @@ def test_empty():
     e = Empty()
     s = SetWrapper([1, 2, 3])
     
+    assert e.size() == 0
+
     assert e.issubset(s)
     assert e.issubset(e)
     
     assert not e.issuperset(s)
     assert e.issuperset(e)
-    
+    assert e.issuperset(SetWrapper([]))
+
     assert not e.hasmember(rand_int())
     
     assert not e.overlaps(s)

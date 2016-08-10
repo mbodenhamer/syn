@@ -152,6 +152,7 @@ class IntRange(Range):
 
 
 Integers = IntRange(MIN_INT, MAX_INT)
+Naturals = IntRange(0, MAX_INT)
 
 #-------------------------------------------------------------------------------
 # StrRange

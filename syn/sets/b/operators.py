@@ -14,6 +14,9 @@ from .base import SetNode, Args
 class SetOperator(SetNode):
     _opts = dict(min_len = 1)
 
+    def size(self):
+        return len(self.to_set())
+
     def sample(self, **kwargs):
         buf = list(self.to_set(**kwargs))
         ret = choice(buf)
@@ -40,6 +43,14 @@ class SetOperator(SetNode):
 
 class Union(SetOperator):
     _opts = dict(min_len = 2)
+
+    def size_limits(self):
+        lbs, ubs = zip(*[c.size_limits() for c in self])
+        # Union can't be any smaller than the biggest set (at its smallest)
+        lb = max(lbs)
+        # Union can't be bigger than the sum of all the sets (at their biggest)
+        ub = sum(ubs)
+        return (lb, ub)
 
     def hasmember(self, other):
         for c in self:
@@ -93,6 +104,12 @@ class Union(SetOperator):
 
 class Intersection(SetOperator):
     _opts = dict(min_len = 2)
+
+    def size_limits(self):
+        lbs, ubs = zip(*[c.size_limits() for c in self])
+        lb = 0
+        ub = min(ubs) # Intersection can't be any bigger than its smallest set
+        return (lb, ub)
 
     def hasmember(self, other):
         for c in self:
@@ -166,6 +183,18 @@ class Difference(SetOperator):
     A = property(itemgetter(0))
     B = property(itemgetter(1))
 
+    def size_limits(self):
+        lb_a, ub_a = self.A.size_limits()
+        lb_b, ub_b = self.B.size_limits()
+
+        # A at its smallest contains everything in B at its largest
+        lb = lb_a - ub_b
+        if lb < 0:
+            lb = 0
+        ub = ub_a # At at its largest contains nothing from B
+
+        return (lb, ub)
+
     def hasmember(self, other):
         return self.A.hasmember(other) and not self.B.hasmember(other)
 
@@ -212,6 +241,9 @@ class Difference(SetOperator):
 
 
 class Complement(SetOperator):
+    '''Use is discouraged in favor of Difference, as that is more explicit.
+    '''
+    
     _opts = dict(min_len = 1,
                  max_len = 1)
 

@@ -38,9 +38,6 @@ class SetLeaf(SetNode):
     def __init__(self, *args, **kwargs):
         super(SetNode, self).__init__(*args, **kwargs)
 
-    def simplify(self):
-        return self
-
 
 #-------------------------------------------------------------------------------
 # Set Wrapper
@@ -49,6 +46,9 @@ class SetLeaf(SetNode):
 class SetWrapper(SetLeaf):
     _attrs = dict(set = Attr(set, doc=''))
     _opts = dict(args = ('set',))
+
+    def size(self):
+        return len(self.set)
 
     @_set_wrapper
     def union(self, *args):
@@ -109,6 +109,9 @@ class TypeWrapper(SetLeaf):
     _attrs = dict(type = Attr(type, doc=''))
     _opts = dict(args = ('type',))
 
+    def size(self):
+        return float('inf')
+
     def hasmember(self, item):
         return isinstance(item, self.type)
 
@@ -147,6 +150,9 @@ class ClassWrapper(SetLeaf):
         super(ClassWrapper, self).__init__(*args, **kwargs)
         self.subclasses = [self.type] + subclasses(self.type)
 
+    def size(self):
+        return len(self.subclasses)
+
     def hasmember(self, item):
         return item in self.subclasses
 
@@ -180,11 +186,14 @@ class Special(SetLeaf):
 
 
 class Empty(Special):
+    def size(self):
+        return 0
+    
     def issubset(self, other):
         return True
 
     def issuperset(self, other):
-        if isinstance(other, Empty):
+        if isinstance(other, Empty) or other.size() == 0:
             return True
         return False
 

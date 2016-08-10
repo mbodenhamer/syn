@@ -16,6 +16,9 @@ def test_union():
     assert set(u.enumerate()) == {1, 2, 3, 4, 5}
     assert set(u.enumerate(lazy=True)) == {1, 2, 3, 4, 5}
 
+    assert u.size() == 5
+    assert u.size_limits() == (3, 6)
+
     assert u.hasmember(1)
     assert u.hasmember(5)
     assert not u.hasmember(6)
@@ -51,6 +54,9 @@ def test_intersection():
     assert i._children == [SetWrapper({1, 2, 3}), SetWrapper({2, 3, 4})]
     assert set(i.enumerate()) == {2, 3}
     assert set(i.lazy_enumerate()) == {2, 3}
+
+    assert i.size() == 2
+    assert i.size_limits() == (0, 3)
 
     assert not i.hasmember(1)
     assert i.hasmember(2)
@@ -93,6 +99,9 @@ def test_intersection():
     assert i4.to_set() == set()
     assert_raises(ValueError, i4.lazy_sample)
 
+    # i5 = Intersection(range(10), Range(-10000000000, 10000000000))
+    # assert set(i5.lazy_enumerate()) == set(range(10))
+    # assert set(i5.enumerate()) == set(range(10))
 
 #-------------------------------------------------------------------------------
 # Difference
@@ -103,6 +112,10 @@ def test_difference():
     assert set(d.enumerate()) == {1}
     assert set(d.lazy_enumerate()) == {1}
     
+    assert d.size() == 1
+    assert d.size_limits() == (0, 3)
+    assert Difference({1, 2}, {1, 2, 3}).size_limits() == (0, 2)
+
     assert d.hasmember(1)
     assert not d.hasmember(2)
     assert not d.hasmember(4)

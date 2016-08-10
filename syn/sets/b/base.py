@@ -29,6 +29,16 @@ class SetNode(Node):
                 lst.append(SetWrapper(arg))
         super(SetNode, self).__init__(*lst, **kwargs)
 
+    def size(self):
+        '''Returns the cardinality of the set.
+        '''
+        raise NotImplementedError()
+
+    def size_limits(self):
+        '''Returns the lower and upper bounds of set size.
+        '''
+        return (self.size(), self.size())
+
     def union(self, *args):
         raise NotImplementedError()
 

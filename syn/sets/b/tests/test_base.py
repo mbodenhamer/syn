@@ -9,6 +9,7 @@ def test_setnode():
     assert isinstance(obj[0], SetWrapper)
     assert obj[0].set == {1, 2, 3}
 
+    assert_raises(NotImplementedError, obj.size)
     assert_raises(NotImplementedError, obj.union)
     assert_raises(NotImplementedError, obj.intersection)
     assert_raises(NotImplementedError, obj.difference, None)
