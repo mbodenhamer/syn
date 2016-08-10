@@ -1,7 +1,7 @@
 from random import choice
+from itertools import product
 from operator import itemgetter
-from syn.five import xrange
-from syn.base_utils import type_partition, getitem
+from syn.base_utils import type_partition, prod
 
 from .range import Range
 from .leaf import SetWrapper, Empty
@@ -12,7 +12,7 @@ from .base import SetNode, Args
 
 
 class SetOperator(SetNode):
-    _opts = dict(min_len = 1)
+    _opts = dict(min_len = 2)
 
     def size(self):
         return len(self.to_set())
@@ -42,8 +42,6 @@ class SetOperator(SetNode):
 
 
 class Union(SetOperator):
-    _opts = dict(min_len = 2)
-
     def size_limits(self):
         lbs, ubs = zip(*[c.size_limits() for c in self])
         # Union can't be any smaller than the biggest set (at its smallest)
@@ -103,8 +101,6 @@ class Union(SetOperator):
 
 
 class Intersection(SetOperator):
-    _opts = dict(min_len = 2)
-
     def size_limits(self):
         lbs, ubs = zip(*[c.size_limits() for c in self])
         lb = 0
@@ -237,8 +233,38 @@ class Difference(SetOperator):
     
 
 #-------------------------------------------------------------------------------
+# Product
+
+
+class Product(SetOperator):
+    '''Cartesian Product'''
+
+    def size_limits(self):
+        lbs, ubs = zip(*[c.size_limits() for c in self])
+        lb = prod(lbs)
+        ub = prod(ubs)
+        return (lb, ub)
+
+    def hasmember(self, other):
+        for k, c in enumerate(self):
+            if not c.hasmember(other[k]):
+                return False
+        return True
+
+    def sample(self, **kwargs):
+        return tuple([c.sample(**kwargs) for c in self])
+    
+    def enumerate(self, **kwargs):
+        for item in product(*[c.enumerate(**kwargs) for c in self]):
+            yield item
+
+    def to_set(self, **kwargs):
+        return set(self.enumerate(**kwargs))
+
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('SetOperator', 'Union', 'Intersection', 'Difference')
+__all__ = ('SetOperator', 'Union', 'Intersection', 'Difference', 'Product')
 
 #-------------------------------------------------------------------------------

@@ -2,7 +2,7 @@ from nose.tools import assert_raises
 from syn.five import xrange
 from syn.base_utils import feq
 from syn.sets.b import Union, SetWrapper, Range, NULL, Intersection, \
-    Difference, ClassWrapper
+    Difference, ClassWrapper, Product
 
 SAMPLES = 10
 range = lambda *args: list(xrange(*args))
@@ -163,6 +163,28 @@ def test_difference():
     # Test lazy_enumerate
     d = Difference(Range(0, 100000), Range(100, 200))
     assert list(d.lazy_enumerate(max_enumerate=10)) == range(10)
+
+#-------------------------------------------------------------------------------
+# Product
+
+def test_product():
+    p = Product(Range(1, 5), Range(6, 10), Range(11, 15))
+    ps = p.to_set()
+    assert (1, 6, 11) in ps
+    assert (5, 6, 11) in ps
+    assert (5, 10, 11) in ps
+    assert (5, 10, 15) in ps
+
+    assert feq(p.expected_size(), 125)
+
+    assert not p.hasmember((0, 6, 11))
+    for k in range(SAMPLES):
+        item = p.sample()
+        assert p.hasmember(item)
+
+    p = Product({1}, {2}, {3})
+    assert p.to_set() == set([(1, 2, 3)])
+    assert p.sample() == (1, 2, 3)
 
 #-------------------------------------------------------------------------------
 # Combined Operators
