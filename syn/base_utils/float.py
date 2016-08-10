@@ -4,6 +4,7 @@ from syn.five import NUM
 
 #-------------------------------------------------------------------------------
 
+# An attempt at a reasonable machine-independent value
 DEFAULT_TOLERANCE = math.pow(10, math.log(sys.float_info.epsilon, 10) / 2.0)
 
 #-------------------------------------------------------------------------------
