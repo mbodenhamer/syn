@@ -154,6 +154,9 @@ def index(seq, elem):
         return seq.index(elem)
     return None
 
+def unzip(seq):
+    return zip(*list(seq))
+
 #-------------------------------------------------------------------------------
 # Mapping utilities
 
@@ -290,6 +293,6 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'assert_equivalent', 'assert_inequivalent', 'assert_type_equivalent',
            'assert_pickle_idempotent', 'assert_deepcopy_idempotent',
            'rgetattr', 'callables', 'is_subclass', 'getitem', 'same_lineage',
-           'type_partition', 'subclasses')
+           'type_partition', 'subclasses', 'unzip')
 
 #-------------------------------------------------------------------------------

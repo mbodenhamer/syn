@@ -203,6 +203,12 @@ def test_index():
     assert index(lst, 9) == 9
     assert index(lst, 10) is None
 
+def test_unzip():
+    from syn.base_utils import unzip
+
+    assert list(unzip(((1, 2), (3, 4)))) == [(1, 3), (2, 4)]
+    assert list(unzip(((x, 2*x) for x in range(1, 4)))) == [(1, 2, 3), (2, 4, 6)]
+
 #-------------------------------------------------------------------------------
 # Mapping utilities
 
