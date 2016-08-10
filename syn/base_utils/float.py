@@ -18,8 +18,8 @@ def feq(a, b, tol=DEFAULT_TOLERANCE):
 #-------------------------------------------------------------------------------
 # Math
 
-def prod(*args, **kwargs):
-    if kwargs.get('log', False):
+def prod(args, log=False):
+    if log:
         tmp = sum(math.log(arg) for arg in args)
         return math.exp(tmp)
 

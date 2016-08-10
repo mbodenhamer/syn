@@ -21,10 +21,10 @@ def test_feq():
 def test_prod():
     from syn.base_utils import prod, feq
 
-    assert prod(2, 3, 4) == 24
-    assert feq(prod(2, 3, 4, log=True), 24)
+    assert prod([2, 3, 4]) == 24
+    assert feq(prod([2, 3, 4], log=True), 24)
 
-    assert prod(*list(range(1, 21))) == math.factorial(20)
+    assert prod(range(1, 21)) == math.factorial(20)
 
 #-------------------------------------------------------------------------------
 
