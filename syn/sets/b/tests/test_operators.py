@@ -100,9 +100,13 @@ def test_intersection():
     assert i4.to_set() == set()
     assert_raises(ValueError, i4.lazy_sample)
 
-    # i5 = Intersection(range(10), Range(-10000000000, 10000000000))
-    # assert set(i5.lazy_enumerate()) == set(range(10))
-    # assert set(i5.enumerate()) == set(range(10))
+    # Advantages of lazy_enumerate()
+    i5 = Intersection(Range(-10000000000, 10000000000), range(10))
+    assert set(i5.lazy_enumerate()) == set(range(10))
+
+    # Test max_enumerate
+    i6 = Intersection(Range(0, 100), Range(10, 90))
+    assert list(i6.lazy_enumerate(max_enumerate=10)) == range(10, 20)
 
 #-------------------------------------------------------------------------------
 # Difference
@@ -142,6 +146,10 @@ def test_difference():
     d = Difference({1, 2}, {1, 2, 3})
     assert d.to_set() == set()
     assert_raises(ValueError, d.lazy_sample)
+
+    # Test lazy_enumerate
+    d = Difference(Range(0, 100000), Range(100, 200))
+    assert list(d.lazy_enumerate(max_enumerate=10)) == range(10)
 
 #-------------------------------------------------------------------------------
 
