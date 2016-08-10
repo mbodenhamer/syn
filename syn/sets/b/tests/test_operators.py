@@ -2,7 +2,7 @@ from nose.tools import assert_raises
 from syn.five import xrange
 from syn.base_utils import feq
 from syn.sets.b import Union, SetWrapper, Range, NULL, Intersection, \
-    Difference
+    Difference, ClassWrapper
 
 SAMPLES = 10
 range = lambda *args: list(xrange(*args))
@@ -46,6 +46,15 @@ def test_union():
     assert Union(Range(1, 2)).to_set() == {1, 2}
     assert Union({2, 4}).to_set() == {2, 4}
     
+    # Sanity Check
+    class Foo(object): pass
+    class F1(Foo): pass
+    u = Union(range(10), Range(10, 20), ClassWrapper(Foo))
+    assert u.size() == 23
+    assert feq(u.expected_size(), 17)
+    us = u.to_set()
+    assert len(us) == 23
+    assert us == set(range(10)) | set(range(10, 21)) | set([Foo, F1])
 
 #-------------------------------------------------------------------------------
 # Intersection
@@ -154,6 +163,22 @@ def test_difference():
     # Test lazy_enumerate
     d = Difference(Range(0, 100000), Range(100, 200))
     assert list(d.lazy_enumerate(max_enumerate=10)) == range(10)
+
+#-------------------------------------------------------------------------------
+# Combined Operators
+
+def test_combined_operators():
+    s = Union(Union(range(5), Range(5, 9)),
+              Union(Range(10, 14), range(15, 20)))
+
+    assert list(sorted(s.lazy_enumerate())) == range(20)
+    assert s.to_set() == set(range(20))
+
+    s = Intersection(Union(Range(-10, 0),
+                           Intersection(Range(0, 10), Range(0, 20))),
+                     Difference(Range(0, 10), Range(5, 100000)))
+    assert s.to_set() == set(range(5))
+    assert list(sorted(s.lazy_enumerate())) == range(5)
 
 #-------------------------------------------------------------------------------
 
