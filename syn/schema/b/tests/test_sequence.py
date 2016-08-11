@@ -1,4 +1,5 @@
-from syn.schema.b import Sequence, Set, Or, Repeat
+from syn.schema.b import Sequence, Set, Or, Repeat, Optional, OneOrMore, \
+    ZeroOrMore
 from syn.sets import SetWrapper, TypeWrapper, Range
 
 #-------------------------------------------------------------------------------
@@ -38,6 +39,7 @@ def test_conversion():
 def test_generation():
     s = Sequence(1, 2, 3)
     assert s.get_one() == [1, 2, 3]
+    assert s.sample() == [1, 2, 3]
     assert list(s.enumerate()) == [[1, 2, 3]]
 
     s = Sequence(1, Repeat(2, lb=0, ub=3))
@@ -45,6 +47,51 @@ def test_generation():
                                      [1, 2],
                                      [1, 2, 2],
                                      [1, 2, 2, 2]]
+
+    s = Sequence(Optional(1))
+    assert sorted(s.enumerate()) == [[], [1]]
+
+    s = Sequence(ZeroOrMore(1))
+    assert sorted(s.enumerate()) == [[],
+                                     [1],
+                                     [1, 1],
+                                     [1, 1, 1],
+                                     [1, 1, 1, 1],
+                                     [1, 1, 1, 1, 1]]
+
+    s = Sequence(OneOrMore(1))
+    assert sorted(s.enumerate()) == [[1],
+                                     [1, 1],
+                                     [1, 1, 1],
+                                     [1, 1, 1, 1],
+                                     [1, 1, 1, 1, 1],
+                                     [1, 1, 1, 1, 1, 1]]
+
+    s = Sequence(Or(1, [2, 3]))
+    assert sorted(s.enumerate()) == [[1], [2, 3]]
+
+    s = Sequence(Repeat(Or(1, 2), lb = 1, ub = 2), 5)
+    assert sorted(s.enumerate()) == [[1, 1, 5],
+                                     [1, 2, 5],
+                                     [1, 5],
+                                     [2, 1, 5],
+                                     [2, 2, 5],
+                                     [2, 5]]
+
+    s = Sequence(Repeat(Repeat(1, lb=1, ub=2), lb=1, ub=2))
+    assert sorted(s.enumerate()) == [[1],
+                                     [1, 1],
+                                     [1, 1, 1],
+                                     [1, 1, 1],
+                                     [1, 1, 1, 1]]
+
+    s = Sequence(Or(2, Repeat(Repeat(1, lb=1, ub=2), lb=1, ub=2)), 3)
+    assert sorted(s.enumerate()) == [[1, 1, 1, 1, 3],
+                                     [1, 1, 1, 3],
+                                     [1, 1, 1, 3],
+                                     [1, 1, 3],
+                                     [1, 3],
+                                     [2, 3]]
 
 #-------------------------------------------------------------------------------
 

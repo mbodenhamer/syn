@@ -57,7 +57,7 @@ class Or(SchemaNode):
     def __init__(self, *args, **kwargs):
         lst = []
         for arg in args:
-            if is_proper_sequence(arg):
+            if not isinstance(arg, SchemaNode) and is_proper_sequence(arg):
                 lst.append(Sequence(*arg))
             else:
                 lst.append(arg)
@@ -118,13 +118,20 @@ class Sequence(SchemaNode):
     def get_one(self, **kwargs):
         return flattened(self.set.get_one(**kwargs))
 
+    def sample(self, **kwargs):
+        return flattened(self.set.sample(**kwargs))
+
+    def validate(self):
+        super(Sequence, self).validate()
+        self.set.validate()
+
 
 #-------------------------------------------------------------------------------
 # Combinations
 
 Optional = partial(Repeat, lb=0, ub=1, greedy=True)
-OneOrMore = partial(Repeat, lb=1, ub=None, greedy=True)
-ZeroOrMore = partial(Repeat, lb=0, ub=None, greedy=True)
+OneOrMore = partial(Repeat, lb=1, greedy=True)
+ZeroOrMore = partial(Repeat, lb=0, greedy=True)
 
 #-------------------------------------------------------------------------------
 # __all__
