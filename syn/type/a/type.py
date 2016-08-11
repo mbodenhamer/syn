@@ -68,6 +68,13 @@ class Type(object):
         raise NotImplementedError
 
 
+    def validate_exception(self, value):
+        try:
+            self.validate(value)
+            return True, None
+        except TypeError as e:
+            return False, e
+
 #-------------------------------------------------------------------------------
 # Any Type
 
