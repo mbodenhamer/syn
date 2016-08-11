@@ -280,6 +280,13 @@ class I2(I):
     def _baz(self):
         self.f = self.d + self.e
 
+class I2a(I2):
+    pass
+
+class I2b(I2):
+    def _baz(self):
+        self.f = super(I2a, self)._baz() + 1
+
 class I3(I2):
     @setstate_hook
     def _foobaz(self):
@@ -309,6 +316,17 @@ def test_init_setstate_hooks():
     assert obj.f == 27.0
 
     check_idempotence(obj)
+
+    # Inheriting without overriding preserves the init hook
+    obj = I2a(5, 2.5)
+    assert obj.d == 12.5
+    assert obj.e == 14.5
+    assert obj.f == 27.0
+
+    check_idempotence(obj)
+
+    # Because we overrode _baz without specifying init_hook again
+    assert_raises(AttributeError, I2b, 5, 2.5)
 
     obj = I3(5, 2.5)
     assert obj.f == 27.0
