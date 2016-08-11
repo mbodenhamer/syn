@@ -10,7 +10,6 @@ from syn.sets import SetNode, Union, Product, SetWrapper, TypeWrapper
 from syn.base_utils import flattened, is_proper_sequence
 from operator import itemgetter
 from functools import partial
-import collections
 
 #-------------------------------------------------------------------------------
 # SchemaNode
@@ -118,13 +117,22 @@ class Sequence(SchemaNode):
         self.set = Product(*sets)
 
     def enumerate(self, **kwargs):
+        '''Iterate through all possible sequences (lists).  By default, will
+        stop after 50 items have been yielded. This value can be
+        change by supplying a different value via the max_enumerate kwarg.
+        '''
         for item in self.set.enumerate(**kwargs):
             yield flattened(item)
 
     def get_one(self, **kwargs):
+        '''Returns one possible sequence (list). May return the same value on
+        multiple invocations.
+        '''
         return flattened(self.set.get_one(**kwargs))
 
     def sample(self, **kwargs):
+        '''Returns one possible sequence (list). The selection is randomized.
+        '''
         return flattened(self.set.sample(**kwargs))
 
     def validate(self):
