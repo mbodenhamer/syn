@@ -7,9 +7,14 @@ from syn.five import xrange, SET
 from syn.base import Attr, init_hook
 from syn.tree import Node
 from syn.sets import SetNode, Union, Product, SetWrapper, TypeWrapper
-from syn.base_utils import flattened, is_proper_sequence
+from syn.base_utils import flattened, is_proper_sequence, IterableList
 from operator import itemgetter
 from functools import partial
+
+#-------------------------------------------------------------------------------
+
+class MatchFailed(Exception):
+    pass
 
 #-------------------------------------------------------------------------------
 # SchemaNode
@@ -130,6 +135,35 @@ class Sequence(SchemaNode):
         multiple invocations.
         '''
         return flattened(self.set.get_one(**kwargs))
+
+    def match(self, seq, **kwargs):
+        '''If the schema matches seq, returns a list of the matched objects.
+        Otherwise, returns None.
+        '''
+        strict = kwargs.get('strict', self.strict)
+        top_level = kwargs.get('top_level', True)
+        match = kwargs.get('match', list())
+
+        if top_level:
+            kwargs['top_level'] = False
+            kwargs['match'] = match
+
+            try:
+                if not isinstance(seq, IterableList):
+                    seq = IterableList(seq)
+                self.match(seq, **kwargs)
+
+                if strict:
+                    if not seq.empty():
+                        raise MatchFailed('Sequence is too long')
+
+            except MatchFailed:
+                return
+
+            return match
+
+        for elem in self.elems:
+            elem.match(seq, **kwargs)
 
     def sample(self, **kwargs):
         '''Returns one possible sequence (list). The selection is randomized.
