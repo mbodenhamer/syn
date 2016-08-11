@@ -64,16 +64,6 @@ class Set(SchemaNode):
 class Or(SchemaNode):
     _opts = dict(min_len = 2)
 
-    def __init__(self, *args, **kwargs):
-        lst = []
-        for arg in args:
-            if (not isinstance(arg, (SchemaNode, SetNode)) 
-                and is_proper_sequence(arg)):
-                lst.append(Sequence(*arg))
-            else:
-                lst.append(arg)
-        super(Or, self).__init__(*lst, **kwargs)
-
     @init_hook
     def generate_set(self, **kwargs):
         sets = [c.set for c in self]

@@ -31,7 +31,7 @@ def test_conversion():
     assert s[0].set == sw
 
     o = Or(1, [2, 3])
-    assert list(o) == [Set(SetWrapper([1])), Sequence(2, 3)]
+    assert list(o) == [Set(SetWrapper([1])), Set(SetWrapper([2, 3]))]
 
 #-------------------------------------------------------------------------------
 # Test generation
@@ -68,7 +68,7 @@ def test_generation():
                                      [1, 1, 1, 1, 1, 1]]
 
     s = Sequence(Or(1, [2, 3]))
-    assert sorted(s.enumerate()) == [[1], [2, 3]]
+    assert sorted(s.enumerate()) == [[1], [2], [3]]
 
     s = Sequence(Repeat(Or(1, 2), lb = 1, ub = 2), 5)
     assert sorted(s.enumerate()) == [[1, 1, 5],
