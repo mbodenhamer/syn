@@ -5,7 +5,7 @@ import syn.schema.b
 # Schema imports
 
 def test_schema_imports():
-    assert syn.schema.Sequence is syn.schema.b.Sequence
+    assert syn.schema.SchemaNode is syn.schema.b.SchemaNode
 
 #-------------------------------------------------------------------------------
 

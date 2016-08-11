@@ -1,10 +1,10 @@
-from syn.schema.b import Sequence
+from syn.schema.b import SchemaNode
 
 #-------------------------------------------------------------------------------
-# Sequence
+# SchemaNode
 
-def test_sequence():
-    Sequence
+def test_schemanode():
+    SchemaNode
 
 #-------------------------------------------------------------------------------
 
