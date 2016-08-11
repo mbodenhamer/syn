@@ -285,7 +285,7 @@ class I2a(I2):
 
 class I2b(I2):
     def _baz(self):
-        self.f = super(I2a, self)._baz() + 1
+        self.f = super(I2a, self)._baz() + 1 # pragma: no cover
 
 class I3(I2):
     @setstate_hook
