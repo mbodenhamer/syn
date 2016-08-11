@@ -1,4 +1,5 @@
 from nose.tools import assert_raises
+from syn.five import xrange
 
 #-------------------------------------------------------------------------------
 # ListView
@@ -59,6 +60,68 @@ def test_listview():
     assert_raises(ValueError, ListView, [1, 2, 3], 2, 1)
     assert_raises(ValueError, ListView, [1, 2, 3], 5, 7)
     assert_raises(ValueError, ListView, [1, 2, 3], 0, 7)
+
+#-------------------------------------------------------------------------------
+# IterableList
+
+def test_iterablelist():
+    from syn.base_utils import IterableList
+    range = lambda *args: list(xrange(*args))
+
+    l = IterableList(range(0,10))
+    assert len(l) == 10
+    assert l.position == 0
+    assert not l.empty()
+    assert_raises(ValueError, l.seek, 0, 3)
+
+    l.seek(0, 2)
+    assert not l.empty()
+    assert l.peek() == 9
+    assert l.position == 9
+    assert l.next() == 9
+    assert l.empty()
+
+    l.seek(1)
+    assert l.position == 1
+    l.mark()
+
+    l.seek(8)
+    assert l.next() == 8
+    assert l.next() == 9
+    assert_raises(StopIteration, l.next)
+    assert l.position == 10
+    assert l.peek() is None
+    assert_raises(StopIteration, l.peek, safe=False)
+
+    l.reset()
+    assert l.peek() == 1
+    assert l.next() == 1
+    assert l.displacement() == 1
+    assert l.peek() == 2
+    assert l.previous() == 1
+    assert l.displacement() == 0
+
+    assert l.peek(2) == 3
+    assert l.peek(-1) == 0
+    assert l.peek(-2) is None
+    assert l.peek() == 1
+    assert_raises(StopIteration, l.peek, -2, safe=False)
+    assert l.peek() is None
+
+    l.reset()
+    assert l.peek() == 1
+    l.consume(3)
+    assert l.peek() == 4
+
+    l2 = l.copy()
+    l2.reset()
+    assert l.peek() == 4
+    assert l2.peek() == 1
+    assert l2.take(3) == [1, 2, 3]
+    assert l2.peek() == 4
+
+    assert l2.take(0) == []
+    assert l2.peek() == 4
 
 #-------------------------------------------------------------------------------
 # Query Utilities

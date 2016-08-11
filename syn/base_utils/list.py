@@ -66,6 +66,90 @@ class ListView(MutableSequence):
 
 
 #-------------------------------------------------------------------------------
+# IterableList
+
+
+class IterableList(list):
+    def __init__(self, values, position=0, position_mark=None):
+        super(IterableList, self).__init__(values)
+        self.position = position
+        self.position_mark = (position_mark if position_mark is not None 
+                              else self.position)
+
+    def _check_position(self):
+        if self.position >= len(self) or self.position < 0:
+            raise StopIteration()
+
+    def consume(self, n):
+        self.seek(n, 1)
+
+    def copy(self):
+        return type(self)(list(self), position=self.position,
+                          position_mark=self.position_mark)
+
+    def displacement(self):
+        return self.position - self.position_mark
+
+    def empty(self):
+        return len(self) == 0 or self.position >= len(self)
+
+    def mark(self):
+        self.position_mark = self.position
+
+    def next(self):
+        ret = self.peek()
+        self.seek(1, 1)
+        return ret
+
+    def peek(self, n=None, safe=True):
+        if n is not None:
+            self.seek(n, 1)
+        
+        try:
+            self._check_position()
+        except StopIteration:
+            if safe:
+                if n is not None:
+                    self.position += -n
+                return
+            raise StopIteration()
+
+        ret = self[self.position]
+        if n is not None:
+            self.seek(-n, 1)
+        return ret
+
+    def previous(self):
+        self.seek(-1, 1)
+        ret = self.peek()
+        return ret
+
+    def reset(self):
+        self.position = self.position_mark
+        self._check_position()
+
+    def seek(self, n, mode=0):
+        if mode == 0:
+            self.position = n
+        elif mode == 1:
+            self._check_position()
+            self.position += n
+        elif mode == 2:
+            self.position = len(self) - n - 1
+        else:
+            raise ValueError("Invalid mode value '%d'" % mode)
+
+    def take(self, n):
+        self._check_position()
+        if n > 0:
+            self.peek(n-1, safe=False)
+            ret = self[self.position:self.position+n]
+            self.consume(n)
+            return ret
+        return []
+
+
+#-------------------------------------------------------------------------------
 # Query Utilities
 
 def is_proper_sequence(seq):
@@ -103,7 +187,7 @@ def flattened(seq):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('ListView',
+__all__ = ('ListView', 'IterableList',
            'is_proper_sequence', 'is_flat',
            'indices_removed', 'flattened')
 
