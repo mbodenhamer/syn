@@ -1,9 +1,10 @@
-from syn.five import xrange
+from syn.five import xrange, SET
 from syn.base import Attr, init_hook
 from syn.tree import Node
 from syn.sets import SetNode, Union, Product, SetWrapper, TypeWrapper
 from syn.base_utils import flattened, is_proper_sequence
 from operator import itemgetter
+from functools import partial
 import collections
 
 #-------------------------------------------------------------------------------
@@ -27,14 +28,11 @@ class SchemaNode(Node):
                 lst.append(Set(TypeWrapper(arg)))
             elif isinstance(arg, SetNode):
                 lst.append(Set(arg))
-            elif isinstance(arg, set) or is_proper_sequence(arg):
+            elif isinstance(arg, SET) or is_proper_sequence(arg):
                 lst.append(Set(SetWrapper(arg)))
             else:
                 lst.append(Set(SetWrapper([arg]))) # Create a singleton
         super(SchemaNode, self).__init__(*lst, **kwargs)
-
-    def match(self, **kwargs):
-        raise NotImplementedError
 
 
 #-------------------------------------------------------------------------------
@@ -45,7 +43,7 @@ class Set(SchemaNode):
     _opts = dict(max_len = 0,
                  args = ('set',))
 
-    def __init__(*args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(SchemaNode, self).__init__(*args, **kwargs)
 
 
@@ -90,7 +88,7 @@ class Repeat(SchemaNode):
         sets = []
         for k in xrange(self.lb, self.ub + 1):
             if k == 0:
-               sets.append(SetWrapper(set()))
+               sets.append(SetWrapper([()]))
             elif k == 1:
                 sets.append(self.A.set)
             else:
@@ -122,8 +120,16 @@ class Sequence(SchemaNode):
 
 
 #-------------------------------------------------------------------------------
+# Combinations
+
+Optional = partial(Repeat, lb=0, ub=1, greedy=True)
+OneOrMore = partial(Repeat, lb=1, ub=None, greedy=True)
+ZeroOrMore = partial(Repeat, lb=0, ub=None, greedy=True)
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('SchemaNode', 'Set', 'Or', 'Repeat', 'Sequence')
+__all__ = ('SchemaNode', 'Set', 'Or', 'Repeat', 'Sequence',
+           'Optional', 'OneOrMore', 'ZeroOrMore')
 
 #-------------------------------------------------------------------------------
