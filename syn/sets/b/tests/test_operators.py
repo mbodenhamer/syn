@@ -42,10 +42,6 @@ def test_union():
         item = u2.sample()
         assert u2.hasmember(item)
 
-    # NOTE: these are not valid Union objects
-    assert Union(Range(1, 2)).to_set() == {1, 2}
-    assert Union({2, 4}).to_set() == {2, 4}
-    
     # Sanity Check
     class Foo(object): pass
     class F1(Foo): pass
@@ -56,6 +52,12 @@ def test_union():
     assert len(us) == 23
     assert us == set(range(10)) | set(range(10, 21)) | set([Foo, F1])
 
+    # Edge Cases
+    assert list(Union().enumerate()) == []
+    assert Union().to_set() == set()
+    assert Union(Range(1, 2)).to_set() == {1, 2}
+    assert Union({2, 4}).to_set() == {2, 4}
+    
 #-------------------------------------------------------------------------------
 # Intersection
 
@@ -99,9 +101,6 @@ def test_intersection():
     assert Intersection(Range(1, 5), Union({2}, Range(4,5))).to_set() == {2, 4, 5}
     assert Intersection(NULL, Union({2}, Range(4,5))).to_set() == set()
 
-    # NOTE: this is not a valid Intersection object
-    assert Intersection(Range(1, 5)).to_set() == set(range(1,6))
-
     i3 = Intersection({1, 2, 3}, {1, 2, 3})
     assert len(list(i3.enumerate(max_enumerate = 2))) == 2
 
@@ -120,6 +119,11 @@ def test_intersection():
     # Sanity check
     i7 = Intersection(range(10), Range(0, 50))
     assert i7.to_set() == set(range(10))
+
+    # Edge Cases
+    assert Intersection().to_set() == set()
+    assert list(Intersection().lazy_enumerate()) == []
+    assert Intersection(Range(1, 5)).to_set() == set(range(1,6))
 
 #-------------------------------------------------------------------------------
 # Difference

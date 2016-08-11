@@ -12,8 +12,6 @@ from .base import SetNode, Args
 
 
 class SetOperator(SetNode):
-    _opts = dict(min_len = 2)
-
     def size(self):
         return len(self.to_set())
 
@@ -137,10 +135,11 @@ class Intersection(SetOperator):
             sets.sort(key=lambda s: s.expected_size())
 
             # Enumerate over the smallest set
-            for item in sets[0].enumerate(**kwargs):
-                if self.hasmember(item):
-                    yield item
-
+            if sets:
+                for item in sets[0].enumerate(**kwargs):
+                    if self.hasmember(item):
+                        yield item
+                        
     def to_set(self, **kwargs):
         ret = set()
         part = type_partition(self, Range, SetWrapper)
