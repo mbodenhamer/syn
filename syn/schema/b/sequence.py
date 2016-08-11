@@ -1,3 +1,8 @@
+'''Tools for representing sets of sequences via sequence operators and
+sets of sequence items.  The main idea is that a set of sequences is
+the result of a (flattened) Cartesian product over a sequence of sets.
+'''
+
 from syn.five import xrange, SET
 from syn.base import Attr, init_hook
 from syn.tree import Node
@@ -13,10 +18,11 @@ import collections
 
 class SchemaNode(Node):
     _aliases = dict(_list = 'elems')
-    _attrs = dict(strict = Attr(bool, False, ''),
+    _attrs = dict(strict = Attr(bool, False, 'If True, use strict matching'),
                   set = Attr(SetNode, optional=True, internal=True,
                              doc='Internal set representation'),
-                  coerce_types = Attr(bool, True, ''))
+                  coerce_types = Attr(bool, True, 'If True, attempt to coerce '
+                                      'potential match values to expected type'))
     _opts = dict(coerce_args = True)
 
     def __init__(self, *args, **kwargs):
