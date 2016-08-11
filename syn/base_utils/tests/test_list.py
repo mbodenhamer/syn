@@ -61,6 +61,28 @@ def test_listview():
     assert_raises(ValueError, ListView, [1, 2, 3], 0, 7)
 
 #-------------------------------------------------------------------------------
+# Query Utilities
+
+def test_is_proper_sequence():
+    from syn.base_utils import is_proper_sequence
+
+    assert not is_proper_sequence(1)
+    assert not is_proper_sequence('abc')
+    assert is_proper_sequence(['a', 'b', 'c'])
+    assert is_proper_sequence(('a', 'b', 'c'))
+
+def test_is_flat():
+    from syn.base_utils import is_flat
+
+    assert is_flat([1, 2, 3])
+    assert is_flat((1, 2, 3))
+    assert is_flat('abc')
+    assert is_flat(['a', 'b', 'c'])
+    assert not is_flat([[], 2, 3])
+
+    assert_raises(TypeError, is_flat, 1)
+
+#-------------------------------------------------------------------------------
 # Non-Modification Utilities
 
 def test_indices_removed():
@@ -72,6 +94,19 @@ def test_indices_removed():
     assert indices_removed(lst, lst) == []
 
     assert lst == list(range(10))
+
+def test_flattened():
+    from syn.base_utils import flattened
+
+    assert flattened(5) == [5]
+    assert flattened([1, 2]) == [1, 2]
+    assert flattened((1, 2)) == [1, 2]
+    assert flattened([1]) == [1]
+    assert flattened([[1]]) == [1]
+
+    assert flattened([[1, 2], [3, 4, 5]]) == [1, 2, 3, 4, 5]
+    assert flattened([[1, (2, 3, [4]), [[5]]], [[3, (4, 5)]]]) == \
+        [1, 2, 3, 4, 5, 3, 4, 5]
 
 #-------------------------------------------------------------------------------
 
