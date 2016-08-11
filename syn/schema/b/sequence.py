@@ -62,7 +62,8 @@ class Or(SchemaNode):
     def __init__(self, *args, **kwargs):
         lst = []
         for arg in args:
-            if not isinstance(arg, SchemaNode) and is_proper_sequence(arg):
+            if (not isinstance(arg, (SchemaNode, SetNode)) 
+                and is_proper_sequence(arg)):
                 lst.append(Sequence(*arg))
             else:
                 lst.append(arg)
@@ -82,7 +83,7 @@ class Repeat(SchemaNode):
     _attrs = dict(lb = Attr(int, 0, 'Minimum number of times to repeat'),
                   ub = Attr(int, init=lambda self: self.lb + 5,
                             doc='Maximum number of times to repeat'),
-                  greedy = Attr(bool, True, 'Match as much as we can'))
+                  greedy = Attr(bool, True, 'Match as much as we can if True'))
     _opts = dict(min_len = 1,
                  max_len = 1)
 
