@@ -5,7 +5,7 @@ from syn.base.b import Base, Attr, init_hook, coerce_hook, setstate_hook
 from syn.type.a import Type
 from syn.base_utils import assert_equivalent, assert_pickle_idempotent, \
     assert_inequivalent, assert_type_equivalent, \
-    get_mod, SeqDict, is_hashable
+    get_mod, SeqDict, is_hashable, this_module
 from syn.base.b import check_idempotence
 
 #-------------------------------------------------------------------------------
@@ -479,12 +479,12 @@ def test_class_auto_documentation():
 class REPR1(Base):
     _attrs = dict(a = Attr(int),
                   b = Attr(float))
-    _opts = dict(repr_template = '<{__name__} a={a} b={b}>',
+    _opts = dict(repr_template = '<{__mod__}.{__name__} a={a} b={b}>',
                  init_validate = True)
 
 def test_repr_template():
     r = REPR1(a = 1, b = 2.3)
-    assert repr(r) == '<REPR1 a=1 b=2.3>'
+    assert repr(r) == '<{}.REPR1 a=1 b=2.3>'.format(this_module().__name__)
 
     r._opts.repr_template = '{b}'
     assert repr(r) == '2.3'
