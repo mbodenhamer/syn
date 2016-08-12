@@ -54,14 +54,7 @@ def test_typetype():
     res, e = t.query_exception(1)
     assert res
     assert e is None
-    res, e = t.validate_exception(1)
-    assert res
-    assert e is None
     res, e = t.query_exception(1.2)
-    assert not res
-    assert isinstance(e, TypeError)
-    assert t.coerce(1.2) == 1
-    res, e = t.validate_exception(1.2)
     assert not res
     assert isinstance(e, TypeError)
     assert t.coerce(1.2) == 1
