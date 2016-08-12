@@ -1,8 +1,18 @@
 from nose.tools import assert_raises
 from syn.schema.b.sequence import Sequence, Set, Or, Repeat, Optional, \
-    OneOrMore, ZeroOrMore, MatchFailure, MatchFailed
+    OneOrMore, ZeroOrMore, MatchFailure, MatchFailed, Match
 from syn.sets import SetWrapper, TypeWrapper, Range
 from syn.base_utils import IterableList
+
+#-------------------------------------------------------------------------------
+# Match
+
+def test_match():
+    m = Match()
+    assert m
+
+    m = Match(*[1, 2, 3])
+    assert list(m) == [1, 2, 3]
 
 #-------------------------------------------------------------------------------
 # MatchFailure
@@ -126,7 +136,7 @@ def test_matching():
     s = Sequence('a', 'b', 'c')
 
     assert s.match('abc')
-    assert s.match('abc') == ['a', 'b', 'c']
+    assert list(s.match('abc')) == ['a', 'b', 'c']
 
     f = s.match('d')
     assert f.message == 'Item not in set'
@@ -181,6 +191,31 @@ def test_matching():
     assert s.match('ba')
     assert s.match('aba')
     assert not s.match('aba', strict=True)
+
+    s = Sequence(Repeat(Or('a', Sequence('b', 'c', 'd')), lb=1, ub=3))
+    assert not s.match('')
+    assert s.match('a')
+    assert s.match('bcd')
+    assert s.match('abcdbcd')
+    assert s.match('abcda')
+    assert s.match('aaa')
+    assert s.match('bcdaa')
+    assert not s.match('bcdaaa', strict=True)
+
+    s = Sequence(Optional('a'))
+    assert s.match('')
+    assert s.match('a')
+    assert not s.match('aa', strict=True)
+    assert s.match('b')
+
+    s = Sequence(ZeroOrMore('a'))
+    assert s.match('')
+    assert s.match('a')
+    assert s.match('aaaaaaa')
+    assert not s.match('aaab', strict=True)
+
+    s = Sequence(int, float, str)
+    assert s.match([1, 1.2, 'abc'])
 
 #-------------------------------------------------------------------------------
 # Misc.

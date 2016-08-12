@@ -5,7 +5,7 @@ the result of a (flattened) Cartesian product over a sequence of sets.
 
 from copy import copy
 from syn.five import xrange, SET, STR
-from syn.base import Attr, init_hook, Base
+from syn.base import Attr, init_hook, Base, ListWrapper
 from syn.tree import Node
 from syn.sets import SetNode, Union, Product, SetWrapper, TypeWrapper
 from syn.base_utils import flattened, is_proper_sequence, IterableList, message
@@ -13,6 +13,19 @@ from operator import itemgetter
 from functools import partial
 
 OAttr = partial(Attr, optional=True)
+
+#-------------------------------------------------------------------------------
+# Match
+
+
+class Match(ListWrapper):
+    # So that "if pattern.match(...):" can be used
+    def __nonzero__(self):
+        return True
+
+    def __bool__(self):
+        return True
+
 
 #-------------------------------------------------------------------------------
 # MatchFailure
@@ -254,7 +267,7 @@ class Sequence(SchemaNode):
             except MatchFailed as e:
                 return e.failure()
 
-            return match
+            return Match(*match)
 
         for elem in self.elems:
             elem.match(seq, **kwargs)
@@ -280,7 +293,7 @@ ZeroOrMore = partial(Repeat, lb=0, greedy=True)
 # __all__
 
 __all__ = ('SchemaNode', 'Set', 'Or', 'Repeat', 'Sequence',
-           'MatchFailure', 'MatchFailed',
+           'Match', 'MatchFailure', 'MatchFailed',
            'Optional', 'OneOrMore', 'ZeroOrMore')
 
 #-------------------------------------------------------------------------------
