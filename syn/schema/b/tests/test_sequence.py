@@ -1,3 +1,4 @@
+from nose.tools import assert_raises
 from syn.schema.b.sequence import Sequence, Set, Or, Repeat, Optional, \
     OneOrMore, ZeroOrMore, MatchFailure, MatchFailed
 from syn.sets import SetWrapper, TypeWrapper, Range
@@ -9,6 +10,23 @@ from syn.base_utils import IterableList
 def test_matchfailure():
     m = MatchFailure(message='abc', seq=IterableList([]))
     assert not m
+
+#-------------------------------------------------------------------------------
+# MatchFailed
+
+def test_matchfailed():
+    msg = 'abc'
+    seq = IterableList([])
+
+    e = MatchFailed(msg, seq)
+    assert e.fails == []
+    assert e.failure() == MatchFailure(message=msg, seq=seq, fails=[])
+
+    def ex():
+        raise e
+
+    assert_raises(Exception, ex)    
+    assert_raises(MatchFailed, ex)    
 
 #-------------------------------------------------------------------------------
 # Test conversion

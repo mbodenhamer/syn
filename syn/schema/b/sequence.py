@@ -8,7 +8,7 @@ from syn.five import xrange, SET, STR
 from syn.base import Attr, init_hook, Base
 from syn.tree import Node
 from syn.sets import SetNode, Union, Product, SetWrapper, TypeWrapper
-from syn.base_utils import flattened, is_proper_sequence, IterableList
+from syn.base_utils import flattened, is_proper_sequence, IterableList, message
 from operator import itemgetter
 from functools import partial
 
@@ -44,7 +44,7 @@ class MatchFailed(Exception):
         self.fails = fails if fails else []
     
     def failure(self):
-        return MatchFailure(message=self.message, 
+        return MatchFailure(message=message(self), 
                             seq=self.seq, 
                             fails=self.fails)
 
