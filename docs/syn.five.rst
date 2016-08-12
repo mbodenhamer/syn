@@ -4,6 +4,14 @@ syn.five package
 Submodules
 ----------
 
+syn.five.num module
+-------------------
+
+.. automodule:: syn.five.num
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 syn.five.string module
 ----------------------
 

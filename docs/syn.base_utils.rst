@@ -36,6 +36,14 @@ syn.base_utils.filters module
     :undoc-members:
     :show-inheritance:
 
+syn.base_utils.float module
+---------------------------
+
+.. automodule:: syn.base_utils.float
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 syn.base_utils.hash module
 --------------------------
 
@@ -48,6 +56,14 @@ syn.base_utils.list module
 --------------------------
 
 .. automodule:: syn.base_utils.list
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+syn.base_utils.logic module
+---------------------------
+
+.. automodule:: syn.base_utils.logic
     :members:
     :undoc-members:
     :show-inheritance:
