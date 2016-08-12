@@ -3,8 +3,8 @@ Changelog
 
 0.0.11 (2016-08-15)
 ~~~~~~~~~~~~~~~~~~~
-
-
+- Added syn.schema.sequence.Type for explicit type specifications
+- Added repr template functionality to syn.base.b.Base
 
 0.0.10 (2016-08-12)
 ~~~~~~~~~~~~~~~~~~
