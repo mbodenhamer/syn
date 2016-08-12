@@ -1,12 +1,14 @@
 from syn.schema.b.sequence import Sequence, Set, Or, Repeat, Optional, \
     OneOrMore, ZeroOrMore, MatchFailure, MatchFailed
 from syn.sets import SetWrapper, TypeWrapper, Range
+from syn.base_utils import IterableList
 
 #-------------------------------------------------------------------------------
 # MatchFailure
 
 def test_matchfailure():
-    pass
+    m = MatchFailure(message='abc', seq=IterableList([]))
+    assert not m
 
 #-------------------------------------------------------------------------------
 # Test conversion
