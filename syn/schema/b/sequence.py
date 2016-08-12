@@ -54,7 +54,7 @@ class MatchFailed(Exception):
 
 
 class SchemaNode(Node):
-    _aliases = dict(_list = 'elems')
+    _aliases = dict(_list = ['elems'])
     _attrs = dict(set = Attr(SetNode, optional=True, internal=True,
                              doc='Internal set representation'))
     _opts = dict(optional_none = True)
@@ -90,13 +90,15 @@ class Set(SchemaNode):
         match = kwargs['match']
 
         try:
+            seq.mark()
             item = next(seq)
         except StopIteration:
             raise MatchFailed('Sequence is too short', seq)
 
-        if self.set.hasmember(seq):
+        if self.set.hasmember(item):
             match.append(item)
         else:
+            seq.reset() # Correct the index for error display
             raise MatchFailed('Item not in set', seq)
 
 
@@ -183,8 +185,9 @@ class Repeat(SchemaNode):
                     if count >= self.lb:
                         break
 
-                if count >= self.ub:
-                    break
+                if self.ub is not None:
+                    if count >= self.ub:
+                        break
             
             except MatchFailed as e:
                 fails.append(e.failure())
@@ -230,9 +233,9 @@ class Sequence(SchemaNode):
 
     def match(self, seq, **kwargs):
         '''If the schema matches seq, returns a list of the matched objects.
-        Otherwise, returns MatchFailure.
+        Otherwise, returns MatchFailure instance.
         '''
-        strict = kwargs.get('strict', self.strict)
+        strict = kwargs.get('strict', False)
         top_level = kwargs.get('top_level', True)
         match = kwargs.get('match', list())
 

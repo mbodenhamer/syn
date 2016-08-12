@@ -123,7 +123,71 @@ def test_generation():
 # Test Matching
 
 def test_matching():
-    pass
+    s = Sequence('a', 'b', 'c')
+
+    assert s.match('abc')
+    assert s.match('abc') == ['a', 'b', 'c']
+
+    f = s.match('d')
+    assert f.message == 'Item not in set'
+    assert f.seq.position == 0
+
+    f = s.match('')
+    assert f.message == 'Sequence is too short'
+    assert f.seq.position == 0
+
+    s = Sequence(Or('a', 'b'))
+    assert s.match('a')
+    assert s.match('b')
+    assert not s.match('c')
+    assert s.match('ac')
+    assert not s.match('ac', strict=True)
+
+    f = s.match('c')
+    assert f.message == 'Did not meet any Or conditions'
+    assert f.seq.position == 0
+    assert f.fails[0].message == 'Item not in set'
+    assert f.fails[0].seq.position == 0
+
+    f = s.match('ac', strict=True)
+    assert f.message == 'Sequence is too long'
+    assert f.seq.position == 1
+
+    s = Sequence(OneOrMore('a'))
+    assert not s.match('')
+    assert s.match('a')
+    assert s.match('a' * 50)
+    assert not s.match('ab', strict=True)
+
+    f = s.match('')
+    assert f.message == 'Did not match enough repetitions'
+    assert f.seq.position == 0
+    assert f.fails[0].message == 'Sequence is too short'
+    assert f.fails[0].seq.position == 0
+
+    s = Sequence(Repeat(Or('a', 'b'), lb=1, ub=3))
+    assert not s.match('')
+    assert s.match('a')
+    assert s.match('b')
+    assert s.match('aba')
+    assert s.match('abab')
+    assert not s.match('abab', strict=True)
+    assert not s.match('acb', strict=True)
+
+    s = Sequence(Repeat(Or('a', 'b'), lb=1, ub=3, greedy=False))
+    assert not s.match('')
+    assert s.match('a')
+    assert s.match('b')
+    assert s.match('ba')
+    assert s.match('aba')
+    assert not s.match('aba', strict=True)
+
+#-------------------------------------------------------------------------------
+# Misc.
+
+def test_misc():
+    r = Repeat(1, lb=2, ub=1)
+    assert_raises(ValueError, r.validate)
 
 #-------------------------------------------------------------------------------
 
