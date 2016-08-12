@@ -87,7 +87,7 @@ def test_iterablelist():
 
     l.seek(8)
     assert l.next() == 8
-    assert l.next() == 9
+    assert next(l) == 9
     assert_raises(StopIteration, l.next)
     assert l.position == 10
     assert l.peek() is None

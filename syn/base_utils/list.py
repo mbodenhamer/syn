@@ -96,6 +96,9 @@ class IterableList(list):
     def mark(self):
         self.position_mark = self.position
 
+    def __next__(self):
+        return self.next()
+
     def next(self):
         ret = self.peek()
         self.seek(1, 1)
