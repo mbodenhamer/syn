@@ -1,11 +1,12 @@
 Changelog
 ---------
 
-0.0.10 (2016-08-11)
+0.0.10 (2016-08-12)
 ~~~~~~~~~~~~~~~~~~
 - Added lazy sampling and enumeration to syn.sets
 - Removed syn.sets.Complement
 - Added syn.sets.Product
+- Added syn.schema.sequence (syn.schema.b.sequence)
 
 0.0.9 (2016-08-09)
 ~~~~~~~~~~~~~~~~~~
