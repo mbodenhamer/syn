@@ -474,6 +474,22 @@ def test_class_auto_documentation():
     ADOC(1, 1.2)
 
 #-------------------------------------------------------------------------------
+# Repr template
+
+class REPR1(Base):
+    _attrs = dict(a = Attr(int),
+                  b = Attr(float))
+    _opts = dict(repr_template = '<{__name__} a={a} b={b}>',
+                 init_validate = True)
+
+def test_repr_template():
+    r = REPR1(a = 1, b = 2.3)
+    assert repr(r) == '<REPR1 a=1 b=2.3>'
+
+    r._opts.repr_template = '{b}'
+    assert repr(r) == '2.3'
+
+#-------------------------------------------------------------------------------
 # Update functionality
 
 class TestUpdate(Base):

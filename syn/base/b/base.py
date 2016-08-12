@@ -68,6 +68,7 @@ class Base(object):
                      init_validate = False,
                      make_hashable = False,
                      optional_none = False,
+                     repr_template = '',
                      register_subclasses = False)
     _seq_opts = SeqDict(coerce_hooks = (),
                         init_hooks = (),
@@ -280,7 +281,18 @@ class Base(object):
     def __ne__(self, other):
         return not (self == other)
 
+    def _repr_template(self):
+        dct = self.to_dict()
+        dct['__name__'] = get_typename(self)
+        dct['__mod__'] = get_mod(self)
+
+        template = self._opts.repr_template
+        return template.format(**dct)
+
     def __repr__(self):
+        if self._opts.repr_template:
+            return self._repr_template()
+
         out = '<' + get_mod(self) + '.' + get_typename(self) + ' '
         out += str(self.to_dict('repr_exclude'))
         out += '>'
