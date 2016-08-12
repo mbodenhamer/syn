@@ -2,8 +2,8 @@ import re
 import six
 import types
 import inspect
-from functools import reduce
 from collections import defaultdict
+from functools import reduce, partial
 
 #-------------------------------------------------------------------------------
 
@@ -190,6 +190,16 @@ def import_module(modname):
         mod = __import__(modname)
     return mod
 
+def this_module(npop=1):
+    '''Returns the module object of the module this function is called from
+    '''
+    stack = inspect.stack()
+    st = stack[npop]
+    frame = st[0]
+    return inspect.getmodule(frame)
+
+that_module = partial(this_module, npop=2)
+
 #-------------------------------------------------------------------------------
 # Exception utilities
 
@@ -293,6 +303,7 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'assert_equivalent', 'assert_inequivalent', 'assert_type_equivalent',
            'assert_pickle_idempotent', 'assert_deepcopy_idempotent',
            'rgetattr', 'callables', 'is_subclass', 'getitem', 'same_lineage',
-           'type_partition', 'subclasses', 'unzip')
+           'type_partition', 'subclasses', 'unzip', 'this_module', 
+           'that_module')
 
 #-------------------------------------------------------------------------------

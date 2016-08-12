@@ -248,6 +248,14 @@ def test_import_module():
     m3 = import_module('os')
     assert vars(m3).keys() == vars(os).keys()
 
+def test_this_module():
+    from syn.base_utils import this_module
+
+    this = this_module()
+    assert hasattr(this, 'test_this_module')
+    assert hasattr(this, 'test_import_module')
+    assert this.test_this_module is test_this_module
+
 #-------------------------------------------------------------------------------
 # Exception utilities
 
