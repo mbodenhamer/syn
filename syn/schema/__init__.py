@@ -1,1 +1,1 @@
-from .b import *
+from .b import sequence

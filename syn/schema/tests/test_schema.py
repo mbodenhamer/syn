@@ -1,11 +1,11 @@
-import syn.schema
-import syn.schema.b
+from syn.schema import sequence
+import syn.schema.b.sequence
 
 #-------------------------------------------------------------------------------
 # Schema imports
 
 def test_schema_imports():
-    assert syn.schema.SchemaNode is syn.schema.b.SchemaNode
+    assert sequence.SchemaNode is syn.schema.b.sequence.SchemaNode
 
 #-------------------------------------------------------------------------------
 

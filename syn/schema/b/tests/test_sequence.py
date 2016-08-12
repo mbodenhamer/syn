@@ -1,6 +1,12 @@
-from syn.schema.b import Sequence, Set, Or, Repeat, Optional, OneOrMore, \
-    ZeroOrMore
+from syn.schema.b.sequence import Sequence, Set, Or, Repeat, Optional, \
+    OneOrMore, ZeroOrMore, MatchFailure, MatchFailed
 from syn.sets import SetWrapper, TypeWrapper, Range
+
+#-------------------------------------------------------------------------------
+# MatchFailure
+
+def test_matchfailure():
+    pass
 
 #-------------------------------------------------------------------------------
 # Test conversion
