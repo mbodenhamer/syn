@@ -116,6 +116,17 @@ class Set(SchemaNode):
 
 
 #-------------------------------------------------------------------------------
+# Type
+
+
+class Type(Set):
+    def __init__(self, arg, **kwargs):
+        if not isinstance(arg, TypeWrapper):
+            arg = TypeWrapper(arg)
+        super(Type, self).__init__(arg, **kwargs)
+
+
+#-------------------------------------------------------------------------------
 # Or
 
 
@@ -292,7 +303,7 @@ ZeroOrMore = partial(Repeat, lb=0, greedy=True)
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('SchemaNode', 'Set', 'Or', 'Repeat', 'Sequence',
+__all__ = ('SchemaNode', 'Set', 'Type', 'Or', 'Repeat', 'Sequence',
            'Match', 'MatchFailure', 'MatchFailed',
            'Optional', 'OneOrMore', 'ZeroOrMore')
 

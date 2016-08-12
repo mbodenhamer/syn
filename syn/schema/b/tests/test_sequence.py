@@ -1,6 +1,6 @@
 from nose.tools import assert_raises
 from syn.schema.b.sequence import Sequence, Set, Or, Repeat, Optional, \
-    OneOrMore, ZeroOrMore, MatchFailure, MatchFailed, Match
+    OneOrMore, ZeroOrMore, MatchFailure, MatchFailed, Match, Type
 from syn.sets import SetWrapper, TypeWrapper, Range
 from syn.base_utils import IterableList
 
@@ -214,7 +214,7 @@ def test_matching():
     assert s.match('aaaaaaa')
     assert not s.match('aaab', strict=True)
 
-    s = Sequence(int, float, str)
+    s = Sequence(int, float, Type(str))
     assert s.match([1, 1.2, 'abc'])
 
 #-------------------------------------------------------------------------------
@@ -223,6 +223,10 @@ def test_matching():
 def test_misc():
     r = Repeat(1, lb=2, ub=1)
     assert_raises(ValueError, r.validate)
+
+    t = Type(int)
+    assert t.set == TypeWrapper(int)
+    assert Type(TypeWrapper(int)).set == TypeWrapper(int)
 
 #-------------------------------------------------------------------------------
 
