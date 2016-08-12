@@ -1,6 +1,12 @@
+from weakref import WeakSet
 from syn.five import STR, strf
 from collections import Iterable
 from syn.base_utils import hasmethod, message, nearest_base, get_typename, istr
+
+#-------------------------------------------------------------------------------
+# Type Registry
+
+TYPE_REGISTRY = WeakSet()
 
 #-------------------------------------------------------------------------------
 # Base Class
@@ -8,7 +14,10 @@ from syn.base_utils import hasmethod, message, nearest_base, get_typename, istr
 
 class Type(object):
     '''A representation for various possible types syn supports.'''
-    __slots__ = ()
+    __slots__ = ('__weakref__',)
+
+    def __init__(self):
+        TYPE_REGISTRY.add(self)
 
     def check(self, value):
         raise NotImplementedError
@@ -46,6 +55,10 @@ class Type(object):
         '''Returns a quasi-intuitive string representation of the type.'''
         raise NotImplementedError
 
+    def generate(self, **kwargs):
+        '''Returns a value for this type.'''
+        raise NotImplementedError
+
     def query(self, value):
         try:
             self.check(value)
@@ -73,6 +86,9 @@ class Type(object):
 
 
 class AnyType(Type):
+    def __init__(self):
+        super(AnyType, self).__init__()
+
     def check(self, value):
         pass
 
@@ -94,6 +110,7 @@ class TypeType(Type):
     __slots__ = ('type', 'call_coerce', 'call_validate')
 
     def __init__(self, typ):
+        super(TypeType, self).__init__()
         self.type = typ
         self.call_coerce = hasmethod(self.type, 'coerce')
         self.call_validate = hasmethod(self.type, 'validate')
@@ -140,6 +157,7 @@ class ValuesType(Type):
     __slots__ = ('values', 'indexed_values')
 
     def __init__(self, values):
+        super(ValuesType, self).__init__()
         self.values = values
 
         self.indexed_values = values
@@ -174,6 +192,7 @@ class MultiType(Type):
     __slots__ = ('types', 'typestr', 'typelist', 'typemap', 'is_typelist')
 
     def __init__(self, types):
+        super(MultiType, self).__init__()
         self.is_typelist = False
         if all(isinstance(typ, type) for typ in types):
             self.is_typelist = True
@@ -229,6 +248,9 @@ class MultiType(Type):
 class TypeExtension(Type):
     '''For extending the type system.
     '''
+
+    def __init__(self):
+        super(TypeExtension, self).__init__()
 
     def validate(self, value):
         self.check(value)

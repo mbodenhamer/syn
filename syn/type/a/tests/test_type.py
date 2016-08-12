@@ -12,6 +12,7 @@ def test_type():
     assert_raises(NotImplementedError, t.check, 1)
     assert_raises(NotImplementedError, t.coerce, 1)
     assert_raises(NotImplementedError, t.display)
+    assert_raises(NotImplementedError, t.generate)
     assert_raises(NotImplementedError, t.rst)
     assert_raises(NotImplementedError, t.validate, 1)
 
