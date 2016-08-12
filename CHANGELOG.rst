@@ -1,6 +1,11 @@
 Changelog
 ---------
 
+0.0.11 (2016-08-15)
+~~~~~~~~~~~~~~~~~~~
+
+
+
 0.0.10 (2016-08-12)
 ~~~~~~~~~~~~~~~~~~
 - Added lazy sampling and enumeration to syn.sets
