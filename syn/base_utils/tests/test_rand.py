@@ -1,7 +1,7 @@
 from nose.tools import assert_raises
-from syn.five import xrange, PY2
+from syn.five import xrange, PY2, PY3
 
-SAMPLES = 20
+SAMPLES = 5
 from syn.base_utils.rand import MIN_FLOAT
 
 #-------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ def test_rand_complex():
 def test_randstr():
     from syn.base_utils import rand_str
 
-    strs = [rand_str() for k in range(SAMPLES)]
+    strs = [rand_str() for k in xrange(SAMPLES)]
     assert all(isinstance(s, str) for s in strs)
     assert any(len(s) > 0 for s in strs)
 
@@ -66,9 +66,59 @@ def test_rand_unicode():
     from syn.base_utils import rand_unicode
 
     if PY2:
-        strs = [rand_unicode(min_len=1) for k in range(SAMPLES)]
+        strs = [rand_unicode(min_len=1) for k in xrange(SAMPLES)]
         assert all(isinstance(s, unicode) for s in strs)
         assert any(len(s) > 0 for s in strs)
+
+def test_rand_bytes():
+    from syn.base_utils import rand_bytes
+    
+    if PY3:
+        bytess = [rand_bytes() for k in xrange(SAMPLES)]
+        assert all(isinstance(b, bytes) for b in bytess)
+
+#-------------------------------------------------------------------------------
+# Sequence
+
+def test_rand_list():
+    from syn.base_utils import rand_list, is_flat
+
+    lists = [rand_list() for k in xrange(SAMPLES)]
+    assert all(isinstance(l, list) for l in lists)
+
+    for k in xrange(SAMPLES):
+        l = rand_list(max_depth=0)
+        assert is_flat(l)
+
+def test_rand_tuple():
+    from syn.base_utils import rand_tuple
+
+    tuples = [rand_tuple() for k in xrange(SAMPLES)]
+    assert all(isinstance(t, tuple) for t in tuples)
+
+#-------------------------------------------------------------------------------
+# Mapping
+
+def test_rand_dict():
+    from syn.base_utils import rand_dict
+
+    dicts = [rand_dict() for k in xrange(SAMPLES)]
+    assert all(isinstance(d, dict) for d in dicts)
+
+#-------------------------------------------------------------------------------
+# Set
+
+def test_rand_set():
+    from syn.base_utils import rand_set
+
+    sets = [rand_set() for k in xrange(SAMPLES)]
+    assert all(isinstance(s, set) for s in sets)
+    
+def test_rand_frozenset():
+    from syn.base_utils import rand_frozenset
+
+    sets = [rand_frozenset() for k in xrange(SAMPLES)]
+    assert all(isinstance(s, frozenset) for s in sets)
 
 #-------------------------------------------------------------------------------
 # Misc
