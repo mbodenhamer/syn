@@ -140,10 +140,26 @@ def test_rand_dispatch():
     assert isinstance(rand_dispatch(complex), complex)
     assert isinstance(rand_dispatch(str), str)
     assert isinstance(rand_dispatch(bool), bool)
+    assert isinstance(rand_dispatch(list), list)
+    assert isinstance(rand_dispatch(tuple), tuple)
+    assert isinstance(rand_dispatch(dict), dict)
+    assert isinstance(rand_dispatch(set), set)
+    assert isinstance(rand_dispatch(frozenset), frozenset)
+    assert rand_dispatch(type(None)) is None
     
     if PY2:
         assert isinstance(rand_dispatch(long), long)
         assert isinstance(rand_dispatch(unicode), (str, unicode))
+
+    if PY3:
+        assert isinstance(rand_dispatch(bytes), bytes)
+
+    class Bar(object):
+        @classmethod
+        def _generate(cls, **kwargs):
+            return cls()
+
+    assert isinstance(rand_dispatch(Bar), Bar)
 
     class Foo(object): pass
     assert_raises(TypeError, rand_dispatch, Foo)

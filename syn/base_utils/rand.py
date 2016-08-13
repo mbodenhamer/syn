@@ -181,8 +181,12 @@ if PY3:
     GENERATORS[bytes] = rand_bytes
 
 def rand_dispatch(typ, **kwargs):
+    from .py import hasmethod
+
     if typ in GENERATORS:
         return GENERATORS[typ](**kwargs)
+    elif hasmethod(typ, '_generate'):
+        return typ._generate(**kwargs)
     raise TypeError('Cannot dispatch random generator for type: {}'.
                     format(typ))
 
