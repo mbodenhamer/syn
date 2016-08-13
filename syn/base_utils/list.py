@@ -164,7 +164,7 @@ def is_flat(seq):
     if not isinstance(seq, Sequence):
         raise TypeError("seq is not a Sequence")
     return all(implies(isinstance(e, Sequence), 
-                       isinstance(e, STR)) 
+                       isinstance(e, STR + (bytes,))) 
                for e in seq)
 
 #-------------------------------------------------------------------------------

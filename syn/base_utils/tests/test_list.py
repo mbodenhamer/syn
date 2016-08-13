@@ -1,5 +1,5 @@
 from nose.tools import assert_raises
-from syn.five import xrange
+from syn.five import xrange, PY3
 
 #-------------------------------------------------------------------------------
 # ListView
@@ -142,6 +142,9 @@ def test_is_flat():
     assert is_flat('abc')
     assert is_flat(['a', 'b', 'c'])
     assert not is_flat([[], 2, 3])
+
+    if PY3:
+        assert is_flat([1, 2, 'abc', b'abc'])
 
     assert_raises(TypeError, is_flat, 1)
 
