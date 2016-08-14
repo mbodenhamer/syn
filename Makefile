@@ -1,6 +1,6 @@
 all: test
 
-VERSION = `cat version.txt | xargs`
+VERSION = `grep version syn/__init__.py | sed "s/__version__ = '\(.*\)'/\1/"`
 
 IMAGE = mbodenhamer/syn-dev
 PYDEV = docker run --rm -it -e BE_UID=`id -u` -e BE_GID=`id -g` \
@@ -62,7 +62,10 @@ pip-compile:
 	@$(PYDEV) pip-compile dev-requirements.in
 	@$(PYDEV) pip-compile requirements.in
 
-.PHONY: pip-compile
+print-version:
+	@echo $(VERSION)
+
+.PHONY: pip-compile print-version
 #-------------------------------------------------------------------------------
 # Tests
 
