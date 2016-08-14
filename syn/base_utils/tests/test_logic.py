@@ -51,6 +51,9 @@ def test_collection_equivalent():
     assert ce([1, 2], [2, 1])
     assert ce((1, 2, 3, 4), {2, 1, 4, 3})
 
+    assert not ce([], [1])
+    assert not ce([1], [2, 1])
+
 #-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
