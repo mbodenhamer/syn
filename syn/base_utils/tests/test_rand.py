@@ -3,6 +3,7 @@ from syn.five import xrange, PY2, PY3
 
 SAMPLES = 5
 from syn.base_utils.rand import MIN_FLOAT, PRIMITIVE_TYPES
+from syn.base_utils import is_hashable
 
 #-------------------------------------------------------------------------------
 # Numeric
@@ -170,6 +171,13 @@ def test_rand_primitive():
     for k in xrange(SAMPLES):
         x = rand_primitive()
         assert isinstance(x, tuple(PRIMITIVE_TYPES))
+
+def test_rand_hashable():
+    from syn.base_utils import rand_hashable
+
+    for k in xrange(SAMPLES):
+        x = rand_hashable()
+        assert is_hashable(x)
 
 #-------------------------------------------------------------------------------
 
