@@ -2,7 +2,7 @@ import six
 from syn.five import xrange
 from nose.tools import assert_raises
 from syn.type.a import (Type, ValuesType, MultiType, TypeType, AnyType,
-                        TypeExtension)
+                        TypeExtension, Set, Schema)
 from syn.base_utils import is_hashable
 
 SAMPLES = 5
@@ -179,6 +179,45 @@ def test_multitype():
     t.validate('abc')
     t.validate(u'abc')
     assert_raises(TypeError, t.validate, 3.4)
+
+#-------------------------------------------------------------------------------
+# Set
+
+def test_set():
+    from syn.sets.b import Range
+
+    t = Set(Range(1, 5))
+    assert t == Set(Range(1, 5))
+    assert t != Set(Range(0, 5))
+
+    assert t.query(1)
+    assert not t.query(0)
+    t.validate(1)
+    assert_raises(TypeError, t.validate, 0)
+
+    for k in xrange(SAMPLES):
+        assert t.generate() in set(xrange(1, 6))
+
+    assert t.display() == t.rst() == '<Set>'
+
+#-------------------------------------------------------------------------------
+# Schema
+
+def test_schema():
+    from syn.schema.b.sequence import Sequence
+
+    t = Schema(Sequence(1, 2, 3))
+    assert t == Schema(Sequence(1, 2, 3))
+    assert t != Schema(Sequence(1, 3, 2))
+
+    assert t.query([1, 2, 3])
+    assert not t.query([1, 3, 2])
+    t.validate([1, 2, 3])
+    assert_raises(TypeError, t.validate, [1, 3, 2])
+
+    assert t.generate() == [1, 2, 3]
+
+    assert t.display() == t.rst() == '<Schema>'
 
 #-------------------------------------------------------------------------------
 # dispatch_type

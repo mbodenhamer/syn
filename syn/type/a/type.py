@@ -313,6 +313,78 @@ class MultiType(Type):
         
 
 #-------------------------------------------------------------------------------
+# Set
+
+
+class Set(Type):
+    '''For explicitly wrapping a SetNode as a type (since automatic
+    dispatching cannot be implemented at this level).
+    '''
+
+    def __init__(self, set):
+        super(Set, self).__init__()
+        self.set = set
+        self.set.validate()
+
+    def __eq__(self, other):
+        if super(Set, self).__eq__(other):
+            if self.set == other.set:
+                return True
+        return False
+
+    def __hash__(self):
+        return hash(id(self))
+
+    def check(self, value):
+        if not self.set.hasmember(value):
+            raise TypeError('Set does not contain value: {}'.format(value))
+
+    def display(self):
+        return '<Set>'
+
+    def generate(self, **kwargs):
+        return self.set.sample(**kwargs)
+    
+    def validate(self, value):
+        self.check(value)
+
+
+#-------------------------------------------------------------------------------
+# Schema
+
+
+class Schema(Type):
+    '''For explicitly wrapping a Schema as a type (since automatic
+    dispatching cannot be implemented at this level).
+    '''
+    def __init__(self, schema):
+        super(Schema, self).__init__()
+        self.schema = schema
+
+    def __eq__(self, other):
+        if super(Schema, self).__eq__(other):
+            if self.schema == other.schema:
+                return True
+        return False
+
+    def __hash__(self):
+        return hash(id(self))
+
+    def check(self, value):
+        if not self.schema.match(value):
+            raise TypeError('Schema does not match: {}'.format(value))
+
+    def display(self):
+        return '<Schema>'
+
+    def generate(self, **kwargs):
+        return self.schema.sample(**kwargs)
+    
+    def validate(self, value):
+        self.check(value)
+
+
+#-------------------------------------------------------------------------------
 # TypeExtension
 
 
@@ -327,7 +399,8 @@ class TypeExtension(Type):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Type', 'AnyType', 'TypeType', 'ValuesType', 'MultiType', 
+__all__ = ('Type', 'AnyType', 'TypeType', 'ValuesType', 'MultiType',
+           'Set', 'Schema',
            'TypeExtension')
 
 #-------------------------------------------------------------------------------

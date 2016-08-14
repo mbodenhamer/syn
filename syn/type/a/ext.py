@@ -208,8 +208,8 @@ class Tuple(TypeExtension):
 # Sequence types
 
 List = partial(Sequence, seq_type=list)
-Set = partial(Sequence, seq_type=set)
-FrozenSet = partial(Sequence, seq_type=frozenset)
+#Set = partial(Sequence, seq_type=set)
+#FrozenSet = partial(Sequence, seq_type=frozenset)
 AssocList = List(Tuple((None, None)))
 
 #-------------------------------------------------------------------------------
@@ -287,7 +287,7 @@ class This(TypeExtension):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Callable', 'Sequence', 'List', 'Tuple', 'Set', 'FrozenSet',
+__all__ = ('Callable', 'Sequence', 'List', 'Tuple',
            'Mapping', 'Dict', 'Hashable', 'AssocList', 'This')
 
 #-------------------------------------------------------------------------------
