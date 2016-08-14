@@ -1,6 +1,9 @@
+from syn.five import xrange
 from nose.tools import assert_raises
 from syn.type.a.ext import (Callable, List, Sequence, Mapping, Dict, Hashable,
                             Tuple, AssocList, This)
+
+SAMPLES = 5
 
 #-------------------------------------------------------------------------------
 # Callable
@@ -15,6 +18,8 @@ def test_callable():
     t.check(Foo())
     t.check(test_callable)
     t.check(int)
+    t.check(t.generate())
+    assert t.generate()() == ((), {})
     assert t.display() == t.rst() == '<callable>'
     t.validate(int)
     assert_raises(TypeError, t.check, 1)
@@ -28,6 +33,7 @@ def test_hashable():
     assert t.query(3)
     assert not t.query(dict(a = 3))
     assert t.display() == t.rst() == '<hashable>'
+    t.check(t.generate())
 
 #-------------------------------------------------------------------------------
 # Sequence
@@ -45,6 +51,10 @@ def test_sequence():
     assert int_list.query([1, 2, 3])
     assert not int_list.query([1.2, 2, 3])
     assert not int_list.query((1, 2, 3))
+
+    for k in xrange(SAMPLES):
+        l = int_list.generate()
+        int_list.check(l)
 
     bad_list = (1.2, '3', 4)
     good_list = [1, 2, 3]
@@ -88,6 +98,9 @@ def test_tuple():
     assert t.query((1, 2.3))
     assert not t.query((2.3, 1))
     assert t.coerce((2.3, 1)) == (2, 1.0)
+    assert t.display() == '(int, float)'
+    assert t.rst() == '(*int*, *float*)'
+    t.check(t.generate())
 
     t = Tuple((int, float), uniform=True)
     assert t.uniform
@@ -97,9 +110,14 @@ def test_tuple():
     assert t.query((1, 1))
     assert t.query((2.3, 1))
     assert not t.query(('abc', 1))
+    assert t.display() == '(int | float, ...)'
+    assert t.rst() == '(*int* | *float*, ...)'
+    t.check(t.generate())
 
-    # TODO: update when implementing better display() and rst() methods
-    assert t.display() == t.rst() == '<tuple>'
+    t.length = 2
+    assert t.display() == '(int | float, int | float)'
+    assert t.rst() == '(*int* | *float*, *int* | *float*)'
+    t.check(t.generate())
 
 #-------------------------------------------------------------------------------
 # AssocList
@@ -123,6 +141,7 @@ def test_mapping():
     assert int_dict.query(dict(a=1, b=2))
     assert not int_dict.query(dict(a=1.2, b=2))
     assert not int_dict.query(1)
+    int_dict.check(int_dict.generate())
 
     bad_dict = dict(a=1.2, b='3', c=4)
     good_dict = dict(a=1, b=2, c=3)

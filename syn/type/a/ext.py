@@ -1,8 +1,11 @@
+from random import randint
 from functools import partial
+from syn.five import xrange
 from collections import Sequence as _Sequence
 from collections import Mapping as _Mapping
 from .type import TypeExtension, Type, AnyType
-from syn.base_utils import is_hashable
+from syn.base_utils import is_hashable, rand_hashable
+from syn.base_utils.rand import MIN_SEQLEN, MAX_SEQLEN, rand_str
 
 #-------------------------------------------------------------------------------
 # Callable
@@ -19,6 +22,11 @@ class Callable(TypeExtension):
     def display(self):
         return '<callable>'
 
+    def generate(self, **kwargs):
+        def func(*args, **_kwargs):
+            return args, _kwargs
+        return func
+
 
 #-------------------------------------------------------------------------------
 # Hashable
@@ -34,6 +42,9 @@ class Hashable(TypeExtension):
 
     def display(self):
         return '<hashable>'
+
+    def generate(self, **kwargs):
+        return rand_hashable(**kwargs)
 
 
 #-------------------------------------------------------------------------------
@@ -67,6 +78,13 @@ class Sequence(TypeExtension):
         seq = self.seq_type.display()
         item = self.item_type.display()
         return '{}({})'.format(seq, item)
+
+    def generate(self, **kwargs):
+        min_len = kwargs.get('min_len', MIN_SEQLEN)
+        max_len = kwargs.get('max_len', MAX_SEQLEN)
+        N = randint(min_len, max_len)
+        ret = [self.item_type.generate(**kwargs) for k in xrange(N)]
+        return self.seq_type.coerce(ret)
 
     def rst(self):
         seq = self.seq_type.rst()
@@ -129,8 +147,40 @@ class Tuple(TypeExtension):
         return tuple(values)
 
     def display(self):
-        # TODO: integrate type information
-        return '<tuple>'
+        types = self.types
+        if self.uniform and self.length:
+            types = [types] * self.length
+
+        if not self.length:
+            ret = '{}, ...'.format(self.types.display())
+        else:
+            ret = ', '.join(t.display() for t in types)
+        return '(' + ret + ')'
+
+    def generate(self, **kwargs):
+        types = self.types
+        if self.uniform and self.length:
+            types = [types] * self.length
+
+        if not self.length:
+            min_len = kwargs.get('min_len', MIN_SEQLEN)
+            max_len = kwargs.get('max_len', MAX_SEQLEN)
+            N = randint(min_len, max_len)
+            ret = [self.types.generate(**kwargs) for k in xrange(N)]
+        else:
+            ret = [t.generate(**kwargs) for t in types]
+        return tuple(ret)
+
+    def rst(self):
+        types = self.types
+        if self.uniform and self.length:
+            types = [types] * self.length
+
+        if not self.length:
+            ret = '{}, ...'.format(self.types.rst())
+        else:
+            ret = ', '.join(t.rst() for t in types)
+        return '(' + ret + ')'
 
 
 #-------------------------------------------------------------------------------
@@ -173,7 +223,17 @@ class Mapping(TypeExtension):
         map_ = self.map_type.display()
         value = self.value_type.display()
         return '{}({} => {})'.format(map_, AnyType().display(), value)
+
+    def generate(self, **kwargs):
+        min_len = kwargs.get('min_len', MIN_SEQLEN)
+        max_len = kwargs.get('max_len', MAX_SEQLEN)
+        N = randint(min_len, max_len)
         
+        values = [self.value_type.generate(**kwargs) for k in xrange(N)]
+        keys = [rand_str(min_len=5, max_len=10) for k in xrange(N)]
+        ret = dict(zip(keys, values))
+        return self.map_type.coerce(ret)
+
     def rst(self):
         map_ = self.map_type.rst()
         value = self.value_type.rst()
