@@ -12,6 +12,8 @@ SAMPLES = 5
 def test_type():
     t = Type()
 
+    assert t == Type()
+    assert t != 1
     assert_raises(NotImplementedError, t.check, 1)
     assert_raises(NotImplementedError, t.coerce, 1)
     assert_raises(NotImplementedError, t.display)
@@ -24,6 +26,7 @@ def test_type():
 
 def test_anytype():
     t = AnyType()
+    assert t == AnyType()
 
     t.check(1)
     assert t.coerce(1) == 1
@@ -50,6 +53,8 @@ def test_typetype():
     assert t.type is int
     assert not t.call_coerce
     assert not t.call_validate
+    assert t == TypeType(int)
+    assert t != TypeType(float)
 
     t.check(1)
     assert_raises(TypeError, t.check, 1.2)
@@ -105,6 +110,8 @@ def test_typetype():
 
 def test_valuestype():
     t = ValuesType({1, 1.2, u'b'})
+    assert t == ValuesType([1, 1.2, u'b'])
+    assert t != ValuesType([1, 1.3, u'b'])
     
     t.check(1)
     t.check(1.2)
@@ -129,6 +136,8 @@ def test_multitype():
     import math
 
     t = MultiType((int, float))
+    assert t == MultiType((int, float))
+    assert t != MultiType((int, str))
     assert t.is_typelist
     assert t.query(1)
     assert t.query(1.2)

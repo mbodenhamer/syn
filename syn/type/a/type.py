@@ -3,7 +3,7 @@ from syn.five import STR, strf
 from collections import Iterable
 from random import randrange, choice
 from syn.base_utils import hasmethod, message, nearest_base, get_typename, \
-    istr, rand_primitive
+    istr, rand_primitive, collection_equivalent
 
 #-------------------------------------------------------------------------------
 # Type Registry
@@ -22,6 +22,15 @@ class Type(object):
     def __init__(self):
         if self.register_generable:
             GENERABLE_TYPE_REGISTRY.add(self)
+
+    def __eq__(self, other):
+        return type(self) is type(other)
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __hash__(self):
+        return hash(id(self))
 
     def check(self, value):
         raise NotImplementedError
@@ -129,6 +138,17 @@ class TypeType(Type):
         self.call_coerce = hasmethod(self.type, 'coerce')
         self.call_validate = hasmethod(self.type, 'validate')
 
+    def __eq__(self, other):
+        if super(TypeType, self).__eq__(other):
+            if self.type == other.type:
+                if self.call_coerce == other.call_coerce:
+                    if self.call_validate == other.call_validate:
+                        return True
+        return False
+
+    def __hash__(self):
+        return hash(id(self))
+
     def check(self, value):
         if not isinstance(value, self.type):
             raise TypeError('Expected value of type {}; got: {}'
@@ -189,6 +209,15 @@ class ValuesType(Type):
         if not hasattr(values, '__getitem__'):
             self.indexed_values = list(values)
 
+    def __eq__(self, other):
+        if super(ValuesType, self).__eq__(other):
+            if collection_equivalent(self.indexed_values, other.indexed_values):
+                return True
+        return False
+
+    def __hash__(self):
+        return hash(id(self))
+
     def check(self, value):
         if value not in self.values:
             raise TypeError('Invalid value: {}'.format(value))
@@ -230,6 +259,15 @@ class MultiType(Type):
         self.typestr = ', '.join(map(strf, types))
         self.types = [Type.dispatch(typ) for typ in types]
         self.typemap = dict(zip(types, self.types))
+
+    def __eq__(self, other):
+        if super(MultiType, self).__eq__(other):
+            if self.types == other.types:
+                return True
+        return False
+
+    def __hash__(self):
+        return hash(id(self))
 
     def check(self, value):
         if self.is_typelist:
