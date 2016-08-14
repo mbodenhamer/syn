@@ -1,3 +1,4 @@
+import re
 from setuptools import setup, find_packages
 
 def read(fpath):
@@ -7,12 +8,18 @@ def read(fpath):
 def requirements(fpath):
     return list(filter(bool, read(fpath).split('\n')))
 
+def metadata(txt, meta):
+    m = re.search("^__{}__ = ['\"]([^'\"]*)['\"]".format(meta), txt, re.M)
+    if m:
+        return m.groups()[0]
+    raise RuntimeError('Metadata {} not found'.format(meta))
+
 def version(fpath):
-    return read(fpath).strip()
+    return metadata(read(fpath), 'version')
 
 setup(
     name = 'syn',
-    version = version('version.txt'),
+    version = version('syn/__init__.py'),
     author = 'Matt Bodenhamer',
     author_email = 'mbodenhamer@mbodenhamer.com',
     description = 'Python metaprogramming, typing, and compilation facilities',
