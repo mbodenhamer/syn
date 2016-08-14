@@ -189,6 +189,7 @@ def test_set():
     t = Set(Range(1, 5))
     assert t == Set(Range(1, 5))
     assert t != Set(Range(0, 5))
+    assert Type.dispatch(t) is t
 
     assert t.query(1)
     assert not t.query(0)
@@ -209,6 +210,7 @@ def test_schema():
     t = Schema(Sequence(1, 2, 3))
     assert t == Schema(Sequence(1, 2, 3))
     assert t != Schema(Sequence(1, 3, 2))
+    assert Type.dispatch(t) is t
 
     assert t.query([1, 2, 3])
     assert not t.query([1, 3, 2])
