@@ -41,6 +41,17 @@ def test_equiv():
     assert not equiv(x, z)
 
 #-------------------------------------------------------------------------------
+# Collection logic
+
+def test_collection_equivalent():
+    from syn.base_utils import collection_equivalent as ce
+
+    assert ce([], ())
+    assert ce([1, 2], [1, 2])
+    assert ce([1, 2], [2, 1])
+    assert ce((1, 2, 3, 4), {2, 1, 4, 3})
+
+#-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
     from syn.base_utils import run_all_tests
