@@ -62,6 +62,16 @@ class Sequence(TypeExtension):
         self.item_type = Type.dispatch(item_type)
         self.seq_type = Type.dispatch(seq_type)
 
+    def __eq__(self, other):
+        if super(Sequence, self).__eq__(other):
+            if self.seq_type == other.seq_type:
+                if self.item_type == other.item_type:
+                    return True
+        return False
+
+    def __hash__(self):
+        return hash(id(self))
+
     def check(self, values):
         self.seq_type.check(values)
 
@@ -116,6 +126,17 @@ class Tuple(TypeExtension):
 
         self.types = types
         self.length = length
+
+    def __eq__(self, other):
+        if super(Tuple, self).__eq__(other):
+            if self.types == other.types:
+                if self.uniform == other.uniform:
+                    if self.length == other.length:
+                        return True
+        return False
+
+    def __hash__(self):
+        return hash(id(self))
 
     def check(self, values):
         if not isinstance(values, tuple):
@@ -205,6 +226,16 @@ class Mapping(TypeExtension):
         super(Mapping, self).__init__()
         self.value_type = Type.dispatch(value_type)
         self.map_type = Type.dispatch(map_type)
+
+    def __eq__(self, other):
+        if super(Mapping, self).__eq__(other):
+            if self.map_type == other.map_type:
+                if self.value_type == other.value_type:
+                    return True
+        return False
+
+    def __hash__(self):
+        return hash(id(self))
 
     def check(self, dct):
         self.map_type.check(dct)

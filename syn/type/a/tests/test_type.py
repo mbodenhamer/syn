@@ -3,6 +3,7 @@ from syn.five import xrange
 from nose.tools import assert_raises
 from syn.type.a import (Type, ValuesType, MultiType, TypeType, AnyType,
                         TypeExtension)
+from syn.base_utils import is_hashable
 
 SAMPLES = 5
 
@@ -14,6 +15,7 @@ def test_type():
 
     assert t == Type()
     assert t != 1
+    assert is_hashable(t)
     assert_raises(NotImplementedError, t.check, 1)
     assert_raises(NotImplementedError, t.coerce, 1)
     assert_raises(NotImplementedError, t.display)

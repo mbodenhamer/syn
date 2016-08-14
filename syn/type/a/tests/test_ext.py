@@ -40,6 +40,8 @@ def test_hashable():
 
 def test_sequence():
     int_seq = Sequence(int)
+    assert int_seq == Sequence(int)
+    assert int_seq != Sequence(float)
 
     assert int_seq.query([1, 2, 3])
     assert not int_seq.query([1.2, 2, 3])
@@ -69,6 +71,8 @@ def test_sequence():
 
 def test_tuple():
     t = Tuple(int)
+    assert t == Tuple(int)
+    assert t != Tuple(float)
     assert t.types.type is int
     assert t.uniform
     assert t.length is None
@@ -132,6 +136,8 @@ def test_assoclist():
 
 def test_mapping():
     int_map = Mapping(int)
+    assert int_map == Mapping(int)
+    assert int_map != Mapping(float)
 
     assert int_map.query(dict(a=1, b=2))
     assert not int_map.query(dict(a=1.2, b=2))
