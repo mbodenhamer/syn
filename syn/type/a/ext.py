@@ -44,8 +44,10 @@ class Sequence(TypeExtension):
     '''The value must be a sequence whose values are the provided type.
     '''
     __slots__ = ('item_type', 'seq_type')
+    register_generable = True
 
     def __init__(self, item_type, seq_type=_Sequence):
+        super(Sequence, self).__init__()
         self.item_type = Type.dispatch(item_type)
         self.seq_type = Type.dispatch(seq_type)
 
@@ -80,8 +82,10 @@ class Tuple(TypeExtension):
     '''For defining tuple types.
     '''
     __slots__ = ('types', 'length', 'uniform')
+    register_generable = True
 
     def __init__(self, types, length=None, uniform=False):
+        super(Tuple, self).__init__()
         self.uniform = True
         if isinstance(types, _Sequence) and not uniform:
             length = len(types)
@@ -145,8 +149,10 @@ class Mapping(TypeExtension):
     '''The value must be a mapping whose values are the provided type.
     '''
     __slots__ = ('value_type', 'map_type')
+    register_generable = True
 
     def __init__(self, value_type, map_type=_Mapping):
+        super(Mapping, self).__init__()
         self.value_type = Type.dispatch(value_type)
         self.map_type = Type.dispatch(map_type)
 

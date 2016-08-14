@@ -1,12 +1,14 @@
 from weakref import WeakSet
 from syn.five import STR, strf
 from collections import Iterable
-from syn.base_utils import hasmethod, message, nearest_base, get_typename, istr
+from random import randrange, choice
+from syn.base_utils import hasmethod, message, nearest_base, get_typename, \
+    istr, rand_primitive
 
 #-------------------------------------------------------------------------------
 # Type Registry
 
-TYPE_REGISTRY = WeakSet()
+GENERABLE_TYPE_REGISTRY = WeakSet()
 
 #-------------------------------------------------------------------------------
 # Base Class
@@ -15,9 +17,11 @@ TYPE_REGISTRY = WeakSet()
 class Type(object):
     '''A representation for various possible types syn supports.'''
     __slots__ = ('__weakref__',)
+    register_generable = False
 
     def __init__(self):
-        TYPE_REGISTRY.add(self)
+        if self.register_generable:
+            GENERABLE_TYPE_REGISTRY.add(self)
 
     def check(self, value):
         raise NotImplementedError
@@ -86,9 +90,6 @@ class Type(object):
 
 
 class AnyType(Type):
-    def __init__(self):
-        super(AnyType, self).__init__()
-
     def check(self, value):
         pass
 
@@ -97,6 +98,18 @@ class AnyType(Type):
 
     def display(self):
         return 'any'
+
+    def generate(self, **kwargs):
+        max_enum = kwargs.get('max_enum', 20)
+        types = kwargs.get('types', GENERABLE_TYPE_REGISTRY)
+        N = randrange(min(len(types), max_enum))
+
+        for k, typ in enumerate(types):
+            if k == N:
+                try:
+                    return typ.generate(**kwargs)
+                except:
+                    return rand_primitive()
 
     def validate(self, value):
         pass
@@ -108,6 +121,7 @@ class AnyType(Type):
 
 class TypeType(Type):
     __slots__ = ('type', 'call_coerce', 'call_validate')
+    register_generable = True
 
     def __init__(self, typ):
         super(TypeType, self).__init__()
@@ -135,6 +149,16 @@ class TypeType(Type):
     def display(self):
         return get_typename(self.type)
 
+    def generate(self, **kwargs):
+        from .registry import TYPE_REGISTRY
+
+        if hasmethod(self.type, '_generate'):
+            return self.type._generate(**kwargs)
+        elif self.type in TYPE_REGISTRY:
+            return TYPE_REGISTRY[self.type].generate(**kwargs)
+        raise TypeError('Unable to generate value for type: {}'
+                        .format(self.type))
+
     def rst(self):
         return '*' +  self.display() + '*'
 
@@ -155,6 +179,7 @@ class ValuesType(Type):
     Think of this is a denotational definition of the type.
     '''
     __slots__ = ('values', 'indexed_values')
+    register_generable = True
 
     def __init__(self, values):
         super(ValuesType, self).__init__()
@@ -178,6 +203,9 @@ class ValuesType(Type):
     def display(self):
         return istr(list(self.values))
 
+    def generate(self, **kwargs):
+        return choice(self.indexed_values)
+
     def validate(self, value):
         self.check(value)
 
@@ -190,6 +218,7 @@ class MultiType(Type):
     '''A tuple of type specifiers, any of which may be valid.
     '''
     __slots__ = ('types', 'typestr', 'typelist', 'typemap', 'is_typelist')
+    register_generable = True
 
     def __init__(self, types):
         super(MultiType, self).__init__()
@@ -232,6 +261,10 @@ class MultiType(Type):
         strs = [typ.display() for typ in self.types]
         return ' | '.join(strs)
 
+    def generate(self, **kwargs):
+        typ = choice(self.types)
+        return typ.generate(**kwargs)
+
     def rst(self):
         strs = [typ.rst() for typ in self.types]
         return ' | '.join(strs)
@@ -248,9 +281,6 @@ class MultiType(Type):
 class TypeExtension(Type):
     '''For extending the type system.
     '''
-
-    def __init__(self):
-        super(TypeExtension, self).__init__()
 
     def validate(self, value):
         self.check(value)

@@ -1,7 +1,10 @@
 import six
+from syn.five import xrange
 from nose.tools import assert_raises
 from syn.type.a import (Type, ValuesType, MultiType, TypeType, AnyType,
                         TypeExtension)
+
+SAMPLES = 5
 
 #-------------------------------------------------------------------------------
 # Type
@@ -199,6 +202,30 @@ def test_dispatch_type():
     assert_raises(TypeError, Type.dispatch, 1)
     assert_raises(TypeError, Type.dispatch, b'abc')
     assert_raises(TypeError, Type.dispatch, u'abc')
+
+#-------------------------------------------------------------------------------
+# Test generation
+
+def test_generation():
+    from syn.base_utils.rand import PRIMITIVE_TYPES
+
+    anys = [AnyType().generate() for k in xrange(SAMPLES)]
+    assert any(x is not None for x in anys)
+
+    class Foo(object): pass
+    assert isinstance(AnyType().generate(types=[Foo]), tuple(PRIMITIVE_TYPES))
+
+    class Bar(object):
+        @classmethod
+        def _generate(cls, **kwargs):
+            return cls()
+
+    assert isinstance(TypeType(int).generate(), int)
+    assert isinstance(TypeType(Bar).generate(), Bar)
+    assert_raises(TypeError, TypeType(Foo).generate)
+
+    assert ValuesType([1, 2, 3]).generate() in {1, 2, 3}
+    assert isinstance(MultiType([int, float]).generate(), (int, float))
 
 #-------------------------------------------------------------------------------
 
