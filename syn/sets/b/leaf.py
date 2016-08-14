@@ -1,7 +1,7 @@
 from random import choice
 from functools import reduce
-from syn.base import Attr
-from syn.type import List
+from syn.base import Attr, init_hook
+from syn.type import List, Type
 from syn.base_utils import subclasses, rand_dispatch
 from .base import SetNode, Args
 
@@ -106,18 +106,23 @@ class TypeWrapper(SetLeaf):
     '''The idea is that a type implicitly represents the set of all of its
     valid instances.
     '''
-    _attrs = dict(type = Attr(type, doc=''))
-    _opts = dict(args = ('type',))
+    _attrs = dict(type = Attr(Type, doc=''))
+    _opts = dict(args = ('type',),
+                 coerce_args = False)
+
+    @init_hook
+    def _convert_type(self):
+        if not isinstance(self.type, Type):
+            self.type = Type.dispatch(self.type)
 
     def size(self):
         return float('inf')
 
     def hasmember(self, item):
-        return isinstance(item, self.type)
+        return self.type.query(item)
 
     def sample(self, **kwargs):
-        ret = rand_dispatch(self.type)
-        return ret
+        return self.type.generate(**kwargs)
 
     def enumerate(self, **kwargs):
         args = Args(**kwargs)
