@@ -190,14 +190,12 @@ def rand_dispatch(typ, **kwargs):
     raise TypeError('Cannot dispatch random generator for type: {}'.
                     format(typ))
 
-def rand_types(types, **kwargs):
-    return rand_dispatch(choice(types))
-
 def rand_primitive(**kwargs):
-    return rand_types(PRIMITIVE_TYPES, **kwargs)
+    return rand_dispatch(choice(PRIMITIVE_TYPES), **kwargs)
 
 def rand_hashable(**kwargs):
-    return rand_types(HASHABLE_TYPES, **kwargs)
+    kwargs['types'] = HASHABLE_TYPES
+    return rand_dispatch(choice(HASHABLE_TYPES), **kwargs)
 
 #-------------------------------------------------------------------------------
 # __all__
