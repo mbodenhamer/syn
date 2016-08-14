@@ -320,6 +320,7 @@ class Set(Type):
     '''For explicitly wrapping a SetNode as a type (since automatic
     dispatching cannot be implemented at this level).
     '''
+    register_generable = True
 
     def __init__(self, set):
         super(Set, self).__init__()
@@ -357,6 +358,8 @@ class Schema(Type):
     '''For explicitly wrapping a Schema as a type (since automatic
     dispatching cannot be implemented at this level).
     '''
+    register_generable = True
+
     def __init__(self, schema):
         super(Schema, self).__init__()
         self.schema = schema
