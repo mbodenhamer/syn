@@ -490,6 +490,22 @@ def test_repr_template():
     assert repr(r) == '2.3'
 
 #-------------------------------------------------------------------------------
+# Test generation
+
+class Gen1(Base):
+    _attrs = dict(a = Attr(int),
+                  b = Attr(float),
+                  c = Attr(str, optional=True, group='generate_exclude'))
+
+def test_generation():
+    g = Gen1._generate()
+    g.validate()
+
+    assert isinstance(g.a, int)
+    assert isinstance(g.b, float)
+    assert not hasattr(g, 'c')
+
+#-------------------------------------------------------------------------------
 # Update functionality
 
 class TestUpdate(Base):

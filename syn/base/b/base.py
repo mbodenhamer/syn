@@ -57,6 +57,7 @@ class Base(object):
                             '_internal',
                             'eq_exclude',
                             'hash_exclude',
+                            'generate_exclude',
                             'getstate_exclude',
                             'repr_exclude',
                             'str_exclude',
@@ -141,6 +142,13 @@ class Base(object):
 
         if self._opts.init_validate:
             self.validate()
+
+    @classmethod
+    def _generate(cls, **kwargs):
+        dct = {attr: info.type.generate(**kwargs) for attr, info in
+               cls._attrs.items() if attr not in 
+               cls._groups['generate_exclude']}
+        return cls(**dct)
 
     @classmethod
     def _generate_documentation_signature(cls, attrs):
