@@ -2,7 +2,7 @@ from nose.tools import assert_raises
 from syn.five import xrange, PY2, PY3
 
 SAMPLES = 5
-from syn.base_utils.rand import MIN_FLOAT
+from syn.base_utils.rand import MIN_FLOAT, PRIMITIVE_TYPES
 
 #-------------------------------------------------------------------------------
 # Numeric
@@ -163,6 +163,13 @@ def test_rand_dispatch():
 
     class Foo(object): pass
     assert_raises(TypeError, rand_dispatch, Foo)
+
+def test_rand_primitive():
+    from syn.base_utils import rand_primitive
+
+    for k in xrange(SAMPLES):
+        x = rand_primitive()
+        assert isinstance(x, tuple(PRIMITIVE_TYPES))
 
 #-------------------------------------------------------------------------------
 
