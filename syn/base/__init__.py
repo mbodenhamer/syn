@@ -1,5 +1,5 @@
-from .b import Base, Attr, Attrs, This
-from .b import ListWrapper
-from .b import create_hook, init_hook, coerce_hook, setstate_hook
-from .b import Counter
-from .b import check_idempotence
+from .b import *
+
+from syn.base_utils import harvest_metadata, delete
+with delete(harvest_metadata, delete):
+    harvest_metadata('../metadata.yml')
