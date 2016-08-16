@@ -1,5 +1,7 @@
 import re
+import os
 import six
+import yaml
 import types
 import inspect
 from collections import defaultdict
@@ -200,6 +202,17 @@ def this_module(npop=1):
 
 that_module = partial(this_module, npop=2)
 
+def harvest_metadata(fpath, abspath=False, template='__{}__'):
+    mod = that_module()
+    path = fpath
+    if not abspath:
+        path = os.path.join(os.path.dirname(os.path.abspath(mod.__file__)),
+                            path)
+
+    with open(path, 'r') as f:
+        for key, value in yaml.load(f).items():
+            setattr(mod, template.format(key), value)
+
 #-------------------------------------------------------------------------------
 # Exception utilities
 
@@ -304,6 +317,6 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'assert_pickle_idempotent', 'assert_deepcopy_idempotent',
            'rgetattr', 'callables', 'is_subclass', 'getitem', 'same_lineage',
            'type_partition', 'subclasses', 'unzip', 'this_module', 
-           'that_module')
+           'that_module', 'harvest_metadata')
 
 #-------------------------------------------------------------------------------

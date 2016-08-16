@@ -256,6 +256,15 @@ def test_this_module():
     assert hasattr(this, 'test_import_module')
     assert this.test_this_module is test_this_module
 
+def test_harvest_metadata():
+    from . import harvest1 as h1
+
+    assert h1.__a__ == 1
+    assert h1.__b__ == 2.3
+    assert h1.__c__ == 'abc'
+    assert h1.__d__ is False
+    assert h1.__version__ == '1.0'
+
 #-------------------------------------------------------------------------------
 # Exception utilities
 
