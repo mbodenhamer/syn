@@ -13,7 +13,7 @@ def metadata(fpath):
         return yaml.load(f)
 
 def version(fpath):
-    return metadata(fpath)['version']
+    return str(metadata(fpath)['version'])
 
 setup(
     name = 'syn',

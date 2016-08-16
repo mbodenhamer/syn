@@ -25,7 +25,7 @@ def read(fpath):
 
 def metadata(fpath, meta):
     txt = read(fpath)
-    m = re.search('(?m)^{}:\s+(\S+)$'.format(meta), txt)
+    m = re.search("(?m)^{}:\s+['\"]?(.+?)['\"]?$".format(meta), txt)
     if m:
         return m.groups()[0]
     raise RuntimeError('Cannot find value for {}'.format(meta))
