@@ -1,5 +1,6 @@
 import os
 import threading
+from syn.five import STR
 from contextlib import contextmanager
 
 #-------------------------------------------------------------------------------
@@ -26,8 +27,23 @@ def chdir(path):
         os.chdir(pwd)
 
 #-------------------------------------------------------------------------------
+# dels
+
+@contextmanager
+def delete(*args):
+    '''For using then deleting objects.'''
+    from syn.base_utils import this_module
+    mod = this_module(npop=3)
+    yield
+    for arg in args:
+        name = arg
+        if not isinstance(name, STR):
+            name = arg.__name__
+        delattr(mod, name)
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('assign', 'chdir')
+__all__ = ('assign', 'chdir', 'delete')
 
 #-------------------------------------------------------------------------------

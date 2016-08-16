@@ -32,6 +32,21 @@ def test_chdir():
     assert pwd == os.getcwd() != FOO
 
 #-------------------------------------------------------------------------------
+# dels
+
+def test_delete():
+    from . import delete1 as d1
+
+    assert d1.__a__ == 1
+    assert d1.__b__ == 2.3
+    assert d1.__c__ == 'abc'
+    assert d1.__d__ is False
+    assert d1.__version__ == '1.0'
+
+    assert not hasattr(d1, 'delete')
+    assert not hasattr(d1, 'harvest_metadata')
+
+#-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
     from syn.base_utils import run_all_tests
