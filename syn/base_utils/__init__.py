@@ -10,3 +10,5 @@ from .context import *
 from .str import *
 from .tree import *
 from .alg import *
+
+harvest_metadata('../metadata.yml')
