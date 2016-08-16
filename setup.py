@@ -1,4 +1,4 @@
-import re
+import yaml
 from setuptools import setup, find_packages
 
 def read(fpath):
@@ -8,18 +8,16 @@ def read(fpath):
 def requirements(fpath):
     return list(filter(bool, read(fpath).split('\n')))
 
-def metadata(txt, meta):
-    m = re.search("^__{}__ = ['\"]([^'\"]*)['\"]".format(meta), txt, re.M)
-    if m:
-        return m.groups()[0]
-    raise RuntimeError('Metadata {} not found'.format(meta))
+def metadata(fpath):
+    with open(fpath, 'r') as f:
+        return yaml.load(f)
 
 def version(fpath):
-    return metadata(read(fpath), 'version')
+    return metadata(fpath)['version']
 
 setup(
     name = 'syn',
-    version = version('syn/__init__.py'),
+    version = version('syn/metadata.yml'),
     author = 'Matt Bodenhamer',
     author_email = 'mbodenhamer@mbodenhamer.com',
     description = 'Python metaprogramming, typing, and compilation facilities',

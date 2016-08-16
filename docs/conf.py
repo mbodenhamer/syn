@@ -23,11 +23,12 @@ def read(fpath):
     with open(fpath, 'rt') as f:
         return f.read().strip()
 
-def metadata(txt, meta):
-    m = re.search("^__{}__ = ['\"]([^'\"]*)['\"]".format(meta), txt, re.M)
+def metadata(fpath, meta):
+    txt = read(fpath)
+    m = re.search('(?m)^{}:\s+(\S+)$'.format(meta), txt)
     if m:
         return m.groups()[0]
-    raise RuntimeError('Metadata {} not found'.format(meta))
+    raise RuntimeError('Cannot find value for {}'.format(meta))
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -70,7 +71,7 @@ author = u'Matt Bodenhamer'
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = metadata(read(os.path.join(DIR, '../syn/__init__.py')), 'version')
+release = metadata(os.path.join(DIR, '../syn/metadata.yml'), 'version')
 # The short X.Y version.
 version = release
 

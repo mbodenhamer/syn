@@ -1,6 +1,6 @@
 all: test
 
-VERSION = `grep version syn/__init__.py | sed "s/__version__ = '\(.*\)'/\1/"`
+VERSION = `grep version syn/metadata.yml | sed "s/version: \(.*\)/\1/"`
 
 IMAGE = mbodenhamer/syn-dev
 PYDEV = docker run --rm -it -e BE_UID=`id -u` -e BE_GID=`id -g` \
