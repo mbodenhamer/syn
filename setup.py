@@ -1,4 +1,4 @@
-import yaml
+import re
 from setuptools import setup, find_packages
 
 def read(fpath):
@@ -8,12 +8,15 @@ def read(fpath):
 def requirements(fpath):
     return list(filter(bool, read(fpath).split('\n')))
 
-def metadata(fpath):
-    with open(fpath, 'r') as f:
-        return yaml.load(f)
+def metadata(fpath, meta):
+    txt = read(fpath)
+    m = re.search("(?m)^{}:\s+['\"]?(.+?)['\"]?$".format(meta), txt)
+    if m:
+        return m.groups()[0]
+    raise RuntimeError('Cannot find value for {}'.format(meta))
 
 def version(fpath):
-    return str(metadata(fpath)['version'])
+    return metadata(fpath, 'version')
 
 setup(
     name = 'syn',
