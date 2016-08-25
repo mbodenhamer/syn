@@ -3,7 +3,10 @@
 from .string import *
 from .num import *
 from six import PY2, PY3
+
+# range-related
 from six.moves import xrange
+range = lambda *args, **kwargs: list(xrange(*args, **kwargs))
 
 # For convenience, not compatibility
 SET = (set, frozenset)
