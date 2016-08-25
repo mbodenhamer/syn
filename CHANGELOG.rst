@@ -1,6 +1,11 @@
 Changelog
 ---------
 
+0.0.12 (2016-09-05)
+~~~~~~~~~~~~~~~~~~~
+- Added iteration methods to syn.tree.b.Node
+- Added syn.tree.query
+
 0.0.11 (2016-08-16)
 ~~~~~~~~~~~~~~~~~~~
 - Added syn.schema.sequence.Type for explicit type specifications
