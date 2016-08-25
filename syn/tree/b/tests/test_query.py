@@ -1,10 +1,12 @@
+from nose.tools import assert_raises
 from syn.tree.b.query import Query
 
 #-------------------------------------------------------------------------------
 # Query
 
 def test_query():
-    Query
+    q = Query()
+    assert_raises(NotImplementedError, q)
 
 #-------------------------------------------------------------------------------
 

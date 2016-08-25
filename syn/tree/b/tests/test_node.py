@@ -3,8 +3,7 @@ from nose.tools import assert_raises
 from syn.base.b import Attr
 from syn.tree.b import Node, TreeError
 from syn.base.b.tests.test_base import check_idempotence
-from syn.base_utils import assert_equivalent, assert_inequivalent, \
-    assert_type_equivalent
+from syn.base_utils import assert_equivalent, assert_inequivalent, consume
 
 #-------------------------------------------------------------------------------
 # Tree Node Test 1
@@ -168,6 +167,11 @@ def treenode_tst_3(cls):
     assert n1.descendants() == [n2, n3, n4]
     
     assert_raises(TreeError, n1.remove_child, n5)
+
+    def set_foo(n):
+        n.foo = n._id * 2
+    consume(n1.depth_first(set_foo))
+    assert list(n1.depth_first(attrgetter('foo'))) == [2, 4, 6, 8]
 
 #-------------------------------------------------------------------------------
 # Tree Node
