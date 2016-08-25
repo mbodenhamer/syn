@@ -2,6 +2,7 @@ from nose.tools import assert_raises
 from syn.five import range
 
 #-------------------------------------------------------------------------------
+# Status
 
 def test_iterlen():
     from syn.base_utils import iterlen, is_empty
@@ -13,6 +14,9 @@ def test_iterlen():
     assert not is_empty(i)
     assert iterlen(i) == 10
 
+#-------------------------------------------------------------------------------
+# Modification
+
 def test_consume():
     from syn.base_utils import consume, is_empty
 
@@ -23,6 +27,26 @@ def test_consume():
     assert lst2 == range(4, 10)
     consume(i1)
     assert is_empty(i1)
+
+def test_first():
+    from syn.base_utils import first, iterlen
+
+    l = range(10)
+    assert first(l) == 0
+    assert l == range(10)
+
+    i = iter(l)
+    assert first(i) == 0
+    assert first(i) == 1
+    assert iterlen(i) == 8
+
+def test_last():
+    from syn.base_utils import last, is_empty
+
+    l = range(10)
+    i = iter(l)
+    assert last(i) == 9
+    assert is_empty(i)
 
 #-------------------------------------------------------------------------------
 
