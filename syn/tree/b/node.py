@@ -32,7 +32,7 @@ class Node(ListWrapper):
                   _id = IAttr(int, optional=True, doc='Integer id of the node'),
                   _list = IAttr(list, groups = (REPREX,),
                                 doc='Child nodes'),
-                  _node_count = IAttr(int, 1, 'The number of nodes in the '
+                  _node_count = IAttr(int, doc='The number of nodes in the subtree'
                                       'rooted by this node.')
                  )
     _aliases = dict(_list = ['_children'])
@@ -48,6 +48,7 @@ class Node(ListWrapper):
 
     @init_hook
     def _initial_node_count(self):
+        self._node_count = 1
         for c in self._children:
             self._node_count += c.node_count()
 

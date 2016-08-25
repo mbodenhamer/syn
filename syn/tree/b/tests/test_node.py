@@ -149,7 +149,9 @@ def treenode_tst_3(cls):
     assert n4.descendants() == []
     assert n5.descendants() == []
 
+    assert n1.node_count() == 5
     n1.remove_child(n5)
+    assert n1.node_count() == 4
     assert n1._children == [n2, n3]
     assert n5._parent is None
     assert n5.siblings() == []
