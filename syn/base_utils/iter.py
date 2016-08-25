@@ -18,10 +18,12 @@ def is_empty(iter):
 def consume(iter, N=None):
     '''Consumes N items from iter.  If N is None (or not given), consumes all.
     '''
-    if N is None:
-        list(iter)
-    else:
-        list(islice(iter, N))
+    i = iter
+    if N is not None:
+        i = islice(iter, N)
+
+    for x in i:
+        pass
 
 #-------------------------------------------------------------------------------
 # __all__
