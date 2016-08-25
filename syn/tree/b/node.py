@@ -90,16 +90,10 @@ class Node(ListWrapper):
         for c in self._children:
             yield c
 
-    def get_parent(self):
-        return self._parent
-
-    def get_children(self):
-        return self._children
-
-    def get_id(self):
+    def id(self):
         return self._id
 
-    def get_name(self):
+    def name(self):
         return self._name
 
     def collect_nodes(self, attr=None, val=None, key=None):

@@ -83,7 +83,7 @@ class Tree(Base):
                 del self.type_dict[get_typename(_node)]
 
         if node != self.root:
-            parent = node.get_parent()
+            parent = node.parent()
             if parent is None:
                 raise TreeError("Non-root node '{}' has no parent" 
                                 .format(repr(node)))
@@ -94,10 +94,10 @@ class Tree(Base):
         self.depth_first(node=remove_node, current_node=node)
 
     def replace_node(self, source, dest, **kwargs):
-        if dest.get_parent() is not None:
+        if dest.parent() is not None:
             raise TreeError("Node dest must have no parent")
 
-        parent = source.get_parent()
+        parent = source.parent()
         if parent is None:
             if source == self.root:
                 self.remove_node(source, **kwargs)
@@ -156,7 +156,7 @@ class Tree(Base):
             if get_typename(current_node) == nodetype:
                 function(current_node)
                 
-        for child in current_node.get_children():
+        for child in current_node.children():
             ret = self.depth_first(node, stop_test, _return, child, **kwargs)
             if ret:
                 return ret
@@ -183,7 +183,7 @@ class Tree(Base):
         if current_node is self.root:
             return
 
-        parent = current_node.get_parent()
+        parent = current_node.parent()
         return self.search_rootward(node, stop_test, _return, parent, **kwargs)
 
     def validate(self):

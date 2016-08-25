@@ -191,10 +191,10 @@ def test_tree_node():
     assert obj._id == 4545
     assert obj._name == 'foonode'
 
-    assert obj.get_children() is obj._children
-    assert obj.get_parent() is obj._parent
-    assert obj.get_id() is obj._id
-    assert obj.get_name() is obj._name
+    assert list(obj.children()) == obj._children
+    assert obj.parent() is obj._parent
+    assert obj.id() is obj._id
+    assert obj.name() is obj._name
     assert_inequivalent(obj, n)
 
     treenode_tst_1(Node)
