@@ -1,15 +1,10 @@
-import syn.tree
-import syn.tree.b
-from syn.tree import query as sq
+from syn.tree.b.query import Query
 
 #-------------------------------------------------------------------------------
-# Tree imports
+# Query
 
-def test_tree_imports():
-    assert syn.tree.Node is syn.tree.b.Node
-    assert syn.tree.Tree is syn.tree.b.Tree
-    assert syn.tree.TreeError is syn.tree.b.TreeError
-    assert sq.Query is syn.tree.b.query.Query
+def test_query():
+    Query
 
 #-------------------------------------------------------------------------------
 
