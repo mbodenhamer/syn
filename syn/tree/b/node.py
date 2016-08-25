@@ -132,15 +132,20 @@ class Node(ListWrapper):
             nodes.extend(c.collect_by_type(typ))
         return nodes
 
-    def depth_first(self, func=None):
-        pass
+    def depth_first(self, func=identity, filt=true):
+        if filt(self):
+            yield func(self)
 
-    def rootward(self, func=identity, filter=true):
-        if filter(self):
+        for c in self._children:
+            for x in c.depth_first(func, filt):
+                yield x
+
+    def rootward(self, func=identity, filt=true):
+        if filt(self):
             yield func(self)
 
         if self._parent is not None:
-            for x in self._parent.rootward(func, filter):
+            for x in self._parent.rootward(func, filt):
                 yield x
 
     def descendants(self, **kwargs):
