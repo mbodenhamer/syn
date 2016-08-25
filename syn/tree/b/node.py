@@ -31,7 +31,9 @@ class Node(ListWrapper):
                                 doc='Name of the node (for display purposes)'),
                   _id = IAttr(int, optional=True, doc='Integer id of the node'),
                   _list = IAttr(list, groups = (REPREX,),
-                                doc='Child nodes')
+                                doc='Child nodes'),
+                  _node_count = IAttr(int, 1, 'The number of nodes in the '
+                                      'rooted by this node.')
                  )
     _aliases = dict(_list = ['_children'])
     _opts = dict(init_validate = False,
@@ -43,6 +45,11 @@ class Node(ListWrapper):
 
     def __bool__(self):
         return True
+
+    @init_hook
+    def _initial_node_count(self):
+        for c in self._children:
+            self._node_count += c.node_count()
 
     @init_hook
     @setstate_hook
@@ -61,6 +68,7 @@ class Node(ListWrapper):
             self.insert(index, node)
         else:
             self.append(node)
+        self._node_count += node.node_count()
         node._parent = self
 
     def remove_child(self, node):
@@ -68,6 +76,7 @@ class Node(ListWrapper):
             raise TreeError("Node '%s' not a child; cannot remove" % str(node))
 
         self._children.remove(node)
+        self._node_count -= node.node_count()
         node._parent = None
 
     def get_parent(self):
@@ -146,7 +155,7 @@ class Node(ListWrapper):
         return None
 
     def node_count(self):
-        return len(self.collect_nodes())
+        return self._node_count
 
     def validate(self):
         super(Node, self).validate()
