@@ -25,9 +25,9 @@ def tree_tst_1(treecls):
     n1.add_child(n2)
     n1.add_child(n3)
 
-    assert n1.siblings() == []
-    assert n2.siblings() == [n3]
-    assert n3.siblings() == [n2]
+    assert list(n1.siblings()) == []
+    assert list(n2.siblings()) == [n3]
+    assert list(n3.siblings()) == [n2]
 
     obj = treecls(n1)
     check_idempotence(obj)

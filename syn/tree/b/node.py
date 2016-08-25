@@ -83,6 +83,13 @@ class Node(ListWrapper):
         self._node_count -= node.node_count()
         node._parent = None
 
+    def parent(self):
+        return self._parent
+
+    def children(self):
+        for c in self._children:
+            yield c
+
     def get_parent(self):
         return self._parent
 
@@ -148,15 +155,15 @@ class Node(ListWrapper):
             for x in self._parent.rootward(func, filt):
                 yield x
 
-    def descendants(self, **kwargs):
+    def descendants(self):
         for node in self.depth_first(filt=lambda n: n != self):
             yield node
 
-    def siblings(self, **kwargs):
-        if self._parent is None:
-            return []
-        ret = [c for c in self._parent if c is not self]
-        return ret
+    def siblings(self):
+        if self._parent is not None:
+            for c in self._parent.children():
+                if c is not self:
+                    yield c
 
     def find_type(self, typ, children_only=False):
         # Search our current children first
