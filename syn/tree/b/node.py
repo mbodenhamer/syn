@@ -149,13 +149,25 @@ class Node(ListWrapper):
             for x in self._parent.rootward(func, filt):
                 yield x
 
-    def descendants(self):
-        for node in self.depth_first(filt=lambda n: n != self):
+    def ancestors(self, include_self=False):
+        filt = true
+        if not include_self:
+            filt = lambda n: n != self
+
+        for node in self.rootward(filt=filt):
+            yield node
+
+    def descendants(self, include_self=False):
+        filt = true
+        if not include_self:
+            filt = lambda n: n != self
+
+        for node in self.depth_first(filt=filt):
             yield node
 
     def siblings(self):
         if self._parent is not None:
-            for c in self._parent.children():
+            for k, c in enumerate(self._parent.children()):
                 if c is not self:
                     yield c
 

@@ -153,10 +153,18 @@ def treenode_tst_3(cls):
     assert list(n1.siblings()) == []
 
     assert list(n1.descendants()) == [n2, n3, n4, n5]
+    assert list(n1.descendants(include_self=True)) == [n1, n2, n3, n4, n5]
     assert list(n2.descendants()) == []
     assert list(n3.descendants()) == [n4]
     assert list(n4.descendants()) == []
     assert list(n5.descendants()) == []
+
+    assert list(n1.ancestors()) == []
+    assert list(n2.ancestors()) == [n1]
+    assert list(n3.ancestors()) == [n1]
+    assert list(n4.ancestors()) == [n3, n1]
+    assert list(n4.ancestors(include_self=True)) == [n4, n3, n1]
+    assert list(n5.ancestors()) == [n1]
 
     assert n1.node_count() == 5
     n1.remove_child(n5)
