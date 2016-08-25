@@ -13,6 +13,9 @@ GSEX = Base.groups_enum().getstate_exclude
 REPREX = Base.groups_enum().repr_exclude
 STREX = Base.groups_enum().str_exclude
 
+true = lambda x: True
+identity = lambda x: x
+
 #-------------------------------------------------------------------------------
 # TreeError
 
@@ -128,6 +131,17 @@ class Node(ListWrapper):
         for c in self:
             nodes.extend(c.collect_by_type(typ))
         return nodes
+
+    def depth_first(self, func=None):
+        pass
+
+    def rootward(self, func=identity, filter=true):
+        if filter(self):
+            yield func(self)
+
+        if self._parent is not None:
+            for x in self._parent.rootward(func, filter):
+                yield x
 
     def descendants(self, **kwargs):
         ret = self.collect_nodes()[1:]

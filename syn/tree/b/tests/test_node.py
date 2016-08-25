@@ -1,3 +1,4 @@
+from operator import attrgetter
 from nose.tools import assert_raises
 from syn.base.b import Attr
 from syn.tree.b import Node, TreeError
@@ -129,6 +130,11 @@ def treenode_tst_3(cls):
     n1 = cls(n2, n3, n5, _id = 1)
 
     assert n4.collect_rootward() == [n4, n3, n1]
+    assert list(n4.rootward()) == [n4, n3, n1]
+    assert list(n4.rootward(filter=lambda n: n._id >= 3)) == [n4, n3]
+    assert list(n4.rootward(filter=lambda n: n._id <= 3)) == [n3, n1]
+    assert list(n4.rootward(func=attrgetter('_id'), 
+                            filter=lambda n: n._id <= 3)) == [3, 1]
 
     assert n1._children == [n2, n3, n5]
     assert n3._children == [n4]
