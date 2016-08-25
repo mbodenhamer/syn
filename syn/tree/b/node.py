@@ -149,8 +149,8 @@ class Node(ListWrapper):
                 yield x
 
     def descendants(self, **kwargs):
-        ret = self.collect_nodes()[1:]
-        return ret
+        for node in self.depth_first(filt=lambda n: n != self):
+            yield node
 
     def siblings(self, **kwargs):
         if self._parent is None:

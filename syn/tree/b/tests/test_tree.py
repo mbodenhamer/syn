@@ -75,7 +75,7 @@ def tree_tst_1(treecls):
                   {Tst2: do_nothing})
     assert_raises(TypeError, obj._check_search_kwarg_types, {0: do_nothing})
 
-    assert n1.descendants() == [n2, n5, n6, n3, n4]
+    assert list(n1.descendants()) == [n2, n5, n6, n3, n4]
 
     accum = []
     def collect(node):
