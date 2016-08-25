@@ -8,6 +8,7 @@ from .py import *
 from .filters import *
 from .context import *
 from .str import *
+from .iter import *
 from .tree import *
 from .alg import *
 
