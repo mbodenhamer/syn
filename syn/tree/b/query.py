@@ -18,6 +18,8 @@ class Query(Node):
 
 class Type(Node):
     _attrs = dict(type = Attr(Type_, AnyType()))
+    _opts = dict(max_len = 0,
+                 args = ('type',))
 
     @init_hook
     def _dispatch_type(self):

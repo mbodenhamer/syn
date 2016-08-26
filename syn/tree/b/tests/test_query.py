@@ -23,6 +23,10 @@ def test_type():
     t = Type()
     assert isinstance(t.type, syn.type.a.AnyType)
 
+    t = Type(Node)
+    assert isinstance(t.type, syn.type.a.TypeType)
+    assert t.type.type is Node
+
 #-------------------------------------------------------------------------------
 # Axes
 
