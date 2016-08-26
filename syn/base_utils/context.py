@@ -1,6 +1,9 @@
 import os
+import sys
 import threading
-from syn.five import STR
+from syn.five import STR, PY2
+from collections import Iterable
+from six.moves import cStringIO
 from contextlib import contextmanager
 
 #-------------------------------------------------------------------------------
@@ -30,7 +33,7 @@ def assign(A, attr, B, lock=False):
             tmp = getattr(A, attr)
 
         setattr(A, attr, B)
-        yield
+        yield B
 
         if tmp is NoAttr:
             delattr(A, attr)
@@ -49,7 +52,7 @@ def chdir(path):
         os.chdir(pwd)
 
 #-------------------------------------------------------------------------------
-# dels
+# delete
 
 @contextmanager
 def delete(*args):
@@ -64,8 +67,59 @@ def delete(*args):
         delattr(mod, name)
 
 #-------------------------------------------------------------------------------
+# nested_context
+
+@contextmanager
+def nested_context(contexts, argss=None, kwargss=None, extend=False):
+    from .py import getitem
+    argss = argss if argss else []
+    kwargss = kwargss if kwargss else []
+
+    gens = []
+    rets = []
+    for k, context in enumerate(contexts):
+        args = getitem(argss, k, ())
+        kwargs = getitem(kwargss, k, {})
+        gen = context(*args, **kwargs)
+        gens.append(gen)
+        ret = gen.__enter__()
+        if ret:
+            if isinstance(ret, Iterable) and extend:
+                rets.extend(ret)
+            else:
+                rets.append(ret)
+
+    err = None
+    exc_info = (None, None, None)
+    try:
+        yield tuple(rets)
+    except Exception as err:
+        exc_info = sys.exc_info()
+
+    for gen in reversed(gens):
+        gen.__exit__(*exc_info)
+
+    if PY2:
+        if err:
+            raise err
+
+#-------------------------------------------------------------------------------
+# capture
+
+@contextmanager
+def capture(names=('stdout', 'stderr'), obj=sys, typ=cStringIO):
+    argss = []
+    for name in names:
+        argss.append((obj, name, typ()))
+
+    contexts = [assign] * len(names)
+    with nested_context(contexts, argss) as ret:
+        yield ret
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('null_context', 'assign', 'chdir', 'delete')
+__all__ = ('null_context', 'assign', 'chdir', 'delete', 'nested_context', 
+           'capture')
 
 #-------------------------------------------------------------------------------
