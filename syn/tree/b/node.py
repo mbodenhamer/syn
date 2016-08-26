@@ -165,11 +165,19 @@ class Node(ListWrapper):
         for node in self.depth_first(filt=filt):
             yield node
 
-    def siblings(self):
+    def siblings(self, preceding=False, following=False):
         if self._parent is not None:
+            idx = self._parent._children.index(self)
             for k, c in enumerate(self._parent.children()):
                 if c is not self:
-                    yield c
+                    if preceding:
+                        if k < idx:
+                            yield c
+                    elif following:
+                        if k > idx:
+                            yield c
+                    else:
+                        yield c
 
     def find_type(self, typ, children_only=False):
         # Search our current children first

@@ -149,6 +149,8 @@ def treenode_tst_3(cls):
     assert list(n5.siblings()) == [n2, n3]
     assert list(n4.siblings()) == []
     assert list(n3.siblings()) == [n2, n5]
+    assert list(n3.siblings(preceding=True)) == [n2]
+    assert list(n3.siblings(following=True)) == [n5]
     assert list(n2.siblings()) == [n3, n5]
     assert list(n1.siblings()) == []
 
