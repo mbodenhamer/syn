@@ -14,7 +14,7 @@ class Node(Node_):
 
 def test_query():
     q = Query()
-    assert_raises(NotImplementedError, q)
+    assert_raises(NotImplementedError, q, 1)
 
 #-------------------------------------------------------------------------------
 # Type
@@ -42,13 +42,13 @@ def test_axes():
     assert list(t.root.depth_first(attrgetter('name'))) == \
         ['n1', 'n2', 'n3', 'n4', 'n5']
 
-    q = Root() # /
+    q = Root() # /   (or root::node())
     assert t.find_one(q) is n1
     assert list(t.query(q)) == [n1]
     assert t.find_one(q, n5) is n1
     assert list(t.query(q, n5)) == [n1]
 
-    q = Self() # .
+    q = Self() # .   (or self::node())
     assert t.find_one(q) is n1
     assert list(t.query(q)) == [n1]
     assert t.find_one(q, n5) is n5

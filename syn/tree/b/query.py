@@ -8,7 +8,7 @@ from .node import Node
 
 
 class Query(Node):
-    def __call__(self, *args, **kwargs):
+    def __call__(self, node, **kwargs):
         raise NotImplementedError
 
 
@@ -26,21 +26,26 @@ class Type(Node):
         if not isinstance(self.type, Type_):
             self.type = Type_.dispatch(self.type)
 
+    def __call__(self, node, **kwargs):
+        if self.type.query(node):
+            yield node
+
 
 #-------------------------------------------------------------------------------
 # Axes
 
 
 class Axis(Query):
-    def __call__(self, node):
-        if not self._children:
-            for x in self.iterate(node):
-                yield x
-        else:
-            for c in self.children():
-                for n in c(node):
-                    for x in self.iterate(n):
-                        yield x
+    def __init__(self, *args, **kwargs):
+        if not args:
+            args = [Type()]
+        super(Axis, self).__init__(*args, **kwargs)
+
+    def __call__(self, node, **kwargs):
+        for c in self.children():
+            for n in c(node, **kwargs):
+                for x in self.iterate(n):
+                    yield x
 
 
 #-----------------------------------------------------------
