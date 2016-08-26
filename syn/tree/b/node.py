@@ -2,6 +2,7 @@ from functools import partial
 from syn.five import STR
 from syn.type.a import This
 from syn.base.b import Base, ListWrapper, Attr, init_hook, setstate_hook
+from syn.base_utils import last
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -164,6 +165,9 @@ class Node(ListWrapper):
 
         for node in self.depth_first(filt=filt):
             yield node
+
+    def root(self):
+        return last(self.rootward())
 
     def siblings(self, preceding=False, following=False):
         if self._parent is not None:

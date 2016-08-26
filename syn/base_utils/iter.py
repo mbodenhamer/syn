@@ -48,8 +48,9 @@ def first(iter):
 
 @ensure_iter
 def last(iter):
-    consume(iter, iterlen(iter) - 1)
-    return next(iter)
+    for x in iter:
+        pass
+    return x
 
 #-------------------------------------------------------------------------------
 # __all__
