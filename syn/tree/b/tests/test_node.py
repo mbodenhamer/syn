@@ -239,7 +239,7 @@ class A1(Node):
     
 def test_attributes():
     a = A1(a = 1, b = 1.2)
-    assert list(a.attributes()) == [('a', 1), ('b', 1.2)]
+    assert sorted(list(a.attributes())) == [('a', 1), ('b', 1.2)]
 
 #-------------------------------------------------------------------------------
 
