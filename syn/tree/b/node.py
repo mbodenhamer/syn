@@ -150,6 +150,11 @@ class Node(ListWrapper):
             for x in self._parent.rootward(func, filt):
                 yield x
 
+    def attributes(self):
+        for attr, spec in self._attrs.items():
+            if not spec.internal:
+                yield attr, getattr(self, attr)
+
     def ancestors(self, include_self=False):
         filt = true
         if not include_self:
@@ -166,14 +171,6 @@ class Node(ListWrapper):
         for node in self.depth_first(filt=filt):
             yield node
 
-    def attributes(self):
-        for attr, spec in self._attrs.items():
-            if not spec.internal:
-                yield attr, getattr(self, attr)
-
-    def root(self):
-        return last(self.rootward())
-
     def siblings(self, preceding=False, following=False):
         if self._parent is not None:
             idx = self._parent._children.index(self)
@@ -187,6 +184,9 @@ class Node(ListWrapper):
                             yield c
                     else:
                         yield c
+
+    def root(self):
+        return last(self.rootward())
 
     def find_type(self, typ, children_only=False):
         # Search our current children first
