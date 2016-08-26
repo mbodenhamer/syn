@@ -124,13 +124,16 @@ def test_axes():
     assert list(t.query(q)) == []
     assert list(t.query(q, n5)) == [n4, n3, n2, n1]
 
-    q = Following() # <<
+    q = Following() # >>
     assert list(t.query(q)) == [n2, n3, n4, n5]
     assert list(t.query(q, n5)) == []
 
     q = Attribute() # @
     assert list(t.query(q)) == [('name', 'n1')]
     assert list(t.query(q, n5)) == [('name', 'n5')]
+
+    q = Attribute(Preceding()) # <<@
+    assert list(t.query(q, n3)) == [('name', 'n2'), ('name', 'n1')]
 
 #-------------------------------------------------------------------------------
 
