@@ -166,6 +166,11 @@ class Node(ListWrapper):
         for node in self.depth_first(filt=filt):
             yield node
 
+    def attributes(self):
+        for attr, spec in self._attrs.items():
+            if not spec.internal:
+                yield attr, getattr(self, attr)
+
     def root(self):
         return last(self.rootward())
 

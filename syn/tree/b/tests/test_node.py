@@ -231,6 +231,17 @@ def test_node_must_be_root():
     assert_raises(TreeError, r1.validate)
 
 #-------------------------------------------------------------------------------
+# attributes
+
+class A1(Node):
+    _attrs = dict(a = Attr(int),
+                  b = Attr(float))
+    
+def test_attributes():
+    a = A1(a = 1, b = 1.2)
+    assert list(a.attributes()) == [('a', 1), ('b', 1.2)]
+
+#-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
     from syn.base_utils import run_all_tests
