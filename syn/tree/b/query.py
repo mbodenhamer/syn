@@ -8,25 +8,39 @@ from .node import Node
 
 
 class Query(Node):
+    _opts = dict(min_len = 1,
+                 max_len = 1)
+
     def __call__(self, node, **kwargs):
-        raise NotImplementedError
+        if not self._children:
+            for x in self.iterate(node):
+                yield x
+        
+        else:
+            for c in self.children():
+                for n in c(node, **kwargs):
+                    for x in self.iterate(n):
+                        yield x
+
+    def iterate(self, node):
+        if False:
+            yield # pragma: no cover
 
 
 #-------------------------------------------------------------------------------
 # Type
 
 
-class Type(Node):
+class Type(Query):
     _attrs = dict(type = Attr(Type_, AnyType()))
-    _opts = dict(max_len = 0,
-                 args = ('type',))
+    _opts = dict(args = ('type',))
 
     @init_hook
     def _dispatch_type(self):
         if not isinstance(self.type, Type_):
             self.type = Type_.dispatch(self.type)
 
-    def __call__(self, node, **kwargs):
+    def iterate(self, node):
         if self.type.query(node):
             yield node
 
@@ -36,16 +50,7 @@ class Type(Node):
 
 
 class Axis(Query):
-    def __init__(self, *args, **kwargs):
-        if not args:
-            args = [Type()]
-        super(Axis, self).__init__(*args, **kwargs)
-
-    def __call__(self, node, **kwargs):
-        for c in self.children():
-            for n in c(node, **kwargs):
-                for x in self.iterate(n):
-                    yield x
+    pass
 
 
 #-----------------------------------------------------------

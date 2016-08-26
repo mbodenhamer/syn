@@ -14,7 +14,7 @@ class Node(Node_):
 
 def test_query():
     q = Query()
-    assert_raises(NotImplementedError, q, 1)
+    assert list(q(1)) == []
 
 #-------------------------------------------------------------------------------
 # Type
@@ -23,7 +23,7 @@ def test_type():
     t = Type()
     assert isinstance(t.type, syn.type.a.AnyType)
 
-    t = Type(Node)
+    t = Type(type=Node)
     assert isinstance(t.type, syn.type.a.TypeType)
     assert t.type.type is Node
 
@@ -67,6 +67,11 @@ def test_axes():
     assert list(t.query(q, n3)) == []
     assert t.find_one(q, n3) is None
 
+    q = Child(Type(Child())) # ./node()/*
+    assert list(t.query(q)) == [n4]
+    assert list(t.query(q, n3)) == []
+    assert t.find_one(q, n3) is None
+
     q = Child(Child(Self())) # ./*/*
     assert list(t.query(q)) == [n4]
     assert list(t.query(q, n3)) == []
@@ -75,6 +80,11 @@ def test_axes():
     q = Descendant(Root(), include_self=True) # //*
     assert list(t.query(q)) == [n1, n2, n3, n4, n5]
     assert list(t.query(q, n3)) == [n1, n2, n3, n4, n5]
+
+    q = Descendant(Root()) # /descendant::node()/*
+    assert list(t.query(q)) == [n2, n3, n4, n5]
+    assert list(t.query(q, n3)) == [n2, n3, n4, n5]
+
 
 #-------------------------------------------------------------------------------
 
