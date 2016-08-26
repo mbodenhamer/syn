@@ -143,8 +143,18 @@ def test_predicates():
     p = Predicate()
     assert_raises(NotImplementedError, p, 1)
 
-    a = Any()
-    assert a(1) is True
+    p = Any()
+    assert p(1) is True
+
+    p = Name('foo')
+    assert p(Node(_name='foo'))
+    assert not p(Node(_name='bar'))
+    assert not p(Node(name='foo'))
+
+    p = Name('foo', name_attr='name')
+    assert p(Node(name='foo'))
+    assert not p(Node(name='bar'))
+    assert not p(Node(_name='foo'))
 
 #-------------------------------------------------------------------------------
 # Where
@@ -170,6 +180,13 @@ def test_where():
     assert list(t.query(q)) == [n2, n3, n5]
     assert list(t.query(q, n3)) == [n4]
 
+    q = Where(Child(), Position(1)) #./[2]
+    assert list(t.query(q)) == [n3]
+    assert list(t.query(q, n3)) == []
+
+    q = Where(Child(), Position(1, start_offset=1)) #./[1]
+    assert list(t.query(q)) == [n2]
+    assert list(t.query(q, n3)) == [n4]
 
 #-------------------------------------------------------------------------------
 
