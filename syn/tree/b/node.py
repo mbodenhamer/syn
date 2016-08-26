@@ -23,6 +23,14 @@ def _following_depth_first(node):
         for x in n.depth_first():
             yield x
 
+def _preceding_depth_first(node):
+    for n in node.siblings(preceding=True, axis=True):
+        for x in n.depth_first(reverse=True):
+            yield x
+
+    if node._parent is not None:
+        yield node._parent
+
 #-------------------------------------------------------------------------------
 # TreeError
 
@@ -196,7 +204,8 @@ class Node(ListWrapper):
             yield x
 
     def preceding(self):
-        pass
+        for x in self.rootward(_preceding_depth_first):
+            yield x
 
     def siblings(self, preceding=False, following=False, axis=False):
         if self._parent is not None:

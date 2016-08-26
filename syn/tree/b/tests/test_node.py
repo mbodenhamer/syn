@@ -188,6 +188,12 @@ def treenode_tst_3(cls):
     assert list(n4.following()) == [n5]
     assert list(n5.following()) == []
 
+    assert list(n1.preceding()) == []
+    assert list(n2.preceding()) == [n1]
+    assert list(n3.preceding()) == [n2, n1]
+    assert list(n4.preceding()) == [n3, n2, n1]
+    assert list(n5.preceding()) == [n4, n3, n2, n1]
+
     assert n4.root() is n1
 
     assert n1.node_count() == 5
