@@ -32,6 +32,11 @@ def test_assign():
         assert Foo.lst == [3, 4, 5]
     assert Foo.lst == [1, 2, 3]
 
+    assert not hasattr(Foo, 'a')
+    with assign(Foo, 'a', 1):
+        assert Foo.a == 1
+    assert not hasattr(Foo, 'a')
+
 #-------------------------------------------------------------------------------
 # cd
 

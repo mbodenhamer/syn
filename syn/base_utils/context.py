@@ -20,12 +20,22 @@ def assign(A, attr, B, lock=False):
     '''Assigns B to A.attr, yields, and then assigns A.attr back to its
     original value.
     '''
+    class NoAttr(object): pass
+
     context = threading.Lock if lock else null_context
     with context():
-        tmp = getattr(A, attr)
+        if not hasattr(A, attr):
+            tmp = NoAttr
+        else:
+            tmp = getattr(A, attr)
+
         setattr(A, attr, B)
         yield
-        setattr(A, attr, tmp)
+
+        if tmp is NoAttr:
+            delattr(A, attr)
+        else:
+            setattr(A, attr, tmp)
 
 #-------------------------------------------------------------------------------
 # cd
