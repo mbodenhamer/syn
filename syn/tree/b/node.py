@@ -93,8 +93,12 @@ class Node(ListWrapper):
     def parent(self):
         return self._parent
 
-    def children(self):
-        for c in self._children:
+    def children(self, reverse=False):
+        cs = self._children
+        if reverse:
+            cs = reversed(cs)
+
+        for c in cs:
             yield c
 
     def id(self):
@@ -140,15 +144,21 @@ class Node(ListWrapper):
             nodes.extend(c.collect_by_type(typ))
         return nodes
 
-    def depth_first(self, func=identity, filt=true, include_toplevel=True,
-                    top_level=True):
+    def depth_first(self, func=identity, filt=true, reverse=False,
+                    include_toplevel=True, top_level=True):
         if implies(top_level, include_toplevel):
             if filt(self):
-                yield func(self)
+                res = func(self)
+                if not reverse:
+                    yield res
 
-        for c in self._children:
-            for x in c.depth_first(func, filt, include_toplevel, False):
+        for c in self.children(reverse=reverse):
+            for x in c.depth_first(func, filt, reverse, 
+                                   include_toplevel, False):
                 yield x
+
+        if reverse:
+            yield res
 
     def rootward(self, func=identity, filt=true, include_toplevel=True,
                  top_level=True):
@@ -188,16 +198,16 @@ class Node(ListWrapper):
     def preceding(self):
         pass
 
-    def siblings(self, preceding=False, following=False):
+    def siblings(self, preceding=False, following=False, axis=False):
         if self._parent is not None:
             idx = self._parent._children.index(self)
             for k, c in enumerate(self._parent.children()):
                 if c is not self:
-                    if preceding:
-                        if k < idx:
-                            yield c
-                    elif following:
+                    if following:
                         if k > idx:
+                            yield c
+                    elif preceding:
+                        if k < idx:
                             yield c
                     else:
                         yield c

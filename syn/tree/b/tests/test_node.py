@@ -136,6 +136,7 @@ def treenode_tst_3(cls):
                             filt=lambda n: n._id <= 3)) == [3, 1]
     
     assert list(n1.depth_first()) == [n1, n2, n3, n4, n5]
+    assert list(n1.depth_first(reverse=True)) == [n5, n4, n3, n2, n1]
     assert list(n1.depth_first(func=attrgetter('_id'),
                                filt=lambda n: n._id % 2 == 0)) == [2, 4]
 
@@ -145,6 +146,9 @@ def treenode_tst_3(cls):
     assert n3._parent is n1
     assert n4._parent is n3
     assert n5._parent is n1
+
+    assert list(n1.children()) == [n2, n3, n5]
+    assert list(n1.children(reverse=True)) == [n5, n3, n2]
     
     assert list(n5.siblings()) == [n2, n3]
     assert list(n4.siblings()) == []
