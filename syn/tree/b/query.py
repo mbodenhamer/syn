@@ -1,3 +1,6 @@
+from __future__ import division
+from operator import itemgetter
+from syn.five import STR
 from syn.type.a import Type as Type_
 from syn.type.a import AnyType
 from syn.base.b import Attr, init_hook
@@ -80,7 +83,8 @@ class Attribute(Axis):
 
 class Child(Axis):
     def iterate(self, node, **kwargs):
-        for c in node.children():
+        for k, c in enumerate(node.children()):
+            c._child_position = k
             yield c
 
 
@@ -163,6 +167,71 @@ class Sibling(Axis):
                                preceding=self.preceding, 
                                axis=True):
             yield d
+
+
+#-------------------------------------------------------------------------------
+# Predicates
+
+
+class Predicate(Query):
+    _opts = dict(max_len = 0)
+
+    def __call__(self, node, **kwargs):
+        return self.eval(node, **kwargs)
+
+    def eval(self, node, **kwargs):
+        raise NotImplementedError
+
+
+#-----------------------------------------------------------
+# Any
+
+
+class Any(Predicate):
+    def eval(self, node, **kwargs):
+        return True
+
+
+#-----------------------------------------------------------
+# Position
+
+
+class Position(Predicate):
+    _attrs = dict(pos = Attr(int))
+    _opts = dict(args = ('pos',))
+
+    def eval(self, node, **kwargs):
+        return node._current_position == self.pos
+
+
+#-----------------------------------------------------------
+# Name
+
+
+class Name(Predicate):
+    _attrs = dict(name = Attr(STR),
+                  name_attr = Attr(STR, '_name'))
+    _opts = dict(args = ('name',))
+
+    def eval(self, node, **kwargs):
+        return getattr(node, self.name_attr) == self.name
+
+
+#-------------------------------------------------------------------------------
+# Where
+
+
+class Where(Query):
+    node = property(itemgetter(0))
+    cond = property(itemgetter(1))
+
+    _opts = dict(min_len = 2,
+                 max_len = 2)
+
+    def __call__(self, node, **kwargs):
+        for n in self.node(node, **kwargs):
+            if self.cond(n, **kwargs):
+                yield n
 
 
 #-------------------------------------------------------------------------------

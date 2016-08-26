@@ -4,7 +4,8 @@ from syn.base import Attr
 from syn.tree.b import Tree
 from syn.tree.b import Node as Node_
 from syn.tree.b.query import Query, Type, Root, Self, Child, Descendant, \
-    Ancestor, Parent, Sibling, Following, Preceding, Attribute
+    Ancestor, Parent, Sibling, Following, Preceding, Attribute, Where, \
+    Predicate, Any, Position, Name
 import syn.type.a
 
 class Node(Node_):
@@ -134,6 +135,41 @@ def test_axes():
 
     q = Attribute(Preceding()) # <<@
     assert list(t.query(q, n3)) == [('name', 'n2'), ('name', 'n1')]
+
+#-------------------------------------------------------------------------------
+# Predicates
+
+def test_predicates():
+    p = Predicate()
+    assert_raises(NotImplementedError, p, 1)
+
+    a = Any()
+    assert a(1) is True
+
+#-------------------------------------------------------------------------------
+# Where
+
+def test_where():
+    n5 = Node(name = 'n5')
+    n4 = Node(name = 'n4')
+    n3 = Node(n4, name = 'n3')
+    n2 = Node(name = 'n2')
+    n1 = Node(n2, n3, n5, name = 'n1')
+
+    def assign_name(n):
+        n._name = n.name
+
+    t = Tree(n1)
+    t.depth_first(assign_name)
+
+    q = Where(Child(), Name('n2')) # ./n2
+    assert list(t.query(q)) == [n2]
+    assert list(t.query(q, n3)) == []
+
+    q = Where(Child(), Any()) # ./*
+    assert list(t.query(q)) == [n2, n3, n5]
+    assert list(t.query(q, n3)) == [n4]
+
 
 #-------------------------------------------------------------------------------
 
