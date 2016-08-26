@@ -168,7 +168,11 @@ def treenode_tst_3(cls):
     assert list(n4.ancestors(include_self=True)) == [n4, n3, n1]
     assert list(n5.ancestors()) == [n1]
 
-    #assert list(n3.following()) == [n4, n5]
+    assert list(n1.following()) == [n2, n3, n4, n5]
+    assert list(n2.following()) == [n3, n4, n5]
+    assert list(n3.following()) == [n4, n5]
+    assert list(n4.following()) == [n5]
+    assert list(n5.following()) == []
 
     assert n4.root() is n1
 

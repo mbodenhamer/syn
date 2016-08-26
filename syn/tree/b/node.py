@@ -182,7 +182,7 @@ class Node(ListWrapper):
         for x in self.depth_first(include_toplevel=False):
             yield x
         
-        for x in self.rootward(_following_depth_first, include_toplevel=False):
+        for x in self.rootward(_following_depth_first):
             yield x
 
     def preceding(self):
