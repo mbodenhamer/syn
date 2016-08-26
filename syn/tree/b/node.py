@@ -201,7 +201,15 @@ class Node(ListWrapper):
     def siblings(self, preceding=False, following=False, axis=False):
         if self._parent is not None:
             idx = self._parent._children.index(self)
-            for k, c in enumerate(self._parent.children()):
+
+            reverse = False
+            if axis and preceding:
+                preceding = False
+                following = True
+                reverse = True
+                idx = len(self._parent._children) - idx - 1
+
+            for k, c in enumerate(self._parent.children(reverse=reverse)):
                 if c is not self:
                     if following:
                         if k > idx:
