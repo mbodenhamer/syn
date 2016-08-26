@@ -1,5 +1,6 @@
 import os
 import sys
+from functools import partial
 from contextlib import contextmanager
 from syn.base_utils import message
 
@@ -104,7 +105,9 @@ def test_nested_context():
         yield x+3
 
     x = 1
-    with nested_context([plus1, plus2, plus3], [[x]]*3) as (w, y, z):
+    with nested_context([partial(plus1, x),
+                         partial(plus2, x),
+                         partial(plus3, x)]) as (w, y, z):
         assert x == 1
         assert w == 2
         assert y == 3
