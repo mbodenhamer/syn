@@ -1,8 +1,9 @@
+from collections import Iterator
 from functools import partial
 from syn.five import STR
 from syn.type.a import This
 from syn.base.b import Base, ListWrapper, Attr, init_hook, setstate_hook
-from syn.base_utils import last
+from syn.base_utils import last, implies
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -16,6 +17,11 @@ STREX = Base.groups_enum().str_exclude
 
 true = lambda x: True
 identity = lambda x: x
+
+def _following_depth_first(node):
+    for n in node.siblings(following=True):
+        for x in n.depth_first():
+            yield x
 
 #-------------------------------------------------------------------------------
 # TreeError
@@ -134,20 +140,29 @@ class Node(ListWrapper):
             nodes.extend(c.collect_by_type(typ))
         return nodes
 
-    def depth_first(self, func=identity, filt=true):
-        if filt(self):
-            yield func(self)
+    def depth_first(self, func=identity, filt=true, include_toplevel=True,
+                    top_level=True):
+        if implies(top_level, include_toplevel):
+            if filt(self):
+                yield func(self)
 
         for c in self._children:
-            for x in c.depth_first(func, filt):
+            for x in c.depth_first(func, filt, include_toplevel, False):
                 yield x
 
-    def rootward(self, func=identity, filt=true):
-        if filt(self):
-            yield func(self)
+    def rootward(self, func=identity, filt=true, include_toplevel=True,
+                 top_level=True):
+        if implies(top_level, include_toplevel):
+            if filt(self):
+                res = func(self)
+                if isinstance(res, Iterator):
+                    for x in res:
+                        yield x
+                else:
+                    yield res
 
         if self._parent is not None:
-            for x in self._parent.rootward(func, filt):
+            for x in self._parent.rootward(func, filt, include_toplevel, False):
                 yield x
 
     def attributes(self):
@@ -156,20 +171,22 @@ class Node(ListWrapper):
                 yield attr, getattr(self, attr)
 
     def ancestors(self, include_self=False):
-        filt = true
-        if not include_self:
-            filt = lambda n: n != self
-
-        for node in self.rootward(filt=filt):
+        for node in self.rootward(include_toplevel=include_self):
             yield node
 
     def descendants(self, include_self=False):
-        filt = true
-        if not include_self:
-            filt = lambda n: n != self
-
-        for node in self.depth_first(filt=filt):
+        for node in self.depth_first(include_toplevel=include_self):
             yield node
+
+    def following(self):
+        for x in self.depth_first(include_toplevel=False):
+            yield x
+        
+        for x in self.rootward(_following_depth_first, include_toplevel=False):
+            yield x
+
+    def preceding(self):
+        pass
 
     def siblings(self, preceding=False, following=False):
         if self._parent is not None:

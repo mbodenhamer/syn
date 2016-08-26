@@ -168,6 +168,8 @@ def treenode_tst_3(cls):
     assert list(n4.ancestors(include_self=True)) == [n4, n3, n1]
     assert list(n5.ancestors()) == [n1]
 
+    #assert list(n3.following()) == [n4, n5]
+
     assert n4.root() is n1
 
     assert n1.node_count() == 5
