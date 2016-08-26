@@ -162,6 +162,7 @@ def treenode_tst_3(cls):
     assert list(n3.siblings(following=True)) == [n5]
     assert list(n3.siblings(following=True, axis=True)) == [n5]
     assert list(n2.siblings()) == [n3, n5]
+    assert list(n2.siblings(axis=True)) == [n3, n5]
     assert list(n2.siblings(following=True)) == [n3, n5]
     assert list(n2.siblings(following=True, axis=True)) == [n3, n5]
     assert list(n2.siblings(preceding=True)) == []
@@ -194,7 +195,11 @@ def treenode_tst_3(cls):
     assert list(n4.preceding()) == [n3, n2, n1]
     assert list(n5.preceding()) == [n4, n3, n2, n1]
 
+    assert n1.root() is n1
+    assert n2.root() is n1
+    assert n3.root() is n1
     assert n4.root() is n1
+    assert n5.root() is n1
 
     assert n1.node_count() == 5
     n1.remove_child(n5)
