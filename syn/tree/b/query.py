@@ -19,10 +19,10 @@ class Query(Node):
         else:
             for c in self.children():
                 for n in c(node, **kwargs):
-                    for x in self.iterate(n):
+                    for x in self.iterate(n, **kwargs):
                         yield x
 
-    def iterate(self, node):
+    def iterate(self, node, **kwargs):
         if False:
             yield # pragma: no cover
 
@@ -40,7 +40,7 @@ class Type(Query):
         if not isinstance(self.type, Type_):
             self.type = Type_.dispatch(self.type)
 
-    def iterate(self, node):
+    def iterate(self, node, **kwargs):
         if self.type.query(node):
             yield node
 
@@ -60,7 +60,7 @@ class Axis(Query):
 class Ancestor(Axis):
     _attrs = dict(include_self = Attr(bool, False))
 
-    def iterate(self, node):
+    def iterate(self, node, **kwargs):
         for a in node.ancestors(include_self=self.include_self):
             yield a
 
@@ -70,7 +70,7 @@ class Ancestor(Axis):
 
 
 class Attribute(Axis):
-    def iterate(self, node):
+    def iterate(self, node, **kwargs):
         for attr, value in node.attributes():
             yield attr, value
 
@@ -80,7 +80,7 @@ class Attribute(Axis):
 
 
 class Child(Axis):
-    def iterate(self, node):
+    def iterate(self, node, **kwargs):
         for c in node.children():
             yield c
 
@@ -92,7 +92,7 @@ class Child(Axis):
 class Descendant(Axis):
     _attrs = dict(include_self = Attr(bool, False))
 
-    def iterate(self, node):
+    def iterate(self, node, **kwargs):
         for d in node.descendants(include_self=self.include_self):
             yield d
 
@@ -102,7 +102,7 @@ class Descendant(Axis):
 
 
 class Parent(Axis):
-    def iterate(self, node):
+    def iterate(self, node, **kwargs):
         yield node.parent()
 
 
@@ -111,7 +111,7 @@ class Parent(Axis):
 
 
 class Root(Axis):
-    def iterate(self, node):
+    def iterate(self, node, **kwargs):
         yield node.root()
 
 
@@ -120,7 +120,7 @@ class Root(Axis):
 
 
 class Self(Axis):
-    def iterate(self, node):
+    def iterate(self, node, **kwargs):
         yield node
 
 
@@ -133,7 +133,7 @@ class Sibling(Axis):
                   preceding = Attr(bool, False))
     _opts = dict(one_true = [('following', 'preceding')])
 
-    def iterate(self, node):
+    def iterate(self, node, **kwargs):
         for d in node.siblings(following=self.following, 
                                preceding=self.preceding, 
                                axis=True):
