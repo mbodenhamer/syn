@@ -2,7 +2,7 @@ from syn.five import STR
 from syn.type.a import List, Dict
 from syn.base.b import Base, Attr, Counter
 from .node import Node, TreeError
-from syn.base_utils import get_typename, getitem
+from syn.base_utils import get_typename, getitem, first
 
 #-------------------------------------------------------------------------------
 # Default search functions
@@ -185,6 +185,19 @@ class Tree(Base):
 
         parent = current_node.parent()
         return self.search_rootward(node, stop_test, _return, parent, **kwargs)
+
+    def query(self, q, context=None):
+        if context is None:
+            context = self.root
+
+        for x in q(context):
+            yield x
+
+    def find_one(self, *args, **kwargs):
+        try:
+            return first(self.query(*args, **kwargs))
+        except StopIteration:
+            return None
 
     def validate(self):
         super(Tree, self).validate()
