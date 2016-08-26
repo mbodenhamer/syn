@@ -4,6 +4,16 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 FOO = os.path.join(DIR, 'foo')
 
 #-------------------------------------------------------------------------------
+# null_context
+
+def test_null_context():
+    from syn.base_utils import null_context
+
+    l = [1, 2, 3]
+    with null_context():
+        assert l == [1, 2, 3]
+
+#-------------------------------------------------------------------------------
 # Temporary assignment
 
 def test_assign():
@@ -13,7 +23,12 @@ def test_assign():
         lst = [1, 2, 3]
 
     assert Foo.lst == [1, 2, 3]
+
     with assign(Foo, 'lst', [3, 4, 5]):
+        assert Foo.lst == [3, 4, 5]
+    assert Foo.lst == [1, 2, 3]
+
+    with assign(Foo, 'lst', [3, 4, 5], lock=True):
         assert Foo.lst == [3, 4, 5]
     assert Foo.lst == [1, 2, 3]
 

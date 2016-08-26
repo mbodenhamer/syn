@@ -4,12 +4,24 @@ from syn.five import STR
 from contextlib import contextmanager
 
 #-------------------------------------------------------------------------------
+# null_context
+
+@contextmanager
+def null_context():
+    '''A context manager that does nothing.
+    '''
+    yield
+
+#-------------------------------------------------------------------------------
 # Temporary assignment
 
 @contextmanager
-def assign(A, attr, B):
-    '''Assigns B to A.attr, yields, and then assigns A.attr back to its original value.'''
-    with threading.Lock():
+def assign(A, attr, B, lock=False):
+    '''Assigns B to A.attr, yields, and then assigns A.attr back to its
+    original value.
+    '''
+    context = threading.Lock if lock else null_context
+    with context():
         tmp = getattr(A, attr)
         setattr(A, attr, B)
         yield
@@ -44,6 +56,6 @@ def delete(*args):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('assign', 'chdir', 'delete')
+__all__ = ('null_context', 'assign', 'chdir', 'delete')
 
 #-------------------------------------------------------------------------------
