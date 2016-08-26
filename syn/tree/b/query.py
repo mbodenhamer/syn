@@ -8,8 +8,7 @@ from .node import Node
 
 
 class Query(Node):
-    _opts = dict(min_len = 1,
-                 max_len = 1)
+    _opts = dict(max_len = 1)
 
     def __call__(self, node, **kwargs):
         if not self._children:
@@ -98,12 +97,38 @@ class Descendant(Axis):
 
 
 #-----------------------------------------------------------
+# Following
+
+
+class Following(Axis):
+    _attrs = dict(include_self = Attr(bool, False))
+
+    def iterate(self, node, **kwargs):
+        for d in node.following():
+            yield d
+
+
+#-----------------------------------------------------------
 # Parent
 
 
 class Parent(Axis):
     def iterate(self, node, **kwargs):
-        yield node.parent()
+        parent = node.parent()
+        if parent is not None:
+            yield parent
+
+
+#-----------------------------------------------------------
+# Preceding
+
+
+class Preceding(Axis):
+    _attrs = dict(include_self = Attr(bool, False))
+
+    def iterate(self, node, **kwargs):
+        for d in node.preceding():
+            yield d
 
 
 #-----------------------------------------------------------

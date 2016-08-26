@@ -3,7 +3,8 @@ from nose.tools import assert_raises
 from syn.base import Attr
 from syn.tree.b import Tree
 from syn.tree.b import Node as Node_
-from syn.tree.b.query import Query, Type, Root, Self, Child, Descendant
+from syn.tree.b.query import Query, Type, Root, Self, Child, Descendant, \
+    Ancestor, Parent, Sibling, Following, Preceding, Attribute
 import syn.type.a
 
 class Node(Node_):
@@ -42,13 +43,13 @@ def test_axes():
     assert list(t.root.depth_first(attrgetter('name'))) == \
         ['n1', 'n2', 'n3', 'n4', 'n5']
 
-    q = Root() # /   (or root::node())
+    q = Root() # /   (or root::)
     assert t.find_one(q) is n1
     assert list(t.query(q)) == [n1]
     assert t.find_one(q, n5) is n1
     assert list(t.query(q, n5)) == [n1]
 
-    q = Self() # .   (or self::node())
+    q = Self() # .   (or self::)
     assert t.find_one(q) is n1
     assert list(t.query(q)) == [n1]
     assert t.find_one(q, n5) is n5
@@ -81,10 +82,55 @@ def test_axes():
     assert list(t.query(q)) == [n1, n2, n3, n4, n5]
     assert list(t.query(q, n3)) == [n1, n2, n3, n4, n5]
 
-    q = Descendant(Root()) # /descendant::node()/*
+    q = Descendant(Root()) # /descendant::
     assert list(t.query(q)) == [n2, n3, n4, n5]
     assert list(t.query(q, n3)) == [n2, n3, n4, n5]
 
+    q = Descendant() # descendant::
+    assert list(t.query(q)) == [n2, n3, n4, n5]
+    assert list(t.query(q, n3)) == [n4]
+
+    q = Ancestor() # ancestor::
+    assert list(t.query(q)) == []
+    assert list(t.query(q, n3)) == [n1]
+    assert list(t.query(q, n4)) == [n3, n1]
+
+    q = Ancestor(include_self=True) # ancestor-or-self::
+    assert list(t.query(q)) == [n1]
+    assert list(t.query(q, n3)) == [n3, n1]
+    assert list(t.query(q, n4)) == [n4, n3, n1]
+
+    q = Child(Ancestor()) # ancestor::/*
+    assert list(t.query(q)) == []
+    assert list(t.query(q, n3)) == [n2, n3, n5]
+    assert list(t.query(q, n4)) == [n4, n2, n3, n5]
+
+    q = Parent() # ..
+    assert list(t.query(q)) == []
+    assert list(t.query(q, n3)) == [n1]
+    assert list(t.query(q, n4)) == [n3]
+    
+    q = Sibling(following=True) # following-sibling::
+    assert list(t.query(q)) == []
+    assert list(t.query(q, n3)) == [n5]
+    assert list(t.query(q, n2)) == [n3, n5]
+
+    q = Sibling(preceding=True) # preceding-sibling::
+    assert list(t.query(q)) == []
+    assert list(t.query(q, n3)) == [n2]
+    assert list(t.query(q, n5)) == [n3, n2]
+
+    q = Preceding() # <<
+    assert list(t.query(q)) == []
+    assert list(t.query(q, n5)) == [n4, n3, n2, n1]
+
+    q = Following() # <<
+    assert list(t.query(q)) == [n2, n3, n4, n5]
+    assert list(t.query(q, n5)) == []
+
+    q = Attribute() # @
+    assert list(t.query(q)) == [('name', 'n1')]
+    assert list(t.query(q, n5)) == [('name', 'n5')]
 
 #-------------------------------------------------------------------------------
 
