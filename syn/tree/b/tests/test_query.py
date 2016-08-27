@@ -5,7 +5,8 @@ from syn.tree.b import Tree
 from syn.tree.b import Node as Node_
 from syn.tree.b.query import Query, Type, Root, Self, Child, Descendant, \
     Ancestor, Parent, Sibling, Following, Preceding, Attribute, Where, \
-    Predicate, Any, Position, Name
+    Predicate, Any, Position, Name, POSITION
+from syn.base_utils import assign
 import syn.type.a
 
 class Node(Node_):
@@ -155,6 +156,24 @@ def test_predicates():
     assert p(Node(name='foo'))
     assert not p(Node(name='bar'))
     assert not p(Node(_name='foo'))
+
+    p = Position(1)
+    n = Node()
+    with assign(n, POSITION, 0):
+        assert not p(n)
+    with assign(n, POSITION, 1):
+        assert p(n)
+    with assign(n, POSITION, 2):
+        assert not p(n)
+
+    p = Position(2, start_offset=1)
+    n = Node()
+    with assign(n, POSITION, 0):
+        assert not p(n)
+    with assign(n, POSITION, 1):
+        assert p(n)
+    with assign(n, POSITION, 2):
+        assert not p(n)
 
 #-------------------------------------------------------------------------------
 # Where
