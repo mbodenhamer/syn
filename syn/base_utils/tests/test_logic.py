@@ -1,3 +1,5 @@
+from syn.base_utils import feq
+
 #-------------------------------------------------------------------------------
 # Propositional logic
 
@@ -74,6 +76,68 @@ def test_nor():
     assert not nor(True, True, True)
     assert not nor(False, False, True)
     assert nor(False, False, False)
+
+#-------------------------------------------------------------------------------
+# Fuzzy logic
+
+def test_fuzzy_and():
+    from syn.base_utils import fuzzy_and
+
+    assert feq(fuzzy_and(1, 1, 1), 1)
+    assert feq(fuzzy_and(1, 1, 0), 0)
+
+def test_fuzzy_not():
+    from syn.base_utils import fuzzy_not
+
+    assert feq(fuzzy_not(1), 0)
+    assert feq(fuzzy_not(0), 1)
+
+def test_fuzzy_nand():
+    from syn.base_utils import fuzzy_nand
+
+    assert feq(fuzzy_nand(1, 1, 1), 0)
+    assert feq(fuzzy_nand(1, 1, 0), 1)
+    assert feq(fuzzy_nand(0, 0, 0), 1)
+
+def test_fuzzy_or():
+    from syn.base_utils import fuzzy_or
+
+    assert feq(fuzzy_or(1, 1, 1), 1)
+    assert feq(fuzzy_or(1, 1, 0), 1)
+    assert feq(fuzzy_or(1, 0, 0), 1)
+    assert feq(fuzzy_or(0, 0, 0), 0)
+
+def test_fuzzy_nor():
+    from syn.base_utils import fuzzy_nor
+
+    assert feq(fuzzy_nor(1, 1, 1), 0)
+    assert feq(fuzzy_nor(1, 1, 0), 0)
+    assert feq(fuzzy_nor(1, 0, 0), 0)
+    assert feq(fuzzy_nor(0, 0, 0), 1)
+
+def test_fuzzy_implies():
+    from syn.base_utils import fuzzy_implies
+
+    assert feq(fuzzy_implies(0, 0), 1)
+    assert feq(fuzzy_implies(0, 1), 1)
+    assert feq(fuzzy_implies(1, 0), 0)
+    assert feq(fuzzy_implies(1, 1), 1)
+
+def test_fuzzy_equiv():
+    from syn.base_utils import fuzzy_equiv
+
+    assert feq(fuzzy_equiv(0, 0), 1)
+    assert feq(fuzzy_equiv(0, 1), 0)
+    assert feq(fuzzy_equiv(1, 0), 0)
+    assert feq(fuzzy_equiv(1, 1), 1)
+
+def test_fuzzy_xor():
+    from syn.base_utils import fuzzy_xor
+
+    assert feq(fuzzy_xor(0, 0), 0)
+    assert feq(fuzzy_xor(0, 1), 1)
+    assert feq(fuzzy_xor(1, 0), 1)
+    assert feq(fuzzy_xor(1, 1), 0)
 
 #-------------------------------------------------------------------------------
 # Collection logic
