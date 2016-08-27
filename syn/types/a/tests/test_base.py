@@ -1,11 +1,12 @@
-import syn.types
-import syn.types.a
+from syn.types.a import Type
 
 #-------------------------------------------------------------------------------
-# Types imports
+# Type
 
-def test_types_imports():
-    assert syn.types.Type is syn.types.a.Type
+def test_type():
+    t = Type(1)
+    assert t.istr() == '1'
+    t.hashable()
 
 #-------------------------------------------------------------------------------
 
