@@ -113,9 +113,9 @@ class Following(Axis):
     _attrs = dict(include_self = Attr(bool, False))
 
     def iterate(self, node, **kwargs):
-        for k, d in enumerate(node.following()):
-            with assign(d, POSITION, k):
-                yield d
+        for k, f in enumerate(node.following()):
+            with assign(f, POSITION, k):
+                yield f
 
 
 #-----------------------------------------------------------
@@ -138,9 +138,9 @@ class Preceding(Axis):
     _attrs = dict(include_self = Attr(bool, False))
 
     def iterate(self, node, **kwargs):
-        for k, d in enumerate(node.preceding()):
-            with assign(d, POSITION, k):
-                yield d
+        for k, p in enumerate(node.preceding()):
+            with assign(p, POSITION, k):
+                yield p
 
 
 #-----------------------------------------------------------
@@ -246,8 +246,8 @@ class Where(Query):
     def __call__(self, node, **kwargs):
         for k, n in enumerate(self.node(node, **kwargs)):
             if self.cond(n, **kwargs):
-                n._nodeset_position = k
-                yield n
+                with assign(n, POSITION, k):
+                    yield n
 
 
 #-------------------------------------------------------------------------------
