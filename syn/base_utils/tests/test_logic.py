@@ -40,6 +40,41 @@ def test_equiv():
     assert not equiv(x, y)
     assert not equiv(x, z)
 
+def test_xor():
+    from syn.base_utils import xor
+
+    assert xor(True, False)
+    assert xor(False, True)
+    assert not xor(True, True)
+    assert not xor(False, False)
+
+def test_and_():
+    from syn.base_utils import and_
+
+    assert and_(True, True, True)
+    assert not and_(True, True, False)
+
+def test_or_():
+    from syn.base_utils import or_
+
+    assert or_(True, True, True)
+    assert or_(False, False, True)
+    assert not or_(False, False, False)
+
+def test_nand():
+    from syn.base_utils import nand
+
+    assert not nand(True, True, True)
+    assert nand(True, True, False)
+    assert nand(False, False, False)
+
+def test_nor():
+    from syn.base_utils import nor
+
+    assert not nor(True, True, True)
+    assert not nor(False, False, True)
+    assert nor(False, False, False)
+
 #-------------------------------------------------------------------------------
 # Collection logic
 
