@@ -202,19 +202,24 @@ def treenode_tst_3(cls):
     assert n5.root() is n1
 
     assert n1.node_count() == 5
-    n1.remove_child(n5)
+    n4.add_child(Node())
+    assert n1.node_count() == 6
+    assert n4.node_count() == 2
+    n3.remove_child(n4)
     assert n1.node_count() == 4
+    n1.remove_child(n5)
+    assert n1.node_count() == 3
     assert n1._children == [n2, n3]
     assert n5._parent is None
     assert list(n5.siblings()) == []
-    assert list(n1.descendants()) == [n2, n3, n4]
+    assert list(n1.descendants()) == [n2, n3]
     
     assert_raises(TreeError, n1.remove_child, n5)
 
     def set_foo(n):
         n.foo = n._id * 2
     consume(n1.depth_first(set_foo))
-    assert list(n1.depth_first(attrgetter('foo'))) == [2, 4, 6, 8]
+    assert list(n1.depth_first(attrgetter('foo'))) == [2, 4, 6]
 
 #-------------------------------------------------------------------------------
 # Tree Node

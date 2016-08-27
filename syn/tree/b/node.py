@@ -3,7 +3,7 @@ from functools import partial
 from syn.five import STR
 from syn.type.a import This
 from syn.base.b import Base, ListWrapper, Attr, init_hook, setstate_hook
-from syn.base_utils import last, implies
+from syn.base_utils import last, implies, consume
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -87,16 +87,22 @@ class Node(ListWrapper):
             self.insert(index, node)
         else:
             self.append(node)
-        self._node_count += node.node_count()
         node._parent = self
+        
+        def adjust(n):
+            n._node_count += node.node_count()
+        consume(self.rootward(adjust))
 
     def remove_child(self, node):
         if node not in self._children:
             raise TreeError("Node '%s' not a child; cannot remove" % str(node))
 
         self._children.remove(node)
-        self._node_count -= node.node_count()
         node._parent = None
+
+        def adjust(n):
+            n._node_count -= node.node_count()
+        consume(self.rootward(adjust))
 
     def parent(self):
         return self._parent
