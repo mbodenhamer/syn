@@ -7,7 +7,7 @@ from syn.base.b import Attr, init_hook
 from syn.base_utils import assign
 from .node import Node
 
-_NODESET_POSITION = '_nodeset_position'
+POSITION = '_nodeset_position'
 
 #-------------------------------------------------------------------------------
 # Query
@@ -67,7 +67,7 @@ class Ancestor(Axis):
 
     def iterate(self, node, **kwargs):
         for k, a in enumerate(node.ancestors(include_self=self.include_self)):
-            with assign(a, _NODESET_POSITION, k):
+            with assign(a, POSITION, k):
                 yield a
 
 
@@ -88,7 +88,7 @@ class Attribute(Axis):
 class Child(Axis):
     def iterate(self, node, **kwargs):
         for k, c in enumerate(node.children()):
-            with assign(c, _NODESET_POSITION, k):
+            with assign(c, POSITION, k):
                 yield c
 
 
@@ -101,7 +101,7 @@ class Descendant(Axis):
 
     def iterate(self, node, **kwargs):
         for k, d in enumerate(node.descendants(include_self=self.include_self)):
-            with assign(d, _NODESET_POSITION, k):
+            with assign(d, POSITION, k):
                 yield d
 
 
@@ -114,7 +114,7 @@ class Following(Axis):
 
     def iterate(self, node, **kwargs):
         for k, d in enumerate(node.following()):
-            with assign(d, _NODESET_POSITION, k):
+            with assign(d, POSITION, k):
                 yield d
 
 
@@ -126,7 +126,7 @@ class Parent(Axis):
     def iterate(self, node, **kwargs):
         parent = node.parent()
         if parent is not None:
-            with assign(parent, _NODESET_POSITION, 0):
+            with assign(parent, POSITION, 0):
                 yield parent
 
 
@@ -139,7 +139,7 @@ class Preceding(Axis):
 
     def iterate(self, node, **kwargs):
         for k, d in enumerate(node.preceding()):
-            with assign(d, _NODESET_POSITION, k):
+            with assign(d, POSITION, k):
                 yield d
 
 
@@ -150,7 +150,7 @@ class Preceding(Axis):
 class Root(Axis):
     def iterate(self, node, **kwargs):
         root = node.root()
-        with assign(root, _NODESET_POSITION, 0):
+        with assign(root, POSITION, 0):
             yield root
 
 
@@ -160,7 +160,7 @@ class Root(Axis):
 
 class Self(Axis):
     def iterate(self, node, **kwargs):
-        with assign(node, _NODESET_POSITION, 0):
+        with assign(node, POSITION, 0):
             yield node
 
 
@@ -177,7 +177,7 @@ class Sibling(Axis):
         for k, s in enumerate(node.siblings(following=self.following, 
                                             preceding=self.preceding, 
                                             axis=True)):
-            with assign(s, _NODESET_POSITION, k):
+            with assign(s, POSITION, k):
                 yield s
 
 
@@ -211,7 +211,7 @@ class Any(Predicate):
 class Position(Predicate):
     _attrs = dict(pos = Attr(int),
                   start_offset = Attr(int, 0),
-                  pos_attr = Attr(STR, '_nodeset_position'))
+                  pos_attr = Attr(STR, POSITION))
     _opts = dict(args = ('pos',))
 
     def eval(self, node, **kwargs):
