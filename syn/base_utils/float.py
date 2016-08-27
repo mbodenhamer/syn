@@ -1,6 +1,8 @@
 import sys
 import math
 from syn.five import NUM
+from functools import reduce
+import operator as op
 
 #-------------------------------------------------------------------------------
 
@@ -24,11 +26,7 @@ def prod(args, log=False):
         tmp = sum(math.log(arg) for arg in args)
         return math.exp(tmp)
 
-    ret = 1
-    lst = list(args)
-    while lst:
-        ret *= lst.pop()
-    return ret
+    return reduce(op.mul, args)
 
 #-------------------------------------------------------------------------------
 # __all__
