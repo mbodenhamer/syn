@@ -5,7 +5,8 @@ from syn.tree.b import Tree
 from syn.tree.b import Node as Node_
 from syn.tree.b.query import Query, Type, Root, Self, Child, Descendant, \
     Ancestor, Parent, Sibling, Following, Preceding, Attribute, Where, \
-    Predicate, Any, Position, Name, POSITION
+    Predicate, Any, Position, Name, POSITION, Function, Value, Eq, Ne, Lt, Le, \
+    Gt, Ge
 from syn.base_utils import assign
 import syn.type.a
 
@@ -174,6 +175,40 @@ def test_predicates():
         assert p(n)
     with assign(n, POSITION, 2):
         assert not p(n)
+
+#-------------------------------------------------------------------------------
+# Functions
+
+def test_functions():
+    f = Function()
+    assert_raises(NotImplementedError, f.eval, [])
+
+    v = Value(1)
+    assert v(Node()) == v.value == 1
+
+    # --------------------Comparison--------------------
+
+    f = Eq(1, 1)
+    assert f._children == [Value(1), Value(1)]
+    assert f(None)
+    assert not Eq(1, 2)(None)
+
+    assert Ne(1, 2)(None)
+    assert not Ne(1, 1)(None)
+
+    assert Lt(1, 2)(None)
+    assert not Lt(1, 1)(None)
+
+    assert Le(1, 2)(None)
+    assert Le(1, 1)(None)
+    assert not Le(1, 0)(None)
+
+    assert Gt(2, 1)(None)
+    assert not Gt(1, 1)(None)
+
+    assert Ge(2, 1)(None)
+    assert Ge(1, 1)(None)
+    assert not Ge(0, 1)(None)
 
 #-------------------------------------------------------------------------------
 # Where

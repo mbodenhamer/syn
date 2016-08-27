@@ -1,9 +1,10 @@
 from __future__ import division
 from operator import itemgetter
+import operator as op
 from syn.five import STR
 from syn.type.a import Type as Type_
 from syn.type.a import AnyType
-from syn.base.b import Attr, init_hook
+from syn.base.b import Attr, init_hook, create_hook
 from syn.base_utils import assign
 from .node import Node
 
@@ -233,6 +234,78 @@ class Name(Predicate):
 
 
 #-------------------------------------------------------------------------------
+# Value
+
+
+class Value(Query):
+    _attrs = dict(value = Attr(None))
+    _opts = dict(max_len = 0,
+                 args = ('value',))
+    
+    def __call__(self, node, **kwargs):
+        return self.value
+
+
+#-------------------------------------------------------------------------------
+# Function
+
+
+class Function(Query):
+    arity = None
+    func = None
+
+    def __init__(self, *args, **kwargs):
+        lst = []
+        for arg in args:
+            if not isinstance(arg, Query):
+                lst.append(Value(arg))
+            else:
+                lst.append(arg)
+        super(Function, self).__init__(*lst, **kwargs)
+
+    @classmethod
+    @create_hook
+    def _set_lens(cls):
+        if cls.arity is not None:
+            cls._opts.min_len = cls.arity
+            cls._opts.max_len = cls.arity
+
+    def __call__(self, node, **kwargs):
+        values = [c(node, **kwargs) for c in self.children()]
+        return self.eval(values, **kwargs)
+
+    def eval(self, values, **kwargs):
+        if self.func is None:
+            raise NotImplementedError
+        return self.func(*values)
+
+
+#-----------------------------------------------------------
+# Comparison
+
+
+class Comparison(Function):
+    arity = 2
+
+class Eq(Comparison):
+    func = op.eq
+
+class Ne(Comparison):
+    func = op.ne
+
+class Lt(Comparison):
+    func = op.lt
+
+class Le(Comparison):
+    func = op.le
+
+class Gt(Comparison):
+    func = op.gt
+
+class Ge(Comparison):
+    func = op.ge
+
+#-------------------------------------------------------------------------------
 # Where
 
 
@@ -245,7 +318,7 @@ class Where(Query):
 
     def __call__(self, node, **kwargs):
         for k, n in enumerate(self.node(node, **kwargs)):
-            if self.cond(n, **kwargs):
+            if self.cond(n, **kwargs) is True:
                 with assign(n, POSITION, k):
                     yield n
 
