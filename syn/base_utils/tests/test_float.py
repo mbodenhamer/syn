@@ -7,7 +7,9 @@ def test_feq():
     from syn.base_utils import feq
 
     assert feq(1, 1)
+    assert feq(1, 1.0)
     assert not feq(1, 2)
+    assert not feq(1, 0.9)
     assert feq(1.0, 1.00)
     assert feq(1e-10, 2e-10, tol=1e-9)
     assert not feq(1e-10, 2e-10, tol=1e-11)
