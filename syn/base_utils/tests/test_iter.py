@@ -2,7 +2,7 @@ from nose.tools import assert_raises
 from syn.five import range
 
 #-------------------------------------------------------------------------------
-# Status
+# Query
 
 def test_iterlen():
     from syn.base_utils import iterlen, is_empty

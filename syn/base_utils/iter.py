@@ -14,7 +14,7 @@ def ensure_iter(f):
     return func
 
 #-------------------------------------------------------------------------------
-# Status
+# Query
 
 def iterlen(iter):
     '''Returns the number of iterations remaining over iter.
