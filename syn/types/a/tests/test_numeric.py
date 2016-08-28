@@ -1,14 +1,15 @@
-from nose.tools import assert_raises
-from syn.types.a import Type
+from syn.types.a import Type, Numeric, Int, hashable
 
 #-------------------------------------------------------------------------------
-# Type
+# Numeric
 
-def test_type():
-    t = Type(1)
-    assert t.obj == 1
-    assert t.istr() == '1'
-    assert t.hashable() is t.obj
+def test_numeric():
+    x = 1
+    t = Type.dispatch(x)
+    assert isinstance(t, Numeric)
+    assert type(t) is Int
+
+    assert hashable(x) == x
 
 #-------------------------------------------------------------------------------
 

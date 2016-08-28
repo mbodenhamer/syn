@@ -1,5 +1,6 @@
 import six
 from functools import wraps
+from syn.type.a import Type as Type_
 from syn.base_utils import nearest_base, is_hashable
 
 #-------------------------------------------------------------------------------
@@ -32,6 +33,7 @@ class TypeMeta(type):
         
         if self.type is not None:
             TYPE_REGISTRY[self.type] = self
+            self.type_ = Type_.dispatch(self.type)
 
 
 #-------------------------------------------------------------------------------
@@ -41,25 +43,47 @@ class TypeMeta(type):
 @six.add_metaclass(TypeMeta)
 class Type(object):
     type = object
+    gen_type = None
+    gen_types = None
 
     def __init__(self, obj):
         self.obj = obj
 
     @classmethod
     def dispatch(cls, obj):
-        return TYPE_REGISTRY[nearest_base(type(obj), TYPE_REGISTRY.keys())]
+        typ = type(obj)
+        if typ in TYPE_REGISTRY:
+            return TYPE_REGISTRY[typ](obj)
+
+        base = nearest_base(typ, TYPE_REGISTRY.keys())
+        return TYPE_REGISTRY[base](obj)
+
+    @classmethod
+    def generate(cls, **kwargs):
+        if cls.gen_type is None and cls.gen_types is None:
+            return cls.type_.generate(**kwargs)
+        elif cls.gen_type:
+            return cls.type(cls.gen_type.generate(**kwargs))
+        return cls.type(typ.generate(**kwargs) for typ in cls.gen_types)
 
     @return_(is_hashable)
     def hashable(self):
-        raise NotImplementedError
+        return hashable(self.__dict__)
 
     def istr(self):
         return str(self.obj)
 
 
 #-------------------------------------------------------------------------------
+# Utilities
+
+def hashable(obj):
+    return Type.dispatch(obj).hashable()
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Type',)
+__all__ = ('TYPE_REGISTRY', 'Type',
+           'hashable')
 
 #-------------------------------------------------------------------------------
