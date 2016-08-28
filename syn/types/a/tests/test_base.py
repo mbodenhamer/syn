@@ -8,7 +8,7 @@ from syn.base_utils import get_fullname, is_hashable
 def test_type():
     t = Type(1)
     assert t.obj == 1
-    assert t.istr() == '1'
+    assert t.rstr() == '1'
     assert t.hashable() is t.obj
 
     class Foo(object):

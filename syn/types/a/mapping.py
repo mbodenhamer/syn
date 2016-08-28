@@ -11,9 +11,9 @@ class Mapping(Type):
     type = collections.Mapping
 
     @return_(is_hashable)
-    def hashable(self):
-        return tuple((hashable(key),
-                      hashable(value))
+    def hashable(self, **kwargs):
+        return tuple((hashable(key, **kwargs),
+                      hashable(value, **kwargs))
                      for key, value in self.obj.items())
 
 

@@ -71,24 +71,30 @@ class Type(object):
         return cls.type(typ.generate(**kwargs) for typ in cls.gen_types)
 
     @return_(is_hashable)
-    def hashable(self):
+    def hashable(self, **kwargs):
         return tuple_prepend(get_fullname(self.obj),
-                             hashable(self.obj.__dict__))
+                             hashable(self.obj.__dict__, **kwargs))
 
-    def istr(self):
+    def rstr(self, **kwargs):
         return str(self.obj)
 
 
 #-------------------------------------------------------------------------------
 # Utilities
 
-def hashable(obj):
-    return Type.dispatch(obj).hashable()
+def generate(typ, **kwargs):
+    return Type.type_dispatch(typ).generate(**kwargs)
+
+def hashable(obj, **kwargs):
+    return Type.dispatch(obj).hashable(**kwargs)
+
+def rstr(obj, **kwargs):
+    return Type.dispatch(obj).rstr(**kwargs)
 
 #-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('TYPE_REGISTRY', 'Type',
-           'hashable')
+           'generate', 'hashable', 'rstr')
 
 #-------------------------------------------------------------------------------
