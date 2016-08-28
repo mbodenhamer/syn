@@ -52,12 +52,15 @@ class Type(object):
 
     @classmethod
     def dispatch(cls, obj):
-        typ = type(obj)
+        return cls.type_dispatch(type(obj))(obj)
+
+    @classmethod
+    def type_dispatch(cls, typ):
         if typ in TYPE_REGISTRY:
-            return TYPE_REGISTRY[typ](obj)
+            return TYPE_REGISTRY[typ]
 
         base = nearest_base(typ, TYPE_REGISTRY.keys())
-        return TYPE_REGISTRY[base](obj)
+        return TYPE_REGISTRY[base]
 
     @classmethod
     def generate(cls, **kwargs):
