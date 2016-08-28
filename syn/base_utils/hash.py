@@ -1,5 +1,5 @@
-'''Utilities for determining hashability and converting to hashable objects.
-'''
+#-------------------------------------------------------------------------------
+# Query
 
 def is_hashable(obj):
     try:
@@ -7,7 +7,6 @@ def is_hashable(obj):
     except TypeError:
         return False
     return True
-
 
 #-------------------------------------------------------------------------------
 # __all__
