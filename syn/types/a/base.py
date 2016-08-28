@@ -1,7 +1,8 @@
 import six
 from functools import wraps
 from syn.type.a import Type as Type_
-from syn.base_utils import nearest_base, is_hashable
+from syn.base_utils import nearest_base, is_hashable, tuple_prepend, \
+    get_fullname
 
 #-------------------------------------------------------------------------------
 # Type registry
@@ -68,7 +69,8 @@ class Type(object):
 
     @return_(is_hashable)
     def hashable(self):
-        return hashable(self.__dict__)
+        return tuple_prepend(get_fullname(self.obj),
+                             hashable(self.obj.__dict__))
 
     def istr(self):
         return str(self.obj)
