@@ -86,6 +86,9 @@ def get_typename(x):
         ret = x.__class__.__name__
     return ret
 
+def get_fullname(x):
+    return '{}.{}'.format(get_mod(x), get_typename(x))
+
 def same_lineage(o1, o2):
     '''Returns True iff o1 and o2 are of the same class lineage (that is, a direct line of descent, without branches).'''
     def comp(x, y):
@@ -158,6 +161,14 @@ def index(seq, elem):
 
 def unzip(seq):
     return zip(*list(seq))
+
+def tuple_append(tup, x):
+    ret = tup + (x,)
+    return ret
+
+def tuple_prepend(x, tup):
+    ret =  (x,) + tup
+    return ret
 
 #-------------------------------------------------------------------------------
 # Mapping utilities
@@ -317,6 +328,7 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'assert_pickle_idempotent', 'assert_deepcopy_idempotent',
            'rgetattr', 'callables', 'is_subclass', 'getitem', 'same_lineage',
            'type_partition', 'subclasses', 'unzip', 'this_module', 
-           'that_module', 'harvest_metadata')
+           'that_module', 'harvest_metadata', 'tuple_append', 'get_fullname',
+           'tuple_prepend')
 
 #-------------------------------------------------------------------------------

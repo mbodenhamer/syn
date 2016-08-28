@@ -120,6 +120,13 @@ def test_get_typename():
     assert get_typename(Foo) == 'Foo'
     assert get_typename(Foo()) == 'Foo'
 
+def test_get_fullname():
+    from syn.base_utils import get_fullname
+    from syn.base.a import Base
+
+    assert get_fullname(Base) == 'syn.base.a.base.Base'
+    assert get_fullname(Base()) == 'syn.base.a.base.Base'
+
 def test_same_lineage():
     from syn.base_utils import same_lineage
 
@@ -208,6 +215,20 @@ def test_unzip():
 
     assert list(unzip(((1, 2), (3, 4)))) == [(1, 3), (2, 4)]
     assert list(unzip(((x, 2*x) for x in range(1, 4)))) == [(1, 2, 3), (2, 4, 6)]
+
+def test_tuple_append():
+    from syn.base_utils import tuple_append
+
+    t = (1, 2, 3)
+    t2 = tuple_append(t, 4)
+    assert t2 == (1, 2, 3, 4)
+
+def test_tuple_prepend():
+    from syn.base_utils import tuple_prepend
+
+    t = (1, 2, 3)
+    t2 = tuple_prepend(4, t)
+    assert t2 == (4, 1, 2, 3)
 
 #-------------------------------------------------------------------------------
 # Mapping utilities
