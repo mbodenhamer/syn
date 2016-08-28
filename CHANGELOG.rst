@@ -5,6 +5,7 @@ Changelog
 ~~~~~~~~~~~~~~~~~~~
 - Added iteration methods to syn.tree.b.Node
 - Added syn.tree.query
+- Added syn.types
 
 0.0.11 (2016-08-16)
 ~~~~~~~~~~~~~~~~~~~
