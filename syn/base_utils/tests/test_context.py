@@ -1,5 +1,6 @@
 import os
 import sys
+from copy import copy
 from functools import partial
 from contextlib import contextmanager
 from syn.base_utils import message
@@ -42,6 +43,27 @@ def test_assign():
         assert hasattr(Foo, 'a')
         assert Foo.a == 1
     assert not hasattr(Foo, 'a')
+
+#-------------------------------------------------------------------------------
+# Temporary item assignment
+
+def test_setitem():
+    from syn.base_utils import setitem
+
+    dct = dict(a = 1, b = 2)
+    cdct = copy(dct)
+    
+    assert dct == cdct
+    with setitem(dct, 'a', 3):
+        assert dct == dict(a = 3, b = 2)
+    assert dct == cdct
+
+    assert 'c' not in dct
+    with setitem(dct, 'c', 4) as x:
+        assert x == 4
+        assert dct == dict(a = 1, b = 2, c = 4)
+    assert 'c' not in dct
+    assert dct == cdct
 
 #-------------------------------------------------------------------------------
 # cd

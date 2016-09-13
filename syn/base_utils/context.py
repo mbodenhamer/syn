@@ -41,6 +41,28 @@ def assign(A, attr, B, lock=False):
             setattr(A, attr, tmp)
 
 #-------------------------------------------------------------------------------
+# Temporary item assignment
+
+@contextmanager
+def setitem(dct, name, item, lock=False):
+    class NoItem(object): pass
+
+    context = threading.Lock if lock else null_context
+    with context():
+        if name not in dct:
+            tmp = NoItem
+        else:
+            tmp = dct[name]
+
+        dct[name] = item
+        yield item
+
+        if tmp is NoItem:
+            del dct[name]
+        else:
+            dct[name] = tmp
+
+#-------------------------------------------------------------------------------
 # cd
 
 @contextmanager
@@ -119,7 +141,7 @@ def capture(names=('stdout', 'stderr'), obj=sys, typ=cStringIO):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('null_context', 'assign', 'chdir', 'delete', 'nested_context', 
-           'capture')
+__all__ = ('null_context', 'assign', 'setitem', 'chdir', 'delete', 
+           'nested_context', 'capture')
 
 #-------------------------------------------------------------------------------
