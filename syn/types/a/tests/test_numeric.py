@@ -1,6 +1,6 @@
 from syn.types.a import Type, Numeric, Int, hashable, rstr, serialize, \
-    deserialize
-from syn.base_utils import is_hashable, assert_equivalent
+    deserialize, estr, enumerate_
+from syn.base_utils import is_hashable
 
 #-------------------------------------------------------------------------------
 # Numeric
@@ -18,12 +18,14 @@ def test_numeric():
         assert type(val) is cls.type
         assert is_hashable(hashable(val))
         assert deserialize(serialize(val)) == val
-    
         assert isinstance(rstr(val), str)
-        # assert_equivalent(eval(estr(val)), val)
 
-        # for item in enumerate_(cls, max_enum=1):
-        #     assert type(item) is cls.type
+        for item in enumerate_(cls.type, max_enum=1):
+            assert type(item) is cls.type
+
+            eitem = eval(estr(item))
+            assert eitem == item
+            assert type(eitem) is cls.type
 
 #-------------------------------------------------------------------------------
 

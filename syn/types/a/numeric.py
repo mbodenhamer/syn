@@ -27,7 +27,8 @@ def complex_enumval(x, **kwargs):
 
 
 class Numeric(Type):
-    pass
+    def estr(self, **kwargs):
+        return str(self.obj)
 
 
 #-------------------------------------------------------------------------------

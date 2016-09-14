@@ -91,7 +91,6 @@ class Type(object):
         if SER_KEYS.name not in obj or SER_KEYS.mod not in obj:
             return cls.dispatch(obj)
 
-        # mod = __import__(obj[SER_KEYS.mod], fromlist=[obj[SER_KEYS.name]])
         mod = import_module(obj[SER_KEYS.mod])
         return cls.type_dispatch(getattr(mod, obj[SER_KEYS.name]))
 
@@ -113,7 +112,6 @@ class Type(object):
             return dct
 
         name = dct[SER_KEYS.name]
-        # mod = __import__(dct[SER_KEYS.mod], fromlist=[name])
         mod = import_module(dct[SER_KEYS.mod])
         args = dct.get(SER_KEYS.args, [])
         kwargs = dct.get(SER_KEYS.kwargs, {})
@@ -175,7 +173,7 @@ class Type(object):
         '''Should return a string that can eval into an equivalent object'''
         if hasmethod(self.obj, '_estr'):
             return self.obj._estr(**kwargs)
-        return str(self.obj)
+        return '{}()'.format(get_typename(self), str(self.obj))
 
     @classmethod
     def _generate(cls, **kwargs):
