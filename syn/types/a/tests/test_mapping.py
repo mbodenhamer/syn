@@ -1,7 +1,8 @@
 from six import PY2
 from nose.tools import assert_raises
 from syn.types.a import Type, Mapping, Dict, \
-    hashable, serialize, deserialize, estr, rstr, enumerate_
+    hashable, serialize, deserialize, estr, rstr
+from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent
 
 #-------------------------------------------------------------------------------

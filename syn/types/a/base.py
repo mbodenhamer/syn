@@ -253,7 +253,7 @@ class Type(object):
 def deserialize(obj, **kwargs):
     return Type.deserialize_dispatch(obj).deserialize(obj, **kwargs)
 
-def enumerate_(obj, **kwargs):
+def enumerate(obj, **kwargs):
     for item in Type.type_dispatch(obj).enumerate(**kwargs):
         yield item
 
@@ -278,7 +278,7 @@ def serialize(obj, **kwargs):
 # __all__
 
 __all__ = ('TYPE_REGISTRY', 'Type',
-           'deserialize', 'enumerate_', 'estr', 'generate', 'hashable', 
+           'deserialize', 'enumerate', 'estr', 'generate', 'hashable', 
            'rstr', 'serialize')
 
 #-------------------------------------------------------------------------------
