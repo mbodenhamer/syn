@@ -1,4 +1,5 @@
 import operator as op
+from functools import partial
 from syn.base_utils import feq
 
 #-------------------------------------------------------------------------------
@@ -170,8 +171,8 @@ def test_collection_comp():
     assert cc([], ())
     assert not cc([], (), coll_func=any)
 
-    assert not cc([1.1, 2.2], [1.1, 2.20000000000002])
-    assert cc([1.1, 2.2], [1.1, 2.20000000000002], feq)
+    assert not cc([1.1, 2.2], [1.1, 2.22])
+    assert cc([1.1, 2.2], [1.1, 2.22], partial(feq, tol=5e-2))
 
 #-------------------------------------------------------------------------------
 
