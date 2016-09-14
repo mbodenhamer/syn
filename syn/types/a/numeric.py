@@ -1,6 +1,7 @@
+from six import PY2
 from syn.base_utils import setitem, rand_int, rand_float, rand_bool, \
-    rand_complex
-from .base import Type
+    rand_complex, rand_long
+from .base import Type, SER_KEYS
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -64,6 +65,29 @@ class Int(Numeric):
 
 
 #-------------------------------------------------------------------------------
+# Long
+
+
+class Long(Numeric):
+    if PY2:
+        type = long
+
+    @classmethod
+    def _enumeration_value(cls, x, **kwargs):
+        return long(x)
+
+    def estr(self, **kwargs):
+        return repr(self.obj)
+
+    @classmethod
+    def _generate(cls, **kwargs):
+        return rand_long(**kwargs)
+
+    def _serialize(self, dct, **kwargs):
+        dct[SER_KEYS.args] = [repr(self.obj)]
+
+
+#-------------------------------------------------------------------------------
 # Float
 
 
@@ -100,6 +124,6 @@ class Complex(Numeric):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Numeric', 'Bool', 'Int', 'Float', 'Complex')
+__all__ = ('Numeric', 'Bool', 'Int', 'Long', 'Float', 'Complex')
 
 #-------------------------------------------------------------------------------

@@ -1,7 +1,9 @@
+from six import PY2
 from syn.types.a import Type, Numeric, Int, hashable, rstr, serialize, \
-    deserialize, estr, generate
+    deserialize, estr, generate, TYPE_REGISTRY, Long
 from syn.types.a import enumerate as enumerate_
-from syn.base_utils import is_hashable, collection_comp, feq, assert_equivalent
+from syn.base_utils import is_hashable, collection_comp, assert_equivalent, \
+    feq, assert_type_equivalent
 
 #-------------------------------------------------------------------------------
 # Numeric
@@ -15,6 +17,9 @@ def test_numeric():
     assert hashable(x) == x
 
     for cls in Numeric.__subclasses__():
+        if cls.type is None:
+            continue
+
         val = cls.generate()
         assert type(val) is cls.type
         assert is_hashable(hashable(val))
@@ -67,6 +72,29 @@ def test_int():
     assert deserialize(-1) == -1
 
 #-------------------------------------------------------------------------------
+# Long
+
+def test_long():
+    if PY2:
+        lst = list(enumerate_(long, max_enum=5))
+        assert lst == [0, 1, 2, 3, 4]
+        
+        x = long('1L')
+        assert rstr(x) == '1'
+        assert estr(x) == '1L'
+        assert_equivalent(hashable(-x), -x)
+
+        gen = generate(long)
+        assert isinstance(gen, long)
+
+        assert_type_equivalent(deserialize(serialize(x)), x)
+
+        assert TYPE_REGISTRY[long] is Long
+        assert Long in TYPE_REGISTRY.values()
+    else:
+        assert Long not in TYPE_REGISTRY.values()
+
+#-------------------------------------------------------------------------------
 # Float
 
 def test_float():
@@ -101,7 +129,7 @@ def test_complex():
     gen = generate(complex)
     assert isinstance(gen, complex)
 
-    assert_equivalent(deserialize(serialize(c)), c)
+    assert_type_equivalent(deserialize(serialize(c)), c)
 
 #-------------------------------------------------------------------------------
 
