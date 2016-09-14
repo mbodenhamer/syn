@@ -44,6 +44,10 @@ class TypeMeta(type):
     def __init__(self, *args):
         super(TypeMeta, self).__init__(*args)
         
+        # Prevent erroneous type registrations
+        if self.type is object and get_typename(self) != 'Type':
+            self.type = None
+
         # Register type
         if self.type is not None:
             TYPE_REGISTRY[self.type] = self
@@ -103,6 +107,11 @@ class Type(object):
 
     @classmethod
     def deserialize(cls, dct, **kwargs_):
+        if not isinstance(dct, dict):
+            return dct
+        if SER_KEYS.name not in dct or SER_KEYS.mod not in dct:
+            return dct
+
         name = dct[SER_KEYS.name]
         # mod = __import__(dct[SER_KEYS.mod], fromlist=[name])
         mod = import_module(dct[SER_KEYS.mod])
@@ -244,7 +253,7 @@ class Type(object):
 # Utilities
 
 def deserialize(obj, **kwargs):
-    return Type.deserialize_dispatch(obj).deserialize(**kwargs)
+    return Type.deserialize_dispatch(obj).deserialize(obj, **kwargs)
 
 def enumerate_(obj, **kwargs):
     for item in Type.type_dispatch(obj).enumerate(**kwargs):
