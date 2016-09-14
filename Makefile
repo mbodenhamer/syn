@@ -69,13 +69,19 @@ print-version:
 #-------------------------------------------------------------------------------
 # Tests
 
+PY34 = source .tox/py34/bin/activate
+QUICK_TEST = nosetests -v --pdb --pdb-failures
+
 test:
 	@$(PYDEV) coverage erase
 	@$(PYDEV) tox
 	@$(PYDEV) coverage html
 
 quick-test:
-	@$(PYDEV) nosetests -v --pdb --pdb-failures
+	@$(PYDEV) $(QUICK_TEST)
+
+py3-quick-test:
+	@$(PYDEV) bash -c "$(PY34); $(QUICK_TEST)"
 
 dist-test: build
 	@$(PYDEV) dist-test $(VERSION)
