@@ -1,3 +1,5 @@
+import operator as op
+
 #-------------------------------------------------------------------------------
 # Propositional logic
 
@@ -64,12 +66,15 @@ def fuzzy_xor(a, b):
 def collection_equivalent(A, B):
     return all(a in B for a in A) and all(b in A for b in B)
 
+def collection_comp(A, B, item_func=op.eq, coll_func=all):
+    return coll_func(item_func(a, b) for (a, b) in zip(A, B))
+
 #-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('implies', 'equiv', 'xor', 'and_', 'or_', 'nand', 'nor',
            'fuzzy_and', 'fuzzy_not', 'fuzzy_nand', 'fuzzy_or', 'fuzzy_nor',
            'fuzzy_implies', 'fuzzy_equiv', 'fuzzy_xor',
-           'collection_equivalent')
+           'collection_equivalent', 'collection_comp')
 
 #-------------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+import operator as op
 from syn.base_utils import feq
 
 #-------------------------------------------------------------------------------
@@ -152,6 +153,21 @@ def test_collection_equivalent():
 
     assert not ce([], [1])
     assert not ce([1], [2, 1])
+
+def test_collection_comp():
+    from syn.base_utils import collection_comp as cc
+
+    assert cc([1, 2], [1, 2])
+    assert not cc([2, 1], [1, 2])
+    assert not cc([2, 1], [1, 2], coll_func=any)
+    assert cc([2, 1], [1, 2], op.ne)
+    assert not cc([2, 2], [1, 2], op.ne)
+    assert not cc([2, 2], [1, 2], op.eq)
+    assert cc([2, 2], [1, 2], coll_func=any)
+    assert cc([2, 2], [1, 2], op.ne, any)
+
+    assert cc([], ())
+    assert not cc([], (), coll_func=any)
 
 #-------------------------------------------------------------------------------
 
