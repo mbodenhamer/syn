@@ -18,13 +18,13 @@ SER_KEYS = AttrDict(name = '___name',
                     attrs = '___attrs',
                     is_type = '___is_type')
 
-SER_IDEMPOTENT = {int, float, bool}
+SER_IDEMPOTENT = {int, float, bool, str}
 SER_BUILTINS = vars(six.moves.builtins)
 
 #-------------------------------------------------------------------------------
 # Utilities
 
-class return_(object):
+class return_if(object):
     def __init__(self, check_func):
         self.check_func = check_func
 
@@ -141,11 +141,16 @@ class Type(object):
     def enumerate(cls, **kwargs):
         start = kwargs.get('start', 0)
         step = kwargs.get('step', 1)
+        max_enum = kwargs.get('max_enum', None)
 
+        k = 0
         x = start
         while True:
+            if k >= max_enum:
+                break
             yield cls.enumeration_value(x, **kwargs)
             x += step
+            k += 1
 
     @classmethod
     def _enumeration_value(cls, x, **kwargs):
@@ -156,6 +161,12 @@ class Type(object):
         if hasmethod(cls.type, '_enumeration_value'):
             return cls.type._enumeration_value(x, **kwargs)
         return cls._enumeration_value(x, **kwargs)
+
+    def estr(self, **kwargs):
+        '''Should return a string that can eval into an equivalent object'''
+        if hasmethod(self.obj, '_estr'):
+            return self.obj._estr(**kwargs)
+        return str(self.obj)
 
     @classmethod
     def _generate(cls, **kwargs):
@@ -169,14 +180,17 @@ class Type(object):
             return cls.type(cls.gen_type.generate(**kwargs))
         return cls.type(typ.generate(**kwargs) for typ in cls.gen_types)
 
-    @return_(is_hashable)
+    def _hashable(self, **kwargs):
+        return hashable(serialize(self.obj))
+
+    @return_if(is_hashable)
     def hashable(self, **kwargs):
         if hasmethod(self.obj, '_hashable'):
             return self.obj._hashable(**kwargs)
-        return tuple_prepend(get_fullname(self.obj),
-                             hashable(self.obj.__dict__, **kwargs))
+        return self._hashable(**kwargs)
 
     def rstr(self, **kwargs):
+        '''The idea is somethinig like a recursive str().'''
         if hasmethod(self.obj, '_rstr'):
             return self.obj._rstr(**kwargs)
         return str(self.obj)
@@ -232,6 +246,13 @@ class Type(object):
 def deserialize(obj, **kwargs):
     return Type.deserialize_dispatch(obj).deserialize(**kwargs)
 
+def enumerate_(obj, **kwargs):
+    for item in Type.type_dispatch(obj).enumerate(**kwargs):
+        yield item
+
+def estr(obj, **kwargs):
+    return Type.dispatch(obj).estr(**kwargs)
+
 def generate(typ, **kwargs):
     return Type.type_dispatch(typ).generate(**kwargs)
 
@@ -250,6 +271,7 @@ def serialize(obj, **kwargs):
 # __all__
 
 __all__ = ('TYPE_REGISTRY', 'Type',
-           'deserialize', 'generate', 'hashable', 'rstr', 'serialize')
+           'deserialize', 'enumerate_', 'estr', 'generate', 'hashable', 
+           'rstr', 'serialize')
 
 #-------------------------------------------------------------------------------

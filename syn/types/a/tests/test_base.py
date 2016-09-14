@@ -1,6 +1,6 @@
 from nose.tools import assert_raises
 from syn.types.a import Type, hashable
-from syn.base_utils import get_fullname, is_hashable
+from syn.base_utils import get_fullname, is_hashable, assert_inequivalent
 
 #-------------------------------------------------------------------------------
 # Type
@@ -17,9 +17,12 @@ def test_type():
     f = Foo()
     f.a = 1
 
-    assert hashable(f) == ('{}'.format(get_fullname(f)), ('a', 1))
+    g = Foo()
+    g.a = 2
+
     assert not is_hashable(f)
     assert is_hashable(hashable(f))
+    assert_inequivalent(hashable(f), hashable(g))
 
 #-------------------------------------------------------------------------------
 

@@ -1,7 +1,6 @@
 import collections
-from syn.base_utils import rand_dict
-from .base import Type, return_, serialize
-from .base import hashable, is_hashable
+from syn.base_utils import rand_dict, get_fullname, tuple_prepend
+from .base import Type, serialize, hashable
 from .numeric import Int
 
 #-------------------------------------------------------------------------------
@@ -11,12 +10,12 @@ from .numeric import Int
 class Mapping(Type):
     type = collections.Mapping
 
-    @return_(is_hashable)
-    def hashable(self, **kwargs):
-        return tuple((hashable(key, **kwargs),
-                      hashable(value, **kwargs))
-                     for key, value in self.obj.items())
-        
+    def _hashable(self, **kwargs):
+        tup = tuple((hashable(key, **kwargs),
+                     hashable(value, **kwargs))
+                    for key, value in self.obj.items())
+        return tuple_prepend(get_fullname(self.obj), tup)
+
     def _serialize(self, dct, **kwargs):
         for key, value in self.obj.items():
             dct[serialize(key)] = serialize(value)
@@ -24,6 +23,7 @@ class Mapping(Type):
 
 #-------------------------------------------------------------------------------
 # Mappings
+
 
 class Dict(Mapping): 
     type = dict
