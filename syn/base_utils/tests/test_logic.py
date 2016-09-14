@@ -156,6 +156,7 @@ def test_collection_equivalent():
 
 def test_collection_comp():
     from syn.base_utils import collection_comp as cc
+    from syn.base_utils import feq
 
     assert cc([1, 2], [1, 2])
     assert not cc([2, 1], [1, 2])
@@ -168,6 +169,9 @@ def test_collection_comp():
 
     assert cc([], ())
     assert not cc([], (), coll_func=any)
+
+    assert not cc([1.1, 2.2], [1.1, 2.20000000000002])
+    assert cc([1.1, 2.2], [1.1, 2.20000000000002], feq)
 
 #-------------------------------------------------------------------------------
 
