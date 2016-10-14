@@ -202,20 +202,6 @@ class Type(object):
             return self.obj._rstr(**kwargs)
         return str(self.obj)
 
-    def _serialize_dict(self, **kwargs):
-        if type(self.obj) in SER_BUILTINS:
-            mod = 'six.moves.builtins'
-        else:
-            mod = get_mod(self.obj)
-
-        return {SER_KEYS.name: get_typename(self.obj),
-                SER_KEYS.mod: mod}
-
-    def serialize_type(self, **kwargs):
-        dct = self._serialize_dict(**kwargs)
-        dct[SER_KEYS.is_type] = True
-        return dct
-
     def _serialize(self, dct, **kwargs):
         if (self.ser_args or self.ser_kwargs) and self.ser_attrs is None:
             ser_attrs = False
@@ -236,6 +222,15 @@ class Type(object):
 
         return dct
 
+    def _serialize_dict(self, **kwargs):
+        if type(self.obj) in SER_BUILTINS:
+            mod = 'six.moves.builtins'
+        else:
+            mod = get_mod(self.obj)
+
+        return {SER_KEYS.name: get_typename(self.obj),
+                SER_KEYS.mod: mod}
+
     def serialize(self, **kwargs):
         if type(self.obj) in SER_IDEMPOTENT:
             return self.obj
@@ -246,6 +241,12 @@ class Type(object):
         
         self._serialize(dct, **kwargs)
         return dct
+
+    def serialize_type(self, **kwargs):
+        dct = self._serialize_dict(**kwargs)
+        dct[SER_KEYS.is_type] = True
+        return dct
+
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -277,7 +278,7 @@ def serialize(obj, **kwargs):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('TYPE_REGISTRY', 'Type',
+__all__ = ('TYPE_REGISTRY', 'SER_KEYS', 'Type',
            'deserialize', 'enumerate', 'estr', 'generate', 'hashable', 
            'rstr', 'serialize')
 

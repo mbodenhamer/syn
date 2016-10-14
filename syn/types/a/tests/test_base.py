@@ -1,5 +1,6 @@
 from nose.tools import assert_raises
-from syn.types.a import Type, hashable, TYPE_REGISTRY
+from syn.types.a import Type, hashable, TYPE_REGISTRY, SER_KEYS, serialize, \
+    deserialize
 from syn.base_utils import get_fullname, is_hashable, assert_inequivalent
 
 #-------------------------------------------------------------------------------
@@ -24,7 +25,18 @@ def test_type():
     assert is_hashable(hashable(f))
     assert_inequivalent(hashable(f), hashable(g))
 
+    dct = serialize(f)
+    assert dct[SER_KEYS.attrs]['a'] == 1
+    
+
+    t = Type.type_dispatch(Foo)
+    assert_raises(NotImplementedError, t._enumeration_value, 1)
+    assert_raises(NotImplementedError, t._generate)
+
     assert TYPE_REGISTRY[object] is Type
+
+#-------------------------------------------------------------------------------
+# Test object with defined methods
 
 #-------------------------------------------------------------------------------
 
