@@ -18,7 +18,7 @@ SER_KEYS = AttrDict(name = '___name',
                     attrs = '___attrs',
                     is_type = '___is_type')
 
-SER_IDEMPOTENT = {int, float, bool, str}
+SER_IDEMPOTENT = {int, float, bool}
 SER_BUILTINS = vars(six.moves.builtins)
 
 #-------------------------------------------------------------------------------
@@ -200,6 +200,11 @@ class Type(object):
         '''The idea is somethinig like a recursive str().'''
         if hasmethod(self.obj, '_rstr'):
             return self.obj._rstr(**kwargs)
+
+        if six.PY2:
+            if isinstance(self.obj, unicode):
+                encoding = kwargs.get('encoding', 'utf-8')
+                return self.obj.encode('utf-8')
         return str(self.obj)
 
     def _serialize(self, dct, **kwargs):

@@ -1,14 +1,42 @@
-#-------------------------------------------------------------------------------
-# BaseString
-
-def test_basestring():
-    pass
+from six import PY2
+from nose.tools import assert_raises
+from syn.types.a import Type, String, Unicode, Bytes, \
+    hashable, serialize, deserialize, estr, rstr
+from syn.types.a import enumerate as enumerate_
+from syn.base_utils import is_hashable, assert_equivalent
 
 #-------------------------------------------------------------------------------
 # String
 
 def test_string():
-    pass
+    s = u'abc'
+
+    t = Type.dispatch(s)
+    assert isinstance(t, String)
+
+    if PY2:
+        assert type(t) is Unicode
+    else:
+        assert type(t) is String
+
+    assert hashable(s) == t.hashable() == s
+    assert is_hashable(s)
+    assert is_hashable(hashable(s))
+
+    for cls in String.__subclasses__():
+        if cls.type is None:
+            continue
+
+        val = cls.generate()
+        assert type(val) is cls.type
+        # assert is_hashable(hashable(val))
+        # assert_equivalent(deserialize(serialize(val)), val)
+    
+        assert isinstance(rstr(val), str)
+        # assert_equivalent(eval(estr(val)), val)
+
+        # for item in enumerate_(cls, max_enum=1):
+        #     assert type(item) is cls.type
 
 #-------------------------------------------------------------------------------
 

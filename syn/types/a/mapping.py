@@ -18,7 +18,7 @@ class Mapping(Type):
 
     def _serialize(self, dct, **kwargs):
         for key, value in self.obj.items():
-            dct[serialize(key)] = serialize(value)
+            dct[key] = serialize(value)
 
 
 #-------------------------------------------------------------------------------

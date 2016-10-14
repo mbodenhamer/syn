@@ -1,4 +1,3 @@
-from six import PY2
 from nose.tools import assert_raises
 from syn.types.a import Type, Set, FrozenSet, \
     hashable, serialize, deserialize, estr, rstr
