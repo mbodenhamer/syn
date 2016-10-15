@@ -1,7 +1,8 @@
 import six
 from functools import wraps
 from syn.base_utils import nearest_base, is_hashable, tuple_prepend, \
-    get_fullname, get_mod, get_typename, AttrDict, hasmethod, import_module
+    get_fullname, get_mod, get_typename, AttrDict, hasmethod, import_module, \
+    quote_string
 
 #-------------------------------------------------------------------------------
 # Type registry
@@ -173,7 +174,15 @@ class Type(object):
         '''Should return a string that can eval into an equivalent object'''
         if hasmethod(self.obj, '_estr'):
             return self.obj._estr(**kwargs)
-        return '{}()'.format(get_typename(self), str(self.obj))
+
+        if six.PY2:
+            if isinstance(self.obj, unicode):
+                encoding = kwargs.get('encoding', 'utf-8')
+                objstr = quote_string(self.obj.encode(encoding))
+                objstr += '.decode("{}")'.format(encoding)
+        else:
+            objstr = quote_string(str(self.obj))
+        return '{}({})'.format(get_typename(self.obj), objstr)
 
     @classmethod
     def _generate(cls, **kwargs):
@@ -204,7 +213,7 @@ class Type(object):
         if six.PY2:
             if isinstance(self.obj, unicode):
                 encoding = kwargs.get('encoding', 'utf-8')
-                return self.obj.encode('utf-8')
+                return self.obj.encode(encoding)
         return str(self.obj)
 
     def _serialize(self, dct, **kwargs):

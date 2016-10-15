@@ -29,11 +29,11 @@ def test_string():
 
         val = cls.generate()
         assert type(val) is cls.type
-        # assert is_hashable(hashable(val))
-        # assert_equivalent(deserialize(serialize(val)), val)
+        assert is_hashable(hashable(val))
+        assert deserialize(serialize(val)) == val
     
         assert isinstance(rstr(val), str)
-        # assert_equivalent(eval(estr(val)), val)
+        assert_equivalent(eval(estr(val)), val)
 
         # for item in enumerate_(cls, max_enum=1):
         #     assert type(item) is cls.type
