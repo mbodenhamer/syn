@@ -19,7 +19,7 @@ SER_KEYS = AttrDict(name = '___name',
                     attrs = '___attrs',
                     is_type = '___is_type')
 
-SER_IDEMPOTENT = {int, float, bool}
+SER_IDEMPOTENT = {int, float, bool, type(None)}
 SER_BUILTINS = vars(six.moves.builtins)
 
 #-------------------------------------------------------------------------------
