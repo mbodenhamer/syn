@@ -1,5 +1,5 @@
 from six import PY2, PY3
-from syn.base_utils import rand_str, rand_unicode
+from syn.base_utils import rand_str, rand_unicode, get_typename, quote_string
 from .base import Type, SER_KEYS
 
 #-------------------------------------------------------------------------------
@@ -26,6 +26,16 @@ class Unicode(String):
         type = unicode
     else:
         type = None
+
+    def estr(self, **kwargs):
+        encoding = kwargs.get('encoding', 'utf-8')
+        objstr = quote_string(self.obj.encode(encoding))
+        objstr += '.decode("{}")'.format(encoding)
+        return '{}({})'.format(get_typename(self.obj), objstr)
+
+    def rstr(self, **kwargs):
+        encoding = kwargs.get('encoding', 'utf-8')
+        return self.obj.encode(encoding)
 
     @classmethod
     def _generate(cls, **kwargs):

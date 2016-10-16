@@ -175,13 +175,7 @@ class Type(object):
         if hasmethod(self.obj, '_estr'):
             return self.obj._estr(**kwargs)
 
-        if six.PY2:
-            if isinstance(self.obj, unicode):
-                encoding = kwargs.get('encoding', 'utf-8')
-                objstr = quote_string(self.obj.encode(encoding))
-                objstr += '.decode("{}")'.format(encoding)
-        else:
-            objstr = quote_string(str(self.obj))
+        objstr = quote_string(str(self.obj))
         return '{}({})'.format(get_typename(self.obj), objstr)
 
     @classmethod
@@ -209,11 +203,6 @@ class Type(object):
         '''The idea is somethinig like a recursive str().'''
         if hasmethod(self.obj, '_rstr'):
             return self.obj._rstr(**kwargs)
-
-        if six.PY2:
-            if isinstance(self.obj, unicode):
-                encoding = kwargs.get('encoding', 'utf-8')
-                return self.obj.encode(encoding)
         return str(self.obj)
 
     def _serialize(self, dct, **kwargs):

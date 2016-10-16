@@ -20,8 +20,8 @@ def test_set():
     for cls in Set.__subclasses__():
         val = cls.generate()
         assert type(val) is cls.type
-        # assert is_hashable(hashable(val))
-        # assert_equivalent(deserialize(serialize(val)), val)
+        assert is_hashable(hashable(val))
+        #assert_equivalent(deserialize(serialize(val)), val)
     
         assert isinstance(rstr(val), str)
         # assert_equivalent(eval(estr(val)), val)
