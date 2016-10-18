@@ -1,6 +1,6 @@
 import collections
 from syn.base_utils import rand_list, rand_tuple, get_fullname, tuple_prepend
-from .base import Type, hashable, serialize, SER_KEYS
+from .base import Type, hashable, deserialize, serialize, SER_KEYS
 
 #-------------------------------------------------------------------------------
 # Sequence
@@ -8,6 +8,14 @@ from .base import Type, hashable, serialize, SER_KEYS
 
 class Sequence(Type):
     type = collections.Sequence
+
+    @classmethod
+    def deserialize(cls, seq, **kwargs):
+        if not isinstance(seq, collections.Sequence):
+            return super(Sequence, cls).deserialize(seq, **kwargs)
+
+        ret = [deserialize(item, **kwargs) for item in seq]
+        return cls.type(ret)
 
     def _hashable(self, **kwargs):
         tup = tuple([hashable(item) for item in self.obj])
@@ -26,6 +34,8 @@ class List(Sequence):
 
     @classmethod
     def _generate(cls, **kwargs):
+        # TODO: pull types from registry (unless they are marked as
+        # excluded or included in an exclude parameter set)
         return rand_list(**kwargs)
     
 

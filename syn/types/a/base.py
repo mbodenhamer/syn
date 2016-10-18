@@ -178,6 +178,17 @@ class Type(object):
         objstr = quote_string(str(self.obj))
         return '{}({})'.format(get_typename(self.obj), objstr)
 
+    def _find_ne(other, **kwargs):
+        raise NotImplementedError
+
+    def find_ne(self, other, **kwargs):
+        if type(self.obj) is not type(other):
+            return "different types ({} =/= {})".format(type(self.obj), type(other))
+
+        if hasmethod(self.obj, '_find_ne'):
+            return self.obj._find_ne(other, **kwargs)
+        return self._find_ne(obj, **kwargs)
+
     @classmethod
     def _generate(cls, **kwargs):
         raise NotImplementedError
@@ -235,6 +246,8 @@ class Type(object):
                 SER_KEYS.mod: mod}
 
     def serialize(self, **kwargs):
+        # TODO: option for custom idempotent types (may be different
+        # for different serialization methods)
         if type(self.obj) in SER_IDEMPOTENT:
             return self.obj
 
@@ -264,6 +277,9 @@ def enumerate(obj, **kwargs):
 def estr(obj, **kwargs):
     return Type.dispatch(obj).estr(**kwargs)
 
+def find_ne(a, b, **kwargs):
+    return Type.dispatch(a).find_ne(b, **kwargs)
+
 def generate(typ, **kwargs):
     return Type.type_dispatch(typ).generate(**kwargs)
 
@@ -282,7 +298,7 @@ def serialize(obj, **kwargs):
 # __all__
 
 __all__ = ('TYPE_REGISTRY', 'SER_KEYS', 'Type',
-           'deserialize', 'enumerate', 'estr', 'generate', 'hashable', 
-           'rstr', 'serialize')
+           'deserialize', 'enumerate', 'estr', 'find_ne', 'generate', 
+           'hashable', 'rstr', 'serialize')
 
 #-------------------------------------------------------------------------------

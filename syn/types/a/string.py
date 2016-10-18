@@ -57,7 +57,7 @@ class Bytes(Type):
         return bytes(s.encode(encoding))
 
     def _serialize(self, dct, **kwargs):
-        dct[SER_KEYS.args] = list(self.obj)
+        dct[SER_KEYS.args] = [list(self.obj)]
 
 
 #-------------------------------------------------------------------------------

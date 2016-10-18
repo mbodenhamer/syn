@@ -21,7 +21,7 @@ def test_set():
         val = cls.generate()
         assert type(val) is cls.type
         assert is_hashable(hashable(val))
-        #assert_equivalent(deserialize(serialize(val)), val)
+        #deserialize(serialize(val)) == val
     
         assert isinstance(rstr(val), str)
         # assert_equivalent(eval(estr(val)), val)

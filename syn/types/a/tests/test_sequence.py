@@ -26,7 +26,7 @@ def test_sequence():
     for cls in Sequence.__subclasses__():
         val = cls.generate()
         assert type(val) is cls.type
-        # assert is_hashable(hashable(val))
+        assert is_hashable(hashable(val))
         # assert_equivalent(deserialize(serialize(val)), val)
     
         assert isinstance(rstr(val), str)
