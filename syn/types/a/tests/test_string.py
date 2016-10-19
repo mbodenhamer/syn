@@ -33,7 +33,7 @@ def test_string():
         assert deserialize(serialize(val)) == val
     
         assert isinstance(rstr(val), str)
-        assert_equivalent(eval(estr(val)), val)
+        assert eval(estr(val)) == val
 
         # for item in enumerate_(cls, max_enum=1):
         #     assert type(item) is cls.type
