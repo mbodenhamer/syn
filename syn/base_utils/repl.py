@@ -1,6 +1,7 @@
 import six
 import shlex
 from .py import message, get_typename
+from syn.five import raw_input
 
 #-------------------------------------------------------------------------------
 # command decorator
@@ -52,8 +53,6 @@ class REPL(object):
         self._loop()
 
     def _loop(self):
-        from syn.five import raw_input
-
         while True:
             try:
                 inpt = raw_input(self.prompt)
@@ -74,7 +73,7 @@ class REPL(object):
         try:
             self.commands[command](self, *args)
         except Exception as e:
-            print("Error in {}: {}: {}".format(command, 
+            print("Error in {}: ***{}***: {}".format(command, 
                                                get_typename(e), 
                                                message(e)))
 
