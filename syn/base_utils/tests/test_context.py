@@ -2,6 +2,7 @@ import os
 import sys
 from copy import copy
 from functools import partial
+from nose.tools import assert_raises
 from contextlib import contextmanager
 from syn.base_utils import message
 
@@ -42,6 +43,14 @@ def test_assign():
     with assign(Foo, 'a', 1):
         assert hasattr(Foo, 'a')
         assert Foo.a == 1
+    assert not hasattr(Foo, 'a')
+
+    def exc():
+        with assign(Foo, 'a', 1):
+            assert Foo.a == 1
+            raise RuntimeError
+
+    assert_raises(RuntimeError, exc)
     assert not hasattr(Foo, 'a')
 
 #-------------------------------------------------------------------------------

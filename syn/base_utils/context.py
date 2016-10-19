@@ -33,12 +33,15 @@ def assign(A, attr, B, lock=False):
             tmp = getattr(A, attr)
 
         setattr(A, attr, B)
-        yield B
 
-        if tmp is NoAttr:
-            delattr(A, attr)
-        else:
-            setattr(A, attr, tmp)
+        try:
+            yield B
+
+        finally:
+            if tmp is NoAttr:
+                delattr(A, attr)
+            else:
+                setattr(A, attr, tmp)
 
 #-------------------------------------------------------------------------------
 # Temporary item assignment
