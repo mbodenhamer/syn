@@ -1,11 +1,11 @@
 import six
 import shlex
-from .py import message
+from .py import message, get_typename
 
 #-------------------------------------------------------------------------------
 # command decorator
 
-class command(object):
+class repl_command(object):
     def __init__(self, name, help=''):
         self.name = name
         self.help = help
@@ -49,6 +49,9 @@ class REPL(object):
         self.prompt = prompt
 
     def __call__(self):
+        self._loop()
+
+    def _loop(self):
         from syn.five import raw_input
 
         while True:
@@ -57,33 +60,38 @@ class REPL(object):
             except (EOFError, KeyboardInterrupt):
                 break
 
-            inpts = shlex.split(inpt)
-            command = inpts[0]
-            args = inpts[1:]
+            self._eval(inpt)
 
-            if command not in self.commands:
-                print('Unrecognized command: {}'.format(command))
-                continue
+    def _eval(self, inpt):
+        inpts = shlex.split(inpt)
+        command = inpts[0]
+        args = inpts[1:]
 
-            try:
-                self.commands[command](self, *args)
-            except Exception as e:
-                print("Error in {}: {}".format(command, message(e)))
+        if command not in self.commands:
+            print('Unrecognized command: {}'.format(command))
+            return
 
-    @command(['h', '?'], 'display available commands')
-    def _print_commands(self, **kwargs):
+        try:
+            self.commands[command](self, *args)
+        except Exception as e:
+            print("Error in {}: {}: {}".format(command, 
+                                               get_typename(e), 
+                                               message(e)))
+
+    @repl_command(['h', '?'], 'display available commands')
+    def print_commands(self, **kwargs):
         # TODO: use texttable here
         for command in sorted(self.commands.keys()):
             print(" {:15} {}".format(command, self.command_help[command]))
 
-    @command('e', 'eval the argument')
-    def _eval(self, expr):
+    @repl_command('e', 'eval the argument')
+    def eval(self, expr):
         print(eval(expr))
 
 
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('REPL',)
+__all__ = ('REPL', 'repl_command')
 
 #-------------------------------------------------------------------------------
