@@ -76,8 +76,11 @@ def chdir(path):
     with threading.Lock():
         pwd = os.getcwd()
         os.chdir(path)
-        yield
-        os.chdir(pwd)
+
+        try:
+            yield
+        finally:
+            os.chdir(pwd)
 
 #-------------------------------------------------------------------------------
 # delete
