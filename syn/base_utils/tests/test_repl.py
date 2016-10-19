@@ -51,7 +51,20 @@ def test_repl():
             r1()
             assert last_line(out) == '4'
 
+
     # Test overriding e in a REPL subclass
+    class R2(R1):
+        @repl_command('e', 'bar')
+        def bar(self, *args):
+            print("bar!")
+
+    r2 = R2('21> ')
+    with capture() as (out, err):
+        r2._eval('a')
+        assert last_line(out) == 'foo!'
+
+        r2._eval('e "1 + 2"')
+        assert last_line(out) == 'bar!'
 
 #-------------------------------------------------------------------------------
 
