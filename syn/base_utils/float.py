@@ -1,6 +1,5 @@
 import sys
 import math
-from syn.five import NUM
 from functools import reduce
 import operator as op
 
@@ -13,6 +12,7 @@ DEFAULT_TOLERANCE = math.pow(10, math.log(sys.float_info.epsilon, 10) / 2.0)
 # Comparison
 
 def feq(a, b, tol=DEFAULT_TOLERANCE):
+    from syn.five import NUM
     if isinstance(a, NUM) and isinstance(b, NUM):
         ret = abs(abs(a) - abs(b)) < tol
         return ret

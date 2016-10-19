@@ -3,7 +3,10 @@
 
 import sys
 from random import randint, random, choice
-from syn.five import unichr, xrange, PY2, PY3
+from six import PY2, PY3
+
+if PY3:
+    xrange = range
 
 #-------------------------------------------------------------------------------
 
@@ -94,6 +97,7 @@ def rand_unicode(min_char=MIN_UNICHR, max_char=MAX_UNICHR, min_len=MIN_STRLEN,
                  max_len=MAX_STRLEN, **kwargs):
     '''For values in the unicode range, regardless of Python version.
     '''
+    from syn.five import unichr
     return unicode(rand_str(min_char, max_char, min_len, max_len, unichr))
 
 def rand_bytes(**kwargs):
