@@ -58,7 +58,7 @@ def test_repl():
         def bar(self, *args):
             print("bar!")
 
-    r2 = R2('21> ')
+    r2 = R2('r2> ')
     with capture() as (out, err):
         r2._eval('a')
         assert last_line(out) == 'foo!'
