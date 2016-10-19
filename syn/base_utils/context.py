@@ -58,12 +58,15 @@ def setitem(dct, name, item, lock=False):
             tmp = dct[name]
 
         dct[name] = item
-        yield item
 
-        if tmp is NoItem:
-            del dct[name]
-        else:
-            dct[name] = tmp
+        try:
+            yield item
+
+        finally:
+            if tmp is NoItem:
+                del dct[name]
+            else:
+                dct[name] = tmp
 
 #-------------------------------------------------------------------------------
 # cd

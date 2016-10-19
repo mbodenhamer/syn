@@ -74,6 +74,14 @@ def test_setitem():
     assert 'c' not in dct
     assert dct == cdct
 
+    def exc():
+        with setitem(dct, 'c', 4):
+            assert dct['c'] == 4
+            raise RuntimeError
+
+    assert_raises(RuntimeError, exc)
+    assert 'c' not in dct
+
 #-------------------------------------------------------------------------------
 # cd
 
