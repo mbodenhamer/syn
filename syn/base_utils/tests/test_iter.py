@@ -1,5 +1,8 @@
 from nose.tools import assert_raises
 from syn.five import range
+from syn.base_utils import rand_int
+
+SAMPLES = 10
 
 #-------------------------------------------------------------------------------
 # Query
@@ -47,6 +50,38 @@ def test_last():
     i = iter(l)
     assert last(i) == 9
     assert is_empty(i)
+
+#-------------------------------------------------------------------------------
+# Calculation
+
+def test_iteration_length():
+    from syn.base_utils import iteration_length
+
+    assert iteration_length(5) == 5
+    assert iteration_length(5, 0) == 5
+    assert iteration_length(5, 1) == 4
+    assert iteration_length(5, 0, 2) == 3
+
+    for k in range(SAMPLES):
+        N = rand_int(0, 20)
+        start = rand_int(0, 20)
+        step = rand_int(1, 5)
+
+        assert iteration_length(N, start, step) == \
+            len(list(range(start, N, step)))
+
+    assert iteration_length(0) == 0
+    assert_raises(ValueError, iteration_length, -1)
+
+    assert iteration_length(10, -1, 1) == 1
+    assert iteration_length(10, -1, 10) == 1
+
+    assert iteration_length(10, -1, -1) == 10
+    assert iteration_length(10, -1, -3) == 4
+    assert iteration_length(10, 1, 3) == 3
+    assert iteration_length(10, 5, -1) == 6
+
+    assert_raises(ValueError, iteration_length, 10, -11)
 
 #-------------------------------------------------------------------------------
 

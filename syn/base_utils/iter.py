@@ -1,3 +1,4 @@
+import math
 from functools import wraps
 from itertools import islice
 from collections import Iterator
@@ -53,8 +54,32 @@ def last(iter):
     return x
 
 #-------------------------------------------------------------------------------
+# Calculation
+
+def iteration_length(N, start=0, step=1):
+    '''Return the number of iteration steps over a list of length N,
+starting at index start, proceeding step elements at a time.
+    '''
+    if N < 0:
+        raise ValueError('N cannot be negative')
+
+    if start < 0:
+        start += N
+        if start < 0:
+            raise ValueError('Invalid start value')
+
+    if step < 0:
+        step = -step
+        N = start + 1
+        start = 0
+
+    ret = int(math.ceil((N - start) / float(step)))
+    return max(0, ret)
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('iterlen', 'is_empty', 'consume', 'first', 'last')
+__all__ = ('iterlen', 'is_empty', 'consume', 'first', 'last',
+           'iteration_length')
 
 #-------------------------------------------------------------------------------
