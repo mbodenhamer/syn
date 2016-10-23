@@ -352,6 +352,11 @@ def elog(exc, func, args=None, kwargs=None, str=str, pretty=True):
                                                 invocation)
     elogger.error(msg)
 
+def ngzwarn(value, name):
+    if value <= 0:
+        mod = that_module()
+        msg = '{} set to value <= 0 in {}'.format(name, mod.__name__)
+
 #-------------------------------------------------------------------------------
 # __all__
 
@@ -362,6 +367,6 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'rgetattr', 'callables', 'is_subclass', 'getitem', 'same_lineage',
            'type_partition', 'subclasses', 'unzip', 'this_module', 
            'that_module', 'harvest_metadata', 'tuple_append', 'get_fullname',
-           'tuple_prepend', 'elog')
+           'tuple_prepend', 'elog', 'ngzwarn')
 
 #-------------------------------------------------------------------------------

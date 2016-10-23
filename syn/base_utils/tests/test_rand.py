@@ -1,9 +1,12 @@
 from nose.tools import assert_raises
 from syn.five import xrange, PY2, PY3
 
-SAMPLES = 5
 from syn.base_utils.rand import MIN_FLOAT, PRIMITIVE_TYPES
-from syn.base_utils import is_hashable
+from syn.base_utils import is_hashable, ngzwarn
+
+from syn.globals import SAMPLES
+SAMPLES //= 2
+ngzwarn(SAMPLES, 'SAMPLES')
 
 #-------------------------------------------------------------------------------
 # Numeric

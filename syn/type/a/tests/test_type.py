@@ -5,7 +5,10 @@ from syn.type.a import (Type, ValuesType, MultiType, TypeType, AnyType,
                         TypeExtension, Set, Schema)
 from syn.base_utils import is_hashable
 
-SAMPLES = 5
+from syn.base_utils import ngzwarn
+from syn.globals import SAMPLES
+SAMPLES //= 2
+ngzwarn(SAMPLES, 'SAMPLES')
 
 #-------------------------------------------------------------------------------
 # Type

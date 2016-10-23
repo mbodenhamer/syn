@@ -4,7 +4,7 @@ from syn.base_utils import feq
 from syn.sets.b import Union, SetWrapper, Range, NULL, Intersection, \
     Difference, ClassWrapper, Product
 
-SAMPLES = 10
+from syn.globals import SAMPLES
 range = lambda *args: list(xrange(*args))
 
 #-------------------------------------------------------------------------------

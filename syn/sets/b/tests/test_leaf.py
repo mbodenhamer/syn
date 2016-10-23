@@ -2,7 +2,7 @@ from nose.tools import assert_raises
 from syn.sets.b import SetWrapper, NULL, TypeWrapper, ClassWrapper, Empty
 from syn.base_utils import rand_int
 
-SAMPLES = 10
+from syn.globals import SAMPLES
 
 #-------------------------------------------------------------------------------
 # SetWrapper

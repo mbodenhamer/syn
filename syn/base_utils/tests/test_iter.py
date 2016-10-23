@@ -1,8 +1,7 @@
 from nose.tools import assert_raises
 from syn.five import range
 from syn.base_utils import rand_int, on_error, elog
-
-SAMPLES = 10
+from syn.globals import SAMPLES
 
 #-------------------------------------------------------------------------------
 # Query
