@@ -67,7 +67,7 @@ def test_iteration_length():
         start = rand_int(0, 20)
         step = rand_int(1, 5)
         
-        with on_error(elog, 'iteration_length', (N, start, step)):
+        with on_error(elog, iteration_length, (N, start, step)):
             assert iteration_length(N, start, step) == \
                 len(list(range(start, N, step)))
 

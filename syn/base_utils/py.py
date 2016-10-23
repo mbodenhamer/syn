@@ -330,7 +330,7 @@ def assert_pickle_idempotent(obj):
     assert_equivalent(obj, obj3)
     assert type(obj) is type(obj3)
 
-def elog(exc, name, args=None, kwargs=None, str=str, pretty=True):
+def elog(exc, func, args=None, kwargs=None, str=str, pretty=True):
     '''For logging exception-raising function invocations during randomized unit tests.
     '''
     args = args if args else ()
@@ -345,10 +345,11 @@ def elog(exc, name, args=None, kwargs=None, str=str, pretty=True):
     else:
         invocation = 'args={}, kwargs={}'.format(str(args), str(kwargs))
 
-    msg = '***{}***: "{}" --- {}({})'.format(get_typename(exc),
-                                             message(exc),
-                                             name,
-                                             invocation)
+    msg = '***{}***: "{}" --- {}.{}({})'.format(get_typename(exc),
+                                                message(exc),
+                                                get_mod(func),
+                                                func.__name__,
+                                                invocation)
     elogger.error(msg)
 
 #-------------------------------------------------------------------------------

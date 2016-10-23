@@ -420,9 +420,9 @@ def test_elog():
 
     class ElogTest(Exception): pass
 
-    elog(ElogTest('msg 1'), 'foo', (1, 1.2, 'abc'))
-    elog(ElogTest('msg 2'), 'foo', (1, 1.2, 'abc'), dict(a=2, b=3.4))
-    elog(ElogTest('msg 3'), 'foo', (1, 1.2, 'abc'), dict(a=2, b=3.4), 
+    elog(ElogTest('msg 1'), elog, (1, 1.2, 'abc'))
+    elog(ElogTest('msg 2'), message, (1, 1.2, 'abc'), dict(a=2, b=3.4))
+    elog(ElogTest('msg 3'), test_elog, (1, 1.2, 'abc'), dict(a=2, b=3.4), 
          pretty=False)
 
 #-------------------------------------------------------------------------------
