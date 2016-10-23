@@ -2,7 +2,7 @@ import six
 from functools import wraps
 from syn.base_utils import nearest_base, is_hashable, tuple_prepend, \
     get_fullname, get_mod, get_typename, AttrDict, hasmethod, import_module, \
-    quote_string
+    quote_string, iteration_length
 
 #-------------------------------------------------------------------------------
 # Type registry
@@ -182,8 +182,10 @@ class Type(object):
         raise NotImplementedError
 
     def find_ne(self, other, **kwargs):
+        from .ne import Value
         if type(self.obj) is not type(other):
-            return "different types ({} =/= {})".format(type(self.obj), type(other))
+            return Value("different types ({} =/= {})".
+                         format(type(self.obj), type(other)))
 
         if hasmethod(self.obj, '_find_ne'):
             return self.obj._find_ne(other, **kwargs)
@@ -263,6 +265,37 @@ class Type(object):
         dct[SER_KEYS.is_type] = True
         return dct
 
+    def _visit(self, k, **kwargs):
+        raise NotImplementedError
+
+    def visit(self, k, **kwargs):
+        step = kwargs.get('step', 1)
+        N = self.visit_len(**kwargs)
+
+        count = 0
+        limit = iteration_length(N, k, step)
+        while True:
+            if count >= limit:
+                raise StopIteration
+
+            if hasmethod(self.obj, '_visit'):
+                for item in self.obj._visit(k, **kwargs):
+                    yield item
+            else:
+                for item in self._visit(k, **kwargs):
+                    yield item
+
+            k += step
+            count += 1
+
+    def _visit_len(self, **kwargs):
+        raise NotImplementedError
+
+    def visit_len(self, **kwargs):
+        if hasmethod(self.obj, '_visit_len'):
+            return self.obj._visit_len(**kwargs)
+        return self._visit_len(**kwargs)
+
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -278,7 +311,7 @@ def estr(obj, **kwargs):
     return Type.dispatch(obj).estr(**kwargs)
 
 def find_ne(a, b, **kwargs):
-    return Type.dispatch(a).find_ne(b, **kwargs)
+    Type.dispatch(a).find_ne(b, **kwargs)()
 
 def generate(typ, **kwargs):
     return Type.type_dispatch(typ).generate(**kwargs)
@@ -294,11 +327,15 @@ def serialize(obj, **kwargs):
         return Type.type_dispatch(obj).serialize_type(**kwargs)
     return Type.dispatch(obj).serialize(**kwargs)
 
+def visit(obj, k=0, **kwargs):
+    for item in Type.dispatch(obj).visit(k, **kwargs):
+        yield item
+
 #-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('TYPE_REGISTRY', 'SER_KEYS', 'Type',
            'deserialize', 'enumerate', 'estr', 'find_ne', 'generate', 
-           'hashable', 'rstr', 'serialize')
+           'hashable', 'rstr', 'serialize', 'visit')
 
 #-------------------------------------------------------------------------------
