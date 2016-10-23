@@ -1,4 +1,5 @@
 from .conf import *
+from .conf2 import *
 from .vars import *
 
 from syn.base_utils import harvest_metadata, delete
