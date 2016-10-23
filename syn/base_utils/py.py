@@ -4,6 +4,7 @@ import six
 import yaml
 import types
 import inspect
+import logging
 from collections import defaultdict
 from functools import reduce, partial
 
@@ -18,6 +19,16 @@ if six.PY2:
 else:
     METHOD_TYPES = (types.MethodType, types.BuiltinMethodType,
                     types.FunctionType, types.BuiltinFunctionType)
+
+#-------------------------------------------------------------------------------
+# elogger setup
+
+elogger = logging.getLogger('elog')
+elogger_handler = logging.StreamHandler()
+elogger_format = logging.Formatter('[elog] %(message)s')
+elogger_handler.setFormatter(elogger_format)
+elogger.addHandler(elogger_handler)
+elogger.setLevel(logging.ERROR)
 
 #-------------------------------------------------------------------------------
 # Class utilities
@@ -319,6 +330,27 @@ def assert_pickle_idempotent(obj):
     assert_equivalent(obj, obj3)
     assert type(obj) is type(obj3)
 
+def elog(exc, name, args=None, kwargs=None, str=str, pretty=True):
+    '''For logging exception-raising function invocations during randomized unit tests.
+    '''
+    args = args if args else ()
+    kwargs = kwargs if kwargs else {}
+
+    if pretty:
+        invocation = ', '.join([str(arg) for arg in args])
+        if kwargs:
+            invocation += ', '
+            invocation += ', '.join(['{}={}'.format(key, str(value))
+                                     for key, value in sorted(kwargs.items())])
+    else:
+        invocation = 'args={}, kwargs={}'.format(str(args), str(kwargs))
+
+    msg = '***{}***: "{}" --- {}({})'.format(get_typename(exc),
+                                             message(exc),
+                                             name,
+                                             invocation)
+    elogger.error(msg)
+
 #-------------------------------------------------------------------------------
 # __all__
 
@@ -329,6 +361,6 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'rgetattr', 'callables', 'is_subclass', 'getitem', 'same_lineage',
            'type_partition', 'subclasses', 'unzip', 'this_module', 
            'that_module', 'harvest_metadata', 'tuple_append', 'get_fullname',
-           'tuple_prepend')
+           'tuple_prepend', 'elog')
 
 #-------------------------------------------------------------------------------

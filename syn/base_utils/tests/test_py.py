@@ -415,6 +415,16 @@ def test_assert_pickle_idempotent():
     assert_pickle_idempotent(e1)
     assert_raises(AssertionError, assert_pickle_idempotent, e2)
 
+def test_elog():
+    from syn.base_utils import elog
+
+    class ElogTest(Exception): pass
+
+    elog(ElogTest('msg 1'), 'foo', (1, 1.2, 'abc'))
+    elog(ElogTest('msg 2'), 'foo', (1, 1.2, 'abc'), dict(a=2, b=3.4))
+    elog(ElogTest('msg 3'), 'foo', (1, 1.2, 'abc'), dict(a=2, b=3.4), 
+         pretty=False)
+
 #-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover

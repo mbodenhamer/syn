@@ -1,6 +1,6 @@
 from nose.tools import assert_raises
 from syn.five import range
-from syn.base_utils import rand_int
+from syn.base_utils import rand_int, on_error, elog
 
 SAMPLES = 10
 
@@ -66,9 +66,10 @@ def test_iteration_length():
         N = rand_int(0, 20)
         start = rand_int(0, 20)
         step = rand_int(1, 5)
-
-        assert iteration_length(N, start, step) == \
-            len(list(range(start, N, step)))
+        
+        with on_error(elog, 'iteration_length', (N, start, step)):
+            assert iteration_length(N, start, step) == \
+                len(list(range(start, N, step)))
 
     assert iteration_length(0) == 0
     assert iteration_length(10, 10) == 0
