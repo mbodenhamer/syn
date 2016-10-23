@@ -222,6 +222,28 @@ def test_capture():
     assert oerr.getvalue() == 'Err1\nErr2\n'
 
 #-------------------------------------------------------------------------------
+# on_error
+
+def test_on_error():
+    from syn.base_utils import on_error, getitem
+
+    accum = []
+    def add(exc, *args, **kwargs):
+        x = getitem(args, 0, 1)
+        accum.append(x)
+
+    def test():
+        with on_error(add, 2):
+            raise RuntimeError
+
+    assert sum(accum) == 0
+    add(Exception())
+    assert sum(accum) == 1
+
+    assert_raises(RuntimeError, test)
+    assert sum(accum) == 3
+
+#-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
     from syn.base_utils import run_all_tests

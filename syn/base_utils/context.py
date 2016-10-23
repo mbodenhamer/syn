@@ -148,9 +148,20 @@ def capture(names=('stdout', 'stderr'), obj=sys, typ=cStringIO):
         yield ret
 
 #-------------------------------------------------------------------------------
+# on_error
+
+@contextmanager
+def on_error(func, *args, **kwargs):
+    try:
+        yield
+    except Exception as e:
+        func(e, *args, **kwargs)
+        raise e
+
+#-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('null_context', 'assign', 'setitem', 'chdir', 'delete', 
-           'nested_context', 'capture')
+           'nested_context', 'capture', 'on_error')
 
 #-------------------------------------------------------------------------------
