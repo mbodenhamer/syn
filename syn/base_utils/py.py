@@ -7,6 +7,7 @@ import inspect
 import logging
 from collections import defaultdict
 from functools import reduce, partial
+from syn.globals import test_logger
 
 #-------------------------------------------------------------------------------
 
@@ -25,8 +26,7 @@ else:
 
 elogger = logging.getLogger('elog')
 elogger_handler = logging.StreamHandler()
-elogger_format = logging.Formatter('[elog] %(message)s')
-elogger_handler.setFormatter(elogger_format)
+elogger_handler.setFormatter(logging.Formatter('[elog] %(message)s'))
 elogger.addHandler(elogger_handler)
 elogger.setLevel(logging.ERROR)
 
@@ -355,7 +355,8 @@ def elog(exc, func, args=None, kwargs=None, str=str, pretty=True):
 def ngzwarn(value, name):
     if value <= 0:
         mod = that_module()
-        msg = '{} set to value <= 0 in {}'.format(name, mod.__name__)
+        msg = '{} set to value <= 0 ({}) in {}'.format(name, value, mod.__name__)
+        test_logger.warning(msg)
 
 #-------------------------------------------------------------------------------
 # __all__

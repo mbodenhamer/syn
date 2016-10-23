@@ -425,6 +425,14 @@ def test_elog():
     elog(ElogTest('msg 3'), test_elog, (1, 1.2, 'abc'), dict(a=2, b=3.4), 
          pretty=False)
 
+def test_ngzwarn():
+    from syn.base_utils import ngzwarn
+
+    ngzwarn(1, 'FOO')
+    #import ipdb; ipdb.set_trace()
+    ngzwarn(0, 'Test value 1')
+    ngzwarn(-1, 'Test value 2')
+
 #-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
