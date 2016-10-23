@@ -70,7 +70,10 @@ starting at index start, proceeding step elements at a time.
 
     if step < 0:
         step = -step
-        N = start + 1
+        new_N = start + 1
+        if new_N > N:
+            raise ValueError('Invalid parameters')
+        N = new_N
         start = 0
 
     ret = int(math.ceil((N - start) / float(step)))

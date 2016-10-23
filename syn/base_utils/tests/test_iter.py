@@ -71,7 +71,10 @@ def test_iteration_length():
             len(list(range(start, N, step)))
 
     assert iteration_length(0) == 0
+    assert iteration_length(10, 10) == 0
+    assert iteration_length(10, 20) == 0
     assert_raises(ValueError, iteration_length, -1)
+    assert_raises(ValueError, iteration_length, 10, 20, -1)
 
     assert iteration_length(10, -1, 1) == 1
     assert iteration_length(10, -1, 10) == 1
