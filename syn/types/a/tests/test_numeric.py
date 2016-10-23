@@ -1,9 +1,29 @@
 from six import PY2
+from syn.five import xrange
 from syn.types.a import Type, Numeric, Int, hashable, rstr, serialize, \
     deserialize, estr, generate, TYPE_REGISTRY, Long
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, collection_comp, assert_equivalent, \
-    feq, assert_type_equivalent
+    feq, assert_type_equivalent, on_error, elog, ngzwarn, subclasses
+
+from syn.globals import SAMPLES
+SAMPLES //= 10
+ngzwarn(SAMPLES, 'SAMPLES')
+
+#-------------------------------------------------------------------------------
+
+def examine_numeric(cls, val):
+    assert type(val) is cls.type
+    assert is_hashable(hashable(val))
+    assert deserialize(serialize(val)) == val
+    assert isinstance(rstr(val), str)
+
+    for item in enumerate_(cls.type, max_enum=1):
+        assert type(item) is cls.type
+
+        eitem = eval(estr(item))
+        assert eitem == item
+        assert type(eitem) is cls.type
 
 #-------------------------------------------------------------------------------
 # Numeric
@@ -16,22 +36,14 @@ def test_numeric():
 
     assert hashable(x) == x
 
-    for cls in Numeric.__subclasses__():
+    for cls in subclasses(Numeric):
         if cls.type is None:
             continue
 
-        val = cls.generate()
-        assert type(val) is cls.type
-        assert is_hashable(hashable(val))
-        assert deserialize(serialize(val)) == val
-        assert isinstance(rstr(val), str)
-
-        for item in enumerate_(cls.type, max_enum=1):
-            assert type(item) is cls.type
-
-            eitem = eval(estr(item))
-            assert eitem == item
-            assert type(eitem) is cls.type
+        for k in xrange(SAMPLES):
+            val = cls.generate()
+            with on_error(elog, examine_numeric, (cls, val)):
+                examine_numeric(cls, val)
 
 #-------------------------------------------------------------------------------
 # Bool
