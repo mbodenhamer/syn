@@ -233,14 +233,13 @@ def test_on_error():
         accum.append(x)
 
     def test():
-        with on_error(add, 2):
+        with on_error(add, 2, ___suppress_global=False):
             raise RuntimeError
 
     assert sum(accum) == 0
     add(Exception())
     assert sum(accum) == 1
 
-    # NOTE: this will fail if SYN_SUPPRESS_TEST_ERRORS is set to 1
     assert_raises(RuntimeError, test)
     assert sum(accum) == 3
 
