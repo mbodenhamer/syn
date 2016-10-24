@@ -4,7 +4,7 @@ from syn.type.a.ext import (Callable, List, Sequence, Mapping, Dict, Hashable,
                             Tuple, AssocList, This)
 
 from syn.base_utils import ngzwarn
-from syn.globals import SAMPLES
+from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES //= 2
 ngzwarn(SAMPLES, 'SAMPLES')
 

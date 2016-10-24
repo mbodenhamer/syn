@@ -4,7 +4,7 @@ from syn.five import xrange, PY2, PY3
 from syn.base_utils.rand import MIN_FLOAT, PRIMITIVE_TYPES
 from syn.base_utils import is_hashable, ngzwarn
 
-from syn.globals import SAMPLES
+from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES //= 2
 ngzwarn(SAMPLES, 'SAMPLES')
 

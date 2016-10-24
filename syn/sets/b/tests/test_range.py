@@ -2,7 +2,7 @@ from syn.five import PY2
 from nose.tools import assert_raises
 from syn.sets.b import Range, NULL, IntRange, StrRange
 
-from syn.globals import SAMPLES
+from syn.globals import TEST_SAMPLES as SAMPLES
 
 #-------------------------------------------------------------------------------
 # Range

@@ -6,7 +6,7 @@ from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, collection_comp, assert_equivalent, \
     feq, assert_type_equivalent, on_error, elog, ngzwarn, subclasses
 
-from syn.globals import SAMPLES
+from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES //= 10
 ngzwarn(SAMPLES, 'SAMPLES')
 

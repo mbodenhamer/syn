@@ -12,17 +12,17 @@ def test_values():
             msgs.append(msg)
 
     logger = FakeLogger()
-    samples = gv.SAMPLES
+    samples = gv.TEST_SAMPLES
     suppress = gv.SUPPRESS_TEST_ERRORS
 
     try:
         with setitem(os.environ, 'SYN_TEST_SAMPLES', '0'):
             gv.set_values()
-            assert gv.SAMPLES == 0
+            assert gv.TEST_SAMPLES == 0
 
             with assign(gv, 'test_logger', logger):
                 gv.check_values()
-                assert msgs[-1] == 'SAMPLES set to value <= 0 (0) in syn.globals'
+                assert msgs[-1] == 'TEST_SAMPLES set to value <= 0 (0) in syn.globals'
 
         with setitem(os.environ, 'SYN_SUPPRESS_TEST_ERRORS', '0'):
             gv.set_values()
@@ -35,7 +35,7 @@ def test_values():
     finally:
         gv.set_values()
 
-    assert gv.SAMPLES == samples
+    assert gv.TEST_SAMPLES == samples
     assert gv.SUPPRESS_TEST_ERRORS == suppress
 
 #-------------------------------------------------------------------------------
