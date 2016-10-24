@@ -249,6 +249,9 @@ def test_getitem():
     assert getitem(dct, ukey, uval) == uval
     assert getitem(dct, ukey, None, True) is None
 
+    assert getitem(dct, 'c', delete=True) == 'abc'
+    assert 'c' not in dct
+
 #-------------------------------------------------------------------------------
 # Module utilities
 

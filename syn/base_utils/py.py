@@ -184,13 +184,16 @@ def tuple_prepend(x, tup):
 #-------------------------------------------------------------------------------
 # Mapping utilities
 
-def getitem(mapping, item, default=None, allow_none_default=False):
+def getitem(mapping, item, default=None, allow_none_default=False, delete=False):
     try:
         ret = mapping[item]
     except (KeyError, IndexError) as e:
         if default is not None or allow_none_default:
             return default
         raise e
+    
+    if delete:
+        del mapping[item]
     return ret
 
 #-------------------------------------------------------------------------------
