@@ -272,13 +272,21 @@ def run_all_tests(env, verbose=False, print_errors=False, exclude=None):
                         if isinstance(env[key], types.FunctionType):
                             testfuncs.append(key)
 
-    for tf in testfuncs:
+    includes = []
+    if '--include' in sys.argv:
+        idx = sys.argv.index('--include')
+        includes = sys.argv[idx+1].split(',')
+
+    if includes:
+        testfuncs = set(testfuncs).intersection(set(includes))
+
+    for tf in sorted(testfuncs):
         if verbose:
             print(tf)
         if print_errors:
             try:
                 env[tf]()
-            except: # pylint: disable=W0702
+            except:
                 traceback.print_exception(*sys.exc_info())
         else:
             env[tf]()

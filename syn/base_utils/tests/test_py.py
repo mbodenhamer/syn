@@ -1,6 +1,8 @@
 import six
+import sys
 from nose.tools import assert_raises
-from syn.base_utils import hasmethod, mro, import_module, message, assign
+from syn.base_utils import hasmethod, mro, import_module, message, assign, \
+    capture
 
 #-------------------------------------------------------------------------------
 # Class utilities
@@ -304,8 +306,8 @@ def test_message():
 # Unit Test Collection
 
 def test_run_all_tests():
-    # pylint: disable=W0612,W0621
     from syn.base_utils import run_all_tests
+
     var1 = [1]
     var2 = [2]
     var3 = [3]
@@ -318,7 +320,7 @@ def test_run_all_tests():
     def blank_test():
         var3.append(7)
     def some_other_func():
-        var4.append(8) # pragma: no cover
+        var4.append(8)
         
     assert 'run_all_tests' in locals()
     run_all_tests(locals(), verbose=True)
@@ -326,6 +328,18 @@ def test_run_all_tests():
     assert var2 == [2,6]
     assert var3 == [3,7]
     assert var4 == [4]
+
+    with assign(sys, 'argv', ['', '', '--include', 
+                              'test,test_blah_blah,some_other_func']):
+        run_all_tests(locals(), verbose=True)
+    
+    assert var1 == [1,5,5]
+    assert var2 == [2,6,6]
+    assert var3 == [3,7]
+    assert var4 == [4]
+
+    some_other_func()
+    assert var4 == [4,8]
 
     def test_error_func():
         raise TypeError('Testing exception trace printing')
@@ -419,8 +433,10 @@ def test_assert_pickle_idempotent():
     assert_raises(AssertionError, assert_pickle_idempotent, e2)
 
 def test_elog():
-    from syn.base_utils import elog
+    from syn.base_utils import elog, this_module
     import syn.base_utils.py as sp
+
+    modname = this_module().__name__
 
     class ElogTest(Exception): pass
 
@@ -442,7 +458,7 @@ def test_elog():
         elog(ElogTest('msg 3'), test_elog, (1, 1.2, 'abc'), dict(a=2), 
              pretty=False)
         assert msgs[-1] == ('***ElogTest***: "msg 3" --- '
-                            'syn.base_utils.tests.test_py.test_elog'
+                            '{}.test_elog'.format(modname) + 
                             '(args=(1, 1.2, \'abc\'), '
                             'kwargs={\'a\': 2})')
 
