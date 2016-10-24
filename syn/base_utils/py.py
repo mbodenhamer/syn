@@ -11,7 +11,7 @@ from syn.globals import test_logger
 
 #-------------------------------------------------------------------------------
 
-import six.moves.builtins # pylint: disable=E0401
+import six.moves.builtins
 builtins = list(vars(six.moves.builtins).values())
 
 # NOTE: for classes only (not objects)
