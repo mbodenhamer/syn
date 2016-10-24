@@ -5,6 +5,7 @@ from syn.sets.b import Union, SetWrapper, Range, NULL, Intersection, \
     Difference, ClassWrapper, Product
 
 from syn.globals import TEST_SAMPLES as SAMPLES
+SAMPLES = max(SAMPLES, 1)
 range = lambda *args: list(xrange(*args))
 
 #-------------------------------------------------------------------------------

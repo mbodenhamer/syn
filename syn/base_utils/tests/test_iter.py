@@ -3,6 +3,8 @@ from syn.five import range
 from syn.base_utils import rand_int, on_error, elog
 from syn.globals import TEST_SAMPLES as SAMPLES
 
+SAMPLES = max(SAMPLES, 1)
+
 #-------------------------------------------------------------------------------
 # Query
 

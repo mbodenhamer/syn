@@ -8,6 +8,7 @@ from syn.base_utils import is_hashable, collection_comp, assert_equivalent, \
 
 from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES //= 10
+SAMPLES = max(SAMPLES, 1)
 ngzwarn(SAMPLES, 'SAMPLES')
 
 #-------------------------------------------------------------------------------

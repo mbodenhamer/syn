@@ -3,6 +3,7 @@ from nose.tools import assert_raises
 from syn.sets.b import Range, NULL, IntRange, StrRange
 
 from syn.globals import TEST_SAMPLES as SAMPLES
+SAMPLES = max(SAMPLES, 1)
 
 #-------------------------------------------------------------------------------
 # Range

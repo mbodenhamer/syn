@@ -4,6 +4,7 @@ from syn.type.a import TYPE_REGISTRY
 from syn.base_utils import ngzwarn
 from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES //= 2
+SAMPLES = max(SAMPLES, 1)
 ngzwarn(SAMPLES, 'SAMPLES')
 
 #-------------------------------------------------------------------------------

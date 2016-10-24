@@ -3,6 +3,7 @@ from syn.sets.b import SetWrapper, NULL, TypeWrapper, ClassWrapper, Empty
 from syn.base_utils import rand_int
 
 from syn.globals import TEST_SAMPLES as SAMPLES
+SAMPLES = max(SAMPLES, 1)
 
 #-------------------------------------------------------------------------------
 # SetWrapper
