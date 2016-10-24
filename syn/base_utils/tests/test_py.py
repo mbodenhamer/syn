@@ -323,7 +323,12 @@ def test_run_all_tests():
         var4.append(8)
         
     assert 'run_all_tests' in locals()
-    run_all_tests(locals(), verbose=True)
+    with assign(sys, 'argv', []):
+        with capture() as (out, err):
+            run_all_tests(locals(), verbose=True)
+            assert out.getvalue() == 'blank_test\ntest\ntest_blah_blah\n'
+            assert err.getvalue() == ''
+
     assert var1 == [1,5]
     assert var2 == [2,6]
     assert var3 == [3,7]
@@ -331,7 +336,10 @@ def test_run_all_tests():
 
     with assign(sys, 'argv', ['', '', '--include', 
                               'test,test_blah_blah,some_other_func']):
-        run_all_tests(locals(), verbose=True)
+        with capture() as (out, err):
+            run_all_tests(locals(), verbose=True)
+            assert out.getvalue() == 'test\ntest_blah_blah\n'
+            assert err.getvalue() == ''
     
     assert var1 == [1,5,5]
     assert var2 == [2,6,6]
@@ -344,7 +352,26 @@ def test_run_all_tests():
     def test_error_func():
         raise TypeError('Testing exception trace printing')
 
-    run_all_tests(locals(), verbose=True, print_errors=True)
+    with assign(sys, 'argv', []):
+        with capture() as (out, err):
+            run_all_tests(locals(), verbose=True, print_errors=True)
+            assert out.getvalue() == ('blank_test\ntest\ntest_blah_blah\n'
+                                      'test_error_func\n')
+            assert err.getvalue().split('\n')[-2] == \
+                'TypeError: Testing exception trace printing'
+
+    with assign(sys, 'argv', ['--print-errors']):
+        with capture() as (out, err):
+            run_all_tests(locals(), verbose=True, print_errors=False)
+            assert out.getvalue() == ('blank_test\ntest\ntest_blah_blah\n'
+                                      'test_error_func\n')
+            assert err.getvalue().split('\n')[-2] == \
+                'TypeError: Testing exception trace printing'
+
+    with assign(sys, 'argv', []):
+        with capture() as (out, err):
+            assert_raises(TypeError, run_all_tests, locals(), verbose=True, 
+                          print_errors=False)
 
 #-------------------------------------------------------------------------------
 # Testing utilities

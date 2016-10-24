@@ -256,12 +256,21 @@ NOSE_PATTERN = re.compile('(?:^|[\\b_\\.-])[Tt]est')
 def _identify_testfunc(s):
     return bool(re.search(NOSE_PATTERN, s))
 
-def run_all_tests(env, verbose=False, print_errors=False, exclude=None):
+def run_all_tests(env, verbose=False, print_errors=False, exclude=None,
+                  include=None):
     import sys
     import traceback
 
-    if exclude is None:
-        exclude = []
+    exclude = exclude if exclude else []
+    include = include if include else []
+
+    include = []
+    if '--include' in sys.argv:
+        idx = sys.argv.index('--include')
+        include = sys.argv[idx+1].split(',')
+
+    if '--print-errors' in sys.argv:
+        print_errors = True
 
     testfuncs = []
     for key in env:
@@ -272,13 +281,8 @@ def run_all_tests(env, verbose=False, print_errors=False, exclude=None):
                         if isinstance(env[key], types.FunctionType):
                             testfuncs.append(key)
 
-    includes = []
-    if '--include' in sys.argv:
-        idx = sys.argv.index('--include')
-        includes = sys.argv[idx+1].split(',')
-
-    if includes:
-        testfuncs = set(testfuncs).intersection(set(includes))
+    if include:
+        testfuncs = set(testfuncs).intersection(set(include))
 
     for tf in sorted(testfuncs):
         if verbose:
