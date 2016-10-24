@@ -240,8 +240,17 @@ def test_on_error():
     add(Exception())
     assert sum(accum) == 1
 
+    # NOTE: this will fail if SYN_SUPPRESS_TEST_ERRORS is set to 1
     assert_raises(RuntimeError, test)
     assert sum(accum) == 3
+
+
+    def test2():
+        with on_error(add, 3, ___suppress_errors=True):
+            raise RuntimeError
+
+    test2()
+    assert sum(accum) == 6
 
 #-------------------------------------------------------------------------------
 

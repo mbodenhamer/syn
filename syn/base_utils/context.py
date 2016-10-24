@@ -5,6 +5,7 @@ from syn.five import STR, PY2
 from collections import Iterable
 from six.moves import cStringIO
 from contextlib import contextmanager
+from syn.globals import SUPPRESS_TEST_ERRORS
 
 #-------------------------------------------------------------------------------
 # null_context
@@ -152,11 +153,20 @@ def capture(names=('stdout', 'stderr'), obj=sys, typ=cStringIO):
 
 @contextmanager
 def on_error(func, *args, **kwargs):
+    from .py import getitem
+
+    suppress = False
+    if '___suppress_errors' in kwargs:
+        suppress = getitem(kwargs, '___suppress_errors', delete=True)
+    elif getitem(kwargs, '___suppress_global', True, delete=True):
+        suppress = SUPPRESS_TEST_ERRORS
+
     try:
         yield
     except Exception as e:
         func(e, *args, **kwargs)
-        raise e
+        if not suppress:
+            raise e
 
 #-------------------------------------------------------------------------------
 # __all__
