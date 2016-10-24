@@ -1,0 +1,36 @@
+import os
+from syn.base_utils import assign, setitem
+import syn.globals.values as gv
+
+#-------------------------------------------------------------------------------
+# values
+
+def test_values():
+    msgs = []
+    class FakeLogger(object):
+        def warning(self, msg):
+            msgs.append(msg)
+
+    logger = FakeLogger()
+    samples = gv.SAMPLES
+
+    try:
+        with setitem(os.environ, 'SYN_TEST_SAMPLES', '0'):
+            gv.set_values()
+            assert gv.SAMPLES == 0
+
+            with assign(gv, 'test_logger', logger):
+                gv.check_values()
+                assert msgs[-1] == 'SAMPLES set to value <= 0 (0) in syn.globals'
+
+    finally:
+        gv.set_values()
+
+    assert gv.SAMPLES == samples
+
+
+#-------------------------------------------------------------------------------
+
+if __name__ == '__main__': # pragma: no cover
+    from syn.base_utils import run_all_tests
+    run_all_tests(globals(), verbose=True, print_errors=False)
