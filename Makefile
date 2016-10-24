@@ -71,7 +71,7 @@ print-version:
 
 SAMPLES_1 = export SYN_TEST_SAMPLES=1
 SAMPLES_100 = export SYN_TEST_SAMPLES=100
-SAMPLES_1000 = export SYN_TEST_SAMPLES=1000
+SAMPLES_10000 = export SYN_TEST_SAMPLES=10000
 SUPPRESS = export SYN_SUPPRESS_TEST_ERRORS
 PY34 = source .tox/py34/bin/activate
 QUICK_TEST = nosetests -v --pdb --pdb-failures
@@ -89,16 +89,16 @@ unit-test:
 	@$(PYDEV) bash -c "$(SAMPLES_100); $(QUICK_TEST)"
 
 heavy-test:
-	@$(PYDEV) bash -c "$(SAMPLES_1000); $(HEAVY_TEST)"
+	@$(PYDEV) bash -c "$(SAMPLES_10000); $(SUPPRESS); $(HEAVY_TEST)"
 
 py3-quick-test:
-	@$(PYDEV) bash -c "$(SAMPLES_1); $(PY34); $(QUICK_TEST)"
+	@$(PYDEV) bash -c "$(PY34); $(SAMPLES_1); $(QUICK_TEST)"
 
 py3-unit-test:
-	@$(PYDEV) bash -c "$(SAMPLES_100); $(PY34); $(QUICK_TEST)"
+	@$(PYDEV) bash -c "$(PY34); $(SAMPLES_100); $(QUICK_TEST)"
 
 py3-heavy-test:
-	@$(PYDEV) bash -c "$(SAMPLES_1000); $(PY34); $(HEAVY_TEST)"
+	@$(PYDEV) bash -c "$(PY34); $(SAMPLES_10000); $(SUPPRESS); $(HEAVY_TEST)"
 
 dist-test: build
 	@$(PYDEV) dist-test $(VERSION)
