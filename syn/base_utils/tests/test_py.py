@@ -1,6 +1,6 @@
 import six
 from nose.tools import assert_raises
-from syn.base_utils import hasmethod, mro, import_module, message
+from syn.base_utils import hasmethod, mro, import_module, message, assign
 
 #-------------------------------------------------------------------------------
 # Class utilities
@@ -420,21 +420,55 @@ def test_assert_pickle_idempotent():
 
 def test_elog():
     from syn.base_utils import elog
+    import syn.base_utils.py as sp
 
     class ElogTest(Exception): pass
 
-    elog(ElogTest('msg 1'), elog, (1, 1.2, 'abc'))
-    elog(ElogTest('msg 2'), message, (1, 1.2, 'abc'), dict(a=2, b=3.4))
-    elog(ElogTest('msg 3'), test_elog, (1, 1.2, 'abc'), dict(a=2, b=3.4), 
-         pretty=False)
+    msgs = []
+    class FakeLogger(object):
+        def error(self, msg):
+            msgs.append(msg)
+
+    logger = FakeLogger()
+    with assign(sp, 'elogger', logger):
+        elog(ElogTest('msg 1'), elog, (1, 1.2, 'abc'))
+        assert msgs[-1] == ('***ElogTest***: "msg 1" --- '
+                            'syn.base_utils.py.elog(1, 1.2, abc)')
+
+        elog(ElogTest('msg 2'), message, (1, 1.2, 'abc'), dict(a=2, b=3.4))
+        assert msgs[-1] == ('***ElogTest***: "msg 2" --- '
+                            'syn.base_utils.py.message(1, 1.2, abc, a=2, b=3.4)')
+
+        elog(ElogTest('msg 3'), test_elog, (1, 1.2, 'abc'), dict(a=2), 
+             pretty=False)
+        assert msgs[-1] == ('***ElogTest***: "msg 3" --- '
+                            'syn.base_utils.tests.test_py.test_elog'
+                            '(args=(1, 1.2, \'abc\'), '
+                            'kwargs={\'a\': 2})')
 
 def test_ngzwarn():
-    from syn.base_utils import ngzwarn
+    from syn.base_utils import ngzwarn, this_module
+    import syn.base_utils.py as sp
 
-    ngzwarn(1, 'FOO')
-    #import ipdb; ipdb.set_trace()
-    ngzwarn(0, 'Test value 1')
-    ngzwarn(-1, 'Test value 2')
+    mod = this_module()
+
+    msgs = []
+    class FakeLogger(object):
+        def warning(self, msg):
+            msgs.append(msg)
+
+    logger = FakeLogger()
+    with assign(sp, 'test_logger', logger):
+        ngzwarn(1, 'FOO')
+        assert msgs == []
+
+        ngzwarn(0, 'Test value 1')
+        assert msgs[-1] == ('Test value 1 set to value <= 0 (0) in {}'
+                            .format(mod.__name__))
+
+        ngzwarn(-1, 'Test value 2')
+        assert msgs[-1] == ('Test value 2 set to value <= 0 (-1) in {}'
+                            .format(mod.__name__))
 
 #-------------------------------------------------------------------------------
 
