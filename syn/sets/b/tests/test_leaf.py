@@ -1,6 +1,6 @@
 from nose.tools import assert_raises
 from syn.sets.b import SetWrapper, NULL, TypeWrapper, ClassWrapper, Empty
-from syn.base_utils import rand_int
+from syn.base_utils import rand_int, elog, on_error
 
 from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES = max(SAMPLES, 1)
@@ -47,7 +47,8 @@ def test_setwrapper():
 
     for k in range(SAMPLES):
         samp = s1.sample()
-        assert s1.hasmember(samp)
+        with on_error(elog, SetWrapper.hasmember, (s1, samp)):
+            assert s1.hasmember(samp)
 
     item = s1.get_one()
     assert s1.hasmember(item)
@@ -66,7 +67,8 @@ def test_typewrapper():
     
     for k in range(SAMPLES):
         item = tw.sample()
-        assert tw.hasmember(item)
+        with on_error(elog, TypeWrapper.hasmember, (tw, item)):
+            assert tw.hasmember(item)
 
     twlist = list(tw.enumerate(max_enumerate = 30))
     assert len(twlist) == 30
@@ -87,7 +89,8 @@ def test_classwrapper():
 
     for k in range(SAMPLES):
         item = cw.sample()
-        assert cw.hasmember(item)
+        with on_error(elog, ClassWrapper.hasmember, (cw, item)):
+            assert cw.hasmember(item)
 
     cwset = cw.to_set()
     assert len(cwset) >= 3

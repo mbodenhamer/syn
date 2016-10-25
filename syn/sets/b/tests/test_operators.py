@@ -1,6 +1,6 @@
 from nose.tools import assert_raises
 from syn.five import xrange
-from syn.base_utils import feq
+from syn.base_utils import feq, on_error, elog
 from syn.sets.b import Union, SetWrapper, Range, NULL, Intersection, \
     Difference, ClassWrapper, Product
 
@@ -27,7 +27,8 @@ def test_union():
 
     for k in range(SAMPLES):
         item = u.sample()
-        assert u.hasmember(item)
+        with on_error(elog, Union.hasmember, (u, item)):
+            assert u.hasmember(item)
 
     item = u.sample(lazy=True)
     assert u.hasmember(item)
@@ -41,7 +42,8 @@ def test_union():
 
     for k in range(SAMPLES):
         item = u2.sample()
-        assert u2.hasmember(item)
+        with on_error(elog, Union.hasmember, (u2, item)):
+            assert u2.hasmember(item)
 
     # Sanity Check
     class Foo(object): pass
@@ -77,7 +79,8 @@ def test_intersection():
 
     for k in range(SAMPLES):
         item = i.sample()
-        assert i.hasmember(item)
+        with on_error(elog, Intersection.hasmember, (i, item)):
+            assert i.hasmember(item)
     
     item = i.lazy_sample()
     assert i.hasmember(item)
@@ -95,7 +98,8 @@ def test_intersection():
 
     for k in range(SAMPLES):
         item = i2.sample()
-        assert i2.hasmember(item)
+        with on_error(elog, Intersection.hasmember, (i2, item)):
+            assert i2.hasmember(item)
 
     assert Intersection(Range(1, 5), Range(2, 6)).to_set() == {2, 3, 4, 5}
     assert Intersection(Range(1, 5), {2, 3}).to_set() == {2, 3}
@@ -145,7 +149,8 @@ def test_difference():
 
     for k in range(SAMPLES):
         item = d.sample()
-        assert d.hasmember(item)
+        with on_error(elog, Difference.hasmember, (d, item)):
+            assert d.hasmember(item)
     
     item = d.lazy_sample()
     assert d.hasmember(item)
@@ -185,7 +190,8 @@ def test_product():
     assert not p.hasmember((0, 6, 11))
     for k in range(SAMPLES):
         item = p.sample()
-        assert p.hasmember(item)
+        with on_error(elog, Product.hasmember, (p, item)):
+            assert p.hasmember(item)
 
     p = Product({1}, {2}, {3})
     assert p.to_set() == set([(1, 2, 3)])
