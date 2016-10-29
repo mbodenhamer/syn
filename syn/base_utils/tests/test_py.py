@@ -216,6 +216,7 @@ def test_full_funcname():
     Foo.baz()
 
     r = REPL()
+    s = set([1, 2, 3])
     modname = this_module().__name__
 
     assert full_funcname(full_funcname) == 'syn.base_utils.py.full_funcname'
@@ -227,6 +228,11 @@ def test_full_funcname():
     assert full_funcname(Foo.bar) == '{}.Foo.bar'.format(modname)
     assert full_funcname(Foo.baz) == '{}.baz'.format(modname)
 
+    if six.PY2:
+        assert full_funcname(s.__contains__) == '__builtin__.set.__contains__'
+    else:
+        assert full_funcname(s.__contains__) == 'builtins.set.__contains__'
+        
 #-------------------------------------------------------------------------------
 # Sequence utilities
 
