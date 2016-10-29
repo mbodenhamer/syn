@@ -47,7 +47,7 @@ def test_setwrapper():
 
     for k in range(SAMPLES):
         samp = s1.sample()
-        with on_error(elog, SetWrapper.hasmember, (s1, samp)):
+        with on_error(elog, s1.hasmember, (s1, samp)):
             assert s1.hasmember(samp)
 
     item = s1.get_one()
@@ -67,7 +67,7 @@ def test_typewrapper():
     
     for k in range(SAMPLES):
         item = tw.sample()
-        with on_error(elog, TypeWrapper.hasmember, (tw, item)):
+        with on_error(elog, tw.hasmember, (tw, item)):
             assert tw.hasmember(item)
 
     twlist = list(tw.enumerate(max_enumerate = 30))
@@ -89,7 +89,7 @@ def test_classwrapper():
 
     for k in range(SAMPLES):
         item = cw.sample()
-        with on_error(elog, ClassWrapper.hasmember, (cw, item)):
+        with on_error(elog, cw.hasmember, (cw, item)):
             assert cw.hasmember(item)
 
     cwset = cw.to_set()

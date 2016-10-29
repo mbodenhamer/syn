@@ -3,7 +3,7 @@ from nose.tools import assert_raises
 from syn.type.a.ext import (Callable, List, Sequence, Mapping, Dict, Hashable,
                             Tuple, AssocList, This)
 
-from syn.base_utils import ngzwarn
+from syn.base_utils import ngzwarn, on_error, elog
 from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES //= 2
 SAMPLES = max(SAMPLES, 1)
@@ -60,7 +60,8 @@ def test_sequence():
 
     for k in xrange(SAMPLES):
         l = int_list.generate()
-        int_list.check(l)
+        with on_error(elog, int_list.check, (l,)):
+            int_list.check(l)
 
     bad_list = (1.2, '3', 4)
     good_list = [1, 2, 3]

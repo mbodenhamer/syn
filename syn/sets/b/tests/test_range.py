@@ -29,7 +29,7 @@ def test_range():
 
     for k in range(SAMPLES):
         samp = r1.sample()
-        with on_error(elog, Range.hasmember, (r1, samp)):
+        with on_error(elog, r1.hasmember, (r1, samp)):
             assert r1.hasmember(samp)
 
     assert sorted(list(r1.enumerate())) == [1, 2, 3, 4, 5]
@@ -156,7 +156,7 @@ def test_strrange():
 
     for k in range(SAMPLES):
         item = s.sample()
-        with on_error(elog, StrRange.hasmember, (s, item)):
+        with on_error(elog, s.hasmember, (s, item)):
             assert s.hasmember(item)
 
     assert sorted(s.enumerate()) == ['a', 'b', 'c']

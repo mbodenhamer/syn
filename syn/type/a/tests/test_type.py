@@ -5,7 +5,7 @@ from syn.type.a import (Type, ValuesType, MultiType, TypeType, AnyType,
                         TypeExtension, Set, Schema)
 from syn.base_utils import is_hashable
 
-from syn.base_utils import ngzwarn
+from syn.base_utils import ngzwarn, on_error, elog
 from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES //= 2
 SAMPLES = max(SAMPLES, 1)
@@ -200,8 +200,11 @@ def test_set():
     t.validate(1)
     assert_raises(TypeError, t.validate, 0)
 
+    s = set(xrange(1, 6))
     for k in xrange(SAMPLES):
-        assert t.generate() in set(xrange(1, 6))
+        val = t.generate()
+        with on_error(elog, s.__contains__, (val,)):
+            assert val in s
 
     assert t.display() == t.rst() == '<Set>'
 
@@ -266,7 +269,8 @@ def test_generation():
     from syn.base_utils.rand import PRIMITIVE_TYPES
 
     anys = [AnyType().generate() for k in xrange(SAMPLES)]
-    assert any(x is not None for x in anys)
+    if len(anys) > 2:
+        assert any(x is not None for x in anys)
 
     class Foo(object): pass
     assert isinstance(AnyType().generate(types=[Foo]), tuple(PRIMITIVE_TYPES))
