@@ -166,6 +166,9 @@ def full_funcname(func):
     name = func.__name__
 
     if hasattr(func, '__self__'):
+        if func.__self__ is None:
+            raise TypeError('Attempted to get name of unbound method {}'
+                            .format(func))
         name = '{}.{}'.format(get_typename(func.__self__), name)
         return '{}.{}'.format(get_mod(func.__self__), name)
     return '{}.{}'.format(get_mod(func), name)

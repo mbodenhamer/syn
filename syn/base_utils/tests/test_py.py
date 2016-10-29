@@ -212,11 +212,18 @@ def test_full_funcname():
         def baz():
             pass
 
+    Foo.bar()
+    Foo.baz()
+
     r = REPL()
     modname = this_module().__name__
 
     assert full_funcname(full_funcname) == 'syn.base_utils.py.full_funcname'
     assert full_funcname(r.eval) == 'syn.base_utils.repl.REPL.eval'
+    if six.PY2:
+        assert_raises(TypeError, full_funcname, REPL.eval)
+    else:
+        assert full_funcname(REPL.eval) == 'syn.base_utils.repl.eval'
     assert full_funcname(Foo.bar) == '{}.Foo.bar'.format(modname)
     assert full_funcname(Foo.baz) == '{}.baz'.format(modname)
 
@@ -497,6 +504,9 @@ def test_elog():
         def smeth():
             pass
             
+    
+    FakeLogger.cmeth()
+    FakeLogger.smeth()
 
     logger = FakeLogger()
     with assign(sp, 'elogger', logger):
