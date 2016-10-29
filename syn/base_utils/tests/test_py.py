@@ -201,6 +201,25 @@ def test_compose():
     assert f2(3) == 8
     assert f3(3) == 4
 
+def test_full_funcname():
+    from syn.base_utils import full_funcname, REPL, this_module
+    
+    class Foo(object):
+        @classmethod
+        def bar(cls):
+            pass
+        @staticmethod
+        def baz():
+            pass
+
+    r = REPL()
+    modname = this_module().__name__
+
+    assert full_funcname(full_funcname) == 'syn.base_utils.py.full_funcname'
+    assert full_funcname(r.eval) == 'syn.base_utils.repl.REPL.eval'
+    assert full_funcname(Foo.bar) == '{}.Foo.bar'.format(modname)
+    assert full_funcname(Foo.baz) == '{}.baz'.format(modname)
+
 #-------------------------------------------------------------------------------
 # Sequence utilities
 
@@ -471,6 +490,13 @@ def test_elog():
     class FakeLogger(object):
         def error(self, msg):
             msgs.append(msg)
+        @classmethod
+        def cmeth(cls):
+            pass
+        @staticmethod
+        def smeth():
+            pass
+            
 
     logger = FakeLogger()
     with assign(sp, 'elogger', logger):
@@ -488,6 +514,23 @@ def test_elog():
                             '{}.test_elog'.format(modname) + 
                             '(args=(1, 1.2, \'abc\'), '
                             'kwargs={\'a\': 2})')
+
+        elog(ElogTest('msg4'), logger.error, ('abc',))
+        assert msgs[-1] == ('***ElogTest***: "msg4" --- '
+                            '{}.FakeLogger.error(abc)'.format(modname))
+                            
+        elog(ElogTest('msg5'), FakeLogger.cmeth)
+        assert msgs[-1] == ('***ElogTest***: "msg5" --- '
+                            '{}.FakeLogger.cmeth()'.format(modname))
+
+        elog(ElogTest('msg6'), FakeLogger.smeth)
+        assert msgs[-1] == ('***ElogTest***: "msg6" --- '
+                            '{}.smeth()'.format(modname))
+
+        elog(ElogTest('msg7'), FakeLogger.smeth, name='FakeLogger.smeth')
+        assert msgs[-1] == ('***ElogTest***: "msg7" --- '
+                            '{}.FakeLogger.smeth()'.format(modname))
+
 
 def test_ngzwarn():
     from syn.base_utils import ngzwarn, this_module

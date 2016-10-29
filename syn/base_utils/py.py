@@ -162,6 +162,14 @@ def rgetattr(obj, attr, *args):
 def compose(*funcs):
     return reduce(lambda f, g: lambda x: f(g(x)), funcs, lambda x: x)
 
+def full_funcname(func):
+    name = func.__name__
+
+    if hasattr(func, '__self__'):
+        name = '{}.{}'.format(get_typename(func.__self__), name)
+        return '{}.{}'.format(get_mod(func.__self__), name)
+    return '{}.{}'.format(get_mod(func), name)
+
 #-------------------------------------------------------------------------------
 # Sequence utilities
 
@@ -345,11 +353,12 @@ def assert_pickle_idempotent(obj):
     assert_equivalent(obj, obj3)
     assert type(obj) is type(obj3)
 
-def elog(exc, func, args=None, kwargs=None, str=str, pretty=True):
+def elog(exc, func, args=None, kwargs=None, str=str, pretty=True, name=''):
     '''For logging exception-raising function invocations during randomized unit tests.
     '''
     args = args if args else ()
     kwargs = kwargs if kwargs else {}
+    name = '{}.{}'.format(get_mod(func), name) if name else full_funcname(func)
 
     if pretty:
         invocation = ', '.join([str(arg) for arg in args])
@@ -360,11 +369,10 @@ def elog(exc, func, args=None, kwargs=None, str=str, pretty=True):
     else:
         invocation = 'args={}, kwargs={}'.format(str(args), str(kwargs))
 
-    msg = '***{}***: "{}" --- {}.{}({})'.format(get_typename(exc),
-                                                message(exc),
-                                                get_mod(func),
-                                                func.__name__,
-                                                invocation)
+    msg = '***{}***: "{}" --- {}({})'.format(get_typename(exc),
+                                             message(exc),
+                                             name,
+                                             invocation)
     elogger.error(msg)
 
 def ngzwarn(value, name):
@@ -383,6 +391,6 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'rgetattr', 'callables', 'is_subclass', 'getitem', 'same_lineage',
            'type_partition', 'subclasses', 'unzip', 'this_module', 
            'that_module', 'harvest_metadata', 'tuple_append', 'get_fullname',
-           'tuple_prepend', 'elog', 'ngzwarn')
+           'tuple_prepend', 'elog', 'ngzwarn', 'full_funcname')
 
 #-------------------------------------------------------------------------------
