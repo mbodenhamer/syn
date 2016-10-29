@@ -1,9 +1,26 @@
-from six import PY2
+from six import PY2, PY3
+from syn.five import xrange
 from nose.tools import assert_raises
 from syn.types.a import Type, String, Unicode, Bytes, \
-    hashable, serialize, deserialize, estr, rstr
+    hashable, serialize, deserialize, estr, rstr, generate
 from syn.types.a import enumerate as enumerate_
-from syn.base_utils import is_hashable, assert_equivalent
+from syn.base_utils import is_hashable, assert_equivalent, subclasses, \
+    on_error, elog, ngzwarn
+
+from syn.globals import TEST_SAMPLES as SAMPLES
+SAMPLES //= 10
+SAMPLES = max(SAMPLES, 1)
+ngzwarn(SAMPLES, 'SAMPLES')
+
+#-------------------------------------------------------------------------------
+
+def examine_string(cls, val):
+    assert type(val) is cls.type
+    assert is_hashable(hashable(val))
+    assert deserialize(serialize(val)) == val
+
+    assert isinstance(rstr(val), str)
+    assert eval(estr(val)) == val
 
 #-------------------------------------------------------------------------------
 # String
@@ -23,20 +40,33 @@ def test_string():
     assert is_hashable(s)
     assert is_hashable(hashable(s))
 
-    for cls in String.__subclasses__():
+    for cls in subclasses(String):
         if cls.type is None:
             continue
 
-        val = cls.generate()
-        assert type(val) is cls.type
-        assert is_hashable(hashable(val))
-        assert deserialize(serialize(val)) == val
-    
-        assert isinstance(rstr(val), str)
-        assert eval(estr(val)) == val
+        for k in xrange(SAMPLES):
+            val = cls.generate()
+            with on_error(elog, examine_string, (cls, val)):
+                examine_string(cls, val)
 
-        # for item in enumerate_(cls, max_enum=1):
-        #     assert type(item) is cls.type
+    # for item in enumerate_(cls, max_enum=1):
+    #     assert type(item) is cls.type
+
+#-------------------------------------------------------------------------------
+# Unicode
+
+def test_unicode():
+    if PY2:
+        gen = generate(unicode)
+        assert isinstance(gen, unicode)
+
+#-------------------------------------------------------------------------------
+# Bytes
+
+def test_bytes():
+    if PY3:
+        gen = generate(bytes)
+        assert isinstance(gen, bytes)
 
 #-------------------------------------------------------------------------------
 
