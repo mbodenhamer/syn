@@ -178,7 +178,7 @@ class Type(object):
         objstr = quote_string(str(self.obj))
         return '{}({})'.format(get_typename(self.obj), objstr)
 
-    def _find_ne(other, **kwargs):
+    def _find_ne(self, other, **kwargs):
         raise NotImplementedError
 
     def find_ne(self, other, **kwargs):
