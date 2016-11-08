@@ -46,7 +46,7 @@ def test_numeric():
 
         buf = []
         last = None
-        for item in enumerate_(cls.type, max_enum=10):
+        for item in enumerate_(cls.type, max_enum=SAMPLES * 10):
             assert type(item) is cls.type
             assert item != last
             buf.append(item)

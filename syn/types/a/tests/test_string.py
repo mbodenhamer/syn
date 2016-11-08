@@ -5,12 +5,30 @@ from syn.types.a import Type, String, Unicode, Bytes, \
     hashable, serialize, deserialize, estr, rstr, generate, visit, find_ne
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, subclasses, \
-    on_error, elog, ngzwarn
+    on_error, elog, ngzwarn, is_unique
 
 from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES //= 10
 SAMPLES = max(SAMPLES, 1)
 ngzwarn(SAMPLES, 'SAMPLES')
+
+#-------------------------------------------------------------------------------
+# string_enumval
+
+def test_string_enumval():
+    from syn.types.a.string import string_enumval, _STRING_ENUMVALS
+
+    assert string_enumval(0) == ' '
+    assert string_enumval(94) == '~'
+    assert string_enumval(95) == '  '
+    assert string_enumval(96) == ' !'
+    #import ipdb; ipdb.set_trace()
+    assert string_enumval(189) == ' ~'
+    assert string_enumval(190) == '! '
+    assert string_enumval(191) == '!!'
+
+    assert _STRING_ENUMVALS[0] == ' '
+    assert _STRING_ENUMVALS[191] == '!!'
 
 #-------------------------------------------------------------------------------
 
@@ -54,10 +72,17 @@ def test_string():
             with on_error(elog, examine_string, (cls, val)):
                 examine_string(cls, val)
 
-    # for item in enumerate_(cls, max_enum=1):
-    #     assert type(item) is cls.type
+        buf = []
+        last = None
+        for item in enumerate_(cls.type, max_enum=10):
+            assert type(item) is cls.type
+            assert item != last
+            buf.append(item)
+            last = item
 
-    # Edge cases
+        assert is_unique(buf)
+
+    # estr edge cases
 
     cases = ["abc'de\r7fghi", "\x00"]
     for case in cases:
