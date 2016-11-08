@@ -1,3 +1,4 @@
+from nose.tools import assert_raises
 from syn.five import PY2
 from syn.base import Base, Attr
 from syn.base_utils import assert_type_equivalent, pretty
@@ -20,6 +21,44 @@ def test_quote_string():
 
     uevil = u"\"\"\"'''\u2013'b\"c\"'''\"\"\""
     assert quote_string(uevil) == u'\'"""\'\'\'\u2013\'b"c"\'\'\'"""\''
+
+def test_outer_quotes():
+    from syn.base_utils import outer_quotes
+
+    assert outer_quotes('"abc"') == '"'
+    assert outer_quotes("'abc'") == "'"
+    assert outer_quotes('\'abc\'') == "'"
+    assert outer_quotes("'''abc'''") == "'''"
+    assert outer_quotes('"""abc"""') == '"""'
+    assert outer_quotes("''") == "'"
+    assert outer_quotes("''''''") == "'''"
+    assert outer_quotes('""') == '"'
+    assert outer_quotes('""""""') == '"""'
+
+    # Gotchas
+    assert outer_quotes('""a"') == '"'
+
+    assert_raises(ValueError, outer_quotes, 'abc')
+    assert_raises(ValueError, outer_quotes, '"abc')
+    assert_raises(ValueError, outer_quotes, 'abc"')
+    assert_raises(ValueError, outer_quotes, '"abc\'')
+
+def test_break_quoted_string():
+    from syn.base_utils import break_quoted_string
+    
+    assert break_quoted_string('"abc"', '1') == '"abc"'
+    assert break_quoted_string('"ab1c"', '1') == '"ab"1"c"'
+    assert break_quoted_string('"ab1c1d2e"', '1', '2') == '"ab"2"c"2"d2e"'
+    assert break_quoted_string('"ab"2"c"2"d2e"', '2') == '"ab"2"c"2"d"2"e"'
+
+def test_break_around_line_breaks():
+    from syn.base_utils import break_around_line_breaks
+
+    assert break_around_line_breaks('"abc"') == '"abc"'
+    assert break_around_line_breaks('"ab\nc"') == '"ab"\n"c"'
+    assert break_around_line_breaks('"ab\rc"') == '"ab"\n"c"'
+    assert break_around_line_breaks('"ab\r\nc"') == '"ab"\n"c"'
+    assert break_around_line_breaks('"a\nb\r\nc\rd"') == '"a"\n"b"\n"c"\n"d"'
 
 #-------------------------------------------------------------------------------
 # Unicode issues

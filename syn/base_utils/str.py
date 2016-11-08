@@ -1,9 +1,12 @@
+import re
 from functools import partial
 from syn.five import STR, PY2
 from .py import get_typename, hasmethod
 
 #-------------------------------------------------------------------------------
 # String-Quoting Utils
+
+QUOTES_PATTERN = re.compile('^(\'\'\'|"""|\'|")')
 
 def quote_string(obj):
     ret_type = type(obj)
@@ -18,6 +21,48 @@ def quote_string(obj):
     q = quotes[0]
     ret = obj.replace(q, ret_type("\'"))
     ret = q + ret + q
+    return ret
+
+def outer_quotes(string):
+    m = re.match(QUOTES_PATTERN, string)
+    if m:
+        ret = m.groups()[0]
+        if string.endswith(ret):
+            return ret
+    raise ValueError('String is not quoted')
+
+def break_quoted_string(string, pattern, repl=None):
+    if repl is None:
+        repl = pattern
+
+    if pattern not in string:
+        return string
+
+    quotes = outer_quotes(string)
+    parts = string.split(pattern)
+
+    def fix(s):
+        ret = s
+        if not ret.startswith(quotes):
+            ret = quotes + ret
+        if not ret.endswith(quotes):
+            ret = ret + quotes
+        return ret
+
+    for k, part in enumerate(parts):
+        parts[k] = fix(part)
+
+    return repl.join(parts)
+
+def break_around_line_breaks(string):
+    lf = '\n'
+    cr = '\r'
+    crlf = '\r\n'
+
+    ret = string
+    ret = break_quoted_string(ret, crlf, lf)
+    ret = break_quoted_string(ret, cr, lf)
+    ret = break_quoted_string(ret, lf, lf)
     return ret
 
 #-------------------------------------------------------------------------------
@@ -184,6 +229,8 @@ pretty = partial(istr, pretty=True)
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('quote_string', 'safe_str', 'istr', 'pretty')
+__all__ = ('quote_string', 'outer_quotes', 'break_quoted_string',
+           'break_around_line_breaks',
+           'safe_str', 'istr', 'pretty')
 
 #-------------------------------------------------------------------------------
