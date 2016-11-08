@@ -19,17 +19,19 @@ ngzwarn(SAMPLES, 'SAMPLES')
 def test_string_enumval():
     from syn.types.a.string import string_enumval, _STRING_ENUMVALS
 
-    assert string_enumval(0) == ' '
-    assert string_enumval(94) == '~'
-    assert string_enumval(95) == '  '
-    assert string_enumval(96) == ' !'
+    assert string_enumval(0) == ''
+    assert string_enumval(1) == ' '
+    assert string_enumval(95) == '~'
+    assert string_enumval(96) == '  '
+    assert string_enumval(97) == ' !'
     #import ipdb; ipdb.set_trace()
-    assert string_enumval(189) == ' ~'
-    assert string_enumval(190) == '! '
-    assert string_enumval(191) == '!!'
+    assert string_enumval(190) == ' ~'
+    assert string_enumval(191) == '! '
+    assert string_enumval(192) == '!!'
 
-    assert _STRING_ENUMVALS[0] == ' '
-    assert _STRING_ENUMVALS[191] == '!!'
+    assert 0 not in _STRING_ENUMVALS
+    assert _STRING_ENUMVALS[1] == ' '
+    assert _STRING_ENUMVALS[192] == '!!'
 
 #-------------------------------------------------------------------------------
 

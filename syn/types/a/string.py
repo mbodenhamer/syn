@@ -13,8 +13,16 @@ from .ne import Value
 _STRING_ENUMVALS = {}
 
 def string_enumval(x, **kwargs):
-    if x in _STRING_ENUMVALS:
-        return _STRING_ENUMVALS[x]
+    top_level = kwargs.get('top_level', True)
+    if top_level:
+        if x == 0:
+            return ''
+
+        kwargs['top_level'] = False
+        return string_enumval(x - 1, **kwargs)
+
+    if x+1 in _STRING_ENUMVALS:
+        return _STRING_ENUMVALS[x+1]
 
     step = kwargs.get('step', 1)
     min_char = kwargs.get('min_char', ' ')
@@ -32,7 +40,7 @@ def string_enumval(x, **kwargs):
     else:
         ret = safe_chr(x + min_char)
 
-    _STRING_ENUMVALS[x] = ret
+    _STRING_ENUMVALS[x+1] = ret
     return ret
 
 #-------------------------------------------------------------------------------
