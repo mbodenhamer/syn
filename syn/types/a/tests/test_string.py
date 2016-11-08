@@ -24,7 +24,6 @@ def test_string_enumval():
     assert string_enumval(95) == '~'
     assert string_enumval(96) == '  '
     assert string_enumval(97) == ' !'
-    #import ipdb; ipdb.set_trace()
     assert string_enumval(190) == ' ~'
     assert string_enumval(191) == '! '
     assert string_enumval(192) == '!!'
@@ -80,7 +79,7 @@ def test_string():
 
         buf = []
         last = None
-        for item in enumerate_(cls.type, max_enum=10):
+        for item in enumerate_(cls.type, max_enum=SAMPLES * 10, step=100):
             assert type(item) is cls.type
             assert item != last
             buf.append(item)
