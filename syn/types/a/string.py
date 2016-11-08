@@ -48,7 +48,7 @@ class String(Type):
 
     def _find_ne(self, other, **kwargs):
         if self.obj != other:
-            if len(self.obj) != len(self.other):
+            if len(self.obj) != len(other):
                 return Value('length-{} string != length-{} string'
                              .format(len(self.obj), len(other)))
 

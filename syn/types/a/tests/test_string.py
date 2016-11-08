@@ -84,7 +84,7 @@ def test_string():
 
     # estr edge cases
 
-    cases = ["abc'de\r7fghi", "\x00"]
+    cases = ["abc'de\r7fghi", "\x00", "\\"]
     for case in cases:
         assert eval(estr(case)) == case
 

@@ -2,7 +2,7 @@ import six
 from functools import wraps
 from syn.base_utils import nearest_base, is_hashable, tuple_prepend, \
     get_fullname, get_mod, get_typename, AttrDict, hasmethod, import_module, \
-    quote_string, iteration_length, escape_line_breaks, escape_null
+    quote_string, iteration_length, escape_for_eval
 
 #-------------------------------------------------------------------------------
 # Type registry
@@ -173,9 +173,9 @@ class Type(object):
     def estr(self, **kwargs):
         '''Should return a string that can eval into an equivalent object'''
         if hasmethod(self.obj, '_estr'):
-            return self.obj._estr(**kwargs)
+            return escape_for_eval(self.obj._estr(**kwargs))
 
-        objstr = escape_null(escape_line_breaks(quote_string(str(self.obj))))
+        objstr = escape_for_eval(quote_string(str(self.obj)))
         return '{}({})'.format(get_typename(self.obj), objstr)
 
     def _find_ne(self, other, **kwargs):

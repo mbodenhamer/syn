@@ -74,6 +74,12 @@ def escape_null(string):
     ret = string.replace('\x00', '\\x00')
     return ret
 
+def escape_for_eval(string):
+    ret = string.replace('\\', '\\\\')
+    ret = escape_line_breaks(ret)
+    ret = escape_null(ret)
+    return ret
+
 #-------------------------------------------------------------------------------
 # Unicode issues
 
@@ -244,7 +250,8 @@ pretty = partial(istr, pretty=True)
 # __all__
 
 __all__ = ('quote_string', 'outer_quotes', 'break_quoted_string',
-           'break_around_line_breaks', 'escape_line_breaks', 'escape_null',
+           'break_around_line_breaks', 
+           'escape_line_breaks', 'escape_null', 'escape_for_eval',
            'safe_chr', 'safe_str', 
            'istr', 'pretty')
 

@@ -72,6 +72,13 @@ def test_escape_null():
     assert escape_null('abc') == 'abc'
     assert escape_null('a\x00b\x00c') == 'a\\x00b\\x00c'
 
+def test_escape_for_eval():
+    from syn.base_utils import escape_for_eval
+
+    assert escape_for_eval('abc') == 'abc'
+    assert escape_for_eval('\n') == '\\n'
+    assert escape_for_eval('b\\a') == 'b\\\\a'
+
 #-------------------------------------------------------------------------------
 # Unicode issues
 
