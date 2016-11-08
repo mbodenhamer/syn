@@ -24,7 +24,6 @@ def string_enumval(x, **kwargs):
     if x+1 in _STRING_ENUMVALS:
         return _STRING_ENUMVALS[x+1]
 
-    step = kwargs.get('step', 1)
     min_char = kwargs.get('min_char', ' ')
     max_char = kwargs.get('max_char', '~')
 
