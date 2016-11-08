@@ -11,6 +11,14 @@ class Value(object):
     def __call__(self):
         return self.value
 
+    def __eq__(self, other):
+        if not isinstance(other, Value):
+            return False
+        return self.value == other.value
+
+    def __ne__(self, other):
+        return not (self == other)
+
 
 #-------------------------------------------------------------------------------
 # FindNE

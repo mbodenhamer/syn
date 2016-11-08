@@ -1,7 +1,8 @@
 from six import PY2
 from syn.five import xrange
 from syn.types.a import Type, Numeric, Int, hashable, rstr, serialize, \
-    deserialize, estr, generate, TYPE_REGISTRY, Long
+    deserialize, estr, generate, TYPE_REGISTRY, Long, visit, find_ne
+from syn.types.a.ne import Value
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, collection_comp, assert_equivalent, \
     feq, assert_type_equivalent, on_error, elog, ngzwarn, subclasses
@@ -19,12 +20,10 @@ def examine_numeric(cls, val):
     assert deserialize(serialize(val)) == val
     assert isinstance(rstr(val), str)
 
-    for item in enumerate_(cls.type, max_enum=1):
-        assert type(item) is cls.type
+    assert list(visit(val)) == [val]
+    assert find_ne(val, val) is None
 
-        eitem = eval(estr(item))
-        assert eitem == item
-        assert type(eitem) is cls.type
+    # TODO: put in each type test; test values (test different types in test_base)
 
 #-------------------------------------------------------------------------------
 # Numeric
@@ -46,6 +45,14 @@ def test_numeric():
             with on_error(elog, examine_numeric, (cls, val)):
                 examine_numeric(cls, val)
 
+        for item in enumerate_(cls.type, max_enum=1):
+            assert type(item) is cls.type
+
+            # These need to be here under enumerate_ b/c of float equality issues
+            eitem = eval(estr(item))
+            assert eitem == item
+            assert type(eitem) is cls.type
+
 #-------------------------------------------------------------------------------
 # Bool
 
@@ -61,6 +68,7 @@ def test_bool():
 
     gen = generate(bool)
     assert gen is True or gen is False
+    assert find_ne(gen, not gen) == Value('{} != {}'.format(gen, not gen))
 
     assert serialize(True) is True
     assert deserialize(True) is True
@@ -80,6 +88,7 @@ def test_int():
 
     gen = generate(int)
     assert isinstance(gen, int)
+    assert find_ne(gen, gen+1) == Value('{} != {}'.format(gen, gen+1))
 
     assert serialize(-1) == -1
     assert deserialize(-1) == -1
@@ -99,6 +108,7 @@ def test_long():
 
         gen = generate(long)
         assert isinstance(gen, long)
+        assert find_ne(gen, gen+1) == Value('{} != {}'.format(gen, gen+1))
 
         assert_type_equivalent(deserialize(serialize(x)), x)
 
@@ -122,6 +132,8 @@ def test_float():
 
     gen = generate(float)
     assert isinstance(gen, float)
+    gen2 = 0.0 if gen != 0 else 1.0
+    assert find_ne(gen, gen2) == Value('{} != {}'.format(gen, gen2))
 
     assert serialize(-1.1) == -1.1
     assert deserialize(-1.1) == -1.1
@@ -141,6 +153,8 @@ def test_complex():
 
     gen = generate(complex)
     assert isinstance(gen, complex)
+    gen2 = 0+0j if gen != 0 else 1.0j
+    assert find_ne(gen, gen2) == Value('{} != {}'.format(gen, gen2))
 
     assert_type_equivalent(deserialize(serialize(c)), c)
 

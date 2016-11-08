@@ -2,6 +2,7 @@ from six import PY2
 from syn.base_utils import setitem, rand_int, rand_float, rand_bool, \
     rand_complex, rand_long
 from .base import Type, SER_KEYS
+from .ne import Value
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -30,6 +31,16 @@ def complex_enumval(x, **kwargs):
 class Numeric(Type):
     def estr(self, **kwargs):
         return str(self.obj)
+
+    def _find_ne(self, other, **kwargs):
+        if self.obj != other:
+            return Value('{} != {}'.format(self.obj, other))
+
+    def _visit(self, k, **kwargs):
+        yield self.obj
+
+    def _visit_len(self, **kwargs):
+        return 1
 
 
 #-------------------------------------------------------------------------------

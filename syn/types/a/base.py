@@ -189,7 +189,7 @@ class Type(object):
 
         if hasmethod(self.obj, '_find_ne'):
             return self.obj._find_ne(other, **kwargs)
-        return self._find_ne(obj, **kwargs)
+        return self._find_ne(other, **kwargs)
 
     @classmethod
     def _generate(cls, **kwargs):
@@ -311,7 +311,7 @@ def estr(obj, **kwargs):
     return Type.dispatch(obj).estr(**kwargs)
 
 def find_ne(a, b, **kwargs):
-    Type.dispatch(a).find_ne(b, **kwargs)()
+    return Type.dispatch(a).find_ne(b, **kwargs)
 
 def generate(typ, **kwargs):
     return Type.type_dispatch(typ).generate(**kwargs)

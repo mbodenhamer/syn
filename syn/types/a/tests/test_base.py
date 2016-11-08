@@ -1,6 +1,7 @@
 from nose.tools import assert_raises
 from syn.types.a import Type, hashable, TYPE_REGISTRY, SER_KEYS, serialize, \
-    deserialize
+    deserialize, find_ne
+from syn.types.a.ne import Value
 from syn.base_utils import get_fullname, is_hashable, assert_inequivalent
 
 #-------------------------------------------------------------------------------
@@ -34,6 +35,10 @@ def test_type():
     assert_raises(NotImplementedError, t._generate)
 
     assert TYPE_REGISTRY[object] is Type
+
+
+    assert find_ne(1, 1.2) == Value("different types ({} =/= {})"
+                                    .format(int, float))
 
 #-------------------------------------------------------------------------------
 # Test object with defined methods
