@@ -167,6 +167,19 @@ def is_flat(seq):
                        isinstance(e, STR + (bytes,))) 
                for e in seq)
 
+def is_unique(seq):
+    '''Returns True if every item in the seq is unique, False otherwise.'''
+    try:
+        s = set(seq)
+        return len(s) == len(seq)
+    except TypeError:
+        buf = []
+        for item in seq:
+            if item in buf:
+                return False
+            buf.append(item)
+        return True
+
 #-------------------------------------------------------------------------------
 # Non-Modification Utilities
 
@@ -191,7 +204,7 @@ def flattened(seq):
 # __all__
 
 __all__ = ('ListView', 'IterableList',
-           'is_proper_sequence', 'is_flat',
+           'is_proper_sequence', 'is_flat', 'is_unique',
            'indices_removed', 'flattened')
 
 #-------------------------------------------------------------------------------

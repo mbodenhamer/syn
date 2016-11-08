@@ -148,6 +148,14 @@ def test_is_flat():
 
     assert_raises(TypeError, is_flat, 1)
 
+def test_is_unique():
+    from syn.base_utils import is_unique
+
+    assert is_unique([1, 2, 3, 4])
+    assert not is_unique([1, 2, 3, 3, 4])
+    assert is_unique([[], [1]])
+    assert not is_unique([[], [1], []])
+
 #-------------------------------------------------------------------------------
 # Non-Modification Utilities
 
