@@ -547,6 +547,7 @@ def test_elog():
         assert msgs[-1] == ('***ElogTest***: "msg7" --- '
                             '{}.FakeLogger.smeth()'.format(modname))
 
+        elog(ElogTest('msg8'), elog, (1, 1.2, u'ab\u2013cd'))
 
 def test_ngzwarn():
     from syn.base_utils import ngzwarn, this_module

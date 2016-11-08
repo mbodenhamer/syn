@@ -359,18 +359,20 @@ def assert_pickle_idempotent(obj):
 def elog(exc, func, args=None, kwargs=None, str=str, pretty=True, name=''):
     '''For logging exception-raising function invocations during randomized unit tests.
     '''
+    from .str import safe_str
+
     args = args if args else ()
     kwargs = kwargs if kwargs else {}
     name = '{}.{}'.format(get_mod(func), name) if name else full_funcname(func)
 
     if pretty:
-        invocation = ', '.join([str(arg) for arg in args])
+        invocation = ', '.join([safe_str(arg) for arg in args])
         if kwargs:
             invocation += ', '
-            invocation += ', '.join(['{}={}'.format(key, str(value))
+            invocation += ', '.join(['{}={}'.format(key, safe_str(value))
                                      for key, value in sorted(kwargs.items())])
     else:
-        invocation = 'args={}, kwargs={}'.format(str(args), str(kwargs))
+        invocation = 'args={}, kwargs={}'.format(safe_str(args), safe_str(kwargs))
 
     msg = '***{}***: "{}" --- {}({})'.format(get_typename(exc),
                                              message(exc),

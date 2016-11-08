@@ -22,6 +22,18 @@ def test_quote_string():
     assert quote_string(uevil) == u'\'"""\'\'\'\u2013\'b"c"\'\'\'"""\''
 
 #-------------------------------------------------------------------------------
+# Unicode issues
+
+def test_safe_str():
+    from syn.base_utils import safe_str
+
+    s = u'ab\u2013cd'
+    if PY2:
+        assert safe_str(s) == s.encode('utf-8')
+    else:
+        assert safe_str(s) == s
+
+#-------------------------------------------------------------------------------
 # istr
 
 class IstrTest(Base):
