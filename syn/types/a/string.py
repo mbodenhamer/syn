@@ -1,6 +1,7 @@
 from six import PY2, PY3
 from syn.base_utils import rand_str, rand_unicode, get_typename, quote_string
 from .base import Type, SER_KEYS
+from .ne import Value
 
 #-------------------------------------------------------------------------------
 # String
@@ -9,12 +10,29 @@ from .base import Type, SER_KEYS
 class String(Type):
     type = str
 
+    def _find_ne(self, other, **kwargs):
+        if self.obj != other:
+            if len(self.obj) != len(self.other):
+                return Value('length-{} string != length-{} string'
+                             .format(len(self.obj), len(other)))
+
+            for k, item in enumerate(self.obj):
+                if item != other[k]:
+                    return Value('strings differ at index {}'
+                                 .format(k))
+
     @classmethod
     def _generate(cls, **kwargs):
         return rand_str(**kwargs)
 
     def _serialize(self, dct, **kwargs):
         dct[SER_KEYS.args] = [self.obj]
+
+    def _visit(self, k, **kwargs):
+        yield self.obj[k]
+
+    def _visit_len(self, **kwargs):
+        return len(self.obj)
 
 
 #-------------------------------------------------------------------------------

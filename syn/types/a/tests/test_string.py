@@ -2,7 +2,7 @@ from six import PY2, PY3
 from syn.five import xrange
 from nose.tools import assert_raises
 from syn.types.a import Type, String, Unicode, Bytes, \
-    hashable, serialize, deserialize, estr, rstr, generate
+    hashable, serialize, deserialize, estr, rstr, generate, visit, find_ne
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, subclasses, \
     on_error, elog, ngzwarn
@@ -18,9 +18,14 @@ def examine_string(cls, val):
     assert type(val) is cls.type
     assert is_hashable(hashable(val))
     assert deserialize(serialize(val)) == val
-
     assert isinstance(rstr(val), str)
-    assert eval(estr(val)) == val
+
+    assert list(visit(val)) == list(val)
+    assert find_ne(val, val) is None
+
+    eitem = eval(estr(val))
+    assert eitem == val
+    assert type(eitem) is cls.type
 
 #-------------------------------------------------------------------------------
 # String
@@ -40,7 +45,7 @@ def test_string():
     assert is_hashable(s)
     assert is_hashable(hashable(s))
 
-    for cls in subclasses(String):
+    for cls in subclasses(String, [String]):
         if cls.type is None:
             continue
 
@@ -51,6 +56,12 @@ def test_string():
 
     # for item in enumerate_(cls, max_enum=1):
     #     assert type(item) is cls.type
+
+    # Edge cases
+
+    cases = ["abc'de\r7fghi", "\x00"]
+    for case in cases:
+        assert eval(estr(case)) == case
 
 #-------------------------------------------------------------------------------
 # Unicode
