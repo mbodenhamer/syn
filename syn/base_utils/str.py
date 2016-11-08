@@ -65,6 +65,15 @@ def break_around_line_breaks(string):
     ret = break_quoted_string(ret, lf, lf)
     return ret
 
+def escape_line_breaks(string):
+    ret = string.replace('\r', '\\r')
+    ret = ret.replace('\n', '\\n')
+    return ret
+
+def escape_null(string):
+    ret = string.replace('\x00', '\\x00')
+    return ret
+
 #-------------------------------------------------------------------------------
 # Unicode issues
 
@@ -230,7 +239,7 @@ pretty = partial(istr, pretty=True)
 # __all__
 
 __all__ = ('quote_string', 'outer_quotes', 'break_quoted_string',
-           'break_around_line_breaks',
+           'break_around_line_breaks', 'escape_line_breaks', 'escape_null',
            'safe_str', 'istr', 'pretty')
 
 #-------------------------------------------------------------------------------

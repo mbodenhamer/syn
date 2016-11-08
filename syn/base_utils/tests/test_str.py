@@ -60,6 +60,18 @@ def test_break_around_line_breaks():
     assert break_around_line_breaks('"ab\r\nc"') == '"ab"\n"c"'
     assert break_around_line_breaks('"a\nb\r\nc\rd"') == '"a"\n"b"\n"c"\n"d"'
 
+def test_escape_line_breaks():
+    from syn.base_utils import escape_line_breaks
+
+    assert escape_line_breaks('abc') == 'abc'
+    assert escape_line_breaks('a\r\nb\rc\n') == 'a\\r\\nb\\rc\\n'
+
+def test_escape_null():
+    from syn.base_utils import escape_null
+
+    assert escape_null('abc') == 'abc'
+    assert escape_null('a\x00b\x00c') == 'a\\x00b\\x00c'
+
 #-------------------------------------------------------------------------------
 # Unicode issues
 
