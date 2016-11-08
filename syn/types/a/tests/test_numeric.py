@@ -23,8 +23,6 @@ def examine_numeric(cls, val):
     assert list(visit(val)) == [val]
     assert find_ne(val, val) is None
 
-    # TODO: put in each type test; test values (test different types in test_base)
-
 #-------------------------------------------------------------------------------
 # Numeric
 
@@ -45,8 +43,11 @@ def test_numeric():
             with on_error(elog, examine_numeric, (cls, val)):
                 examine_numeric(cls, val)
 
-        for item in enumerate_(cls.type, max_enum=1):
+        last = None
+        for item in enumerate_(cls.type, max_enum=2):
             assert type(item) is cls.type
+            assert item != last
+            last = item
 
             # These need to be here under enumerate_ b/c of float equality issues
             eitem = eval(estr(item))
