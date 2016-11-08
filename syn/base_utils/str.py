@@ -77,6 +77,11 @@ def escape_null(string):
 #-------------------------------------------------------------------------------
 # Unicode issues
 
+def safe_chr(x):
+    if PY2 and x > 255:
+        return unichr(x)
+    return chr(x)
+
 def safe_str(x, encoding='utf-8'):
     try:
         return str(x)
@@ -240,6 +245,7 @@ pretty = partial(istr, pretty=True)
 
 __all__ = ('quote_string', 'outer_quotes', 'break_quoted_string',
            'break_around_line_breaks', 'escape_line_breaks', 'escape_null',
-           'safe_str', 'istr', 'pretty')
+           'safe_chr', 'safe_str', 
+           'istr', 'pretty')
 
 #-------------------------------------------------------------------------------

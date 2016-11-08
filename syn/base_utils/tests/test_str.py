@@ -75,6 +75,12 @@ def test_escape_null():
 #-------------------------------------------------------------------------------
 # Unicode issues
 
+def test_safe_chr():
+    from syn.base_utils import safe_chr
+
+    assert safe_chr(32) == ' '
+    assert safe_chr(256) == u'\u0100'
+
 def test_safe_str():
     from syn.base_utils import safe_str
 
