@@ -5,7 +5,8 @@ from syn.types.a import Type, Numeric, Int, hashable, rstr, serialize, \
 from syn.types.a.ne import Value
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, collection_comp, assert_equivalent, \
-    feq, assert_type_equivalent, on_error, elog, ngzwarn, subclasses
+    feq, assert_type_equivalent, on_error, elog, ngzwarn, subclasses, \
+    is_unique
 
 from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES //= 10
@@ -43,16 +44,25 @@ def test_numeric():
             with on_error(elog, examine_numeric, (cls, val)):
                 examine_numeric(cls, val)
 
+        buf = []
         last = None
-        for item in enumerate_(cls.type, max_enum=2):
+        for item in enumerate_(cls.type, max_enum=10):
             assert type(item) is cls.type
             assert item != last
+            buf.append(item)
+
+            if last is None:
+                # These need to be here under enumerate_ b/c of float equality issues
+                eitem = eval(estr(item))
+                assert eitem == item
+                assert type(eitem) is cls.type
+
             last = item
 
-            # These need to be here under enumerate_ b/c of float equality issues
-            eitem = eval(estr(item))
-            assert eitem == item
-            assert type(eitem) is cls.type
+        if cls.type not in {bool,}:
+            assert is_unique(buf)
+        else:
+            assert not is_unique(buf)
 
 #-------------------------------------------------------------------------------
 # Bool
