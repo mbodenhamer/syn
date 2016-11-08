@@ -68,7 +68,7 @@ def test_string():
             continue
 
         for k in xrange(SAMPLES):
-            val = cls.generate()
+            val = generate(cls.type)
             with on_error(elog, examine_string, (cls, val)):
                 examine_string(cls, val)
 
@@ -82,9 +82,10 @@ def test_string():
 
         assert is_unique(buf)
 
-    # estr edge cases
+    # estr potential edge cases
 
-    cases = ["abc'de\r7fghi", "\x00", "\\"]
+    cases = ["abc'de\r7fghi", "\x00", "\\", "\'", '\"', '\a', '\b', '\t', '\v',
+             u'\u2013', '\\u2']
     for case in cases:
         assert eval(estr(case)) == case
 

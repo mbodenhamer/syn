@@ -303,8 +303,8 @@ class Type(object):
 def deserialize(obj, **kwargs):
     return Type.deserialize_dispatch(obj).deserialize(obj, **kwargs)
 
-def enumerate(obj, **kwargs):
-    for item in Type.type_dispatch(obj).enumerate(**kwargs):
+def enumerate(typ, **kwargs):
+    for item in Type.type_dispatch(typ).enumerate(**kwargs):
         yield item
 
 def estr(obj, **kwargs):

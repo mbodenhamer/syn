@@ -109,6 +109,8 @@ class Unicode(String):
 class Bytes(Type):
     if PY3:
         type = bytes
+    else:
+        type = None
 
     @classmethod
     def _enumeration_value(cls, x, **kwargs):

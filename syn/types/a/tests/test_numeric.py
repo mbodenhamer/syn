@@ -40,7 +40,7 @@ def test_numeric():
             continue
 
         for k in xrange(SAMPLES):
-            val = cls.generate()
+            val = generate(cls.type)
             with on_error(elog, examine_numeric, (cls, val)):
                 examine_numeric(cls, val)
 
