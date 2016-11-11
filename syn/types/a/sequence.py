@@ -1,6 +1,43 @@
 import collections
-from syn.base_utils import rand_list, rand_tuple, get_fullname, tuple_prepend
-from .base import Type, hashable, deserialize, serialize, SER_KEYS
+from syn.five import xrange
+from syn.base_utils import rand_list, rand_tuple, get_fullname, tuple_prepend, \
+    get_typename
+from .base import Type, hashable, deserialize, serialize, SER_KEYS, rstr, estr
+from syn.base_utils.rand import SEQ_TYPES, MAX_DEPTH, PRIMITIVE_TYPES
+
+#-------------------------------------------------------------------------------
+# Utilities
+
+def list_enumval(x, **kwargs):
+    top_level = kwargs.get('top_level', True)
+    if top_level:
+        if x == 0:
+            return set()
+
+        kwargs['top_level'] = False
+        return list_enumval(x - 1, **kwargs)
+
+    depth = kwargs.get('depth', 0)
+    max_depth = kwargs.get('max_depth', MAX_DEPTH)
+    types = kwargs.get('types', SEQ_TYPES)
+
+    if depth >= max_depth:
+        types = [t for t in types if t in PRIMITIVE_TYPES]
+
+    kwargs['depth'] = depth + 1
+
+    N = len(types)
+    i = x % N
+    j = x // N
+    l = j + 1
+
+    ret = []
+    for k in xrange(l):
+        i_k = (i + k) % N
+        x_k = j + (k // N)
+        item = Type.type_dispatch(types[i_k])._enumeration_value(x_k, **kwargs)
+        ret.append(item)
+    return ret
 
 #-------------------------------------------------------------------------------
 # Sequence
@@ -17,12 +54,51 @@ class Sequence(Type):
         ret = [deserialize(item, **kwargs) for item in seq]
         return cls.type(ret)
 
+    def estr(self, **kwargs):
+        parts = [estr(item, **kwargs) for item in self.obj]
+        ret = '[' + ', '.join(parts) + ']'
+        return '{}({})'.format(get_typename(self.obj), ret)
+
+    @classmethod
+    def _enumeration_value(cls, x, **kwargs):
+        return list_enumval(x, **kwargs)
+
+    def _find_ne(self, other, **kwargs):
+        # TODO: replace with FindNE objects
+
+        if self.obj != other:
+            # TODO: eliminate this case: check at which index they
+            # become inequal even if they are of different length
+            if len(self.obj) != len(other):
+                return Value('length-{} {} != length-{} {}'
+                             .format(len(self.obj), 
+                                     get_typename(self.obj),
+                                     len(other),
+                                     get_typename(other)))
+
+            for k, item in enumerate(self.obj):
+                if item != other[k]:
+                    return Value('sequences differ at index {}'
+                                 .format(k))
+
     def _hashable(self, **kwargs):
         tup = tuple([hashable(item) for item in self.obj])
         return tuple_prepend(get_fullname(self.obj), tup)
 
+    def _rstr(self, **kwargs):
+        # TODO: add pretty option
+        parts = [rstr(item, **kwargs) for item in self.obj]
+        ret = '[' + ', '.join(parts) + ']'
+        return ret
+
     def _serialize(self, dct, **kwargs):
         dct[SER_KEYS.args] = [[serialize(item, **kwargs) for item in self.obj]]
+
+    def _visit(self, k, **kwargs):
+        yield self.obj[k]
+
+    def _visit_len(self, **kwargs):
+        return len(self.obj)
 
 
 #-------------------------------------------------------------------------------
@@ -43,8 +119,16 @@ class Tuple(Sequence):
     type = tuple
 
     @classmethod
+    def _enumeration_value(cls, x, **kwargs):
+        return tuple(super(Tuple, cls)._enumeration_value(x, **kwargs))
+
+    @classmethod
     def _generate(cls, **kwargs):
         return rand_tuple(**kwargs)
+
+    def _rstr(self, **kwargs):
+        ret = super(Tuple, self)._rstr(**kwargs)[1:-1]
+        return '(' + ret + ')'
 
 
 #-------------------------------------------------------------------------------

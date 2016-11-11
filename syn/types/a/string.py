@@ -54,7 +54,11 @@ class String(Type):
         return string_enumval(x, **kwargs)
 
     def _find_ne(self, other, **kwargs):
+        # TODO: replace with FindNE objects
+
         if self.obj != other:
+            # TODO: eliminate this case: check at which index they
+            # become inequal even if they are of different length
             if len(self.obj) != len(other):
                 return Value('length-{} string != length-{} string'
                              .format(len(self.obj), len(other)))

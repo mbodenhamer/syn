@@ -1,5 +1,14 @@
 from syn.base_utils import get_fullname, rand_set, rand_frozenset
 from .base import Type, hashable, serialize, SER_KEYS
+from syn.base_utils.rand import HASHABLE_TYPES
+from .sequence import list_enumval
+
+#-------------------------------------------------------------------------------
+# Utilities
+
+def set_enumval(x, **kwargs):
+    kwargs['types'] = kwargs.get('types', HASHBLE_TYPES)
+    return list_enumval(x, **kwargs)
 
 #-------------------------------------------------------------------------------
 # Set
@@ -7,6 +16,10 @@ from .base import Type, hashable, serialize, SER_KEYS
 
 class Set(Type):
     type = set
+
+    @classmethod
+    def _enumeration_value(cls, x, **kwargs):
+        pass
 
     @classmethod
     def _generate(cls, **kwargs):

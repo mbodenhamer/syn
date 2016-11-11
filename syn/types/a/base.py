@@ -212,11 +212,14 @@ class Type(object):
             return self.obj._hashable(**kwargs)
         return self._hashable(**kwargs)
 
+    def _rstr(self, **kwargs):
+        return str(self.obj)
+
     def rstr(self, **kwargs):
         '''The idea is somethinig like a recursive str().'''
         if hasmethod(self.obj, '_rstr'):
             return self.obj._rstr(**kwargs)
-        return str(self.obj)
+        return self._rstr(**kwargs)
 
     def _serialize(self, dct, **kwargs):
         if (self.ser_args or self.ser_kwargs) and self.ser_attrs is None:
