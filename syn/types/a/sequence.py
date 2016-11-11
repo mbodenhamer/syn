@@ -1,7 +1,7 @@
 import collections
 from syn.five import xrange
 from syn.base_utils import rand_list, rand_tuple, get_fullname, tuple_prepend, \
-    get_typename
+    get_typename, escape_for_eval
 from .base import Type, hashable, deserialize, serialize, SER_KEYS, rstr, estr
 from syn.base_utils.rand import SEQ_TYPES, MAX_DEPTH, PRIMITIVE_TYPES
 
@@ -57,7 +57,8 @@ class Sequence(Type):
     def estr(self, **kwargs):
         parts = [estr(item, **kwargs) for item in self.obj]
         ret = '[' + ', '.join(parts) + ']'
-        return '{}({})'.format(get_typename(self.obj), ret)
+        ret = '{}({})'.format(get_typename(self.obj), ret)
+        return escape_for_eval(ret)
 
     @classmethod
     def _enumeration_value(cls, x, **kwargs):
