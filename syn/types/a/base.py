@@ -182,6 +182,9 @@ class Type(object):
         raise NotImplementedError
 
     def find_ne(self, other, **kwargs):
+        if self == other:
+            return
+
         from .ne import Value
         if type(self.obj) is not type(other):
             return Value("different types ({} =/= {})".
