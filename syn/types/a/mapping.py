@@ -1,10 +1,12 @@
 import collections
-from syn.base_utils import rand_dict, get_fullname, tuple_prepend
-from .base import Type, serialize, hashable, rstr, estr
+from syn.base_utils import rand_dict, get_fullname, tuple_prepend, \
+    get_typename, escape_for_eval
+from .base import Type, serialize, hashable, rstr, estr, SER_KEYS, deserialize
 from .numeric import Int
 from .sequence import list_enumval
 from .set import set_enumval
 from .ne import Value
+from itertools import islice
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -23,9 +25,19 @@ class Mapping(Type):
     type = collections.Mapping
 
     def __init__(self, *args, **kwargs):
-        super(Set, self).__init__(*args, **kwargs)
+        super(Mapping, self).__init__(*args, **kwargs)
         self.visit_buffer = []
         self.visit_iter = iter(self.obj)
+
+    @classmethod
+    def deserialize(cls, dct, **kwargs):
+        # TODO: may need to have a special case if args or kwars is set (like for defaultdict)
+        for key in SER_KEYS.values():
+            if key in dct:
+                del dct[key]
+
+        ret = {key: deserialize(value, **kwargs) for key, value in dct.items()}
+        return cls.type(ret)
 
     @classmethod
     def _enumeration_value(cls, x, **kwargs):
@@ -49,7 +61,7 @@ class Mapping(Type):
 
         for key, value in self.obj.items():
             oval = other[key]
-            if key != value:
+            if value != oval:
                 return Value('key {}: {} != {}'.format(key, value, oval))
 
     def _hashable(self, **kwargs):

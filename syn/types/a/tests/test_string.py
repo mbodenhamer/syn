@@ -58,8 +58,10 @@ def test_string():
 
     if PY2:
         assert type(t) is Unicode
+        examine_string(Unicode, s)
     else:
         assert type(t) is String
+        examine_string(String, s)
 
     assert hashable(s) == t.hashable() == s
     assert is_hashable(s)

@@ -1,9 +1,31 @@
 from six import PY2
+from syn.five import xrange
 from nose.tools import assert_raises
 from syn.types.a import Type, Sequence, List, Tuple, \
-    hashable, serialize, deserialize, estr, rstr
+    hashable, serialize, deserialize, estr, rstr, visit, find_ne
 from syn.types.a import enumerate as enumerate_
-from syn.base_utils import is_hashable, assert_equivalent
+from syn.base_utils import is_hashable, assert_equivalent, elog, ngzwarn, \
+    is_unique, on_error
+
+from syn.globals import TEST_SAMPLES as SAMPLES
+SAMPLES //= 10
+SAMPLES = max(SAMPLES, 1)
+ngzwarn(SAMPLES, 'SAMPLES')
+
+#-------------------------------------------------------------------------------
+
+def examine_sequence(cls, val):
+    assert type(val) is cls.type
+    assert is_hashable(hashable(val))
+    assert deserialize(serialize(val)) == val
+    assert isinstance(rstr(val), str)
+
+    assert list(visit(val)) == list(val)
+    assert find_ne(val, val) is None
+
+    eitem = eval(estr(val))
+    assert eitem == val
+    assert type(eitem) is cls.type
 
 #-------------------------------------------------------------------------------
 # Sequence
@@ -23,17 +45,25 @@ def test_sequence():
     assert not is_hashable(l)
     assert is_hashable(hashable(l))
 
-    for cls in Sequence.__subclasses__():
-        val = cls.generate()
-        assert type(val) is cls.type
-        assert is_hashable(hashable(val))
-        # assert_equivalent(deserialize(serialize(val)), val)
+    tup = tuple(l)
+    examine_sequence(List, l)
+    examine_sequence(Tuple, tup)
     
-        assert isinstance(rstr(val), str)
-        # assert_equivalent(eval(estr(val)), val)
+    # for cls in Sequence.__subclasses__():
+    #     for k in xrange(SAMPLES):
+    #         val = cls.generate()
+    #         with on_error(elog, examine_sequence, (cls, val)):
+    #             examine_sequence(cls, val)
 
-        # for item in enumerate_(cls, max_enum=1):
-        #     assert type(item) is cls.type
+    #     buf = []
+    #     last = None
+    #     for item in enumerate_(cls.type, max_enum=SAMPLES * 10, step=100):
+    #         assert type(item) is cls.type
+    #         assert item != last
+    #         buf.append(item)
+    #         last = item
+
+    #     assert is_unique(buf)
 
 #-------------------------------------------------------------------------------
 

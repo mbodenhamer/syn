@@ -1,8 +1,29 @@
 from nose.tools import assert_raises
 from syn.types.a import Type, Set, FrozenSet, \
-    hashable, serialize, deserialize, estr, rstr
+    hashable, serialize, deserialize, estr, rstr, visit, find_ne
 from syn.types.a import enumerate as enumerate_
-from syn.base_utils import is_hashable, assert_equivalent
+from syn.base_utils import is_hashable, assert_equivalent, on_error, elog, \
+    ngzwarn, is_unique
+
+from syn.globals import TEST_SAMPLES as SAMPLES
+SAMPLES //= 10
+SAMPLES = max(SAMPLES, 1)
+ngzwarn(SAMPLES, 'SAMPLES')
+
+#-------------------------------------------------------------------------------
+
+def examine_set(cls, val):
+    assert type(val) is cls.type
+    assert is_hashable(hashable(val))
+    assert deserialize(serialize(val)) == val
+    assert isinstance(rstr(val), str)
+
+    assert list(visit(val)) == list(val)
+    assert find_ne(val, val) is None
+
+    eitem = eval(estr(val))
+    assert eitem == val
+    assert type(eitem) is cls.type
 
 #-------------------------------------------------------------------------------
 # Set
@@ -17,17 +38,24 @@ def test_set():
     assert is_hashable(s)
     assert is_hashable(hashable(s))
 
-    for cls in Set.__subclasses__():
-        val = cls.generate()
-        assert type(val) is cls.type
-        assert is_hashable(hashable(val))
-        #deserialize(serialize(val)) == val
-    
-        assert isinstance(rstr(val), str)
-        # assert_equivalent(eval(estr(val)), val)
+    examine_set(Set, set(s))
+    examine_set(FrozenSet, s)
 
-        # for item in enumerate_(cls, max_enum=1):
-        #     assert type(item) is cls.type
+    # for cls in Set.__subclasses__():
+    #     for k in xrange(SAMPLES):
+    #         val = cls.generate()
+    #         with on_error(elog, examine_set, (cls, val)):
+    #             examine_set(cls, val)
+
+    #     buf = []
+    #     last = None
+    #     for item in enumerate_(cls.type, max_enum=SAMPLES * 10, step=100):
+    #         assert type(item) is cls.type
+    #         assert item != last
+    #         buf.append(item)
+    #         last = item
+
+    #     assert is_unique(buf)
 
 #-------------------------------------------------------------------------------
 

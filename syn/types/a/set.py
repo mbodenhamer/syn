@@ -1,7 +1,7 @@
 from itertools import islice
 from syn.base_utils import get_fullname, rand_set, rand_frozenset, \
-    escape_for_eval
-from .base import Type, hashable, serialize, SER_KEYS, rstr
+    escape_for_eval, get_typename
+from .base import Type, hashable, serialize, SER_KEYS, rstr, estr
 from syn.base_utils.rand import HASHABLE_TYPES
 from .sequence import list_enumval
 from .ne import Value

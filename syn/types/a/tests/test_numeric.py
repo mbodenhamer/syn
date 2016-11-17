@@ -34,6 +34,7 @@ def test_numeric():
     assert type(t) is Int
 
     assert hashable(x) == x
+    examine_numeric(Int, x)
 
     for cls in subclasses(Numeric):
         if cls.type is None:
