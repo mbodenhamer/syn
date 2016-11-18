@@ -68,6 +68,9 @@ class String(Type):
                     return Value('strings differ at index {}'
                                  .format(k))
 
+    def _hashable(self, **kwargs):
+        return self
+
     @classmethod
     def _generate(cls, **kwargs):
         return rand_str(**kwargs)

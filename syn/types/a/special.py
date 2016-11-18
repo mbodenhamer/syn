@@ -1,4 +1,5 @@
 from .base import Type
+from .ne import Value
 
 #-------------------------------------------------------------------------------
 # None
@@ -14,9 +15,18 @@ class NONE(Type):
     def estr(self, **kwargs):
         return 'None'
 
+    def _find_ne(self, other, **kwargs):
+        pass
+
     @classmethod
     def _generate(cls, **kwargs):
         return None
+
+    def _visit(self, k, **kwargs):
+        yield None
+
+    def _visit_len(self, **kwargs):
+        return 1
 
 
 #-------------------------------------------------------------------------------
