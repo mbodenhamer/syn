@@ -10,8 +10,15 @@ range = lambda *args, **kwargs: list(xrange(*args, **kwargs))
 
 if PY2:
     raw_input = raw_input
+    import itertools
+    izip = itertools.izip
+    imap = itertools.imap
+    ifilter = itertools.ifilter
 else:
     raw_input = input
+    izip = zip
+    imap = map
+    ifilter = filter
 
 # For convenience, not compatibility
 SET = (set, frozenset)
