@@ -4,6 +4,7 @@ from syn.base_utils import rand_list, rand_tuple, get_fullname, tuple_prepend, \
     get_typename, escape_for_eval
 from .base import Type, hashable, deserialize, serialize, SER_KEYS, rstr, estr
 from syn.base_utils.rand import SEQ_TYPES, MAX_DEPTH, PRIMITIVE_TYPES
+from .ne import DiffersAtIndex, DifferentLength
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -65,22 +66,12 @@ class Sequence(Type):
         return list_enumval(x, **kwargs)
 
     def _find_ne(self, other, **kwargs):
-        # TODO: replace with FindNE objects
-
-        if self.obj != other:
-            # TODO: eliminate this case: check at which index they
-            # become inequal even if they are of different length
-            if len(self.obj) != len(other):
-                return Value('length-{} {} != length-{} {}'
-                             .format(len(self.obj), 
-                                     get_typename(self.obj),
-                                     len(other),
-                                     get_typename(other)))
-
-            for k, item in enumerate(self.obj):
-                if item != other[k]:
-                    return Value('sequences differ at index {}'
-                                 .format(k))
+        for k, item in enumerate(self.obj):
+            if k >= len(other):
+                return DifferentLength(self.obj, other)
+            if item != other[k]:
+                return DiffersAtIndex(self.obj, other, k)
+        return DifferentLength(self.obj, other)
 
     def _hashable(self, **kwargs):
         tup = tuple([hashable(item) for item in self.obj])

@@ -2,7 +2,8 @@ from six import PY2
 from syn.five import xrange
 from nose.tools import assert_raises
 from syn.types.a import Type, Sequence, List, Tuple, \
-    hashable, serialize, deserialize, estr, rstr, visit, find_ne
+    hashable, serialize, deserialize, estr, rstr, visit, find_ne, \
+    DifferentLength, DiffersAtIndex
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, elog, ngzwarn, \
     is_unique, on_error
@@ -44,6 +45,13 @@ def test_sequence():
 
     assert not is_hashable(l)
     assert is_hashable(hashable(l))
+
+    l1 = [1, 2, 3]
+    l2 = [1, 2, 3, 4]
+    l3 = [1, 2, 4]
+    assert find_ne(l1, l2) == DifferentLength(l1, l2)
+    assert find_ne(l2, l1) == DifferentLength(l2, l1)
+    assert find_ne(l1, l3) == DiffersAtIndex(l1, l3, 2)
 
     tup = tuple(l)
     examine_sequence(List, l)
