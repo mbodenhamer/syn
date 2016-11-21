@@ -188,9 +188,8 @@ class DefaultList(list):
             raise IndexError('Invalid index: {}'.format(index))
 
         n_fill = index - len(self)
-        fill = [self._default() for x in xrange(n_fill)]
-        
-        self.extend(fill)
+        for _ in xrange(n_fill):
+            self.append(self._default())
         self.append(value)
 
 
