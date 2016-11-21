@@ -164,12 +164,9 @@ class ValueExplorer(REPL):
         if not self.at_end:
             self.step()
 
-    def _pop(self, delta=-1, save=True):
-        if save:
-            self._push(delta=0, save_only=True)
-
-        self.stack_index += delta
-        frame = self.stack[self.stack_index]
+    def _pop(self):
+        self.stack_index -= 1
+        frame = self.stack.pop()
         self.value = frame['value']
         self.current_value = frame['current_value']
         self.index = frame['index']
@@ -178,18 +175,15 @@ class ValueExplorer(REPL):
         self.iter = frame['iter']
         self._at_bottom_level()
 
-    def _push(self, delta=1, save_only=False):
+    def _push(self):
         frame = dict(value=self.value,
                      current_value=self.current_value,
                      index=self.index,
                      key=self.key,
                      iter=self.iter,
                      at_end=self.at_end)
-        self.stack[self.stack_index] = frame
-        self.stack_index += delta
-
-        if save_only:
-            return
+        self.stack_index += 1
+        self.stack.append(frame)
 
         self.value = self.current_value
         self.current_value = None
@@ -263,7 +257,6 @@ class ValueExplorer(REPL):
             elif not self.at_end:
                 step()
             
-
     @repl_command('l', 'display')
     def command_display(self):
         print(self.display())
