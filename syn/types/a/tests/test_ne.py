@@ -87,6 +87,8 @@ def test_valueexplorer():
     x = ValueExplorer(d)
     dfl = list(item for item in x.depth_first() if not isinstance(item, dict))
     assert set(dfl) == {1, 2, 3, 4}
+    x.reset()
+    assert set(x.depth_first(leaves_only=True)) == {1, 2, 3, 4}
 
     s = set()
     x = ValueExplorer(d, key='c')
@@ -99,9 +101,10 @@ def test_valueexplorer():
     assert x.at_end
     assert s == {3, 4}
 
+    # TODO: test repl commands
+
 #-------------------------------------------------------------------------------
 # DiffExplorer
-
 
 def test_diffexplorer():
     l1 = [1, 2, 3]
@@ -126,6 +129,34 @@ def test_diffexplorer():
     
     x.reset()
     assert list(x.depth_first()) == [(l1, l2), (1, 1), (2, 2), (3, 4)]
+
+    # TODO: test repl commands
+
+#-------------------------------------------------------------------------------
+# Utilities
+
+def test_deep_comp():
+    from syn.types.a.ne import deep_comp
+    from syn.base_utils import feq
+    from functools import partial
+
+    cfeq = partial(feq, tol=0.1)
+    assert cfeq(4.05, 4.06)
+
+    def comp(a, b):
+        if isinstance(a, (float, complex)) and type(a) is type(b):
+            return cfeq(a, b)
+        return a == b
+
+    l1 = [1, 2, [3, 4.05]]
+    l2 = [1, 2, [3, 4.06]]
+    assert deep_comp(l1, l1)
+    assert not deep_comp(l1, l2)
+    assert not deep_comp(l1, l2, comp)
+    assert deep_comp(l1, l2, comp, leaves_only=True)
+
+    dcomp = partial(deep_comp, func=comp, leaves_only=True)
+    assert dcomp(l1, l2)
 
 #-------------------------------------------------------------------------------
 # Value

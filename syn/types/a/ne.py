@@ -1,6 +1,8 @@
 import collections
+import operator as op
 from syn.five import unicode, xrange, izip
-from syn.base_utils import REPL, repl_command, DefaultList, sgn, AttrDict
+from syn.base_utils import REPL, repl_command, DefaultList, sgn, AttrDict, \
+    implies
 from syn.base_utils.rand import PRIMITIVE_TYPES
 
 CONTAINERS = (collections.Mapping, collections.Sequence, set, frozenset)
@@ -246,7 +248,7 @@ class ValueExplorer(REPL):
         self._initialize(self.initial_value, self.initial_index,
                          self.initial_key, self.prompt, self.initial_step_value)
 
-    def depth_first(self):
+    def depth_first(self, leaves_only=False):
         vars = AttrDict(going_up=False,
                         going_forward=False)
         def step():
@@ -262,7 +264,8 @@ class ValueExplorer(REPL):
                 break
 
             if not vars.going_up and not vars.going_forward:
-                yield self.value
+                if implies(leaves_only, self.at_bottom_level):
+                    yield self.value
 
             if vars.going_up:
                 vars.going_up = False
@@ -315,8 +318,9 @@ class DiffExplorer(REPL):
         self.A = A
         self.B = B
 
-    def depth_first(self):
-        for a, b in izip(self.A.depth_first(), self.B.depth_first()):
+    def depth_first(self, **kwargs):
+        for a, b in izip(self.A.depth_first(**kwargs), 
+                         self.B.depth_first(**kwargs)):
             yield a, b
 
     def display(self):
@@ -340,7 +344,6 @@ class DiffExplorer(REPL):
         self.A.reset()
         self.B.reset()
 
-
     @repl_command('l', 'display')
     def command_display(self):
         print(self.display())
@@ -362,6 +365,16 @@ class DiffExplorer(REPL):
         for _ in xrange(num):
             self.up()
 
+
+#-------------------------------------------------------------------------------
+# Utilities
+
+def deep_comp(A, B, func=op.eq, **kwargs):
+    x = DiffExplorer(A, B)
+    for a, b in x.depth_first(**kwargs):
+        if not func(a, b):
+            return False
+    return True
 
 #-------------------------------------------------------------------------------
 # Value (DEPRECATED)
@@ -404,6 +417,7 @@ class FindNE(REPL):
 # __all__
 
 __all__ = ('ValueExplorer', 'DiffExplorer', 'ExplorationError',
+           'deep_comp',
            'Value', 'FindNE')
 
 #-------------------------------------------------------------------------------
