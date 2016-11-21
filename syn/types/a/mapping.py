@@ -5,7 +5,7 @@ from .base import Type, serialize, hashable, rstr, estr, SER_KEYS, deserialize
 from .numeric import Int
 from .sequence import list_enumval
 from .set import set_enumval
-from .ne import Value
+from .ne import KeyDifferences, DiffersAtKey
 from itertools import islice
 
 #-------------------------------------------------------------------------------
@@ -51,18 +51,13 @@ class Mapping(Type):
         return escape_for_eval(ret)
 
     def _find_ne(self, other, **kwargs):
-        # TODO: return FindNE object here
-        keys = set(self.obj.keys())
-        okeys = set(other.keys())
-
-        if keys != okeys:
-            diffs = keys.difference(okeys).union(okeys.difference(keys))
-            return Value('key differences: {}'.format(rstr(diffs)))
-
         for key, value in self.obj.items():
+            if key not in other:
+                return KeyDifferences(self.obj, other)
             oval = other[key]
             if value != oval:
-                return Value('key {}: {} != {}'.format(key, value, oval))
+                return DiffersAtKey(self.obj, other, key)
+        return KeyDifferences(self.obj, other)
 
     def _hashable(self, **kwargs):
         tup = tuple((hashable(key, **kwargs),
