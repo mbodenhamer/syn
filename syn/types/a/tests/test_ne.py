@@ -1,5 +1,6 @@
 from nose.tools import assert_raises
-from syn.types.a.ne import Value, FindNE, ValueExplorer, ExplorationError
+from syn.types.a.ne import Value, FindNE, ValueExplorer, ExplorationError, \
+    DiffExplorer
 
 #-------------------------------------------------------------------------------
 # ValueExplorer
@@ -97,6 +98,34 @@ def test_valueexplorer():
     assert_raises(ExplorationError, x.step)
     assert x.at_end
     assert s == {3, 4}
+
+#-------------------------------------------------------------------------------
+# DiffExplorer
+
+
+def test_diffexplorer():
+    l1 = [1, 2, 3]
+    l2 = [1, 2, 4]
+
+    x = DiffExplorer(l1, l2)
+    assert x.display() == u'A: 1\nB: 1'
+    x.step()
+    assert x.display() == u'A: 2\nB: 2'
+    x.down()
+    assert x.display() == u'A: 2\nB: 2'
+    x.up()
+    assert x.display() == u'A: 2\nB: 2'
+    x.step()
+    assert x.display() == u'A: 3\nB: 4'
+    assert_raises(ExplorationError, x.step)
+    x.step(-1)
+    assert x.display() == u'A: 2\nB: 2'
+    x.step()
+    assert x.display() == u'A: 1\nB: 1'
+    assert_raises(ExplorationError, x.step)
+    
+    x.reset()
+    assert list(x.depth_first()) == [(l1, l2), (1, 1), (2, 2), (3, 4)]
 
 #-------------------------------------------------------------------------------
 # Value

@@ -1,5 +1,5 @@
 import collections
-from syn.five import unicode, xrange
+from syn.five import unicode, xrange, izip
 from syn.base_utils import REPL, repl_command, DefaultList, sgn, AttrDict
 from syn.base_utils.rand import PRIMITIVE_TYPES
 
@@ -303,7 +303,39 @@ class ValueExplorer(REPL):
 
 
 class DiffExplorer(REPL):
-    pass
+    def __init__(self, A, B):
+        if not isinstance(A, ValueExplorer):
+            A = ValueExplorer(A)
+        if not isinstance(B, ValueExplorer):
+            B = ValueExplorer(B)
+
+        self.A = A
+        self.B = B
+
+    def depth_first(self):
+        for a, b in izip(self.A.depth_first(), self.B.depth_first()):
+            yield a, b
+
+    def display(self):
+        a = self.A.display()
+        b = self.B.display()
+        return u'A: {}\nB: {}'.format(a, b)
+
+    def step(self, *args, **kwargs):
+        self.A.step(*args, **kwargs)
+        self.B.step(*args, **kwargs)
+
+    def down(self):
+        self.A.down()
+        self.B.down()
+
+    def up(self):
+        self.A.up()
+        self.B.up()
+
+    def reset(self):
+        self.A.reset()
+        self.B.reset()
 
 
 #-------------------------------------------------------------------------------
@@ -343,7 +375,7 @@ class FindNE(REPL):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('ValueExplorer', 'ExplorationError',
+__all__ = ('ValueExplorer', 'DiffExplorer', 'ExplorationError',
            'Value', 'FindNE')
 
 #-------------------------------------------------------------------------------
