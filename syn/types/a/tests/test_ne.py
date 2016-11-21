@@ -64,9 +64,11 @@ def test_netypes():
     assert n.message() == 'Exclusive items: {}'.format({1, 4})
 
     d1 = dict(a=1, b=2)
-    d2 = dict(b=2, c=3)
+    d2 = dict(b=2)
     n = KeyDifferences(d1, d2)
-    assert n.message() == 'Exclusive keys: {}'.format({'a', 'c'})
+    assert n.message() == 'Exclusive keys: {}'.format({'a'})
+    n = KeyDifferences(d2, d1)
+    assert n.message() == 'Exclusive keys: {}'.format({'a'})
 
 #-------------------------------------------------------------------------------
 # ValueExplorer

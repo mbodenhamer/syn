@@ -4,7 +4,7 @@ from syn.five import STR
 from syn.base_utils import rand_str, rand_unicode, get_typename, quote_string, \
     safe_chr, escape_for_eval
 from .base import Type, SER_KEYS
-from .ne import Value
+from .ne import DifferentLength, DiffersAtIndex
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -54,19 +54,12 @@ class String(Type):
         return string_enumval(x, **kwargs)
 
     def _find_ne(self, other, **kwargs):
-        # TODO: replace with FindNE objects
-
-        if self.obj != other:
-            # TODO: eliminate this case: check at which index they
-            # become inequal even if they are of different length
-            if len(self.obj) != len(other):
-                return Value('length-{} string != length-{} string'
-                             .format(len(self.obj), len(other)))
-
-            for k, item in enumerate(self.obj):
-                if item != other[k]:
-                    return Value('strings differ at index {}'
-                                 .format(k))
+        for k, item in enumerate(self.obj):
+            if k >= len(other):
+                return DifferentLength(self.obj, other)
+            if item != other[k]:
+                return DiffersAtIndex(self.obj, other, k)
+        return DifferentLength(self.obj, other)
 
     def _hashable(self, **kwargs):
         return self

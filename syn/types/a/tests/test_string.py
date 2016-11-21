@@ -2,9 +2,9 @@ from six import PY2, PY3
 from syn.five import xrange
 from nose.tools import assert_raises
 from syn.types.a import Type, String, Unicode, Bytes, \
-    hashable, serialize, deserialize, estr, rstr, generate, visit, find_ne
+    hashable, serialize, deserialize, estr, rstr, generate, visit, find_ne, \
+    DifferentLength, DiffersAtIndex
 from syn.types.a import enumerate as enumerate_
-from syn.types.a.ne import Value
 from syn.base_utils import is_hashable, assert_equivalent, subclasses, \
     on_error, elog, ngzwarn, is_unique
 
@@ -67,8 +67,9 @@ def test_string():
     assert is_hashable(s)
     assert is_hashable(hashable(s))
 
-    assert find_ne('abc', 'abcd') == Value('length-3 string != length-4 string')
-    assert find_ne('abc', 'abd') == Value('strings differ at index 2')
+    assert find_ne('abc', 'abcd') == DifferentLength('abc', 'abcd')
+    assert find_ne('abcd', 'abc') == DifferentLength('abcd', 'abc')
+    assert find_ne('abc', 'abd') == DiffersAtIndex('abc', 'abd', 2)
 
     for cls in subclasses(String, [String]):
         if cls.type is None:
