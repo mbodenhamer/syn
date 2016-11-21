@@ -56,6 +56,48 @@ def test_valueexplorer():
     x = ValueExplorer(l)
     assert list(x.depth_first()) == [l, 1, [2, 3], 2, 3, 4]
 
+    x = ValueExplorer(l, index=1)
+    assert list(x.depth_first()) == [l, [2, 3], 2, 3, 4]
+
+    x = ValueExplorer(l, index=2)
+    assert list(x.depth_first()) == [l, 4]
+
+    x = ValueExplorer(l, index=3)
+    assert list(x.depth_first()) == []
+
+    l = [1, [2, 3], [[4]]]
+    x = ValueExplorer(l)
+    assert list(x.depth_first()) == [l, 1, [2, 3], 2, 3, [[4]], [4], 4]
+
+    d = dict(a=1, b=2)
+    x = ValueExplorer(d)
+    assert set(list(x.depth_first())[1:]) == {1, 2}
+
+    d = dict(a=1, b=2, c=(3, 4))
+    x = ValueExplorer(d)
+    assert set(list(x.depth_first())[1:]) == {1, 2, (3, 4), 3, 4}
+
+    assert ValueExplorer(d, key='a').current_value == 1
+    assert ValueExplorer(d, key='b').current_value == 2
+    assert ValueExplorer(d, key='c').current_value == (3, 4)
+    assert_raises(ExplorationError, ValueExplorer, d, key='d')
+
+    d = dict(a=1, b=2, c=dict(a=3, b=4))
+    x = ValueExplorer(d)
+    dfl = list(item for item in x.depth_first() if not isinstance(item, dict))
+    assert set(dfl) == {1, 2, 3, 4}
+
+    s = set()
+    x = ValueExplorer(d, key='c')
+    assert x.current_value == dict(a=3, b=4)
+    x.down()
+    s.add(x.current_value)
+    x.step()
+    s.add(x.current_value)
+    assert_raises(ExplorationError, x.step)
+    assert x.at_end
+    assert s == {3, 4}
+
 #-------------------------------------------------------------------------------
 # Value
 

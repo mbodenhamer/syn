@@ -152,7 +152,7 @@ class ValueExplorer(REPL):
 
     def _check_empty(self):
         if isinstance(self.value, CONTAINERS):
-            if len(self.value) == 0:
+            if len(self.value) == 0 or self.index >= len(self.value):
                 self.at_end = True
 
     def _prime(self):
@@ -162,7 +162,21 @@ class ValueExplorer(REPL):
 
         self._check_empty()
         if not self.at_end:
-            self.step()
+            if (isinstance(self.value, collections.Mapping) and 
+                self.initial_index is None and self.key is not None):
+                index, pair = next(self.iter)
+                key, value = pair
+                while not key == self.key:
+                    try:
+                        index, pair = next(self.iter)
+                        key, value = pair
+                    except StopIteration:
+                        raise ExplorationError('Unable to find key: {}'
+                                               .format(self.key))
+                self.current_value = value
+                self.index = index
+            else:
+                self.step()
 
     def _pop(self):
         self.stack_index -= 1
@@ -188,6 +202,7 @@ class ValueExplorer(REPL):
         self.value = self.current_value
         self.current_value = None
         self.index = 0
+        self.key = None
         self.at_end = False
         self._at_bottom_level()
         self._prime()
@@ -207,7 +222,11 @@ class ValueExplorer(REPL):
 
         try:
             index, value = next(self.iter)
-            self.current_value = value # TODO: handle mapping case
+            if isinstance(self.value, collections.Mapping):
+                self.key = value[0]
+                self.current_value = value[1]
+            else:
+                self.current_value = value
             self.index = index
         except StopIteration:
             self.at_end = True
