@@ -1,6 +1,7 @@
 from nose.tools import assert_raises
 from syn.types.a.ne import Value, FindNE, ValueExplorer, ExplorationError, \
     DiffExplorer
+from syn.base_utils import capture
 
 #-------------------------------------------------------------------------------
 # ValueExplorer
@@ -101,7 +102,31 @@ def test_valueexplorer():
     assert x.at_end
     assert s == {3, 4}
 
-    # TODO: test repl commands
+
+    def last_line(si):
+        return si.getvalue().split('\n')[-2]
+
+    l = [1, [2, 3], [[4]]]
+    r = ValueExplorer(l)
+    with capture() as (out, err):
+        r._eval('l')
+        assert last_line(out) == '1'
+
+        r._eval('n 2')
+        r._eval('l')
+        assert last_line(out) == '[[4]]'
+
+        r._eval('d 2')
+        r._eval('l')
+        assert last_line(out) == '4'
+
+        r._eval('u 2')
+        r._eval('l')
+        assert last_line(out) == '[[4]]'
+
+        r._eval('n -1')
+        r._eval('l')
+        assert last_line(out) == '[2, 3]'
 
 #-------------------------------------------------------------------------------
 # DiffExplorer
@@ -130,7 +155,31 @@ def test_diffexplorer():
     x.reset()
     assert list(x.depth_first()) == [(l1, l2), (1, 1), (2, 2), (3, 4)]
 
-    # TODO: test repl commands
+    def last_lines(si):
+        return si.getvalue().split('\n')[-3:-1]
+
+    l1 = [1, [2, 3], [[4]]]
+    l2 = [1, [2, 6], [[5]]]
+    r = DiffExplorer(ValueExplorer(l1), ValueExplorer(l2))
+    with capture() as (out, err):
+        r._eval('l')
+        assert last_lines(out) == ['A: 1', 'B: 1']
+
+        r._eval('n 2')
+        r._eval('l')
+        assert last_lines(out) == ['A: [[4]]', 'B: [[5]]']
+
+        r._eval('d 2')
+        r._eval('l')
+        assert last_lines(out) == ['A: 4', 'B: 5']
+
+        r._eval('u 2')
+        r._eval('l')
+        assert last_lines(out) == ['A: [[4]]', 'B: [[5]]']
+
+        r._eval('n -1')
+        r._eval('l')
+        assert last_lines(out) == ['A: [2, 3]', 'B: [2, 6]']
 
 #-------------------------------------------------------------------------------
 # Utilities

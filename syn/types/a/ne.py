@@ -17,6 +17,7 @@ class NEType(object):
         self.B = B
 
     def __call__(self):
+        print(self.message())
         self.explorer()()
 
     def __str__(self):
