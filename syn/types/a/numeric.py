@@ -37,7 +37,7 @@ class Numeric(Type):
             return Value('{} != {}'.format(self.obj, other))
 
     def _visit(self, k, **kwargs):
-        yield self.obj
+        return self.obj
 
     def _visit_len(self, **kwargs):
         return 1

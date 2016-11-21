@@ -96,7 +96,7 @@ class Sequence(Type):
         dct[SER_KEYS.args] = [[serialize(item, **kwargs) for item in self.obj]]
 
     def _visit(self, k, **kwargs):
-        yield self.obj[k]
+        return self.obj[k]
 
     def _visit_len(self, **kwargs):
         return len(self.obj)

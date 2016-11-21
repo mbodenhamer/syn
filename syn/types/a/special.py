@@ -23,7 +23,7 @@ class NONE(Type):
         return None
 
     def _visit(self, k, **kwargs):
-        yield None
+        return None
 
     def _visit_len(self, **kwargs):
         return 1

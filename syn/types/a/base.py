@@ -276,6 +276,7 @@ class Type(object):
 
     def visit(self, k, **kwargs):
         step = kwargs.get('step', 1)
+        enum = kwargs.get('enumerate', False)
         N = self.visit_len(**kwargs)
 
         count = 0
@@ -285,11 +286,14 @@ class Type(object):
                 raise StopIteration
 
             if hasmethod(self.obj, '_visit'):
-                for item in self.obj._visit(k, **kwargs):
-                    yield item
+                item = self.obj._visit(k, **kwargs)
             else:
-                for item in self._visit(k, **kwargs):
-                    yield item
+                item = self._visit(k, **kwargs)
+
+            if enum:
+                yield k, item
+            else:
+                yield item
 
             k += step
             count += 1

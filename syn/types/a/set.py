@@ -60,15 +60,15 @@ class Set(Type):
         if use_buffer:
             N = len(self.visit_buffer)
             if 0 <= k < N:
-                yield self.visit_buffer[k]
+                return self.visit_buffer[k]
             else:
                 idx_diff = k - (N - 1)
                 for item in islice(self.visit_iter, idx_diff):
                     self.visit_buffer.append(item)
-                yield self.visit_buffer[k]
+                return self.visit_buffer[k]
         else:
             items = list(self.obj)
-            yield items[k]
+            return items[k]
 
     def _visit_len(self, **kwargs):
         return len(self.obj)

@@ -98,7 +98,7 @@ class Mapping(Type):
             keys = list(self.obj)
             key = keys[k]
 
-        yield key, self.obj[key]
+        return key, self.obj[key]
 
     def _visit_len(self, **kwargs):
         return len(self.obj)
