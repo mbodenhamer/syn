@@ -58,7 +58,8 @@ class DiffersAtIndex(NEType):
     def message(self):
         iA = self.A[self.index]
         iB = self.B[self.index]
-        return 'Sequences differ at index {}: {} != {}'.format(index, iA, iB)
+        return ('Sequences differ at index {}: {} != {}'
+                .format(self.index, iA, iB))
 
 
 #-----------------------------------------------------------
@@ -77,7 +78,8 @@ class DiffersAtKey(NEType):
     def message(self):
         iA = self.A[self.key]
         iB = self.B[self.key]
-        return 'Mappings differ at key {}: {} != {}'.format(key, iA, iB)
+        return ('Mappings differ at key "{}": {} != {}'
+                .format(self.key, iA, iB))
 
 
 #-----------------------------------------------------------
@@ -309,6 +311,9 @@ class ValueExplorer(REPL):
 class DiffExplorer(REPL):
     commands = dict(REPL.commands)
     command_help = dict(REPL.command_help)
+    
+    current_value = property(lambda self: (self.A.current_value, 
+                                           self.B.current_value))
 
     def __init__(self, A, B):
         if not isinstance(A, ValueExplorer):
@@ -398,27 +403,13 @@ class Value(object):
 
 
 #-------------------------------------------------------------------------------
-# FindNE (DEPRECATED)
-
-
-class FindNE(REPL):
-    commands = dict(REPL.commands)
-    command_help = dict(REPL.command_help)
-
-    @repl_command('b', 'go back')
-    def go_back(self, step=1):
-        pass
-
-    @repl_command('f', 'go forward')
-    def go_forward(self, step=1):
-        pass
-
-
-#-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('ValueExplorer', 'DiffExplorer', 'ExplorationError',
            'deep_comp',
-           'Value', 'FindNE')
+           'NEType', 'NotEqual', 'DiffersAtIndex', 'DiffersAtKey',
+           'DifferentLength', 'DifferentTypes', 'SetDifferences', 
+           'KeyDifferences',
+           'Value')
 
 #-------------------------------------------------------------------------------

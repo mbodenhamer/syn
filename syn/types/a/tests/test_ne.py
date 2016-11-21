@@ -1,7 +1,58 @@
 from nose.tools import assert_raises
-from syn.types.a.ne import Value, FindNE, ValueExplorer, ExplorationError, \
+from syn.types.a.ne import Value, ValueExplorer, ExplorationError, \
     DiffExplorer
-from syn.base_utils import capture
+from syn.base_utils import capture, assign
+
+#-------------------------------------------------------------------------------
+# NETypes
+
+def test_netypes():
+    from syn.types.a.ne import NEType, NotEqual, DiffersAtIndex, DiffersAtKey, \
+        DifferentLength, DifferentTypes, SetDifferences, KeyDifferences
+
+    n = NEType(1, 2)
+    assert str(n) == repr(n)
+    x = n.explorer()
+    assert x.current_value == (1, 2)
+    
+    n = NotEqual(1, 2)
+    assert str(n) == '1 != 2'
+    
+    accum = []
+    def fake_explorer():
+        def func():
+            accum.append(1)
+        return func
+
+    assert sum(accum) == 0
+    with capture() as (out, err):
+        with assign(n, 'explorer', fake_explorer):
+            n()
+    assert sum(accum) == 1
+    assert out.getvalue() == '1 != 2\n'
+
+    l1 = [1, 2, 3]
+    l2 = [1, 4, 3]
+    n = DiffersAtIndex(l1, l2, 1)
+    assert n.explorer().current_value == (2, 4)
+    assert n.message() == 'Sequences differ at index 1: 2 != 4'
+
+    d1 = dict(a=1, b=2)
+    d2 = dict(a=1, b=3)
+    n = DiffersAtKey(d1, d2, key='b')
+    assert n.explorer().current_value == (2, 3)
+    assert n.message() == 'Mappings differ at key "b": 2 != 3'
+
+    l1 = [1, 2]
+    l2 = [1, 2, 3]
+    n = DifferentLength(l1, l2)
+    assert n.message() == 'Different lengths: 2 != 3'
+
+    l1 = [1, 2]
+    l2 = (1, 2, 3)
+    n = DifferentTypes(l1, l2)
+    assert n.message() == ('Different types: {} != {}'
+                           .format(str(list), str(tuple)))
 
 #-------------------------------------------------------------------------------
 # ValueExplorer
@@ -137,6 +188,7 @@ def test_diffexplorer():
 
     x = DiffExplorer(l1, l2)
     assert x.display() == u'A: 1\nB: 1'
+    assert x.current_value == (1, 1)
     x.step()
     assert x.display() == u'A: 2\nB: 2'
     x.down()
@@ -219,12 +271,6 @@ def test_value():
 
     assert v == Value(1)
     assert v != Value(2)
-
-#-------------------------------------------------------------------------------
-# FindNe
-
-def test_findNe():
-    FindNE
 
 #-------------------------------------------------------------------------------
 
