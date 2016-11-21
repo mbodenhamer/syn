@@ -1,6 +1,7 @@
 from nose.tools import assert_raises
 from syn.types.a import Type, Set, FrozenSet, \
-    hashable, serialize, deserialize, estr, rstr, visit, find_ne
+    hashable, serialize, deserialize, estr, rstr, visit, find_ne, \
+    SetDifferences
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, on_error, elog, \
     ngzwarn, is_unique
@@ -37,6 +38,10 @@ def test_set():
     assert hashable(s) == t.hashable() == s
     assert is_hashable(s)
     assert is_hashable(hashable(s))
+
+    s1 = {1, 2, 3}
+    s2 = {2, 3, 4}
+    assert find_ne(s1, s2) == SetDifferences(s1, s2)
 
     examine_set(Set, set(s))
     examine_set(FrozenSet, s)

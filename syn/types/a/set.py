@@ -4,7 +4,7 @@ from syn.base_utils import get_fullname, rand_set, rand_frozenset, \
 from .base import Type, hashable, serialize, SER_KEYS, rstr, estr
 from syn.base_utils.rand import HASHABLE_TYPES
 from .sequence import list_enumval
-from .ne import Value
+from .ne import SetDifferences
 
 #-------------------------------------------------------------------------------
 # Utilities
@@ -36,9 +36,7 @@ class Set(Type):
         return escape_for_eval(ret)
 
     def _find_ne(self, other, **kwargs):
-        if self.obj != other:
-            diffs = self.obj.difference(other).union(other.difference(self.obj))
-            return Value('set differences: {}'.format(rstr(diffs)))
+        return SetDifferences(self.obj, other)
 
     @classmethod
     def _generate(cls, **kwargs):
