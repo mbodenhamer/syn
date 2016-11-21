@@ -126,6 +126,13 @@ class ValueExplorer(REPL):
     def __init__(self, value, index=None, key=None, prompt='(ValEx) ',
                  step=1):
         super(ValueExplorer, self).__init__(prompt)
+        self.initial_value = value
+        self.initial_index = index
+        self.initial_key = key
+        self.initial_step_value = step
+        self._initialize(value, index, key, prompt, step)
+
+    def _initialize(self, value, index, key, prompt, step):
         self.value = value
         self.index = index if index is not None else 0
         self.key = key
@@ -184,15 +191,12 @@ class ValueExplorer(REPL):
         if save_only:
             return
 
-        if self.stack_index < len(self.stack):
-            self._pop(delta=0, save=False)
-        else:
-            self.value = self.current_value
-            self.current_value = None
-            self.index = 0
-            self.at_end = False
-            self._at_bottom_level()
-            self._prime()
+        self.value = self.current_value
+        self.current_value = None
+        self.index = 0
+        self.at_end = False
+        self._at_bottom_level()
+        self._prime()
 
     def display(self):
         return unicode(self.current_value)
@@ -225,8 +229,13 @@ class ValueExplorer(REPL):
             raise ExplorationError('At top level')
         self._pop()
 
+    def reset(self):
+        self._initialize(self.initial_value, self.initial_index,
+                         self.initial_key, self.prompt, self.initial_step_value)
+
     def depth_first(self):
-        vars = AttrDict(going_up=False)
+        vars = AttrDict(going_up=False,
+                        going_forward=False)
         def step():
             try:
                 self.step()
@@ -239,11 +248,18 @@ class ValueExplorer(REPL):
             if self.at_end and self.stack_index == 0:
                 break
 
-            yield self.current_value
+            if not vars.going_up and not vars.going_forward:
+                yield self.value
 
-            if not self.at_bottom_level:
+            if vars.going_up:
+                vars.going_up = False
+                vars.going_forward = True
+                step()
+
+            elif not self.at_bottom_level:
+                vars.going_forward = False
                 self.down()
-                continue
+
             elif not self.at_end:
                 step()
             
