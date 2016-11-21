@@ -185,10 +185,9 @@ class Type(object):
         if self == other:
             return
 
-        from .ne import Value
         if type(self.obj) is not type(other):
-            return Value("different types ({} =/= {})".
-                         format(type(self.obj), type(other)))
+            from .ne import DifferentTypes
+            return DifferentTypes(self.obj, other)
 
         if hasmethod(self.obj, '_find_ne'):
             return self.obj._find_ne(other, **kwargs)

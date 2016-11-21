@@ -1,7 +1,6 @@
 from syn.types.a import Type, NONE, \
-    hashable, serialize, deserialize, estr, rstr, visit, find_ne
+    hashable, serialize, deserialize, estr, rstr, visit, find_ne, DifferentTypes
 from syn.types.a import enumerate as enumerate_
-from syn.types.a.ne import Value
 from syn.base_utils import is_hashable
 
 #-------------------------------------------------------------------------------
@@ -28,7 +27,7 @@ def test_none():
 
     assert list(visit(None)) == [None]
     assert find_ne(None, None) is None
-    assert isinstance(find_ne(None, 1), Value)
+    assert isinstance(find_ne(None, 1), DifferentTypes)
 
 #-------------------------------------------------------------------------------
 
