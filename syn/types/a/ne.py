@@ -1,7 +1,9 @@
 import collections
 from syn.five import unicode, xrange
-from syn.base_utils import REPL, repl_command, DefaultList, sgn
+from syn.base_utils import REPL, repl_command, DefaultList, sgn, AttrDict
 from syn.base_utils.rand import PRIMITIVE_TYPES
+
+CONTAINERS = (collections.Mapping, collections.Sequence, set, frozenset)
 
 #-------------------------------------------------------------------------------
 # NEType
@@ -132,19 +134,28 @@ class ValueExplorer(REPL):
         self.stack = DefaultList(None)
         self.stack_index = 0
         self.current_value = None
+        self.at_end = False
         self._at_bottom_level()
         self._prime()
 
     def _at_bottom_level(self):
-        if isinstance(self.value, (collections.Mapping, collections.Sequence)):
+        if isinstance(self.value, CONTAINERS):
             self.at_bottom_level = False
         self.at_bottom_level = isinstance(self.value, tuple(PRIMITIVE_TYPES))
+
+    def _check_empty(self):
+        if isinstance(self.value, CONTAINERS):
+            if len(self.value) == 0:
+                self.at_end = True
 
     def _prime(self):
         from .base import visit
         self.iter = visit(self.value, k=self.index, step=self.step_value, 
                           enumerate=True)
-        self.step()
+
+        self._check_empty()
+        if not self.at_end:
+            self.step()
 
     def _pop(self, delta=-1, save=True):
         if save:
@@ -156,14 +167,17 @@ class ValueExplorer(REPL):
         self.current_value = frame['current_value']
         self.index = frame['index']
         self.key = frame['key']
+        self.at_end = frame['at_end']
+        self.iter = frame['iter']
         self._at_bottom_level()
-        self._prime()
 
     def _push(self, delta=1, save_only=False):
         frame = dict(value=self.value,
                      current_value=self.current_value,
                      index=self.index,
-                     key=self.key)
+                     key=self.key,
+                     iter=self.iter,
+                     at_end=self.at_end)
         self.stack[self.stack_index] = frame
         self.stack_index += delta
 
@@ -174,7 +188,9 @@ class ValueExplorer(REPL):
             self._pop(delta=0, save=False)
         else:
             self.value = self.current_value
+            self.current_value = None
             self.index = 0
+            self.at_end = False
             self._at_bottom_level()
             self._prime()
 
@@ -184,6 +200,10 @@ class ValueExplorer(REPL):
     def step(self, step=None):
         step = int(step) if step is not None else self.step_value
         if step != self.step_value:
+            if sgn(step) != sgn(self.step_value):
+                if self.at_end:
+                    self.at_end = False
+
             self.step_value = step
             self._prime()
 
@@ -192,6 +212,7 @@ class ValueExplorer(REPL):
             self.current_value = value # TODO: handle mapping case
             self.index = index
         except StopIteration:
+            self.at_end = True
             raise ExplorationError('At last value')
         
     def down(self):
@@ -203,6 +224,29 @@ class ValueExplorer(REPL):
         if self.stack_index == 0:
             raise ExplorationError('At top level')
         self._pop()
+
+    def depth_first(self):
+        vars = AttrDict(going_up=False)
+        def step():
+            try:
+                self.step()
+            except ExplorationError:
+                if self.stack_index > 0:
+                    self.up()
+                    vars.going_up = True
+
+        while True:
+            if self.at_end and self.stack_index == 0:
+                break
+
+            yield self.current_value
+
+            if not self.at_bottom_level:
+                self.down()
+                continue
+            elif not self.at_end:
+                step()
+            
 
     @repl_command('l', 'display')
     def command_display(self):

@@ -65,6 +65,9 @@ def test_sequence():
 
     #     assert is_unique(buf)
 
+    assert list(visit(l, enumerate=True)) == [(0, 1), (1, 2.3), (2, 'abc')]
+    assert list(visit([])) == []
+
 #-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover

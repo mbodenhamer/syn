@@ -44,7 +44,10 @@ def test_valueexplorer():
     assert x.current_value == 3
     assert_raises(ExplorationError, x.step)
 
-    # x = ValueExplorer([])
+    x = ValueExplorer([])
+    assert x.value == []
+    assert x.current_value is None
+    assert_raises(ExplorationError, x.step)
 
 #-------------------------------------------------------------------------------
 # Value
