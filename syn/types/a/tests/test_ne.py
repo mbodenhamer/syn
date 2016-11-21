@@ -34,15 +34,11 @@ def test_valueexplorer():
     x.up()
     assert x.current_value == 3
     x.step(-1)
-    assert x.current_value == 3
-    x.step()
     assert x.current_value == 2
     x.step()
     assert x.current_value == 1
     assert_raises(ExplorationError, x.step)
     x.step(1)
-    assert x.current_value == 1
-    x.step()
     assert x.current_value == 2
     x.step()
     assert x.current_value == 3

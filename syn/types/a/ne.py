@@ -134,7 +134,6 @@ class ValueExplorer(REPL):
         self.current_value = None
         self._at_bottom_level()
         self._prime()
-        self.step()
 
     def _at_bottom_level(self):
         if isinstance(self.value, (collections.Mapping, collections.Sequence)):
@@ -143,7 +142,9 @@ class ValueExplorer(REPL):
 
     def _prime(self):
         from .base import visit
-        self.iter = visit(self.value, k=self.index, step=self.step_value)
+        self.iter = visit(self.value, k=self.index, step=self.step_value, 
+                          enumerate=True)
+        self.step()
 
     def _pop(self, delta=-1, save=True):
         if save:
@@ -176,7 +177,6 @@ class ValueExplorer(REPL):
             self.index = 0
             self._at_bottom_level()
             self._prime()
-            self.step()
 
     def display(self):
         return unicode(self.current_value)
@@ -184,18 +184,13 @@ class ValueExplorer(REPL):
     def step(self, step=None):
         step = int(step) if step is not None else self.step_value
         if step != self.step_value:
-            if sgn(step) != sgn(self.step_value):
-                if step < 0:
-                    self.index -= 1
-                elif step > 0:
-                    self.index += 1
-
             self.step_value = step
             self._prime()
 
         try:
-            self.current_value = next(self.iter)
-            self.index += self.step_value
+            index, value = next(self.iter)
+            self.current_value = value # TODO: handle mapping case
+            self.index = index
         except StopIteration:
             raise ExplorationError('At last value')
         
