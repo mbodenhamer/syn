@@ -272,7 +272,7 @@ class Type(object):
         return dct
 
     def _visit(self, k, **kwargs):
-        raise NotImplementedError
+        return self.obj
 
     def visit(self, k, **kwargs):
         step = kwargs.get('step', 1)
@@ -299,7 +299,7 @@ class Type(object):
             count += 1
 
     def _visit_len(self, **kwargs):
-        raise NotImplementedError
+        return 1
 
     def visit_len(self, **kwargs):
         if hasmethod(self.obj, '_visit_len'):

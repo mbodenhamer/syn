@@ -30,8 +30,8 @@ def test_type():
     assert dct[SER_KEYS.attrs]['a'] == 1
     
     assert_raises(NotImplementedError, t._find_ne, 0)
-    assert_raises(NotImplementedError, t._visit, 0)
-    assert_raises(NotImplementedError, t._visit_len)
+    assert list(t.visit(0)) == [1]
+    assert t.visit_len() == 1
 
     t = Type.type_dispatch(Foo)
     assert_raises(NotImplementedError, t._enumeration_value, 1)
