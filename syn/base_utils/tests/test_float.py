@@ -17,6 +17,16 @@ def test_feq():
     assert feq('abc', 'abc')
     assert not feq('abc', 'ab')
 
+def test_cfeq():
+    from syn.base_utils import cfeq
+
+    assert cfeq(1+1j, 1.001+1.001j, tol=0.01)
+    assert not cfeq(1+1j, 1.001+1.001j)
+    assert not cfeq(1, 1.001+1.001j, tol=0.01)
+
+    assert cfeq('abc', 'abc')
+    assert not cfeq('abc', 'ab')
+
 #-------------------------------------------------------------------------------
 # Math
 

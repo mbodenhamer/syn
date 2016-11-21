@@ -18,6 +18,11 @@ def feq(a, b, tol=DEFAULT_TOLERANCE):
         return ret
     return a == b
 
+def cfeq(a, b, tol=DEFAULT_TOLERANCE):
+    if isinstance(a, complex) and isinstance(b, complex):
+        return feq(a.real, b.real, tol) and feq(a.imag, b.imag, tol)
+    return a == b
+
 #-------------------------------------------------------------------------------
 # Math
 
@@ -38,6 +43,6 @@ def sgn(x):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('feq', 'prod', 'sgn')
+__all__ = ('feq', 'cfeq', 'prod', 'sgn')
 
 #-------------------------------------------------------------------------------
