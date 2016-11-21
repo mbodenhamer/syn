@@ -28,6 +28,13 @@ def test_prod():
 
     assert prod(range(1, 21)) == math.factorial(20)
 
+def test_sgn():
+    from syn.base_utils import sgn
+
+    assert sgn(-0.000000005) == -1
+    assert sgn(0.000000005) == 1
+    assert sgn(0.0) == 0
+
 #-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
