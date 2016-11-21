@@ -102,14 +102,26 @@ class DifferentTypes(NEType):
 
 
 class SetDifferences(NEType):
-    pass
+    def __init__(self, A, B):
+        super(SetDifferences, self).__init__(A, B)
+        self.diffs = A.difference(B).union(B.difference(A))
+
+    def message(self):
+        return 'Exclusive items: {}'.format(self.diffs)
 
 
 #-----------------------------------------------------------
 
 
 class KeyDifferences(NEType):
-    pass
+    def __init__(self, A, B):
+        super(KeyDifferences, self).__init__(A, B)
+        a = set(self.A.keys())
+        b = set(self.B.keys())
+        self.diffs = a.difference(b).union(b.difference(a))
+
+    def message(self):
+        return 'Exclusive keys: {}'.format(self.diffs)
 
 
 #-------------------------------------------------------------------------------

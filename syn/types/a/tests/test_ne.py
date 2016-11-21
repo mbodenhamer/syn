@@ -54,6 +54,16 @@ def test_netypes():
     assert n.message() == ('Different types: {} != {}'
                            .format(str(list), str(tuple)))
 
+    s1 = {1, 2, 3}
+    s2 = {2, 3, 4}
+    n = SetDifferences(s1, s2)
+    assert n.message() == 'Exclusive items: {}'.format({1, 4})
+
+    d1 = dict(a=1, b=2)
+    d2 = dict(b=2, c=3)
+    n = KeyDifferences(d1, d2)
+    assert n.message() == 'Exclusive keys: {}'.format({'a', 'c'})
+
 #-------------------------------------------------------------------------------
 # ValueExplorer
 
