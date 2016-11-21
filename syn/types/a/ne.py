@@ -303,6 +303,9 @@ class ValueExplorer(REPL):
 
 
 class DiffExplorer(REPL):
+    commands = dict(REPL.commands)
+    command_help = dict(REPL.command_help)
+
     def __init__(self, A, B):
         if not isinstance(A, ValueExplorer):
             A = ValueExplorer(A)
@@ -338,6 +341,28 @@ class DiffExplorer(REPL):
         self.B.reset()
 
 
+    @repl_command('l', 'display')
+    def command_display(self):
+        print(self.display())
+
+    @repl_command('d', 'go down the stack')
+    def command_down(self, num='1'):
+        num = int(num)
+        for _ in xrange(num):
+            self.down()
+
+    @repl_command('n', 'step')
+    def command_step(self, step='1'):
+        step = int(step)
+        self.step(step)
+
+    @repl_command('u', 'go up the stack')
+    def command_up(self, num='1'):
+        num = int(num)
+        for _ in xrange(num):
+            self.up()
+
+
 #-------------------------------------------------------------------------------
 # Value (DEPRECATED)
 
@@ -363,6 +388,9 @@ class Value(object):
 
 
 class FindNE(REPL):
+    commands = dict(REPL.commands)
+    command_help = dict(REPL.command_help)
+
     @repl_command('b', 'go back')
     def go_back(self, step=1):
         pass

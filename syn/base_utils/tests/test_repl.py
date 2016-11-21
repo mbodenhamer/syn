@@ -8,6 +8,9 @@ def test_repl():
     import syn.base_utils.repl as repl
 
     class R1(repl.REPL):
+        commands = dict(repl.REPL.commands)
+        command_help = dict(repl.REPL.command_help)
+
         @repl_command('a', 'foo')
         def foo(self):
             print("foo!")
@@ -65,6 +68,9 @@ def test_repl():
 
         r2._eval('e "1 + 2"')
         assert last_line(out) == 'bar!'
+
+    assert len(repl.REPL.commands) == 3
+    assert len(repl.REPL.command_help) == 3
 
 #-------------------------------------------------------------------------------
 
