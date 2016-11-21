@@ -124,6 +124,36 @@ def test_iterablelist():
     assert l2.peek() == 4
 
 #-------------------------------------------------------------------------------
+# DefaultList
+
+def test_defaultlist():
+    from syn.base_utils import DefaultList
+    
+    l = DefaultList(None)
+    l[1] = 1
+    assert l[1] == 1
+    assert l == [None, 1]
+    l[1] = 2
+    assert l == [None, 2]
+    l[2] = 3
+    assert l == [None, 2, 3]
+
+    assert l[4] is None
+    assert l == [None, 2, 3, None, None]
+
+    l2 = DefaultList(list, assign=False)
+    assert l2[1] == []
+    assert len(l2) == 0
+    l2[2] = 3
+    assert l2 == [[], [], 3]
+    assert l2[0] is not l2[1]
+
+    assert_raises(IndexError, l2._set, 0, 1)
+
+    l3 = DefaultList(list, [1, 2, 3])
+    assert l3 == [1, 2, 3]
+
+#-------------------------------------------------------------------------------
 # Query Utilities
 
 def test_is_proper_sequence():

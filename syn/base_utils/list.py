@@ -2,6 +2,7 @@ from syn.five import xrange, STR
 from collections import Sequence, MutableSequence
 
 from .logic import implies
+from .py import getitem
 
 #-------------------------------------------------------------------------------
 # ListView
@@ -153,6 +154,47 @@ class IterableList(list):
 
 
 #-------------------------------------------------------------------------------
+# DefaultList
+
+
+class DefaultList(list):
+    def __init__(self, default, *args, **kwargs):
+        self.assign = getitem(kwargs, 'assign', True, delete=True)
+        super(DefaultList, self).__init__(*args, **kwargs)
+        self.default = default
+
+    def __getitem__(self, index):
+        try:
+            return super(DefaultList, self).__getitem__(index)
+        except IndexError:
+            ret = self._default()
+            if self.assign:
+                self[index] = ret
+            return ret
+
+    def __setitem__(self, index, value):
+        try:
+            super(DefaultList, self).__setitem__(index, value)
+        except IndexError:
+            self._set(index, value)
+
+    def _default(self):
+        if isinstance(self.default, type):
+            return self.default()
+        return self.default
+
+    def _set(self, index, value):
+        if index < len(self):
+            raise IndexError('Invalid index: {}'.format(index))
+
+        n_fill = index - len(self)
+        fill = [self._default() for x in xrange(n_fill)]
+        
+        self.extend(fill)
+        self.append(value)
+
+
+#-------------------------------------------------------------------------------
 # Query Utilities
 
 def is_proper_sequence(seq):
@@ -203,7 +245,7 @@ def flattened(seq):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('ListView', 'IterableList',
+__all__ = ('ListView', 'IterableList', 'DefaultList',
            'is_proper_sequence', 'is_flat', 'is_unique',
            'indices_removed', 'flattened')
 
