@@ -1,8 +1,8 @@
 from six import PY2
 from syn.five import xrange
 from syn.types.a import Type, Numeric, Int, hashable, rstr, serialize, \
-    deserialize, estr, generate, TYPE_REGISTRY, Long, visit, find_ne
-from syn.types.a.ne import Value
+    deserialize, estr, generate, TYPE_REGISTRY, Long, visit, find_ne, \
+    NotEqual
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, collection_comp, assert_equivalent, \
     feq, assert_type_equivalent, on_error, elog, ngzwarn, subclasses, \
@@ -80,7 +80,7 @@ def test_bool():
 
     gen = generate(bool)
     assert gen is True or gen is False
-    assert find_ne(gen, not gen) == Value('{} != {}'.format(gen, not gen))
+    assert find_ne(gen, not gen) == NotEqual(gen, not gen)
 
     assert serialize(True) is True
     assert deserialize(True) is True
@@ -100,7 +100,7 @@ def test_int():
 
     gen = generate(int)
     assert isinstance(gen, int)
-    assert find_ne(gen, gen+1) == Value('{} != {}'.format(gen, gen+1))
+    assert find_ne(gen, gen+1) == NotEqual(gen, gen+1)
 
     assert serialize(-1) == -1
     assert deserialize(-1) == -1
@@ -120,7 +120,7 @@ def test_long():
 
         gen = generate(long)
         assert isinstance(gen, long)
-        assert find_ne(gen, gen+1) == Value('{} != {}'.format(gen, gen+1))
+        assert find_ne(gen, gen+1) == NotEqual(gen, gen+1)
 
         assert_type_equivalent(deserialize(serialize(x)), x)
 
@@ -145,7 +145,7 @@ def test_float():
     gen = generate(float)
     assert isinstance(gen, float)
     gen2 = 0.0 if gen != 0 else 1.0
-    assert find_ne(gen, gen2) == Value('{} != {}'.format(gen, gen2))
+    assert find_ne(gen, gen2) == NotEqual(gen, gen2)
 
     assert serialize(-1.1) == -1.1
     assert deserialize(-1.1) == -1.1
@@ -166,7 +166,7 @@ def test_complex():
     gen = generate(complex)
     assert isinstance(gen, complex)
     gen2 = 0+0j if gen != 0 else 1.0j
-    assert find_ne(gen, gen2) == Value('{} != {}'.format(gen, gen2))
+    assert find_ne(gen, gen2) == NotEqual(gen, gen2)
 
     assert_type_equivalent(deserialize(serialize(c)), c)
 

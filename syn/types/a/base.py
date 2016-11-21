@@ -182,7 +182,7 @@ class Type(object):
         raise NotImplementedError
 
     def find_ne(self, other, **kwargs):
-        if self == other:
+        if self.obj == other:
             return
 
         if type(self.obj) is not type(other):

@@ -20,6 +20,13 @@ class NEType(object):
         print(self.message())
         self.explorer()()
 
+    def __eq__(self, other):
+        return (self.A == other.A and self.B == other.B and 
+                type(self) is type(other))
+
+    def __ne__(self, other):
+        return not (self == other)
+
     def __str__(self):
         try:
             return self.message()

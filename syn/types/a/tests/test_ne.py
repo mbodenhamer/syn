@@ -15,6 +15,10 @@ def test_netypes():
     x = n.explorer()
     assert x.current_value == (1, 2)
     
+    assert n == NEType(1, 2)
+    assert n != NEType(1, 3)
+    assert n != NotEqual(1, 2)
+
     n = NotEqual(1, 2)
     assert str(n) == '1 != 2'
     
