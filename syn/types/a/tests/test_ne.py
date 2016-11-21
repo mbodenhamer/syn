@@ -143,9 +143,9 @@ def test_deep_comp():
     cfeq = partial(feq, tol=0.1)
     assert cfeq(4.05, 4.06)
 
-    def comp(a, b):
-        if isinstance(a, (float, complex)) and type(a) is type(b):
-            return cfeq(a, b)
+    def comp(a, b, func=cfeq):
+        if isinstance(a, float) and type(a) is type(b):
+            return func(a, b)
         return a == b
 
     l1 = [1, 2, [3, 4.05]]
@@ -154,6 +154,8 @@ def test_deep_comp():
     assert not deep_comp(l1, l2)
     assert not deep_comp(l1, l2, comp)
     assert deep_comp(l1, l2, comp, leaves_only=True)
+    assert not deep_comp(l1, l2, partial(comp, func=partial(feq, tol=0.001)), 
+                         leaves_only=True)
 
     dcomp = partial(deep_comp, func=comp, leaves_only=True)
     assert dcomp(l1, l2)
