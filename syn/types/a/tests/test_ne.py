@@ -41,11 +41,19 @@ def test_netypes():
     assert n.explorer().current_value == (2, 4)
     assert n.message() == 'Sequences differ at index 1: 2 != 4'
 
+    assert DiffersAtIndex(l1, l2, 1) == DiffersAtIndex(l1, l2, 1)
+    assert DiffersAtIndex(l1, l2, 1) != DiffersAtIndex(l1, l2, 2)
+    assert DiffersAtIndex(l1, l2, 1) != DiffersAtIndex(l1, l1, 1)
+
     d1 = dict(a=1, b=2)
     d2 = dict(a=1, b=3)
     n = DiffersAtKey(d1, d2, key='b')
     assert n.explorer().current_value == (2, 3)
     assert n.message() == 'Mappings differ at key "b": 2 != 3'
+
+    assert DiffersAtKey(d1, d2, 'a') == DiffersAtKey(d1, d2, 'a')
+    assert DiffersAtKey(d1, d2, 'a') != DiffersAtKey(d1, d2, 'b')
+    assert DiffersAtKey(d1, d2, 'a') != DiffersAtKey(d1, d1, 'a')
 
     l1 = [1, 2]
     l2 = [1, 2, 3]

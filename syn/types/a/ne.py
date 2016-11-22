@@ -57,6 +57,11 @@ class DiffersAtIndex(NEType):
         super(DiffersAtIndex, self).__init__(A, B)
         self.index = index
 
+    def __eq__(self, other):
+        if not super(DiffersAtIndex, self).__eq__(other):
+            return False
+        return self.index == other.index
+
     def explorer(self):
         xA = ValueExplorer(self.A, index=self.index)
         xB = ValueExplorer(self.B, index=self.index)
@@ -76,6 +81,11 @@ class DiffersAtKey(NEType):
     def __init__(self, A, B, key):
         super(DiffersAtKey, self).__init__(A, B)
         self.key = key
+
+    def __eq__(self, other):
+        if not super(DiffersAtKey, self).__eq__(other):
+            return False
+        return self.key == other.key
 
     def explorer(self):
         xA = ValueExplorer(self.A, key=self.key)
