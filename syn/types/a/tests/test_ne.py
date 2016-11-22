@@ -1,6 +1,5 @@
 from nose.tools import assert_raises
-from syn.types.a.ne import Value, ValueExplorer, ExplorationError, \
-    DiffExplorer
+from syn.types.a.ne import ValueExplorer, ExplorationError, DiffExplorer
 from syn.base_utils import capture, assign
 
 #-------------------------------------------------------------------------------
@@ -284,17 +283,6 @@ def test_deep_comp():
 
     dcomp = partial(deep_comp, func=comp, leaves_only=True)
     assert dcomp(l1, l2)
-
-#-------------------------------------------------------------------------------
-# Value
-
-def test_value():
-    v = Value(1)
-    assert v() == 1
-    assert v != 1
-
-    assert v == Value(1)
-    assert v != Value(2)
 
 #-------------------------------------------------------------------------------
 

@@ -412,33 +412,12 @@ def deep_comp(A, B, func=op.eq, **kwargs):
     return True
 
 #-------------------------------------------------------------------------------
-# Value (DEPRECATED)
-
-
-class Value(object):
-    def __init__(self, value):
-        self.value = value
-
-    def __call__(self):
-        return self.value
-
-    def __eq__(self, other):
-        if not isinstance(other, Value):
-            return False
-        return self.value == other.value
-
-    def __ne__(self, other):
-        return not (self == other)
-
-
-#-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('ValueExplorer', 'DiffExplorer', 'ExplorationError',
            'deep_comp',
            'NEType', 'NotEqual', 'DiffersAtIndex', 'DiffersAtKey',
            'DifferentLength', 'DifferentTypes', 'SetDifferences', 
-           'KeyDifferences',
-           'Value')
+           'KeyDifferences')
 
 #-------------------------------------------------------------------------------
