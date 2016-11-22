@@ -1,5 +1,6 @@
 import collections
 import operator as op
+from functools import partial
 from syn.five import unicode, xrange, izip, STR, NUM
 from syn.base_utils import REPL, repl_command, DefaultList, sgn, AttrDict, \
     implies, feq, cfeq, tuple_append
@@ -412,26 +413,27 @@ def deep_comp(A, B, func=op.eq, **kwargs):
             return False
     return True
 
+def feq_comp(a, b, tol=DEFAULT_TOLERANCE):
+    if isinstance(a, STR) or isinstance(b, STR):
+        return a == b
+    if isinstance(a, CONTAINERS) or isinstance(b, CONTAINERS):
+        return type(a) is type(b) and len(a) == len(b)
+    if isinstance(a, complex) or isinstance(b, complex):
+        return cfeq(a, b, tol)
+    return feq(a, b, tol)
+
 def deep_feq(A, B, tol=DEFAULT_TOLERANCE):
     if type(A) is not type(B) and not isinstance(A, tuple_append(NUM, complex)):
         return False
 
-    def func(a, b):
-        if isinstance(a, STR) or isinstance(b, STR):
-            return a == b
-        if isinstance(a, CONTAINERS) or isinstance(b, CONTAINERS):
-            return type(a) is type(b) and len(a) == len(b)
-        if isinstance(a, complex) or isinstance(b, complex):
-            return cfeq(a, b, tol)
-        return feq(a, b, tol)
-
+    func = partial(feq_comp, tol=tol)
     return deep_comp(A, B, func)
 
 #-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('ValueExplorer', 'DiffExplorer', 'ExplorationError',
-           'deep_comp', 'deep_feq',
+           'deep_comp', 'feq_comp', 'deep_feq',
            'NEType', 'NotEqual', 'DiffersAtIndex', 'DiffersAtKey',
            'DifferentLength', 'DifferentTypes', 'SetDifferences', 
            'KeyDifferences')
