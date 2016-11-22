@@ -1,4 +1,5 @@
 import six
+import operator as op
 from functools import wraps
 from syn.base_utils import nearest_base, is_hashable, tuple_prepend, \
     get_fullname, get_mod, get_typename, AttrDict, hasmethod, import_module, \
@@ -178,11 +179,11 @@ class Type(object):
         objstr = escape_for_eval(quote_string(str(self.obj)))
         return '{}({})'.format(get_typename(self.obj), objstr)
 
-    def _find_ne(self, other, **kwargs):
+    def _find_ne(self, other, func, **kwargs):
         raise NotImplementedError
 
-    def find_ne(self, other, **kwargs):
-        if self.obj == other:
+    def find_ne(self, other, func=op.eq, **kwargs):
+        if func(self.obj, other):
             return
 
         if type(self.obj) is not type(other):
@@ -190,8 +191,8 @@ class Type(object):
             return DifferentTypes(self.obj, other)
 
         if hasmethod(self.obj, '_find_ne'):
-            return self.obj._find_ne(other, **kwargs)
-        return self._find_ne(other, **kwargs)
+            return self.obj._find_ne(other, func, **kwargs)
+        return self._find_ne(other, func, **kwargs)
 
     @classmethod
     def _generate(cls, **kwargs):
@@ -319,8 +320,8 @@ def enumerate(typ, **kwargs):
 def estr(obj, **kwargs):
     return Type.dispatch(obj).estr(**kwargs)
 
-def find_ne(a, b, **kwargs):
-    return Type.dispatch(a).find_ne(b, **kwargs)
+def find_ne(a, b, func=op.eq, **kwargs):
+    return Type.dispatch(a).find_ne(b, func, **kwargs)
 
 def generate(typ, **kwargs):
     return Type.type_dispatch(typ).generate(**kwargs)

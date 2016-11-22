@@ -35,7 +35,7 @@ class Set(Type):
         ret = '{}({})'.format(get_typename(self.obj), ret)
         return escape_for_eval(ret)
 
-    def _find_ne(self, other, **kwargs):
+    def _find_ne(self, other, func, **kwargs):
         return SetDifferences(self.obj, other)
 
     @classmethod

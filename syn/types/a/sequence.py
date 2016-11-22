@@ -65,11 +65,11 @@ class Sequence(Type):
     def _enumeration_value(cls, x, **kwargs):
         return list_enumval(x, **kwargs)
 
-    def _find_ne(self, other, **kwargs):
+    def _find_ne(self, other, func, **kwargs):
         for k, item in enumerate(self.obj):
             if k >= len(other):
                 return DifferentLength(self.obj, other)
-            if item != other[k]:
+            if not func(item, other[k]):
                 return DiffersAtIndex(self.obj, other, k)
         return DifferentLength(self.obj, other)
 

@@ -50,12 +50,12 @@ class Mapping(Type):
         ret = '{}({})'.format(get_typename(self.obj), ret)
         return escape_for_eval(ret)
 
-    def _find_ne(self, other, **kwargs):
+    def _find_ne(self, other, func, **kwargs):
         for key, value in self.obj.items():
             if key not in other:
                 return KeyDifferences(self.obj, other)
             oval = other[key]
-            if value != oval:
+            if not func(value, oval):
                 return DiffersAtKey(self.obj, other, key)
         return KeyDifferences(self.obj, other)
 

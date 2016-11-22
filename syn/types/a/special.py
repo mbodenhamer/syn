@@ -14,7 +14,7 @@ class NONE(Type):
     def estr(self, **kwargs):
         return 'None'
 
-    def _find_ne(self, other, **kwargs):
+    def _find_ne(self, other, func, **kwargs):
         pass
 
     @classmethod

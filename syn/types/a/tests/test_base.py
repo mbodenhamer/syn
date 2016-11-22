@@ -28,7 +28,7 @@ def test_type():
     dct = serialize(f)
     assert dct[SER_KEYS.attrs]['a'] == 1
     
-    assert_raises(NotImplementedError, t._find_ne, 0)
+    assert_raises(NotImplementedError, t._find_ne, 0, None)
     assert list(t.visit(0)) == [1]
     assert t.visit_len() == 1
 

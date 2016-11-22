@@ -32,7 +32,7 @@ class Numeric(Type):
     def estr(self, **kwargs):
         return str(self.obj)
 
-    def _find_ne(self, other, **kwargs):
+    def _find_ne(self, other, func, **kwargs):
         return NotEqual(self.obj, other)
 
     def _visit(self, k, **kwargs):
