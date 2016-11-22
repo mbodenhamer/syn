@@ -53,6 +53,7 @@ class REPL(object):
         self._loop()
 
     def _loop(self):
+        self.quit = False
         while True:
             try:
                 inpt = raw_input(self.prompt)
@@ -60,6 +61,8 @@ class REPL(object):
                 break
 
             self._eval(inpt)
+            if self.quit:
+                break
 
     def _eval(self, inpt):
         inpts = shlex.split(inpt)
@@ -86,6 +89,10 @@ class REPL(object):
     @repl_command('e', 'eval the argument')
     def eval(self, expr):
         print(eval(expr))
+
+    @repl_command('q', 'quit')
+    def quit(self, *args, **kwargs):
+        self.quit = True
 
 
 #-------------------------------------------------------------------------------

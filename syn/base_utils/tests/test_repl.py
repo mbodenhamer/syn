@@ -38,7 +38,7 @@ def test_repl():
         assert last_line(out) == '3'
 
         r1._eval('h')
-        assert last_line(out) == ' h               display available commands'
+        assert last_line(out) == ' q               quit'
 
         fi_count = []
         def fake_input(prompt):
@@ -50,10 +50,19 @@ def test_repl():
             else:
                 raise EOFError
 
+        def fake_input2(prompt):
+            fi_count.append(1)
+            return 'q'
+
+        assert sum(fi_count) == 0
         with assign(repl, 'raw_input', fake_input):
             r1()
             assert last_line(out) == '4'
-
+            
+        assert sum(fi_count) == 5
+        with assign(repl, 'raw_input', fake_input2):
+            r1()
+        assert sum(fi_count) == 6
 
     # Test overriding e in a REPL subclass
     class R2(R1):
@@ -69,8 +78,8 @@ def test_repl():
         r2._eval('e "1 + 2"')
         assert last_line(out) == 'bar!'
 
-    assert len(repl.REPL.commands) == 3
-    assert len(repl.REPL.command_help) == 3
+    assert len(repl.REPL.commands) == 4
+    assert len(repl.REPL.command_help) == 4
 
 #-------------------------------------------------------------------------------
 
