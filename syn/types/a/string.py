@@ -61,9 +61,6 @@ class String(Type):
                 return DiffersAtIndex(self.obj, other, k)
         return DifferentLength(self.obj, other)
 
-    def _hashable(self, **kwargs):
-        return self
-
     @classmethod
     def _generate(cls, **kwargs):
         return rand_str(**kwargs)

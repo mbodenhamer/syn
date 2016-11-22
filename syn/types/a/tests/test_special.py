@@ -11,6 +11,8 @@ def test_none():
     t = Type.dispatch(n)
     assert isinstance(t, NONE)
     assert type(t) is NONE
+    assert t._find_ne(None) is None
+    assert t._find_ne(1) is None
 
     assert hashable(n) is t.hashable() is n
     assert is_hashable(n)
