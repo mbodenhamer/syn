@@ -1,12 +1,12 @@
 from nose.tools import assert_raises
-from syn.types.a.ne import ValueExplorer, ExplorationError, DiffExplorer
+from syn.types.a import ValueExplorer, ExplorationError, DiffExplorer
 from syn.base_utils import capture, assign
 
 #-------------------------------------------------------------------------------
 # NETypes
 
 def test_netypes():
-    from syn.types.a.ne import NEType, NotEqual, DiffersAtIndex, DiffersAtKey, \
+    from syn.types.a import NEType, NotEqual, DiffersAtIndex, DiffersAtKey, \
         DifferentLength, DifferentTypes, SetDifferences, KeyDifferences
 
     n = NEType(1, 2)
@@ -283,6 +283,27 @@ def test_deep_comp():
 
     dcomp = partial(deep_comp, func=comp, leaves_only=True)
     assert dcomp(l1, l2)
+
+def test_deep_feq():
+    from syn.types.a import deep_feq
+    
+    assert not deep_feq('abc', 'ab')
+    assert deep_feq('abc', 'abc')
+    assert deep_feq([], [])
+    assert not deep_feq([], ())
+    assert deep_feq([1, 2], [1, 2])
+    assert not deep_feq([1, 2], [1])
+    assert not deep_feq([[1, 2]], [(1, 2)])
+    assert not deep_feq([[]], [()])
+    
+    assert not deep_feq(1, 1.01)
+    assert not deep_feq(1j, 1.01j)
+    assert deep_feq(1, 1.01, tol=0.1)
+    assert deep_feq(1j, 1.01j, tol=0.1)
+    
+    assert not deep_feq([1], [1.01])
+    assert deep_feq([1], [1.01], tol=0.1)
+    assert deep_feq([1j], [1.01j], tol=0.1)
 
 #-------------------------------------------------------------------------------
 

@@ -1,8 +1,9 @@
 import collections
 import operator as op
-from syn.five import unicode, xrange, izip
+from syn.five import unicode, xrange, izip, STR, NUM
 from syn.base_utils import REPL, repl_command, DefaultList, sgn, AttrDict, \
-    implies
+    implies, feq, cfeq, tuple_append
+from syn.base_utils.float import DEFAULT_TOLERANCE
 from syn.base_utils.rand import PRIMITIVE_TYPES
 
 CONTAINERS = (collections.Mapping, collections.Sequence, set, frozenset)
@@ -411,11 +412,26 @@ def deep_comp(A, B, func=op.eq, **kwargs):
             return False
     return True
 
+def deep_feq(A, B, tol=DEFAULT_TOLERANCE):
+    if type(A) is not type(B) and not isinstance(A, tuple_append(NUM, complex)):
+        return False
+
+    def func(a, b):
+        if isinstance(a, STR) or isinstance(b, STR):
+            return a == b
+        if isinstance(a, CONTAINERS) or isinstance(b, CONTAINERS):
+            return type(a) is type(b) and len(a) == len(b)
+        if isinstance(a, complex) or isinstance(b, complex):
+            return cfeq(a, b, tol)
+        return feq(a, b, tol)
+
+    return deep_comp(A, B, func)
+
 #-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('ValueExplorer', 'DiffExplorer', 'ExplorationError',
-           'deep_comp',
+           'deep_comp', 'deep_feq',
            'NEType', 'NotEqual', 'DiffersAtIndex', 'DiffersAtKey',
            'DifferentLength', 'DifferentTypes', 'SetDifferences', 
            'KeyDifferences')
