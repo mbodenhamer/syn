@@ -1,6 +1,6 @@
 from itertools import islice
 from syn.base_utils import get_fullname, rand_set, rand_frozenset, \
-    escape_for_eval, get_typename
+    escape_for_eval, get_typename, safe_sorted
 from .base import Type, hashable, serialize, SER_KEYS, rstr, estr
 from syn.base_utils.rand import HASHABLE_TYPES
 from .sequence import list_enumval
@@ -52,21 +52,9 @@ class Set(Type):
         dct[SER_KEYS.args] = [[serialize(item, **kwargs) for item in self.obj]]
 
     def _visit(self, k, **kwargs):
-        # Don't use the buffer if you are modifying the set in between
-        # _visit calls
-        use_buffer = kwargs.get('use_buffer', True)
-        if use_buffer:
-            N = len(self.visit_buffer)
-            if 0 <= k < N:
-                return self.visit_buffer[k]
-            else:
-                idx_diff = k - (N - 1)
-                for item in islice(self.visit_iter, idx_diff):
-                    self.visit_buffer.append(item)
-                return self.visit_buffer[k]
-        else:
-            items = list(self.obj)
-            return items[k]
+        if not self.visit_buffer:
+            self.visit_buffer = safe_sorted(list(self.obj))
+        return self.visit_buffer[k]
 
     def _visit_len(self, **kwargs):
         return len(self.obj)

@@ -4,7 +4,7 @@ from syn.types.a import Type, Set, FrozenSet, \
     SetDifferences
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, on_error, elog, \
-    ngzwarn, is_unique
+    ngzwarn, is_unique, safe_sorted
 
 from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES //= 10
@@ -19,7 +19,7 @@ def examine_set(cls, val):
     assert deserialize(serialize(val)) == val
     assert isinstance(rstr(val), str)
 
-    assert list(visit(val)) == list(val)
+    assert list(visit(val)) == safe_sorted(list(val))
     assert find_ne(val, val) is None
 
     eitem = eval(estr(val))

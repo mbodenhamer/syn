@@ -3,7 +3,7 @@ from syn.five import xrange
 from nose.tools import assert_raises
 from syn.types.a import Type, Sequence, List, Tuple, \
     hashable, serialize, deserialize, estr, rstr, visit, find_ne, \
-    DifferentLength, DiffersAtIndex
+    DifferentLength, DiffersAtIndex, deep_feq, feq_comp
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, elog, ngzwarn, \
     is_unique, on_error
@@ -18,14 +18,16 @@ ngzwarn(SAMPLES, 'SAMPLES')
 def examine_sequence(cls, val):
     assert type(val) is cls.type
     assert is_hashable(hashable(val))
-    assert deserialize(serialize(val)) == val
+    sval = deserialize(serialize(val))
+    #import ipdb; ipdb.set_trace()
+    assert deep_feq(sval, val)
     assert isinstance(rstr(val), str)
 
     assert list(visit(val)) == list(val)
     assert find_ne(val, val) is None
 
     eitem = eval(estr(val))
-    assert eitem == val
+    assert deep_feq(eitem, val)
     assert type(eitem) is cls.type
 
 #-------------------------------------------------------------------------------

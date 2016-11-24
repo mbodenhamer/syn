@@ -1,6 +1,6 @@
 import collections
 from syn.base_utils import rand_dict, get_fullname, tuple_prepend, \
-    get_typename, escape_for_eval
+    get_typename, escape_for_eval, safe_sorted
 from .base import Type, serialize, hashable, rstr, estr, SER_KEYS, deserialize
 from .numeric import Int
 from .sequence import list_enumval
@@ -77,23 +77,9 @@ class Mapping(Type):
             dct[key] = serialize(value)
 
     def _visit(self, k, **kwargs):
-        # Don't use the buffer if you are modifying the mapping in between
-        # _visit calls
-        use_buffer = kwargs.get('use_buffer', True)
-        if use_buffer:
-            N = len(self.visit_buffer)
-            if 0 <= k < N:
-                key = self.visit_buffer[k]
-            else:
-                idx_diff = k - (N - 1)
-                for item in islice(self.visit_iter, idx_diff):
-                    self.visit_buffer.append(item)
-                key = self.visit_buffer[k]
-        else:
-            keys = list(self.obj)
-            key = keys[k]
-
-        return key, self.obj[key]
+        if not self.visit_buffer:
+            self.visit_buffer = safe_sorted(list(self.obj.items()))
+        return self.visit_buffer[k]
 
     def _visit_len(self, **kwargs):
         return len(self.obj)
