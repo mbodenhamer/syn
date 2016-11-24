@@ -313,9 +313,13 @@ class ValueExplorer(REPL):
             elif not self.at_end:
                 step()
             
-    @repl_command('l', 'display')
-    def command_display(self):
-        print(self.display())
+    @repl_command('c', 'display current_value')
+    def command_display_current_value(self):
+        print(self.current_value)
+
+    @repl_command('l', 'display value')
+    def command_display_value(self):
+        print(self.value)
 
     @repl_command('d', 'go down the stack')
     def command_down(self, num='1'):
@@ -343,10 +347,13 @@ class DiffExplorer(REPL):
     commands = dict(REPL.commands)
     command_help = dict(REPL.command_help)
     
+    value = property(lambda self: (self.A.value,
+                                   self.B.value))
     current_value = property(lambda self: (self.A.current_value, 
                                            self.B.current_value))
 
-    def __init__(self, A, B):
+    def __init__(self, A, B, prompt='(DiffEx) '):
+        super(DiffExplorer, self).__init__(prompt)
         if not isinstance(A, ValueExplorer):
             A = ValueExplorer(A)
         if not isinstance(B, ValueExplorer):
@@ -381,9 +388,16 @@ class DiffExplorer(REPL):
         self.A.reset()
         self.B.reset()
 
-    @repl_command('l', 'display')
-    def command_display(self):
+    @repl_command('c', 'display current_value')
+    def command_display_current_value(self):
         print(self.display())
+
+    @repl_command('l', 'display value')
+    def command_display_value(self):
+        # 1. Current index (or key, if not None)
+        # 2. Ordered iteration
+        print("A: ", self.value[0])
+        print("B: ", self.value[1])
 
     @repl_command('d', 'go down the stack')
     def command_down(self, num='1'):

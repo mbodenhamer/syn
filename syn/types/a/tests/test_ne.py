@@ -183,23 +183,23 @@ def test_valueexplorer():
     l = [1, [2, 3], [[4]]]
     r = ValueExplorer(l)
     with capture() as (out, err):
-        r._eval('l')
+        r._eval('c')
         assert last_line(out) == '1'
 
         r._eval('n 2')
-        r._eval('l')
+        r._eval('c')
         assert last_line(out) == '[[4]]'
 
         r._eval('d 2')
-        r._eval('l')
+        r._eval('c')
         assert last_line(out) == '4'
 
         r._eval('u 2')
-        r._eval('l')
+        r._eval('c')
         assert last_line(out) == '[[4]]'
 
         r._eval('n -1')
-        r._eval('l')
+        r._eval('c')
         assert last_line(out) == '[2, 3]'
 
 #-------------------------------------------------------------------------------
@@ -237,23 +237,23 @@ def test_diffexplorer():
     l2 = [1, [2, 6], [[5]]]
     r = DiffExplorer(ValueExplorer(l1), ValueExplorer(l2))
     with capture() as (out, err):
-        r._eval('l')
+        r._eval('c')
         assert last_lines(out) == ['A: 1', 'B: 1']
 
         r._eval('n 2')
-        r._eval('l')
+        r._eval('c')
         assert last_lines(out) == ['A: [[4]]', 'B: [[5]]']
 
         r._eval('d 2')
-        r._eval('l')
+        r._eval('c')
         assert last_lines(out) == ['A: 4', 'B: 5']
 
         r._eval('u 2')
-        r._eval('l')
+        r._eval('c')
         assert last_lines(out) == ['A: [[4]]', 'B: [[5]]']
 
         r._eval('n -1')
-        r._eval('l')
+        r._eval('c')
         assert last_lines(out) == ['A: [2, 3]', 'B: [2, 6]']
 
 #-------------------------------------------------------------------------------
