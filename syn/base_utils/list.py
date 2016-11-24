@@ -241,11 +241,18 @@ def flattened(seq):
         ret.extend(flattened(seq[1:]))
         return ret
 
+def safe_sorted(x, **kwargs):
+    try:
+        return sorted(x, **kwargs)
+    except TypeError:
+        kwargs['key'] = kwargs.get('key', id)
+        return sorted(x, **kwargs)
+
 #-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('ListView', 'IterableList', 'DefaultList',
            'is_proper_sequence', 'is_flat', 'is_unique',
-           'indices_removed', 'flattened')
+           'indices_removed', 'flattened', 'safe_sorted')
 
 #-------------------------------------------------------------------------------
