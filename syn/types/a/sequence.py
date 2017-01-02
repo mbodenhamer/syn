@@ -13,7 +13,7 @@ def list_enumval(x, **kwargs):
     top_level = kwargs.get('top_level', True)
     if top_level:
         if x == 0:
-            return set()
+            return []
 
         kwargs['top_level'] = False
         return list_enumval(x - 1, **kwargs)

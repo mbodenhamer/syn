@@ -394,8 +394,9 @@ class DiffExplorer(REPL):
 
     @repl_command('l', 'display value')
     def command_display_value(self):
-        # 1. Current index (or key, if not None)
-        # 2. Ordered iteration
+        print("index: ", self.A.index)
+        if self.A.key:
+            print("key: ", self.A.key)
         print("A: ", self.value[0])
         print("B: ", self.value[1])
 
