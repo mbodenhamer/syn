@@ -66,7 +66,6 @@ def test_sequence():
 
         buf = []
         last = None
-        #import ipdb; ipdb.set_trace()
         for item in enumerate_(cls.type, max_enum=SAMPLES * 10, step=100):
             assert type(item) is cls.type
             assert item != last
