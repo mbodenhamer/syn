@@ -19,7 +19,6 @@ def examine_sequence(cls, val):
     assert type(val) is cls.type
     assert is_hashable(hashable(val))
     sval = deserialize(serialize(val))
-    #import ipdb; ipdb.set_trace()
     assert deep_feq(sval, val)
     assert isinstance(rstr(val), str)
 
