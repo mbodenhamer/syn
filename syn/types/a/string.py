@@ -2,7 +2,7 @@ import sys
 from six import PY2, PY3
 from syn.five import STR
 from syn.base_utils import rand_str, rand_unicode, get_typename, quote_string, \
-    safe_chr, escape_for_eval
+    safe_chr, escape_for_eval, safe_unicode
 from .base import Type, SER_KEYS
 from .ne import DifferentLength, DiffersAtIndex
 
@@ -89,7 +89,7 @@ class Unicode(String):
     def _enumeration_value(cls, x, **kwargs):
         kwargs['max_char'] = kwargs.get('max_char', sys.maxunicode)
         s = super(Unicode, cls)._enumeration_value(x, **kwargs)
-        return unicode(s)
+        return safe_unicode(s)
 
     def estr(self, **kwargs):
         encoding = kwargs.get('encoding', 'utf-8')

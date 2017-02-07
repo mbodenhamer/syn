@@ -105,6 +105,8 @@ def test_unicode():
         gen = generate(unicode)
         assert isinstance(gen, unicode)
 
+    assert Unicode._enumeration_value(140) == u'\xab'
+
 #-------------------------------------------------------------------------------
 # Bytes
 
