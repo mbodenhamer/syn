@@ -1,6 +1,6 @@
 import re
 from functools import partial
-from syn.five import STR, PY2
+from syn.five import STR, PY2, unicode, unichr
 from .py import get_typename, hasmethod
 
 #-------------------------------------------------------------------------------
@@ -93,6 +93,18 @@ def safe_str(x, encoding='utf-8'):
         return str(x)
     except UnicodeEncodeError:
         return x.encode(encoding)
+
+def safe_unicode(x):
+    try:
+        return unicode(x)
+    except UnicodeDecodeError:
+        return u''.join(unichr(ord(c)) for c in x)
+
+def safe_print(x, encoding='utf-8'):
+    try:
+        print(x)
+    except UnicodeEncodeError:
+        print(x.encode(encoding))
 
 #-------------------------------------------------------------------------------
 # istr
@@ -252,7 +264,7 @@ pretty = partial(istr, pretty=True)
 __all__ = ('quote_string', 'outer_quotes', 'break_quoted_string',
            'break_around_line_breaks', 
            'escape_line_breaks', 'escape_null', 'escape_for_eval',
-           'safe_chr', 'safe_str', 
+           'safe_chr', 'safe_str', 'safe_unicode', 'safe_print',
            'istr', 'pretty')
 
 #-------------------------------------------------------------------------------

@@ -97,6 +97,22 @@ def test_safe_str():
     else:
         assert safe_str(s) == s
 
+def test_safe_unicode():
+    from syn.base_utils import safe_unicode
+
+    s = '\xac\xab'
+    assert safe_unicode(s) == u'\xac\xab'
+
+def test_safe_print():
+    from syn.base_utils import safe_unicode, safe_print
+    from syn.base_utils import capture
+
+    with capture() as (out, err):
+        s = safe_unicode('\xac\xab')
+        safe_print(s)
+
+    assert out.getvalue() == '\xc2\xac\xc2\xab\n'
+
 #-------------------------------------------------------------------------------
 # istr
 
