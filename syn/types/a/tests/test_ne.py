@@ -126,7 +126,7 @@ def test_valueexplorer():
     assert x.value == []
     assert x.current_value is None
     assert_raises(ExplorationError, x.step)
-    assert list(x.depth_first()) == []
+    assert list(x.depth_first()) == [[]]
 
     l = [1, [2, 3], 4]
     x = ValueExplorer(l)
@@ -180,12 +180,12 @@ def test_valueexplorer():
     x = ValueExplorer(s)
     assert list(x.depth_first()) == ['abcd', 'a', 'b', 'c', 'd']
 
-    # s = ''
-    # x = ValueExplorer(s)
-    # assert list(x.depth_first()) == ['']
+    s = ''
+    x = ValueExplorer(s)
+    assert list(x.depth_first()) == ['']
     
-    # x = ValueExplorer([])
-    # assert list(x.depth_first()) == [[]]
+    x = ValueExplorer([])
+    assert list(x.depth_first()) == [[]]
 
     def last_line(si):
         return si.getvalue().split('\n')[-2]

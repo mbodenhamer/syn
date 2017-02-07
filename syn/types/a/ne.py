@@ -302,6 +302,9 @@ class ValueExplorer(REPL):
                     self.up()
                     vars.going_up = True
 
+        if isinstance(self.value, CONTAINERS) and len(self.value) == 0:
+            yield self.value
+
         while True:
             if self.at_end and self.stack_index == 0:
                 break
