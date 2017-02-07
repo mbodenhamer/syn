@@ -437,20 +437,20 @@ def deep_comp(A, B, func=op.eq, **kwargs):
             return False
     return True
 
-def feq_comp(a, b, tol=DEFAULT_TOLERANCE):
+def feq_comp(a, b, tol=DEFAULT_TOLERANCE, relative=True):
     if isinstance(a, STR) or isinstance(b, STR):
         return a == b
     if isinstance(a, CONTAINERS) or isinstance(b, CONTAINERS):
         return type(a) is type(b) and len(a) == len(b)
     if isinstance(a, complex) or isinstance(b, complex):
-        return cfeq(a, b, tol)
-    return feq(a, b, tol)
+        return cfeq(a, b, tol, relative)
+    return feq(a, b, tol, relative)
 
-def deep_feq(A, B, tol=DEFAULT_TOLERANCE):
+def deep_feq(A, B, tol=DEFAULT_TOLERANCE, relative=True):
     if type(A) is not type(B) and not isinstance(A, tuple_append(NUM, complex)):
         return False
 
-    func = partial(feq_comp, tol=tol)
+    func = partial(feq_comp, tol=tol, relative=relative)
     return deep_comp(A, B, func)
 
 #-------------------------------------------------------------------------------

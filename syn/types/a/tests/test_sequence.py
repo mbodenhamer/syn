@@ -26,7 +26,7 @@ def examine_sequence(cls, val):
     assert find_ne(val, val) is None
 
     eitem = eval(estr(val))
-    #assert deep_feq(eitem, val)
+    assert deep_feq(eitem, val)
     assert type(eitem) is cls.type
 
 #-------------------------------------------------------------------------------

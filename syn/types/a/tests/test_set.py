@@ -4,7 +4,7 @@ from syn.types.a import Type, Set, FrozenSet, \
     SetDifferences, deep_feq, visit, safe_sorted
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, on_error, elog, \
-    ngzwarn, is_unique, safe_sorted
+    ngzwarn, is_unique
 
 from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES //= 10
