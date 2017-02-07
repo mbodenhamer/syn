@@ -1,7 +1,8 @@
 import collections
 from syn.base_utils import rand_dict, get_fullname, tuple_prepend, \
-    get_typename, escape_for_eval, safe_sorted
-from .base import Type, serialize, hashable, rstr, estr, SER_KEYS, deserialize
+    get_typename, escape_for_eval
+from .base import Type, serialize, hashable, rstr, estr, SER_KEYS, \
+    deserialize, safe_sorted
 from .numeric import Int
 from .sequence import list_enumval
 from .set import set_enumval

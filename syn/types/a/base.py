@@ -3,7 +3,7 @@ import operator as op
 from functools import wraps
 from syn.base_utils import nearest_base, is_hashable, tuple_prepend, \
     get_fullname, get_mod, get_typename, AttrDict, hasmethod, import_module, \
-    quote_string, iteration_length, escape_for_eval
+    quote_string, iteration_length, escape_for_eval, compose
 
 #-------------------------------------------------------------------------------
 # Type registry
@@ -341,11 +341,18 @@ def visit(obj, k=0, **kwargs):
     for item in Type.dispatch(obj).visit(k, **kwargs):
         yield item
 
+def safe_sorted(obj, **kwargs):
+    try:
+        return sorted(obj, **kwargs)
+    except (TypeError, UnicodeDecodeError):
+        kwargs['key'] = kwargs.get('key', compose(hash, hashable))
+        return sorted(obj, **kwargs)
+
 #-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('TYPE_REGISTRY', 'SER_KEYS', 'Type',
            'deserialize', 'enumerate', 'estr', 'find_ne', 'generate', 
-           'hashable', 'rstr', 'serialize', 'visit')
+           'hashable', 'rstr', 'serialize', 'visit', 'safe_sorted')
 
 #-------------------------------------------------------------------------------

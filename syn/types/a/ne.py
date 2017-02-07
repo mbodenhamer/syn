@@ -169,6 +169,11 @@ class ValueExplorer(REPL):
         self._initialize(value, index, key, prompt, step)
 
     def _initialize(self, value, index, key, prompt, step):
+        # Example
+        # self.index = 1
+        # self.value = [1, 2, 3, 4]
+        # self.current_value = 2
+
         self.value = value
         self.index = index if index is not None else 0
         self.key = key
@@ -299,7 +304,7 @@ class ValueExplorer(REPL):
 
             if not vars.going_up and not vars.going_forward:
                 if implies(leaves_only, self.at_bottom_level):
-                    yield self.value
+                    yield self.value # self.current_value?
 
             if vars.going_up:
                 vars.going_up = False
