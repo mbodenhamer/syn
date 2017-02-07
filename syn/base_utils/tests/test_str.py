@@ -80,6 +80,14 @@ def test_escape_for_eval():
     assert escape_for_eval('b\\a') == 'b\\\\a'
 
 #-------------------------------------------------------------------------------
+# String Creation
+
+def test_chrs():
+    from syn.base_utils import chrs
+    
+    assert chrs([97,98,10]) == 'ab\n'
+
+#-------------------------------------------------------------------------------
 # Unicode issues
 
 def test_safe_chr():
@@ -105,13 +113,16 @@ def test_safe_unicode():
 
 def test_safe_print():
     from syn.base_utils import safe_unicode, safe_print
-    from syn.base_utils import capture
+    from syn.base_utils import capture, chrs
 
     with capture() as (out, err):
         s = safe_unicode('\xac\xab')
         safe_print(s)
 
-    assert out.getvalue() == '\xc2\xac\xc2\xab\n'
+    if PY2:
+        assert out.getvalue() == '\xc2\xac\xc2\xab\n'
+    else:
+        assert out.getvalue() == chrs([172, 171, 10])
 
 #-------------------------------------------------------------------------------
 # istr

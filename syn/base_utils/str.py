@@ -81,6 +81,12 @@ def escape_for_eval(string):
     return ret
 
 #-------------------------------------------------------------------------------
+# String Creation
+
+def chrs(lst):
+    return ''.join(chr(c) for c in lst)
+
+#-------------------------------------------------------------------------------
 # Unicode issues
 
 def safe_chr(x):
@@ -264,6 +270,7 @@ pretty = partial(istr, pretty=True)
 __all__ = ('quote_string', 'outer_quotes', 'break_quoted_string',
            'break_around_line_breaks', 
            'escape_line_breaks', 'escape_null', 'escape_for_eval',
+           'chrs',
            'safe_chr', 'safe_str', 'safe_unicode', 'safe_print',
            'istr', 'pretty')
 
