@@ -220,12 +220,6 @@ def test_flattened():
     assert flattened([1, 2, [[], 7, [[]]], 3, 4]) == [1, 2, 7, 3, 4]
     assert flattened([[], 1, 2]) == [1, 2]
 
-def test_safe_sorted():
-    from syn.base_utils import safe_sorted
-
-    assert safe_sorted([2, 1]) == [1, 2]
-    safe_sorted(['abc', 1, 1.2])
-
 #-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover

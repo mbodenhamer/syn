@@ -2,10 +2,10 @@ from six import PY2
 from nose.tools import assert_raises
 from syn.types.a import Type, Mapping, Dict, \
     hashable, serialize, deserialize, estr, rstr, visit, find_ne, \
-    DiffersAtKey, KeyDifferences, deep_feq
+    DiffersAtKey, KeyDifferences, deep_feq, safe_sorted
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, on_error, elog, \
-    ngzwarn, is_unique, safe_sorted
+    ngzwarn, is_unique
 
 from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES //= 10
