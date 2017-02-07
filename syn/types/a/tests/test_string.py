@@ -27,6 +27,8 @@ def test_string_enumval():
     assert string_enumval(190) == ' ~'
     assert string_enumval(191) == '! '
     assert string_enumval(192) == '!!'
+    assert string_enumval(300) == '".'
+    assert string_enumval(10000) == ' )8'
 
     assert 0 not in _STRING_ENUMVALS
     assert _STRING_ENUMVALS[1] == ' '
@@ -80,6 +82,7 @@ def test_string():
             with on_error(elog, examine_string, (cls, val)):
                 examine_string(cls, val)
 
+        x = 0
         buf = []
         last = None
         for item in enumerate_(cls.type, max_enum=SAMPLES * 10, step=100):
@@ -87,6 +90,7 @@ def test_string():
             assert item != last
             buf.append(item)
             last = item
+            x += 100
 
         assert is_unique(buf)
 

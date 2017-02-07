@@ -11,8 +11,10 @@ from .ne import DifferentLength, DiffersAtIndex
 
 # TODO: implement a size-limited cache for this sort of thing
 _STRING_ENUMVALS = {}
+_UNICODE_ENUMVALS = {}
 
 def string_enumval(x, **kwargs):
+    cache = kwargs.get('cache', _STRING_ENUMVALS)
     top_level = kwargs.get('top_level', True)
     if top_level:
         if x == 0:
@@ -21,8 +23,8 @@ def string_enumval(x, **kwargs):
         kwargs['top_level'] = False
         return string_enumval(x - 1, **kwargs)
 
-    if x+1 in _STRING_ENUMVALS:
-        return _STRING_ENUMVALS[x+1]
+    if x+1 in cache:
+        return cache[x+1]
 
     min_char = kwargs.get('min_char', ' ')
     max_char = kwargs.get('max_char', '~')
@@ -39,7 +41,7 @@ def string_enumval(x, **kwargs):
     else:
         ret = safe_chr(x + min_char)
 
-    _STRING_ENUMVALS[x+1] = ret
+    cache[x+1] = ret
     return ret
 
 #-------------------------------------------------------------------------------
@@ -88,6 +90,7 @@ class Unicode(String):
     @classmethod
     def _enumeration_value(cls, x, **kwargs):
         kwargs['max_char'] = kwargs.get('max_char', sys.maxunicode)
+        kwargs['cache'] = kwargs.get('cache', _UNICODE_ENUMVALS)
         s = super(Unicode, cls)._enumeration_value(x, **kwargs)
         return safe_unicode(s)
 
