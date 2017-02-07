@@ -18,11 +18,11 @@ MAX_CHR = 0xff
 MIN_UNICHR = 0x00
 MAX_UNICHR = sys.maxunicode
 MIN_STRLEN = 0
-MAX_STRLEN = 100
+MAX_STRLEN = 10
 MAX_FLOAT = sys.float_info.max
 MIN_FLOAT = -MAX_FLOAT
 MIN_SEQLEN = 0
-MAX_SEQLEN = 20
+MAX_SEQLEN = 5
 MAX_DEPTH = 1
 
 PRIMITIVE_TYPES = [bool, int, float, complex, str, type(None)]
