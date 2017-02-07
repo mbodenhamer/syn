@@ -75,6 +75,7 @@ SAMPLES_10000 = export SYN_TEST_SAMPLES=10000
 SUPPRESS = export SYN_SUPPRESS_TEST_ERRORS
 PY34 = source .tox/py34/bin/activate
 QUICK_TEST = nosetests -v --pdb --pdb-failures
+PROFILE_TEST = nosetests -v --pdb --pdb-failures --with-profile
 HEAVY_TEST = nosetests -v
 
 test:
@@ -87,6 +88,9 @@ quick-test:
 
 unit-test:
 	@$(PYDEV) bash -c "$(SAMPLES_100); $(QUICK_TEST)"
+
+unit-profile:
+	@$(PYDEV) bash -c "$(SAMPLES_100); $(PROFILE_TEST)"
 
 heavy-test:
 	@$(PYDEV) bash -c "$(SAMPLES_10000); $(SUPPRESS); $(HEAVY_TEST)"
