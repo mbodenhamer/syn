@@ -1,3 +1,4 @@
+from __future__ import division
 import sys
 import math
 from functools import reduce
@@ -11,16 +12,22 @@ DEFAULT_TOLERANCE = math.pow(10, math.log(sys.float_info.epsilon, 10) / 2.0)
 #-------------------------------------------------------------------------------
 # Comparison
 
-def feq(a, b, tol=DEFAULT_TOLERANCE):
+def feq(a, b, tol=DEFAULT_TOLERANCE, relative=False):
     from syn.five import NUM
     if isinstance(a, NUM) and isinstance(b, NUM):
         ret = abs(abs(a) - abs(b)) < tol
+        if relative and not ret and a != 0 and b != 0:
+            M = min(abs(a), abs(b))
+            A = a / M
+            B = b / M
+            ret = abs(abs(A) - abs(B)) < tol
         return ret
     return a == b
 
-def cfeq(a, b, tol=DEFAULT_TOLERANCE):
+def cfeq(a, b, tol=DEFAULT_TOLERANCE, relative=False):
     if isinstance(a, complex) and isinstance(b, complex):
-        return feq(a.real, b.real, tol) and feq(a.imag, b.imag, tol)
+        return (feq(a.real, b.real, tol, relative) and 
+                feq(a.imag, b.imag, tol, relative))
     return a == b
 
 #-------------------------------------------------------------------------------

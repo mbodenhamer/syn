@@ -14,6 +14,13 @@ def test_feq():
     assert feq(1e-10, 2e-10, tol=1e-9)
     assert not feq(1e-10, 2e-10, tol=1e-11)
 
+    assert not feq(1.0001, 1.0002, tol = 1e-5)
+    assert feq(1.00001, 1.00002, tol = 1e-5)
+    assert not feq(1.00001e300, 1.00002e300, tol = 1e-5)
+    assert feq(1.00001e300, 1.00002e300, tol = 1e-5, relative=True)
+    assert not feq(1.0001e300, 1.0002e300, tol = 1e-5, relative=True)
+    assert not feq(1, 2, relative=True)
+
     assert feq('abc', 'abc')
     assert not feq('abc', 'ab')
 
