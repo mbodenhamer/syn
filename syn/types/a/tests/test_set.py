@@ -1,7 +1,7 @@
 from nose.tools import assert_raises
 from syn.types.a import Type, Set, FrozenSet, \
     hashable, serialize, deserialize, estr, rstr, visit, find_ne, \
-    SetDifferences, deep_feq, visit
+    SetDifferences, deep_feq, visit, safe_sorted
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, on_error, elog, \
     ngzwarn, is_unique, safe_sorted
