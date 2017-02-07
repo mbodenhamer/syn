@@ -176,6 +176,16 @@ def test_valueexplorer():
     assert x.at_end
     assert s == {3, 4}
 
+    s = 'abcd'
+    x = ValueExplorer(s)
+    assert list(x.depth_first()) == ['abcd', 'a', 'b', 'c', 'd']
+
+    # s = ''
+    # x = ValueExplorer(s)
+    # assert list(x.depth_first()) == ['']
+    
+    # x = ValueExplorer([])
+    # assert list(x.depth_first()) == [[]]
 
     def last_line(si):
         return si.getvalue().split('\n')[-2]

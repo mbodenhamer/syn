@@ -173,6 +173,7 @@ class ValueExplorer(REPL):
         # self.index = 1
         # self.value = [1, 2, 3, 4]
         # self.current_value = 2
+        # But during depth_first, will step down such that index = 0, value = 2
 
         self.value = value
         self.index = index if index is not None else 0
@@ -189,6 +190,9 @@ class ValueExplorer(REPL):
     def _at_bottom_level(self):
         if isinstance(self.value, CONTAINERS):
             self.at_bottom_level = False
+            if isinstance(self.value, STR) and len(self.value) == 1:
+                self.at_bottom_level = True
+            return
         self.at_bottom_level = isinstance(self.value, tuple(PRIMITIVE_TYPES))
 
     def _check_empty(self):
@@ -304,7 +308,7 @@ class ValueExplorer(REPL):
 
             if not vars.going_up and not vars.going_forward:
                 if implies(leaves_only, self.at_bottom_level):
-                    yield self.value # self.current_value?
+                    yield self.value
 
             if vars.going_up:
                 vars.going_up = False
