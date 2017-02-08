@@ -28,7 +28,7 @@ def cfeq(a, b, tol=DEFAULT_TOLERANCE, relative=False):
     if isinstance(a, complex) and isinstance(b, complex):
         return (feq(a.real, b.real, tol, relative) and 
                 feq(a.imag, b.imag, tol, relative))
-    return a == b
+    return feq(a, b, tol, relative)
 
 #-------------------------------------------------------------------------------
 # Math
