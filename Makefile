@@ -72,6 +72,7 @@ print-version:
 SAMPLES_1 = export SYN_TEST_SAMPLES=1
 SAMPLES_100 = export SYN_TEST_SAMPLES=100
 SAMPLES_10000 = export SYN_TEST_SAMPLES=10000
+RANDOM_SEED = export SYN_RANDOM_SEED=1
 SUPPRESS = export SYN_SUPPRESS_TEST_ERRORS
 PY34 = source .tox/py34/bin/activate
 QUICK_TEST = nosetests -v --pdb --pdb-failures
@@ -80,11 +81,11 @@ HEAVY_TEST = nosetests -v
 
 test:
 	@$(PYDEV) coverage erase
-	@$(PYDEV) tox
+	@$(PYDEV) bash -c "$(RANDOM_SEED); tox"
 	@$(PYDEV) coverage html
 
 quick-test:
-	@$(PYDEV) bash -c "$(SAMPLES_1); $(QUICK_TEST)"
+	@$(PYDEV) bash -c "$(SAMPLES_1); $(RANDOM_SEED); $(QUICK_TEST)"
 
 unit-test:
 	@$(PYDEV) bash -c "$(SAMPLES_100); $(QUICK_TEST)"
@@ -96,7 +97,7 @@ heavy-test:
 	@$(PYDEV) bash -c "$(SAMPLES_10000); $(SUPPRESS); $(HEAVY_TEST)"
 
 py3-quick-test:
-	@$(PYDEV) bash -c "$(PY34); $(SAMPLES_1); $(QUICK_TEST)"
+	@$(PYDEV) bash -c "$(PY34); $(SAMPLES_1); $(RANDOM_SEED); $(QUICK_TEST)"
 
 py3-unit-test:
 	@$(PYDEV) bash -c "$(PY34); $(SAMPLES_100); $(QUICK_TEST)"

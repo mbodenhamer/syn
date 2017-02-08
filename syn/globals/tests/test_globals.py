@@ -38,6 +38,16 @@ def test_values():
     assert gv.TEST_SAMPLES == samples
     assert gv.SUPPRESS_TEST_ERRORS == suppress
 
+    # Uncomment for a system-dependent sanity check
+
+    # import random
+    # rv = random.randint(1, 100000000) 
+    # if gv.RANDOM_SEED >= 0:
+    #     assert rv == 13436425
+    # else:
+    #     # This should not fail, statistically speaking
+    #     assert rv != 13436425
+
 #-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover

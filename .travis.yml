@@ -9,6 +9,9 @@ install:
   - pip install coveralls
   - pip install .
 
+env:
+  - SYN_RANDOM_SEED=1
+
 script:
   nosetests --with-coverage --cover-package=syn
 
