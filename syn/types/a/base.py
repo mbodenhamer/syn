@@ -318,6 +318,10 @@ def enumerate(typ, **kwargs):
         yield item
 
 def estr(obj, **kwargs):
+    '''Return a string that can evaluate into an equivalent object.
+
+    NOTE: this function is experimental and not fully supported.
+    '''
     return Type.dispatch(obj).estr(**kwargs)
 
 def find_ne(a, b, func=op.eq, **kwargs):

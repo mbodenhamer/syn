@@ -24,9 +24,10 @@ def examine_mapping(cls, val):
     assert list(visit(val)) == safe_sorted(list(val.items()))
     assert find_ne(val, val) is None
 
-    eitem = eval(estr(val))
-    #assert deep_feq(sval, val)
-    assert type(eitem) is cls.type
+    # NOTE: estr has been relegated to experimental status for now
+    # eitem = eval(estr(val))
+    # assert deep_feq(sval, val)
+    # assert type(eitem) is cls.type
 
 #-------------------------------------------------------------------------------
 # Mapping
