@@ -5,7 +5,7 @@ from syn.types.a import Type, Numeric, Int, hashable, rstr, serialize, \
     NotEqual
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, collection_comp, assert_equivalent, \
-    feq, assert_type_equivalent, on_error, elog, ngzwarn, subclasses, \
+    feq, cfeq, assert_type_equivalent, on_error, elog, ngzwarn, subclasses, \
     is_unique
 
 from syn.globals import TEST_SAMPLES as SAMPLES
@@ -23,6 +23,10 @@ def examine_numeric(cls, val):
 
     assert list(visit(val)) == [val]
     assert find_ne(val, val) is None
+
+    eitem = eval(estr(val))
+    assert cfeq(eitem, val, relative=True)
+    assert type(eitem) is cls.type
 
 #-------------------------------------------------------------------------------
 # Numeric
