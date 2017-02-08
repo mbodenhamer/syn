@@ -1,4 +1,5 @@
 from nose.tools import assert_raises
+from syn.five import xrange
 from syn.types.a import Type, Set, FrozenSet, \
     hashable, serialize, deserialize, estr, rstr, visit, find_ne, \
     SetDifferences, deep_feq, visit, safe_sorted
@@ -17,7 +18,7 @@ def examine_set(cls, val):
     assert type(val) is cls.type
     assert is_hashable(hashable(val))
     sval = deserialize(serialize(val))
-    #assert deep_feq(sval, val)
+    assert deep_feq(sval, val)
     assert isinstance(rstr(val), str)
 
     assert list(visit(val)) == safe_sorted(list(val))
@@ -48,21 +49,21 @@ def test_set():
     examine_set(Set, set(s))
     examine_set(FrozenSet, s)
 
-    # for cls in Set.__subclasses__():
-    #     for k in xrange(SAMPLES):
-    #         val = cls.generate()
-    #         with on_error(elog, examine_set, (cls, val)):
-    #             examine_set(cls, val)
+    for cls in Set.__subclasses__():
+        for k in xrange(SAMPLES):
+            val = cls.generate()
+            with on_error(elog, examine_set, (cls, val)):
+                examine_set(cls, val)
 
-    #     buf = []
-    #     last = None
-    #     for item in enumerate_(cls.type, max_enum=SAMPLES * 10, step=100):
-    #         assert type(item) is cls.type
-    #         assert item != last
-    #         buf.append(item)
-    #         last = item
+        buf = []
+        last = None
+        for item in enumerate_(cls.type, max_enum=SAMPLES * 10, step=100):
+            assert type(item) is cls.type
+            assert item != last
+            buf.append(item)
+            last = item
 
-    #     assert is_unique(buf)
+        assert is_unique(buf)
 
 #-------------------------------------------------------------------------------
 
