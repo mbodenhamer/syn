@@ -6,7 +6,7 @@ from syn.types.a import Type, Sequence, List, Tuple, \
     DifferentLength, DiffersAtIndex, deep_feq, feq_comp, ValueExplorer
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, elog, ngzwarn, \
-    is_unique, on_error
+    is_unique, on_error, subclasses
 
 from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES //= 10
@@ -55,11 +55,14 @@ def test_sequence():
     assert find_ne(l2, l1) == DifferentLength(l2, l1)
     assert find_ne(l1, l3) == DiffersAtIndex(l1, l3, 2)
 
+    e1 = eval(estr(l1))
+    assert_equivalent(e1, l1)
+
     tup = tuple(l)
     examine_sequence(List, l)
     examine_sequence(Tuple, tup)
 
-    for cls in Sequence.__subclasses__():
+    for cls in subclasses(Sequence):
         for k in xrange(SAMPLES):
             val = cls.generate()
             with on_error(elog, examine_sequence, (cls, val)):

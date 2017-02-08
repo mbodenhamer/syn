@@ -52,6 +52,9 @@ def test_mapping():
     assert find_ne(d2, d1) == KeyDifferences(d2, d1)
     assert find_ne(d1, d3) == DiffersAtKey(d1, d3, 'b')
 
+    e1 = eval(estr(d1))
+    assert_equivalent(e1, d1)
+
     assert not is_hashable(d)
     assert is_hashable(hashable(d))
     examine_mapping(Dict, d)

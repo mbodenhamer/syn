@@ -5,7 +5,7 @@ from syn.types.a import Type, Set, FrozenSet, \
     SetDifferences, deep_feq, visit, safe_sorted
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, on_error, elog, \
-    ngzwarn, is_unique
+    ngzwarn, is_unique, subclasses
 
 from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES //= 10
@@ -46,10 +46,13 @@ def test_set():
     s2 = {2, 3, 4}
     assert find_ne(s1, s2) == SetDifferences(s1, s2)
 
+    e1 = eval(estr(s1))
+    assert_equivalent(e1, s1)
+
     examine_set(Set, set(s))
     examine_set(FrozenSet, s)
 
-    for cls in Set.__subclasses__():
+    for cls in subclasses(Set, [Set]):
         for k in xrange(SAMPLES):
             val = cls.generate()
             with on_error(elog, examine_set, (cls, val)):

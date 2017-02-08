@@ -11,7 +11,7 @@ from .ne import SetDifferences
 
 def set_enumval(x, **kwargs):
     kwargs['types'] = kwargs.get('types', HASHABLE_TYPES)
-    return list_enumval(x, **kwargs)
+    return set(list_enumval(x, **kwargs))
 
 #-------------------------------------------------------------------------------
 # Set

@@ -42,7 +42,7 @@ class Mapping(Type):
 
     @classmethod
     def _enumeration_value(cls, x, **kwargs):
-        return dict_enumval(x, **kwargs)
+        return cls.type(dict_enumval(x, **kwargs))
 
     def estr(self, **kwargs):
         parts = ["{}: {}".format(estr(key, **kwargs), estr(value, **kwargs))
