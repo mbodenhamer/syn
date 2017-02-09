@@ -481,11 +481,23 @@ def deep_feq(A, B, tol=DEFAULT_TOLERANCE, relative=True):
     func = partial(feq_comp, tol=tol, relative=relative)
     return deep_comp(A, B, func)
 
+def is_primitive(obj):
+    from .base import visit
+    if isinstance(obj, tuple(PRIMITIVE_TYPES)) and not isinstance(obj, STR):
+        return True
+    if isinstance(obj, CONTAINERS) and not isinstance(obj, STR):
+        return False
+    if isinstance(obj, STR):
+        if len(obj) == 1:
+            return True
+        return False
+    return list(visit(obj, max_enum=2)) == [obj]
+
 #-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('ValueExplorer', 'DiffExplorer', 'ExplorationError',
-           'deep_comp', 'feq_comp', 'deep_feq',
+           'deep_comp', 'feq_comp', 'deep_feq', 'is_primitive',
            'NEType', 'NotEqual', 'DiffersAtIndex', 'DiffersAtKey',
            'DiffersAtAttribute',
            'DifferentLength', 'DifferentTypes', 'SetDifferences', 

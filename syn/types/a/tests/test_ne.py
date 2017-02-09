@@ -347,6 +347,21 @@ def test_deep_feq():
     assert deep_feq([1], [1.01], tol=0.1)
     assert deep_feq([1j], [1.01j], tol=0.1)
 
+def test_is_primitive():
+    from syn.types.a import is_primitive
+
+    class Foo(object):
+        pass
+    
+    f = Foo()
+
+    assert is_primitive(1)
+    #assert is_primitive(int)
+    assert not is_primitive([1, 2, 3])
+    assert is_primitive('a')
+    assert not is_primitive('ab')
+    assert is_primitive(f)
+
 #-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
