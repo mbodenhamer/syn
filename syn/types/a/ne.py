@@ -213,12 +213,7 @@ class ValueExplorer(REPL):
         self._prime()
 
     def _at_bottom_level(self):
-        if isinstance(self.value, CONTAINERS):
-            self.at_bottom_level = False
-            if isinstance(self.value, STR) and len(self.value) == 1:
-                self.at_bottom_level = True
-            return
-        self.at_bottom_level = isinstance(self.value, tuple(PRIMITIVE_TYPES))
+        self.at_bottom_level = is_primitive(self.value)
 
     def _check_empty(self):
         if isinstance(self.value, CONTAINERS):
