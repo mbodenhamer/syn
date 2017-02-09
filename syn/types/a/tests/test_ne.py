@@ -347,21 +347,21 @@ def test_deep_feq():
     assert deep_feq([1], [1.01], tol=0.1)
     assert deep_feq([1j], [1.01j], tol=0.1)
 
-def test_is_primitive():
-    from syn.types.a import is_primitive
+def test_is_visit_primitive():
+    from syn.types.a import is_visit_primitive
 
     class Foo(object):
         pass
     
     f = Foo()
 
-    assert is_primitive(1)
-    #assert is_primitive(int)
-    assert not is_primitive([1, 2, 3])
-    assert is_primitive('a')
-    assert not is_primitive('ab')
+    assert is_visit_primitive(1)
+    #assert is_visit_primitive(int)
+    assert not is_visit_primitive([1, 2, 3])
+    assert is_visit_primitive('a')
+    assert not is_visit_primitive('ab')
 
-    assert is_primitive(f)
+    assert is_visit_primitive(f)
     assert list(visit(f)) == [f]
 
 #-------------------------------------------------------------------------------

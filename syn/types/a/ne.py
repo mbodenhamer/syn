@@ -213,7 +213,7 @@ class ValueExplorer(REPL):
         self._prime()
 
     def _at_bottom_level(self):
-        self.at_bottom_level = is_primitive(self.value)
+        self.at_bottom_level = is_visit_primitive(self.value)
 
     def _check_empty(self):
         if isinstance(self.value, CONTAINERS):
@@ -476,7 +476,7 @@ def deep_feq(A, B, tol=DEFAULT_TOLERANCE, relative=True):
     func = partial(feq_comp, tol=tol, relative=relative)
     return deep_comp(A, B, func)
 
-def is_primitive(obj):
+def is_visit_primitive(obj):
     from .base import visit
     if isinstance(obj, tuple(PRIMITIVE_TYPES)) and not isinstance(obj, STR):
         return True
@@ -492,7 +492,7 @@ def is_primitive(obj):
 # __all__
 
 __all__ = ('ValueExplorer', 'DiffExplorer', 'ExplorationError',
-           'deep_comp', 'feq_comp', 'deep_feq', 'is_primitive',
+           'deep_comp', 'feq_comp', 'deep_feq', 'is_visit_primitive',
            'NEType', 'NotEqual', 'DiffersAtIndex', 'DiffersAtKey',
            'DiffersAtAttribute',
            'DifferentLength', 'DifferentTypes', 'SetDifferences', 
