@@ -100,10 +100,12 @@ class Foo(object):
         return dct
 
     def _visit(self, k, **kwargs):
-        return self
+        if k == 0:
+            return self.a
+        return self.b
 
     def _visit_len(self, **kwargs):
-        return 1
+        return 2
 
 def test_custom_object():
     f = Foo(1, 1.2)
@@ -120,12 +122,12 @@ def test_custom_object():
     e1 = eval(estr(f))
     assert_equivalent(e1, f)
 
-    assert list(visit(f)) == [f]
+    assert list(visit(f)) == [1, 1.2]
     assert rstr(f) == 'Foo(1,1.2)'
 
     sval = deserialize(serialize(f))
     assert_equivalent(sval, f)
-    # assert deep_feq(sval, f)
+    assert deep_feq(sval, f)
 
     # val = generate(Foo)
     # assert type(val) is Foo
