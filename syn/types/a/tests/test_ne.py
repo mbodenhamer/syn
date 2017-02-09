@@ -1,5 +1,5 @@
 from nose.tools import assert_raises
-from syn.types.a import ValueExplorer, ExplorationError, DiffExplorer
+from syn.types.a import ValueExplorer, ExplorationError, DiffExplorer, visit
 from syn.base_utils import capture, assign
 
 #-------------------------------------------------------------------------------
@@ -360,7 +360,9 @@ def test_is_primitive():
     assert not is_primitive([1, 2, 3])
     assert is_primitive('a')
     assert not is_primitive('ab')
+
     assert is_primitive(f)
+    assert list(visit(f)) == [f]
 
 #-------------------------------------------------------------------------------
 
