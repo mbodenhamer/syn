@@ -328,6 +328,8 @@ def find_ne(a, b, func=op.eq, **kwargs):
     return Type.dispatch(a).find_ne(b, func, **kwargs)
 
 def generate(typ, **kwargs):
+    if hasmethod(typ, '_generate'):
+        return typ._generate(**kwargs)
     return Type.type_dispatch(typ).generate(**kwargs)
 
 def hashable(obj, **kwargs):

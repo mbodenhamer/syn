@@ -129,8 +129,8 @@ def test_custom_object():
     assert_equivalent(sval, f)
     assert deep_feq(sval, f)
 
-    # val = generate(Foo)
-    # assert type(val) is Foo
+    val = generate(Foo)
+    assert type(val) is Foo
 
     assert_equivalent(Foo(1, 2.3), Foo(1, 2.3))
 
