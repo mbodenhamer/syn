@@ -477,6 +477,7 @@ def deep_feq(A, B, tol=DEFAULT_TOLERANCE, relative=True):
     return deep_comp(A, B, func)
 
 def is_visit_primitive(obj):
+    '''Returns true if properly visiting the object returns only the object itself.'''
     from .base import visit
     if isinstance(obj, tuple(PRIMITIVE_TYPES)) and not isinstance(obj, STR):
         return True
