@@ -1,7 +1,10 @@
 from nose.tools import assert_raises
 from syn.types.a import Type, hashable, TYPE_REGISTRY, SER_KEYS, serialize, \
-    deserialize, find_ne, DifferentTypes, safe_sorted
-from syn.base_utils import get_fullname, is_hashable, assert_inequivalent
+    deserialize, find_ne, DifferentTypes, safe_sorted, estr, find_ne, \
+    generate, DiffersAtAttribute, hashable, rstr, visit, deep_feq
+from syn.types.a import enumerate as enum
+from syn.base_utils import get_fullname, is_hashable, assert_inequivalent, \
+    assert_equivalent, first, get_typename
 
 #-------------------------------------------------------------------------------
 # Type
@@ -41,7 +44,99 @@ def test_type():
     assert isinstance(find_ne(1, 1.2), DifferentTypes)
 
 #-------------------------------------------------------------------------------
-# Test object with defined methods
+# Test object with defined special methods
+
+class Foo(object):
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+    def __eq__(self, other):
+        return (type(self) is type(other) and
+                self.a == other.a and
+                self.b == other.b)
+
+    __hash__ = None
+
+    @classmethod
+    def _enumeration_value(cls, x, **kwargs):
+        a = first(enum(int, start=x, max_enum=1))
+        b = first(enum(float, start=x, max_enum=1))
+        return cls(a, b)
+
+    def _estr(self, **kwargs):
+        a = estr(self.a, **kwargs)
+        b = estr(self.b, **kwargs)
+        return '{}({},{})'.format(get_typename(self), a, b)
+
+    def _find_ne(self, other, func, **kwargs):
+        if not func(self.a, other.a):
+            return DiffersAtAttribute(self, other, 'a')
+        if not func(self.b, other.b):
+            return DiffersAtAttribute(self, other, 'b')
+
+        ret = find_ne(self.a, other.a, func, **kwargs)
+        if ret:
+            return ret
+        return find_ne(self.b, other.b, func, **kwargs)
+
+    @classmethod
+    def _generate(cls, **kwargs):
+        a = generate(int, **kwargs)
+        b = generate(float, **kwargs)
+        return cls(a, b)
+
+    def _hashable(self, **kwargs):
+        return (get_fullname(self), hashable(self.a), hashable(self.b))
+
+    def _rstr(self, **kwargs):
+        a = rstr(self.a, **kwargs)
+        b = rstr(self.b, **kwargs)
+        return '{}({},{})'.format(get_typename(self), a, b)
+
+    def _serialize(self, dct, **kwargs):
+        dct[SER_KEYS.args] = [serialize(self.a, **kwargs),
+                              serialize(self.b, **kwargs)]
+        return dct
+
+    def _visit(self, k, **kwargs):
+        return self
+
+    def _visit_len(self, **kwargs):
+        return 1
+
+def test_custom_object():
+    f = Foo(1, 1.2)
+    f2 = Foo(1, 1.3)
+    f3 = Foo(2, 1.2)
+
+    assert not is_hashable(f)
+    assert is_hashable(hashable(f))
+
+    assert find_ne(f, f) is None
+    assert find_ne(f, f2) == DiffersAtAttribute(f, f2, 'b')
+    assert find_ne(f, f3) == DiffersAtAttribute(f, f3, 'a')
+
+    e1 = eval(estr(f))
+    assert_equivalent(e1, f)
+
+    assert list(visit(f)) == [f]
+    assert rstr(f) == 'Foo(1,1.2)'
+
+    sval = deserialize(serialize(f))
+    assert_equivalent(sval, f)
+    # assert deep_feq(sval, f)
+
+    # val = generate(Foo)
+    # assert type(val) is Foo
+
+    assert_equivalent(Foo(1, 2.3), Foo(1, 2.3))
+
+#-------------------------------------------------------------------------------
+# Test object with special Type handler
+
+def test_custom_type():
+    pass
 
 #-------------------------------------------------------------------------------
 # safe_sorted

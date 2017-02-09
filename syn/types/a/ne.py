@@ -104,6 +104,31 @@ class DiffersAtKey(NEType):
 #-----------------------------------------------------------
 
 
+class DiffersAtAttribute(NEType):
+    def __init__(self, A, B, attr):
+        super(DiffersAtAttribute, self).__init__(A, B)
+        self.attr = attr
+
+    def __eq__(self, other):
+        if not super(DiffersAtAttribute, self).__eq__(other):
+            return False
+        return self.attr == other.attr
+
+    def explorer(self):
+        xA = ValueExplorer(self.A, attr=self.attr)
+        xB = ValueExplorer(self.B, attr=self.attr)
+        return DiffExplorer(xA, xB)
+
+    def message(self):
+        iA = getattr(self.A, self.attr)
+        iB = getattr(self.B, self.attr)
+        return ('Objects differ at attribute "{}": {} != {}'
+                .format(self.attr, iA, iB))
+
+
+#-----------------------------------------------------------
+
+
 class DifferentLength(NEType):
     def message(self):
         return 'Different lengths: {} != {}'.format(len(self.A), len(self.B))
@@ -462,6 +487,7 @@ def deep_feq(A, B, tol=DEFAULT_TOLERANCE, relative=True):
 __all__ = ('ValueExplorer', 'DiffExplorer', 'ExplorationError',
            'deep_comp', 'feq_comp', 'deep_feq',
            'NEType', 'NotEqual', 'DiffersAtIndex', 'DiffersAtKey',
+           'DiffersAtAttribute',
            'DifferentLength', 'DifferentTypes', 'SetDifferences', 
            'KeyDifferences')
 

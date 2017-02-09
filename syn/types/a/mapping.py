@@ -103,15 +103,15 @@ class OrderedDict(Dict):
     gen_type = Dict
 
 
-class DefaultDict(Dict): 
-    type = collections.defaultdict
-    gen_types = (Int, Dict)
+# class DefaultDict(Dict): 
+#     type = collections.defaultdict
+#     gen_types = (Int, Dict)
 
 
 #-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('Mapping',
-           'Dict', 'DefaultDict', 'OrderedDict')
+           'Dict', 'OrderedDict')
 
 #-------------------------------------------------------------------------------

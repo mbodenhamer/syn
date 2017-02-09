@@ -6,7 +6,7 @@ from syn.types.a import Type, Mapping, Dict, \
     DiffersAtKey, KeyDifferences, deep_feq, safe_sorted
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, on_error, elog, \
-    ngzwarn, is_unique
+    ngzwarn, is_unique, subclasses
 
 from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES //= 10
@@ -59,7 +59,7 @@ def test_mapping():
     assert is_hashable(hashable(d))
     examine_mapping(Dict, d)
 
-    for cls in Mapping.__subclasses__():
+    for cls in subclasses(Mapping):
         for k in xrange(SAMPLES):
             val = cls.generate()
             with on_error(elog, examine_mapping, (cls, val)):
