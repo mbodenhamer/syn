@@ -5,6 +5,18 @@ from syn.base_utils import hasmethod, mro, import_module, message, assign, \
     capture
 
 #-------------------------------------------------------------------------------
+# Printing utilities
+
+def test_eprint():
+    from syn.base_utils import eprint, capture
+
+    with capture() as (out, err):
+        eprint('abc')
+
+    assert out.getvalue() == ''
+    assert err.getvalue() == 'abc\n'
+
+#-------------------------------------------------------------------------------
 # Class utilities
 
 def test_subclasses():
@@ -233,6 +245,34 @@ def test_full_funcname():
     else:
         assert full_funcname(s.__contains__) == 'builtins.set.__contains__'
         
+def test_hangwatch():
+    from syn.base_utils import hangwatch, message
+    from time import sleep
+
+    accum = []
+    assert sum(accum) == 0
+
+    def thing1():
+        accum.append(1)
+    
+    hangwatch(1, thing1)
+    assert sum(accum) == 1
+
+    def thing2():
+        sleep(.05)
+
+    assert_raises(RuntimeError, hangwatch, .01, thing2)
+
+    def thing3(msg='foo'):
+        raise NotImplementedError(msg)
+
+    assert_raises(NotImplementedError, hangwatch, 1, thing3)
+
+    try:
+        thing3('bar')
+    except Exception as e:
+        assert message(e) == 'bar'
+
 #-------------------------------------------------------------------------------
 # Sequence utilities
 

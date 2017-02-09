@@ -1,10 +1,14 @@
 import re
 import os
 import six
+import sys
 import yaml
 import types
 import inspect
 import logging
+import threading
+import traceback
+from six.moves.queue import Queue
 from collections import defaultdict
 from functools import reduce, partial
 from syn.globals import test_logger
@@ -29,6 +33,16 @@ elogger_handler = logging.StreamHandler()
 elogger_handler.setFormatter(logging.Formatter('[elog] %(message)s'))
 elogger.addHandler(elogger_handler)
 elogger.setLevel(logging.ERROR)
+
+#-------------------------------------------------------------------------------
+# Printing utilities
+
+def eprint(out, flush=True):
+    if not out.endswith('\n'):
+        out += '\n'
+    sys.stderr.write(out)
+    if flush:
+        sys.stderr.flush()
 
 #-------------------------------------------------------------------------------
 # Class utilities
@@ -172,6 +186,30 @@ def full_funcname(func):
         name = '{}.{}'.format(get_typename(func.__self__), name)
         return '{}.{}'.format(get_mod(func.__self__), name)
     return '{}.{}'.format(get_mod(func), name)
+
+def hangwatch(timeout, func, *args, **kwargs):
+    def target(queue):
+        try:
+            func(*args, **kwargs)
+        except Exception as e:
+            queue.put(sys.exc_info())
+            queue.put(e)
+            sys.exit()
+
+    q = Queue()
+    thread = threading.Thread(target=target, args = (q,))
+    
+    thread.start()
+    thread.join(timeout)
+    if thread.is_alive():
+        raise RuntimeError('Operation did not terminate within {} seconds'
+                           .format(timeout))
+
+    if not q.empty():
+        info = q.get(block=False)
+        e = q.get(block=False)
+        eprint(''.join(traceback.format_exception(*info)))
+        raise e
 
 #-------------------------------------------------------------------------------
 # Sequence utilities
@@ -394,8 +432,8 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'assert_equivalent', 'assert_inequivalent', 'assert_type_equivalent',
            'assert_pickle_idempotent', 'assert_deepcopy_idempotent',
            'rgetattr', 'callables', 'is_subclass', 'getitem', 'same_lineage',
-           'type_partition', 'subclasses', 'unzip', 'this_module', 
+           'type_partition', 'subclasses', 'unzip', 'this_module',  'eprint',
            'that_module', 'harvest_metadata', 'tuple_append', 'get_fullname',
-           'tuple_prepend', 'elog', 'ngzwarn', 'full_funcname')
+           'tuple_prepend', 'elog', 'ngzwarn', 'full_funcname', 'hangwatch')
 
 #-------------------------------------------------------------------------------
