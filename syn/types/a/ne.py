@@ -431,11 +431,11 @@ class DiffExplorer(REPL):
 
     @repl_command('l', 'display value')
     def command_display_value(self):
-        print("index: ", self.A.index)
+        print("index: " + str(self.A.index))
         if self.A.key:
-            print("key: ", self.A.key)
-        print("A: ", self.value[0])
-        print("B: ", self.value[1])
+            print("key: " + str(self.A.key))
+        print("A: " + str(self.value[0]))
+        print("B: " + str(self.value[1]))
 
     @repl_command('d', 'go down the stack')
     def command_down(self, num='1'):

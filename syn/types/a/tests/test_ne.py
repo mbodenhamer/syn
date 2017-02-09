@@ -7,7 +7,12 @@ from syn.base_utils import capture, assign
 
 def test_netypes():
     from syn.types.a import NEType, NotEqual, DiffersAtIndex, DiffersAtKey, \
-        DifferentLength, DifferentTypes, SetDifferences, KeyDifferences
+        DifferentLength, DifferentTypes, SetDifferences, KeyDifferences, \
+        DiffersAtAttribute
+
+    class Foo(object):
+        def __init__(self, a):
+            self.a = a
 
     n = NEType(1, 2)
     assert str(n) == repr(n)
@@ -77,6 +82,13 @@ def test_netypes():
     n = KeyDifferences(d2, d1)
     assert n.message() == 'Exclusive keys: {}'.format({'a'})
 
+    f1 = Foo(1)
+    f2 = Foo(2)
+    n = DiffersAtAttribute(f1, f2, 'a')
+    assert n.message() == 'Objects differ at attribute "a": 1 != 2'
+    assert n != NotEqual(1, 2)
+    #assert n.explorer().current_value == (1, 2)
+
 #-------------------------------------------------------------------------------
 # ValueExplorer
 
@@ -86,6 +98,9 @@ def test_valueexplorer():
     assert x.value == 1
     assert x.current_value == 1
     assert x.display() == u'1'
+    with capture() as (out, err):
+        x.command_display_value()
+    assert out.getvalue() == '1\n'
     assert_raises(ExplorationError, x.step)
     assert_raises(ExplorationError, x.down)
     assert_raises(ExplorationError, x.up)
@@ -196,6 +211,9 @@ def test_valueexplorer():
         r._eval('c')
         assert last_line(out) == '1'
 
+        r._eval('l')
+        assert last_line(out) == '[1, [2, 3], [[4]]]'
+
         r._eval('n 2')
         r._eval('c')
         assert last_line(out) == '[[4]]'
@@ -250,6 +268,10 @@ def test_diffexplorer():
         r._eval('c')
         assert last_lines(out) == ['A: 1', 'B: 1']
 
+        r._eval('l')
+        assert last_lines(out) == ['A: [1, [2, 3], [[4]]]',
+                                   'B: [1, [2, 6], [[5]]]']
+
         r._eval('n 2')
         r._eval('c')
         assert last_lines(out) == ['A: [[4]]', 'B: [[5]]']
@@ -265,6 +287,16 @@ def test_diffexplorer():
         r._eval('n -1')
         r._eval('c')
         assert last_lines(out) == ['A: [2, 3]', 'B: [2, 6]']
+
+    d1 = dict(a = 1)
+    d2 = dict(a = 2)
+    r = DiffExplorer(d1, d2)
+    with capture() as (out, err):
+        r._eval('c')
+        assert last_lines(out) == ['A: 1', 'B: 2']
+
+        r._eval('l')
+        assert last_lines(out) == ["A: {'a': 1}", "B: {'a': 2}"]
 
 #-------------------------------------------------------------------------------
 # Utilities
