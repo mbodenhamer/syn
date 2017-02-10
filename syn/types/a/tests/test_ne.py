@@ -202,6 +202,27 @@ def test_valueexplorer():
     x = ValueExplorer([])
     assert list(x.depth_first()) == [[]]
 
+    
+    class Foo(object):
+        def __init__(self, a, b):
+            self.a = a
+            self.b = b
+
+
+    f = Foo(1, 2)
+    x = ValueExplorer(f)
+    assert list(x.depth_first()) == [f, 1, 2]
+    #assert list(x.depth_first(leaves_only=True)) == [1, 2]
+
+    x = ValueExplorer(f, attr='b')
+    assert x.value is f
+    assert x.current_value == 2
+    assert x.attr == 'b'
+    assert x.index == 1
+
+    assert_raises(ExplorationError, ValueExplorer, f, attr='c')
+
+
     def last_line(si):
         return si.getvalue().split('\n')[-2]
 

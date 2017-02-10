@@ -184,16 +184,17 @@ class ValueExplorer(REPL):
     commands = dict(REPL.commands)
     command_help = dict(REPL.command_help)
 
-    def __init__(self, value, index=None, key=None, prompt='(ValEx) ',
-                 step=1):
+    def __init__(self, value, index=None, key=None, attr=None, 
+                 prompt='(ValEx) ', step=1):
         super(ValueExplorer, self).__init__(prompt)
         self.initial_value = value
         self.initial_index = index
         self.initial_key = key
+        self.initial_attr = attr
         self.initial_step_value = step
-        self._initialize(value, index, key, prompt, step)
+        self._initialize(value, index, key, attr, prompt, step)
 
-    def _initialize(self, value, index, key, prompt, step):
+    def _initialize(self, value, index, key, attr, prompt, step):
         # Example
         # self.index = 1
         # self.value = [1, 2, 3, 4]
@@ -203,6 +204,7 @@ class ValueExplorer(REPL):
         self.value = value
         self.index = index if index is not None else 0
         self.key = key
+        self.attr = attr
         self.step_value = step
 
         self.stack = DefaultList(None)
@@ -240,6 +242,20 @@ class ValueExplorer(REPL):
                                                .format(self.key))
                 self.current_value = value
                 self.index = index
+
+            elif self.initial_index is None and self.attr is not None:
+                index, pair = next(self.iter)
+                attr, value = pair
+                while not attr == self.attr:
+                    try:
+                        index, pair = next(self.iter)
+                        attr, value = pair
+                    except StopIteration:
+                        raise ExplorationError('Unable to find attribute: {}'
+                                               .format(self.attr))
+                self.current_value = value
+                self.index = index
+
             else:
                 self.step()
 
@@ -250,6 +266,7 @@ class ValueExplorer(REPL):
         self.current_value = frame['current_value']
         self.index = frame['index']
         self.key = frame['key']
+        self.attr = frame['attr']
         self.at_end = frame['at_end']
         self.iter = frame['iter']
         self._at_bottom_level()
@@ -259,6 +276,7 @@ class ValueExplorer(REPL):
                      current_value=self.current_value,
                      index=self.index,
                      key=self.key,
+                     attr=self.attr,
                      iter=self.iter,
                      at_end=self.at_end)
         self.stack_index += 1
@@ -268,6 +286,7 @@ class ValueExplorer(REPL):
         self.current_value = None
         self.index = 0
         self.key = None
+        self.attr = None
         self.at_end = False
         self._at_bottom_level()
         self._prime()
@@ -287,12 +306,22 @@ class ValueExplorer(REPL):
 
         try:
             index, value = next(self.iter)
+            self.index = index
+
             if isinstance(self.value, collections.Mapping):
                 self.key = value[0]
                 self.current_value = value[1]
-            else:
-                self.current_value = value
-            self.index = index
+                return
+
+            if isinstance(value, tuple):
+                if len(value) == 2:
+                    if isinstance(value[0], STR):
+                        self.attr = value[0]
+                        self.current_value = value[1]
+                        return
+
+            self.current_value = value
+
         except StopIteration:
             self.at_end = True
             raise ExplorationError('At last value')
@@ -309,7 +338,8 @@ class ValueExplorer(REPL):
 
     def reset(self):
         self._initialize(self.initial_value, self.initial_index,
-                         self.initial_key, self.prompt, self.initial_step_value)
+                         self.initial_key, self.initial_attr, self.prompt, 
+                         self.initial_step_value)
 
     def depth_first(self, leaves_only=False):
         vars = AttrDict(going_up=False,
