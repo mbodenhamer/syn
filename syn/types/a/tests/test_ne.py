@@ -356,7 +356,7 @@ def test_is_visit_primitive():
     f = Foo()
 
     assert is_visit_primitive(1)
-    #assert is_visit_primitive(int)
+    assert is_visit_primitive(int)
     assert not is_visit_primitive([1, 2, 3])
     assert is_visit_primitive('a')
     assert not is_visit_primitive('ab')

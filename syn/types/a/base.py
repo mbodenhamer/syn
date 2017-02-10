@@ -324,6 +324,17 @@ class Type(object):
 
 
 #-------------------------------------------------------------------------------
+# TypeType
+
+
+class TypeType(Type):
+    type = type
+
+    def attrs(self, **kwargs):
+        return []
+
+
+#-------------------------------------------------------------------------------
 # Utilities
 
 def attrs(obj, **kwargs):
