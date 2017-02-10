@@ -170,6 +170,12 @@ def rgetattr(obj, attr, *args):
         return default
     raise AttributeError("Cannot resolve {}.{}".format(obj, attr))
 
+def safe_vars(*args, **kwargs):
+    try:
+        return vars(*args, **kwargs)
+    except TypeError:
+        return {}
+
 #-------------------------------------------------------------------------------
 # Function utilities
 
@@ -434,6 +440,7 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'rgetattr', 'callables', 'is_subclass', 'getitem', 'same_lineage',
            'type_partition', 'subclasses', 'unzip', 'this_module',  'eprint',
            'that_module', 'harvest_metadata', 'tuple_append', 'get_fullname',
-           'tuple_prepend', 'elog', 'ngzwarn', 'full_funcname', 'hangwatch')
+           'tuple_prepend', 'elog', 'ngzwarn', 'full_funcname', 'hangwatch',
+           'safe_vars',)
 
 #-------------------------------------------------------------------------------

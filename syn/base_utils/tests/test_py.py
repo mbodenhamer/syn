@@ -195,6 +195,17 @@ def test_rgetattr():
     assert_raises(TypeError, rgetattr, obj, 'a', 3, 4)
     assert_raises(AttributeError, rgetattr, obj, 'h')
 
+def test_safe_vars():
+    from syn.base_utils import safe_vars
+
+    class Foo(object):
+        pass
+
+    f = Foo()
+    f.a = 1
+    assert safe_vars(f) == dict(a = 1)
+    assert safe_vars(1) == {}
+
 #-------------------------------------------------------------------------------
 # Function utilities
 
