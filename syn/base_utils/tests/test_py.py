@@ -266,7 +266,8 @@ def test_hangwatch():
     def thing3(msg='foo'):
         raise NotImplementedError(msg)
 
-    assert_raises(NotImplementedError, hangwatch, 1, thing3)
+    with capture():
+        assert_raises(NotImplementedError, hangwatch, 1, thing3)
 
     try:
         thing3('bar')
