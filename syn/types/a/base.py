@@ -21,7 +21,7 @@ SER_KEYS = AttrDict(name = '___name',
                     is_type = '___is_type')
 
 SER_IDEMPOTENT = {int, float, bool, type(None)}
-SER_BUILTINS = vars(six.moves.builtins)
+SER_BUILTINS = list(vars(six.moves.builtins).values())
 
 #-------------------------------------------------------------------------------
 # Utilities

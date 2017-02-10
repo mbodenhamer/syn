@@ -63,6 +63,9 @@ class Foo(object):
                 self.a == other.a and
                 self.b == other.b)
 
+    def __ne__(self, other):
+        return not self == other
+
     __hash__ = None
 
     @classmethod
@@ -117,6 +120,8 @@ def test_custom_object():
     f2 = Foo(1, 1.3)
     f3 = Foo(2, 1.2)
 
+    assert f != f2
+
     assert not is_hashable(f)
     assert is_hashable(hashable(f))
 
@@ -136,7 +141,7 @@ def test_custom_object():
     assert_equivalent(sval, f)
     assert deep_feq(sval, f)
 
-    assert_equivalent(Foo, deserialize(serialize(Foo)))
+    assert Foo is deserialize(serialize(Foo))
 
     val = generate(Foo)
     assert type(val) is Foo
@@ -158,12 +163,27 @@ def test_custom_object():
 
 
 class Bar(object):
-    def __init__(self, a, b):
+    def __init__(self, a=None, b=None):
         self.a = a
         self.b = b
 
+    def __eq__(self, other):
+        return (type(self) is type(other) and
+                self.a == other.a and
+                self.b == other.b)
+
+    def __ne__(self, other):
+        return not self == other
+
 
 def test_normal_type():
+    b = Bar(1, 2.3)
+    b2 = Bar(1, 2.4)
+    
+    assert b != b2
+
+    assert list(visit(b)) == [('a', 1), ('b', 2.3)]
+    assert_equivalent(b, deserialize(serialize(b)))
 
     # Because the types system knows nothing of the Bar class
     assert_raises(NotImplementedError, generate, Bar)
@@ -179,6 +199,12 @@ class Baz(object):
 
 def test_custom_type():
     pass
+
+#-------------------------------------------------------------------------------
+# misc
+
+def test_misc():
+    assert int is deserialize(serialize(int))
 
 #-------------------------------------------------------------------------------
 # safe_sorted
