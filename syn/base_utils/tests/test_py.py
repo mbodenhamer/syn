@@ -270,8 +270,9 @@ def test_hangwatch():
         assert_raises(NotImplementedError, hangwatch, 1, thing3)
 
     try:
-        thing3('bar')
-    except Exception as e:
+        with capture():
+            hangwatch(1, thing3, 'bar')
+    except NotImplementedError as e:
         assert message(e) == 'bar'
 
 #-------------------------------------------------------------------------------
