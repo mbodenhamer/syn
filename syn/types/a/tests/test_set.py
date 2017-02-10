@@ -5,7 +5,7 @@ from syn.types.a import Type, Set, FrozenSet, \
     SetDifferences, deep_feq, visit, safe_sorted
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, on_error, elog, \
-    ngzwarn, is_unique, subclasses
+    ngzwarn, is_unique, subclasses, hangwatch
 
 from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES //= 10
@@ -56,7 +56,7 @@ def test_set():
         for k in xrange(SAMPLES):
             val = cls.generate()
             with on_error(elog, examine_set, (cls, val)):
-                examine_set(cls, val)
+                hangwatch(1, examine_set, cls, val)
 
         buf = []
         last = None

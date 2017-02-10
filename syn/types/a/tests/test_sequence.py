@@ -6,7 +6,7 @@ from syn.types.a import Type, Sequence, List, Tuple, \
     DifferentLength, DiffersAtIndex, deep_feq, feq_comp, ValueExplorer
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, elog, ngzwarn, \
-    is_unique, on_error, subclasses
+    is_unique, on_error, subclasses, hangwatch
 
 from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES //= 10
@@ -62,11 +62,14 @@ def test_sequence():
     examine_sequence(List, l)
     examine_sequence(Tuple, tup)
 
+    examine_sequence(Tuple, ([-1839677305294322342, b'', b'\x05l\xbf', 
+                              b'0\xcfXp\xaa', -8468204163727415930], True))
+
     for cls in subclasses(Sequence):
         for k in xrange(SAMPLES):
             val = cls.generate()
             with on_error(elog, examine_sequence, (cls, val)):
-                examine_sequence(cls, val)
+                hangwatch(1, examine_sequence, cls, val)
 
         buf = []
         last = None
