@@ -97,10 +97,11 @@ class Dict(Mapping):
     def _generate(cls, **kwargs):
         return rand_dict(**kwargs)
 
+# NOTE: we don't need these right now; when we do, they can be implemented
 
-class OrderedDict(Dict): 
-    type = collections.OrderedDict
-    gen_type = Dict
+# class OrderedDict(Dict): 
+#     type = collections.OrderedDict
+#     gen_type = Dict
 
 
 # class DefaultDict(Dict): 
@@ -112,6 +113,6 @@ class OrderedDict(Dict):
 # __all__
 
 __all__ = ('Mapping',
-           'Dict', 'OrderedDict')
+           'Dict',)
 
 #-------------------------------------------------------------------------------

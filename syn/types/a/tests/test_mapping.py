@@ -59,6 +59,7 @@ def test_mapping():
     assert is_hashable(hashable(d))
     examine_mapping(Dict, d)
 
+
     for cls in subclasses(Mapping):
         for k in xrange(SAMPLES):
             val = cls.generate()
@@ -74,6 +75,22 @@ def test_mapping():
             last = item
 
         assert is_unique(buf)
+
+#-------------------------------------------------------------------------------
+# Bad test cases
+
+# def test_bad_cases():
+#     from syn.types.a import OrderedDict as OrderedDict_
+#     from collections import OrderedDict
+
+#     val = OrderedDict([((-1.4295764407292497e+308+1.424986100748943e+308j), 
+#                         -810127967009107279), 
+#                        (-1.827012095486929e+307, None), 
+#                        (1.6642652599670256e+308, 
+#                         {8.938423188190213e+307: False, 
+#                          (1.0761629010589936e+308-1.6057678269394774e+308j): False}), 
+#                        (1321286071298621711, (-1.1971920347818657e+308-7.047893113499448e+307j))])
+#     examine_mapping(OrderedDict_, val)
 
 #-------------------------------------------------------------------------------
 
