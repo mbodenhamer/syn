@@ -136,7 +136,7 @@ def test_custom_object():
     assert_equivalent(sval, f)
     assert deep_feq(sval, f)
 
-    #assert_equivalent(Foo, deserialize(serialize(Foo)))
+    assert_equivalent(Foo, deserialize(serialize(Foo)))
 
     val = generate(Foo)
     assert type(val) is Foo

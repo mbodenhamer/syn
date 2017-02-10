@@ -229,7 +229,7 @@ class Type(object):
         if hasmethod(self.obj, '_rstr'):
             return self.obj._rstr(**kwargs)
         return self._rstr(**kwargs)
-
+    
     def _serialize(self, dct, **kwargs):
         if (self.ser_args or self.ser_kwargs) and self.ser_attrs is None:
             ser_attrs = False
@@ -250,13 +250,14 @@ class Type(object):
 
         return dct
 
-    def _serialize_dict(self, **kwargs):
-        if type(self.obj) in SER_BUILTINS:
+    @classmethod
+    def _serialize_dict(cls, typ, **kwargs):
+        if typ in SER_BUILTINS:
             mod = 'six.moves.builtins'
         else:
-            mod = get_mod(self.obj)
+            mod = get_mod(typ)
 
-        return {SER_KEYS.name: get_typename(self.obj),
+        return {SER_KEYS.name: get_typename(typ),
                 SER_KEYS.mod: mod}
 
     def serialize(self, **kwargs):
@@ -265,15 +266,16 @@ class Type(object):
         if type(self.obj) in SER_IDEMPOTENT:
             return self.obj
 
-        dct = self._serialize_dict(**kwargs)
+        dct = self._serialize_dict(type(self.obj), **kwargs)
         if hasmethod(self.obj, '_serialize'):
             return self.obj._serialize(dct, **kwargs)
         
         self._serialize(dct, **kwargs)
         return dct
 
-    def serialize_type(self, **kwargs):
-        dct = self._serialize_dict(**kwargs)
+    @classmethod
+    def serialize_type(cls, typ, **kwargs):
+        dct = cls._serialize_dict(typ, **kwargs)
         dct[SER_KEYS.is_type] = True
         return dct
 
@@ -368,7 +370,7 @@ def rstr(obj, **kwargs):
 
 def serialize(obj, **kwargs):
     if isinstance(obj, type):
-        return Type.type_dispatch(obj).serialize_type(**kwargs)
+        return Type.type_dispatch(obj).serialize_type(obj, **kwargs)
     return Type.dispatch(obj).serialize(**kwargs)
 
 def visit(obj, k=0, **kwargs):
