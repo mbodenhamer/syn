@@ -71,13 +71,13 @@ print-version:
 
 SAMPLES_1 = export SYN_TEST_SAMPLES=1
 SAMPLES_100 = export SYN_TEST_SAMPLES=100
-SAMPLES_10000 = export SYN_TEST_SAMPLES=10000
+SAMPLES_1000 = export SYN_TEST_SAMPLES=1000
 RANDOM_SEED = export SYN_RANDOM_SEED=1
 SUPPRESS = export SYN_SUPPRESS_TEST_ERRORS
 PY34 = source .tox/py34/bin/activate
 QUICK_TEST = nosetests -v --pdb --pdb-failures
-PROFILE_TEST = nosetests -v --pdb --pdb-failures --with-profile
-HEAVY_TEST = nosetests -v
+PROFILE_TEST = nosetests -v --with-profile
+HEAVY_TEST = nosetests -v --processes=4 --process-timeout=40
 
 test:
 	@$(PYDEV) coverage erase
@@ -88,22 +88,22 @@ quick-test:
 	@$(PYDEV) bash -c "$(SAMPLES_1); $(RANDOM_SEED); $(QUICK_TEST)"
 
 unit-test:
-	@$(PYDEV) bash -c "$(SAMPLES_100); $(QUICK_TEST)"
+	@$(PYDEV) bash -c "$(SAMPLES_100); $(HEAVY_TEST)"
 
 unit-profile:
 	@$(PYDEV) bash -c "$(SAMPLES_100); $(PROFILE_TEST)"
 
 heavy-test:
-	@$(PYDEV) bash -c "$(SAMPLES_10000); $(SUPPRESS); $(HEAVY_TEST)"
+	@$(PYDEV) bash -c "$(SAMPLES_1000); $(SUPPRESS); $(HEAVY_TEST)"
 
 py3-quick-test:
 	@$(PYDEV) bash -c "$(PY34); $(SAMPLES_1); $(RANDOM_SEED); $(QUICK_TEST)"
 
 py3-unit-test:
-	@$(PYDEV) bash -c "$(PY34); $(SAMPLES_100); $(QUICK_TEST)"
+	@$(PYDEV) bash -c "$(PY34); $(SAMPLES_100); $(HEAVY_TEST)"
 
 py3-heavy-test:
-	@$(PYDEV) bash -c "$(PY34); $(SAMPLES_10000); $(SUPPRESS); $(HEAVY_TEST)"
+	@$(PYDEV) bash -c "$(PY34); $(SAMPLES_1000); $(SUPPRESS); $(HEAVY_TEST)"
 
 dist-test: build
 	@$(PYDEV) dist-test $(VERSION)
