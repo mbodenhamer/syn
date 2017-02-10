@@ -87,7 +87,7 @@ def test_netypes():
     n = DiffersAtAttribute(f1, f2, 'a')
     assert n.message() == 'Objects differ at attribute "a": 1 != 2'
     assert n != NotEqual(1, 2)
-    #assert n.explorer().current_value == (1, 2)
+    assert n.explorer().current_value == (1, 2)
 
 #-------------------------------------------------------------------------------
 # ValueExplorer
