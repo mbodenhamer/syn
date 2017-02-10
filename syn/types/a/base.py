@@ -385,7 +385,7 @@ def safe_sorted(obj, **kwargs):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('TYPE_REGISTRY', 'SER_KEYS', 'Type',
+__all__ = ('TYPE_REGISTRY', 'SER_KEYS', 'Type', 'TypeType',
            'deserialize', 'enumerate', 'estr', 'find_ne', 'generate', 'attrs',
            'hashable', 'rstr', 'serialize', 'visit', 'safe_sorted')
 

@@ -52,6 +52,7 @@ def test_type():
 #-------------------------------------------------------------------------------
 # Test object with defined special methods
 
+
 class Foo(object):
     def __init__(self, a, b):
         self.a = a
@@ -108,9 +109,7 @@ class Foo(object):
     def _visit_len(self, **kwargs):
         return 2
 
-
-class FooType(Type):
-    type = Foo
+class FooType(Type): type = Foo
 
 
 def test_custom_object():
@@ -137,6 +136,8 @@ def test_custom_object():
     assert_equivalent(sval, f)
     assert deep_feq(sval, f)
 
+    #assert_equivalent(Foo, deserialize(serialize(Foo)))
+
     val = generate(Foo)
     assert type(val) is Foo
 
@@ -153,7 +154,28 @@ def test_custom_object():
     assert_equivalent(Foo(1, 2.3), Foo(1, 2.3))
 
 #-------------------------------------------------------------------------------
+# Test normal object with default type handler
+
+
+class Bar(object):
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+
+def test_normal_type():
+
+    # Because the types system knows nothing of the Bar class
+    assert_raises(NotImplementedError, generate, Bar)
+    assert_raises(NotImplementedError, list, enum(Bar, max_enum=50))
+
+#-------------------------------------------------------------------------------
 # Test object with special Type handler
+
+
+class Baz(object):
+    pass
+
 
 def test_custom_type():
     pass
