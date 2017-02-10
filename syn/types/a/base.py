@@ -184,7 +184,12 @@ class Type(object):
         return '{}({})'.format(get_typename(self.obj), objstr)
 
     def _find_ne(self, other, func, **kwargs):
-        raise NotImplementedError
+        from .ne import DiffersAtAttribute, NotEqual
+        for attr in self.attrs():
+            if not func(getattr(self.obj, attr),
+                        getattr(other, attr)):
+                return DiffersAtAttribute(self.obj, other, attr)
+        return NotEqual(self.obj, other)
 
     def find_ne(self, other, func=op.eq, **kwargs):
         if func(self.obj, other):

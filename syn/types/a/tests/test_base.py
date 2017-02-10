@@ -2,7 +2,8 @@ from nose.tools import assert_raises
 from syn.five import PY3
 from syn.types.a import Type, hashable, TYPE_REGISTRY, SER_KEYS, serialize, \
     deserialize, find_ne, DifferentTypes, safe_sorted, estr, find_ne, \
-    generate, DiffersAtAttribute, hashable, rstr, visit, deep_feq, attrs
+    generate, DiffersAtAttribute, hashable, rstr, visit, deep_feq, attrs, \
+    NotEqual
 from syn.types.a import enumerate as enum
 from syn.base_utils import get_fullname, is_hashable, assert_inequivalent, \
     assert_equivalent, first, get_typename, ngzwarn, is_unique
@@ -37,7 +38,7 @@ def test_type():
     dct = serialize(f)
     assert dct[SER_KEYS.attrs]['a'] == 1
     
-    assert_raises(NotImplementedError, t._find_ne, 0, None)
+    assert t.find_ne(0) == NotEqual(1, 0)
     assert list(t.visit(0)) == [1]
     assert t.visit_len() == 1
 
@@ -178,7 +179,8 @@ class Bar(object):
 def test_normal_type():
     b = Bar(1, 2.3)
     b2 = Bar(1, 2.4)
-    
+    b3 = Bar(2, 2.3)
+
     assert b != b2
     assert_equivalent(Bar(1, 2.3), Bar(1, 2.3))
 
@@ -187,6 +189,10 @@ def test_normal_type():
     else:
         assert is_hashable(b)
     assert is_hashable(hashable(b))
+
+    assert find_ne(b, b) is None
+    assert find_ne(b, b2) == DiffersAtAttribute(b, b2, 'b')
+    assert find_ne(b, b3) == DiffersAtAttribute(b, b3, 'a')
 
     # Is evaluable, but not correct, because we haven't given the
     # types system the proper information for this class
