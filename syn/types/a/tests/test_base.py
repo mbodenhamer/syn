@@ -1,5 +1,5 @@
 from nose.tools import assert_raises
-from syn.five import xrange
+from syn.five import PY3
 from syn.types.a import Type, hashable, TYPE_REGISTRY, SER_KEYS, serialize, \
     deserialize, find_ne, DifferentTypes, safe_sorted, estr, find_ne, \
     generate, DiffersAtAttribute, hashable, rstr, visit, deep_feq, attrs
@@ -121,6 +121,7 @@ def test_custom_object():
     f3 = Foo(2, 1.2)
 
     assert f != f2
+    assert_equivalent(Foo(1, 2.3), Foo(1, 2.3))
 
     assert not is_hashable(f)
     assert is_hashable(hashable(f))
@@ -156,8 +157,6 @@ def test_custom_object():
         
     assert is_unique(buf)
 
-    assert_equivalent(Foo(1, 2.3), Foo(1, 2.3))
-
 #-------------------------------------------------------------------------------
 # Test normal object with default type handler
 
@@ -181,9 +180,26 @@ def test_normal_type():
     b2 = Bar(1, 2.4)
     
     assert b != b2
+    assert_equivalent(Bar(1, 2.3), Bar(1, 2.3))
+
+    if PY3:
+        assert not is_hashable(b)
+    else:
+        assert is_hashable(b)
+    assert is_hashable(hashable(b))
+
+    # Is evaluable, but not correct, because we haven't given the
+    # types system the proper information for this class
+    e1 = eval(estr(b))
+    assert b != e1
 
     assert list(visit(b)) == [('a', 1), ('b', 2.3)]
-    assert_equivalent(b, deserialize(serialize(b)))
+    assert attrs(b) == ['a', 'b']
+    assert rstr(b).startswith('<{} object at '.format(get_fullname(Bar)))
+
+    sval =  deserialize(serialize(b))
+    assert_equivalent(b, sval)
+    assert deep_feq(b, sval)
 
     # Because the types system knows nothing of the Bar class
     assert_raises(NotImplementedError, generate, Bar)
