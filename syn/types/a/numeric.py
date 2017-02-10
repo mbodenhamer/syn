@@ -16,12 +16,14 @@ def float_enumval(x, **kwargs):
 
 def complex_enumval(x, **kwargs):
     real_step = kwargs.get('real_step', .1)
-    imag_step = kwargs.get('real_step', .05)
+    imag_step = kwargs.get('imag_step', .05)
     
-    with setitem(kwargs, 'float_step', real_step):
-        real = float_enumval(x, **kwargs) 
-    with setitem(kwargs, 'float_step', imag_step):
-        imag = float_enumval(x, **kwargs) 
+    new_kwargs = dict(kwargs)
+    new_kwargs['float_step'] = real_step
+    real = float_enumval(x, **new_kwargs) 
+
+    new_kwargs['float_step'] = imag_step
+    imag = float_enumval(x, **new_kwargs) 
     return complex(real, imag)
 
 #-------------------------------------------------------------------------------
