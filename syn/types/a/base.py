@@ -3,7 +3,7 @@ import operator as op
 from functools import wraps
 from syn.base_utils import nearest_base, is_hashable, tuple_prepend, \
     get_fullname, get_mod, get_typename, AttrDict, hasmethod, import_module, \
-    quote_string, iteration_length, escape_for_eval, compose
+    quote_string, iteration_length, escape_for_eval, compose, safe_vars
 
 #-------------------------------------------------------------------------------
 # Type registry
@@ -80,7 +80,7 @@ class Type(object):
         self.obj = obj
 
     def attrs(self, **kwargs):
-        ret = sorted(vars(self.obj).keys())
+        ret = sorted(safe_vars(self.obj).keys())
         return ret
 
     @classmethod
@@ -246,7 +246,7 @@ class Type(object):
                 serialize({kwarg: getattr(self.obj, self.ser_kwargmap[kwarg]) 
                            for kwarg in self.ser_kwargs})
         if ser_attrs:
-            dct[SER_KEYS.attrs] = serialize(vars(self.obj), **kwargs)
+            dct[SER_KEYS.attrs] = serialize(safe_vars(self.obj), **kwargs)
 
         return dct
 
@@ -278,13 +278,21 @@ class Type(object):
         return dct
 
     def _visit(self, k, **kwargs):
-        return self.obj
+        if self.is_primitive:
+            return self.obj
+        
+        attr = self._attrs[k]
+        val = getattr(self.obj, attr)
+        return attr, val
 
     def visit(self, k, **kwargs):
         step = kwargs.get('step', 1)
         enum = kwargs.get('enumerate', False)
-        N = self.visit_len(**kwargs)
 
+        self._attrs = self.attrs(**kwargs)
+        self.is_primitive = not bool(self._attrs)
+        N = self.visit_len(**kwargs)
+            
         count = 0
         limit = iteration_length(N, k, step)
         while True:
@@ -305,7 +313,9 @@ class Type(object):
             count += 1
 
     def _visit_len(self, **kwargs):
-        return 1
+        if self.is_primitive:
+            return 1
+        return len(self._attrs)
 
     def visit_len(self, **kwargs):
         if hasmethod(self.obj, '_visit_len'):
