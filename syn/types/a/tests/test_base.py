@@ -1,10 +1,16 @@
 from nose.tools import assert_raises
+from syn.five import xrange
 from syn.types.a import Type, hashable, TYPE_REGISTRY, SER_KEYS, serialize, \
     deserialize, find_ne, DifferentTypes, safe_sorted, estr, find_ne, \
     generate, DiffersAtAttribute, hashable, rstr, visit, deep_feq
 from syn.types.a import enumerate as enum
 from syn.base_utils import get_fullname, is_hashable, assert_inequivalent, \
-    assert_equivalent, first, get_typename
+    assert_equivalent, first, get_typename, ngzwarn, is_unique
+
+from syn.globals import TEST_SAMPLES as SAMPLES
+SAMPLES //= 10
+SAMPLES = max(SAMPLES, 1)
+ngzwarn(SAMPLES, 'SAMPLES')
 
 #-------------------------------------------------------------------------------
 # Type
@@ -75,11 +81,6 @@ class Foo(object):
         if not func(self.b, other.b):
             return DiffersAtAttribute(self, other, 'b')
 
-        ret = find_ne(self.a, other.a, func, **kwargs)
-        if ret:
-            return ret
-        return find_ne(self.b, other.b, func, **kwargs)
-
     @classmethod
     def _generate(cls, **kwargs):
         a = generate(int, **kwargs)
@@ -101,11 +102,16 @@ class Foo(object):
 
     def _visit(self, k, **kwargs):
         if k == 0:
-            return self.a
-        return self.b
+            return 'a', self.a
+        return 'b', self.b
 
     def _visit_len(self, **kwargs):
         return 2
+
+
+class FooType(Type):
+    type = Foo
+
 
 def test_custom_object():
     f = Foo(1, 1.2)
@@ -122,7 +128,7 @@ def test_custom_object():
     e1 = eval(estr(f))
     assert_equivalent(e1, f)
 
-    assert list(visit(f)) == [1, 1.2]
+    assert list(visit(f)) == [('a', 1), ('b', 1.2)]
     assert rstr(f) == 'Foo(1,1.2)'
 
     sval = deserialize(serialize(f))
@@ -131,6 +137,16 @@ def test_custom_object():
 
     val = generate(Foo)
     assert type(val) is Foo
+
+    buf = []
+    last = None
+    for item in enum(Foo,  max_enum=SAMPLES * 10, step=100):
+        assert type(item) is Foo
+        assert item != last
+        buf.append(item)
+        last = item
+        
+    assert is_unique(buf)
 
     assert_equivalent(Foo(1, 2.3), Foo(1, 2.3))
 
