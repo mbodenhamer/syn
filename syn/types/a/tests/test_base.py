@@ -2,7 +2,7 @@ from nose.tools import assert_raises
 from syn.five import xrange
 from syn.types.a import Type, hashable, TYPE_REGISTRY, SER_KEYS, serialize, \
     deserialize, find_ne, DifferentTypes, safe_sorted, estr, find_ne, \
-    generate, DiffersAtAttribute, hashable, rstr, visit, deep_feq
+    generate, DiffersAtAttribute, hashable, rstr, visit, deep_feq, attrs
 from syn.types.a import enumerate as enum
 from syn.base_utils import get_fullname, is_hashable, assert_inequivalent, \
     assert_equivalent, first, get_typename, ngzwarn, is_unique
@@ -130,6 +130,8 @@ def test_custom_object():
 
     assert list(visit(f)) == [('a', 1), ('b', 1.2)]
     assert rstr(f) == 'Foo(1,1.2)'
+
+    assert attrs(f) == ['a', 'b']
 
     sval = deserialize(serialize(f))
     assert_equivalent(sval, f)

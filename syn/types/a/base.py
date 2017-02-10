@@ -79,6 +79,10 @@ class Type(object):
     def __init__(self, obj):
         self.obj = obj
 
+    def attrs(self, **kwargs):
+        ret = sorted(vars(self.obj).keys())
+        return ret
+
     @classmethod
     def dispatch(cls, obj):
         return cls.type_dispatch(type(obj))(obj)
@@ -242,7 +246,7 @@ class Type(object):
                 serialize({kwarg: getattr(self.obj, self.ser_kwargmap[kwarg]) 
                            for kwarg in self.ser_kwargs})
         if ser_attrs:
-            dct[SER_KEYS.attrs] = serialize(self.obj.__dict__, **kwargs)
+            dct[SER_KEYS.attrs] = serialize(vars(self.obj), **kwargs)
 
         return dct
 
@@ -312,6 +316,9 @@ class Type(object):
 #-------------------------------------------------------------------------------
 # Utilities
 
+def attrs(obj, **kwargs):
+    return Type.dispatch(obj).attrs(**kwargs)
+
 def deserialize(obj, **kwargs):
     return Type.deserialize_dispatch(obj).deserialize(obj, **kwargs)
 
@@ -358,7 +365,7 @@ def safe_sorted(obj, **kwargs):
 # __all__
 
 __all__ = ('TYPE_REGISTRY', 'SER_KEYS', 'Type',
-           'deserialize', 'enumerate', 'estr', 'find_ne', 'generate', 
+           'deserialize', 'enumerate', 'estr', 'find_ne', 'generate', 'attrs',
            'hashable', 'rstr', 'serialize', 'visit', 'safe_sorted')
 
 #-------------------------------------------------------------------------------
