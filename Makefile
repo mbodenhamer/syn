@@ -81,7 +81,7 @@ HEAVY_TEST = nosetests -v --processes=4 --process-timeout=40
 
 test:
 	@$(PYDEV) coverage erase
-	@$(PYDEV) bash -c "$(RANDOM_SEED); tox"
+	@$(PYDEV) tox
 	@$(PYDEV) coverage html
 
 quick-test:
