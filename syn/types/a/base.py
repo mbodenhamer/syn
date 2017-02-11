@@ -211,7 +211,7 @@ class Type(object):
             return cls._generate(**kwargs)
         elif cls.gen_type:
             return cls.type(cls.gen_type.generate(**kwargs))
-        return cls.type(typ.generate(**kwargs) for typ in cls.gen_types)
+        return cls.type(*[generate(typ, **kwargs) for typ in cls.gen_types])
 
     def _hashable(self, **kwargs):
         return hashable(serialize(self.obj))

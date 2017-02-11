@@ -229,11 +229,74 @@ class Baz(object):
         return not self == other
 
 
+class BazType(Type):
+    type = Baz
+    gen_types = (int, float)
+    ser_args = ('a', 'b')
+
+    @classmethod
+    def _enumeration_value(cls, x, **kwargs):
+        a = first(enum(int, start=x, max_enum=1))
+        b = first(enum(float, start=x, max_enum=1))
+        return cls.type(a, b)
+
+    def estr(self, **kwargs):
+        return '{}({},{})'.format(get_typename(self.obj), 
+                                  estr(self.obj.a),
+                                  estr(self.obj.b))
+
+    def _rstr(self, **kwargs):
+        return '{}({},{})'.format(get_typename(self.obj), 
+                                  rstr(self.obj.a),
+                                  rstr(self.obj.b))
+
+
 def test_custom_type():
     b = Baz(1, 2.3)
     b2 = Baz(1, 2.4)
+    b3 = Baz(2, 2.3)
 
     assert b != b2
+    assert_equivalent(Baz(1, 2.3), Baz(1, 2.3))
+
+    if PY3:
+        assert not is_hashable(b)
+    else:
+        assert is_hashable(b)
+    assert is_hashable(hashable(b))
+
+    assert find_ne(b, b) is None
+    assert find_ne(b, b2) == DiffersAtAttribute(b, b2, 'b')
+    assert find_ne(b, b3) == DiffersAtAttribute(b, b3, 'a')
+
+    e1 = eval(estr(b))
+    assert_equivalent(e1, b)
+
+    assert list(visit(b)) == [('a', 1), ('b', 2.3)]
+    assert rstr(b) == 'Baz(1,2.3)'
+
+    assert attrs(b) == ['a', 'b']
+
+    sval = deserialize(serialize(b))
+    assert_equivalent(sval, b)
+    assert deep_feq(sval, b)
+
+    assert Baz is deserialize(serialize(Baz))
+
+    val = generate(Baz)
+    assert type(val) is Baz
+    assert isinstance(val.a, int)
+    assert isinstance(val.b, float)
+
+    buf = []
+    last = None
+    for item in enum(Baz,  max_enum=SAMPLES * 10, step=100):
+        assert type(item) is Baz
+        assert item != last
+        buf.append(item)
+        last = item
+        
+    assert is_unique(buf)
 
 #-------------------------------------------------------------------------------
 # misc

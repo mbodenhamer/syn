@@ -101,12 +101,12 @@ class Dict(Mapping):
 
 # class OrderedDict(Dict): 
 #     type = collections.OrderedDict
-#     gen_type = Dict
+#     gen_type = dict
 
 
 # class DefaultDict(Dict): 
 #     type = collections.defaultdict
-#     gen_types = (Int, Dict)
+#     gen_types = (int, dict)
 
 
 #-------------------------------------------------------------------------------
