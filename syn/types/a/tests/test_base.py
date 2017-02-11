@@ -216,17 +216,34 @@ def test_normal_type():
 
 
 class Baz(object):
-    pass
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+    def __eq__(self, other):
+        return (type(self) is type(other) and
+                self.a == other.a and
+                self.b == other.b)
+
+    def __ne__(self, other):
+        return not self == other
 
 
 def test_custom_type():
-    pass
+    b = Baz(1, 2.3)
+    b2 = Baz(1, 2.4)
+
+    assert b != b2
 
 #-------------------------------------------------------------------------------
 # misc
 
 def test_misc():
     assert int is deserialize(serialize(int))
+
+    d = dict(a=1, b=2)
+    dd = deserialize(d)
+    assert_equivalent(d, dd)
 
 #-------------------------------------------------------------------------------
 # safe_sorted

@@ -90,8 +90,6 @@ class Type(object):
     @classmethod
     def deserialize_dispatch(cls, obj):
         if not isinstance(obj, dict):
-            if isinstance(obj, type):
-                return cls.type_dispatch(obj)
             return cls.dispatch(obj)
 
         if SER_KEYS.name not in obj or SER_KEYS.mod not in obj:
@@ -113,8 +111,6 @@ class Type(object):
     @classmethod
     def deserialize(cls, dct, **kwargs_):
         if not isinstance(dct, dict):
-            return dct
-        if SER_KEYS.name not in dct or SER_KEYS.mod not in dct:
             return dct
 
         name = dct[SER_KEYS.name]
