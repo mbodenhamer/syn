@@ -384,10 +384,29 @@ def test_misc_serialization():
     n.a = 1
 
     sval = deserialize(serialize(n))
+    assert isinstance(sval, NoSer)
     assert n != sval
     assert vars(n) != vars(sval)
     assert n.a == 1
     assert not hasattr(sval, 'a')
+
+#-------------------------------------------------------------------------------
+# misc
+
+
+class DictWrapper(object):
+    def __init__(self, dct):
+        self.dct = dct
+
+class DictWrapperType(Type):
+    type = DictWrapper
+    gen_type = dict
+
+
+def test_misc():
+    w = generate(DictWrapper)
+    assert isinstance(w, DictWrapper)
+    assert isinstance(w.dct, dict)
 
 #-------------------------------------------------------------------------------
 # safe_sorted

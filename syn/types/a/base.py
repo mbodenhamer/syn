@@ -210,7 +210,7 @@ class Type(object):
         if cls.gen_type is None and cls.gen_types is None:
             return cls._generate(**kwargs)
         elif cls.gen_type:
-            return cls.type(cls.gen_type.generate(**kwargs))
+            return cls.type(generate(cls.gen_type, **kwargs))
         return cls.type(*[generate(typ, **kwargs) for typ in cls.gen_types])
 
     def _hashable(self, **kwargs):
