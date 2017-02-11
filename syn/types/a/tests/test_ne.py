@@ -386,6 +386,10 @@ def test_is_visit_primitive():
     assert is_visit_primitive(f)
     assert list(visit(f)) == [f]
 
+    f.a = 1
+    assert not is_visit_primitive(f)
+    assert list(visit(f)) == [('a', 1)]
+
 #-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
