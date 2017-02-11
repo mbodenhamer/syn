@@ -283,6 +283,9 @@ class Function(Query):
 #-----------------------------------------------------------
 # Comparison
 
+class Identity(Function):
+    arity = 1
+    func = lambda self, x: x
 
 class Comparison(Function):
     arity = 2

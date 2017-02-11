@@ -6,7 +6,7 @@ from syn.tree.b import Node as Node_
 from syn.tree.b.query import Query, Type, Root, Self, Child, Descendant, \
     Ancestor, Parent, Sibling, Following, Preceding, Attribute, Where, \
     Predicate, Any, Position, Name, POSITION, Function, Value, Eq, Ne, Lt, Le, \
-    Gt, Ge
+    Gt, Ge, Identity
 from syn.base_utils import assign
 import syn.type.a
 
@@ -207,6 +207,7 @@ def test_functions():
     assert not Gt(1, 1)(None)
 
     assert Ge(2, 1)(None)
+    assert Ge(Identity(2), 1)(None)
     assert Ge(1, 1)(None)
     assert not Ge(0, 1)(None)
 
