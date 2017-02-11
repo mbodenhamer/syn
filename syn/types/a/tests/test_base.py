@@ -69,6 +69,10 @@ class Foo(object):
 
     __hash__ = None
 
+    def _deserialize(self, dct):
+        # Do something useful here
+        pass
+
     @classmethod
     def _enumeration_value(cls, x, **kwargs):
         a = first(enum(int, start=x, max_enum=1))
@@ -299,14 +303,91 @@ def test_custom_type():
     assert is_unique(buf)
 
 #-------------------------------------------------------------------------------
-# misc
+# Misc. Serializaation
 
-def test_misc():
+
+class KWObject(object):
+    def __init__(self, **kwargs):
+        self.a = kwargs['a']
+        self.b = kwargs['b']
+
+    def __eq__(self, other):
+        return (type(self) is type(other) and
+                self.a == other.a and
+                self.b == other.b)
+
+    def __ne__(self, other):
+        return not self == other
+
+class KWObjectType(Type):
+    type = KWObject
+    ser_kwargs = ['a', 'b']
+
+
+class Foo2(object):
+    def __init__(self, a, **kwargs):
+        self.a = a
+        setattr(self, ':b', kwargs['b'])
+        setattr(self, 'c-1', kwargs['c'])
+
+    def __eq__(self, other):
+        return (type(self) is type(other) and
+                self.a == other.a and
+                getattr(self, ':b') == getattr(other, ':b') and
+                getattr(self, 'c-1') == getattr(other, 'c-1'))
+
+    def __ne__(self, other):
+        return not self == other
+
+class Foo2Type(Type):
+    type = Foo2
+    ser_args = ['a']
+    ser_kwargs = ['b', 'c']
+    ser_kwargmap = dict(b = ':b',
+                        c = 'c-1')
+
+
+class NoSer(object):
+    pass
+
+class NoSerType(Type):
+    type = NoSer
+    ser_attrs = False
+
+
+def test_misc_serialization():
     assert int is deserialize(serialize(int))
 
     d = dict(a=1, b=2)
     dd = deserialize(d)
     assert_equivalent(d, dd)
+
+    k = KWObject(a=1, b=2.3)
+    assert k != KWObject(a=2, b=2.3)
+    assert_equivalent(KWObject(a=1, b=2.3), KWObject(b=2.3, a=1))
+    
+    sval = deserialize(serialize(k))
+    assert_equivalent(sval, k)
+    assert deep_feq(sval, k)
+    assert KWObject is deserialize(serialize(KWObject))
+
+    f = Foo2(1, b=2.3, c='abc')
+    f2 = Foo2(1, b=2.4, c='abc')
+    assert f != f2
+
+    sval = deserialize(serialize(f))
+    assert_equivalent(sval, f)
+    assert deep_feq(sval, f)
+    assert Foo2 is deserialize(serialize(Foo2))
+
+    n = NoSer()
+    n.a = 1
+
+    sval = deserialize(serialize(n))
+    assert n != sval
+    assert vars(n) != vars(sval)
+    assert n.a == 1
+    assert not hasattr(sval, 'a')
 
 #-------------------------------------------------------------------------------
 # safe_sorted
