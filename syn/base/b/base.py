@@ -81,6 +81,8 @@ class Base(object):
                                             'create_hooks',
                                             'setstate_hooks'))
 
+    __hash__ = None
+
     def __init__(self, *args, **kwargs):
         _args = self._opts.args
 

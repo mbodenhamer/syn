@@ -506,6 +506,27 @@ def test_generation():
     assert not hasattr(g, 'c')
 
 #-------------------------------------------------------------------------------
+# Test custom hashability
+
+class CHash1(Base):
+    _opts = dict(make_hashable = False)
+    _attrs = dict(a = Attr(int),
+                  b = Attr(float))
+
+    def __hash__(self):
+        return hash(self.a)
+
+class CHash2(CHash1):
+    _opts = dict(make_hashable = True)
+
+def test_custom_hashability():
+    o1 = CHash1(a=1, b=2.3)
+    o2 = CHash2(a=1, b=2.3)
+
+    assert hash(o1) == hash(1)
+    assert hash(o2) != hash(o1)
+
+#-------------------------------------------------------------------------------
 # Update functionality
 
 class TestUpdate(Base):

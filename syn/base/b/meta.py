@@ -120,8 +120,6 @@ class Meta(_Meta):
             def hashf(self):
                 return hash(self.to_tuple(hash=True))
             setattr(self, '__hash__', hashf)
-        else:
-            setattr(self, '__hash__', None)
 
     def _populate_data(self):
         self._data = Data()
