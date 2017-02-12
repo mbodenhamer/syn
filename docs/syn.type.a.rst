@@ -12,14 +12,6 @@ syn.type.a.ext module
     :undoc-members:
     :show-inheritance:
 
-syn.type.a.registry module
---------------------------
-
-.. automodule:: syn.type.a.registry
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 syn.type.a.type module
 ----------------------
 

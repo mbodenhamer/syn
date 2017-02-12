@@ -11,12 +11,14 @@ Subpackages
     syn.conf
     syn.cython
     syn.five
+    syn.globals
     syn.python
     syn.schema
     syn.serialize
     syn.sets
     syn.tree
     syn.type
+    syn.types
 
 Module contents
 ---------------

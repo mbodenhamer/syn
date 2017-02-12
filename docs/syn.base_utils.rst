@@ -52,6 +52,14 @@ syn.base_utils.hash module
     :undoc-members:
     :show-inheritance:
 
+syn.base_utils.iter module
+--------------------------
+
+.. automodule:: syn.base_utils.iter
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 syn.base_utils.list module
 --------------------------
 
@@ -80,6 +88,14 @@ syn.base_utils.rand module
 --------------------------
 
 .. automodule:: syn.base_utils.rand
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+syn.base_utils.repl module
+--------------------------
+
+.. automodule:: syn.base_utils.repl
     :members:
     :undoc-members:
     :show-inheritance:

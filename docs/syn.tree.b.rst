@@ -12,6 +12,14 @@ syn.tree.b.node module
     :undoc-members:
     :show-inheritance:
 
+syn.tree.b.query module
+-----------------------
+
+.. automodule:: syn.tree.b.query
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 syn.tree.b.tree module
 ----------------------
 

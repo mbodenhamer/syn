@@ -12,4 +12,4 @@ syn
 
 ``syn`` is a Python library and command-line tool that will provide metaprogramming, typing, and compilation facilities.
 
-This project is currently in pre-alpha.  Initial usage documentation and examples will be provided when the project moves to alpha in release ``0.1.0``.  The target date for ``0.1.0`` is Q1 2017.
+This project is currently in pre-alpha.  Initial usage documentation and examples will be provided when the project moves to alpha in release ``0.1.0``.  The target date for ``0.1.0`` is Q3 2017.

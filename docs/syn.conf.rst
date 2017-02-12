@@ -12,6 +12,14 @@ syn.conf.conf module
     :undoc-members:
     :show-inheritance:
 
+syn.conf.conf2 module
+---------------------
+
+.. automodule:: syn.conf.conf2
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 syn.conf.vars module
 --------------------
 
