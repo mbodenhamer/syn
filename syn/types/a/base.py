@@ -251,7 +251,7 @@ class Type(object):
                 serialize({kwarg: getattr(self.obj, self.ser_kwargmap[kwarg]) 
                            for kwarg in self.ser_kwargs})
         if ser_attrs:
-            dct[SER_KEYS.attrs] = serialize(safe_vars(self.obj), **kwargs)
+            dct[SER_KEYS.attrs] = serialize(dict(self.pairs(**kwargs)), **kwargs)
 
         return dct
 
