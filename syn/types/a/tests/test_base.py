@@ -1,9 +1,9 @@
 from nose.tools import assert_raises
 from syn.five import PY3
 from syn.types.a import Type, hashable, TYPE_REGISTRY, SER_KEYS, serialize, \
-    deserialize, find_ne, DifferentTypes, safe_sorted, estr, find_ne, \
-    generate, DiffersAtAttribute, hashable, rstr, visit, deep_feq, attrs, \
-    NotEqual
+    deserialize, DifferentTypes, safe_sorted, estr, find_ne, \
+    generate, DiffersAtAttribute, rstr, visit, deep_feq, attrs, \
+    NotEqual, pairs
 from syn.types.a import enumerate as enum
 from syn.base_utils import get_fullname, is_hashable, assert_inequivalent, \
     assert_equivalent, first, get_typename, ngzwarn, is_unique
@@ -142,6 +142,7 @@ def test_custom_object():
     assert rstr(f) == 'Foo(1,1.2)'
 
     assert attrs(f) == ['a', 'b']
+    assert pairs(f) == [('a', 1), ('b', 1.2)]
 
     sval = deserialize(serialize(f))
     assert_equivalent(sval, f)

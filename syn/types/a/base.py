@@ -222,6 +222,10 @@ class Type(object):
             return self.obj._hashable(**kwargs)
         return self._hashable(**kwargs)
 
+    def pairs(self, **kwargs):
+        ret = [(attr, getattr(self.obj, attr)) for attr in self.attrs(**kwargs)]
+        return ret
+
     def _rstr(self, **kwargs):
         return str(self.obj)
 
@@ -366,6 +370,9 @@ def generate(typ, **kwargs):
 def hashable(obj, **kwargs):
     return Type.dispatch(obj).hashable(**kwargs)
 
+def pairs(obj, **kwargs):
+    return Type.dispatch(obj).pairs(**kwargs)
+
 def rstr(obj, **kwargs):
     return Type.dispatch(obj).rstr(**kwargs)
 
@@ -390,6 +397,6 @@ def safe_sorted(obj, **kwargs):
 
 __all__ = ('TYPE_REGISTRY', 'SER_KEYS', 'Type', 'TypeType',
            'deserialize', 'enumerate', 'estr', 'find_ne', 'generate', 'attrs',
-           'hashable', 'rstr', 'serialize', 'visit', 'safe_sorted')
+           'hashable', 'rstr', 'serialize', 'visit', 'safe_sorted', 'pairs')
 
 #-------------------------------------------------------------------------------
