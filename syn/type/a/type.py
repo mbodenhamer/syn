@@ -4,6 +4,7 @@ from collections import Iterable
 from random import randrange, choice
 from syn.base_utils import hasmethod, message, nearest_base, get_typename, \
     istr, rand_primitive, collection_equivalent
+from syn.types import generate
 
 #-------------------------------------------------------------------------------
 # Type Registry
@@ -170,14 +171,7 @@ class TypeType(Type):
         return get_typename(self.type)
 
     def generate(self, **kwargs):
-        from .registry import TYPE_REGISTRY
-
-        if hasmethod(self.type, '_generate'):
-            return self.type._generate(**kwargs)
-        elif self.type in TYPE_REGISTRY:
-            return TYPE_REGISTRY[self.type].generate(**kwargs)
-        raise TypeError('Unable to generate value for type: {}'
-                        .format(self.type))
+        return generate(self.type, **kwargs)
 
     def rst(self):
         return '*' +  self.display() + '*'

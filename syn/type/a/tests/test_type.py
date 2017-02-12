@@ -267,6 +267,7 @@ def test_dispatch_type():
 
 def test_generation():
     from syn.base_utils.rand import PRIMITIVE_TYPES
+    from syn.types import Type as Type_
 
     anys = [AnyType().generate() for k in xrange(SAMPLES)]
     if len(anys) > 2:
@@ -280,9 +281,11 @@ def test_generation():
         def _generate(cls, **kwargs):
             return cls()
 
+    class BarType(Type_): type = Bar
+
     assert isinstance(TypeType(int).generate(), int)
     assert isinstance(TypeType(Bar).generate(), Bar)
-    assert_raises(TypeError, TypeType(Foo).generate)
+    assert_raises(NotImplementedError, TypeType(Foo).generate)
 
     assert ValuesType([1, 2, 3]).generate() in {1, 2, 3}
     assert isinstance(MultiType([int, float]).generate(), (int, float))
