@@ -6,6 +6,7 @@ from syn.type.a.ext import Callable, Sequence
 from syn.base_utils import GroupDict, AttrDict, SeqDict, ReflexiveDict,\
     callables, rgetattr, hasmethod
 from functools import partial
+from syn.types import hashable
 
 from syn.base.a.meta import Attr as _Attr
 from syn.base.a.meta import Attrs as _Attrs
@@ -118,7 +119,7 @@ class Meta(_Meta):
     def _set_hash(self):
         if self._get_opt('make_hashable', False):
             def hashf(self):
-                return hash(self.to_tuple(hash=True))
+                return hash(hashable(self.to_tuple(hash=True)))
             setattr(self, '__hash__', hashf)
 
     def _populate_data(self):

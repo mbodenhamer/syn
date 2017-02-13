@@ -25,6 +25,9 @@ class A3(A):
     _opts = dict(make_hashable = True)
     _attrs = dict(b = Attr(float, group=A.groups_enum().hash_exclude))
 
+class A4(A3):
+    _attrs = dict(a = Attr(list))
+
 def test_base():
     kwargs = dict(a=5, b=3.4, c=u'abc')
     obj = A(**kwargs)
@@ -61,6 +64,10 @@ def test_base():
     assert obj3.to_tuple() == (5, 3.4, u'abc')
     assert obj3.to_tuple(hash=True) == ('A3', 5, u'abc')
     assert is_hashable(obj3)
+
+    obj4 = A4(a=[1, 2, 3], b=3.4, c='abc')
+    assert not is_hashable(obj4.to_tuple(hash=True))
+    assert is_hashable(obj4)
 
 #-------------------------------------------------------------------------------
 # Test Positional Args

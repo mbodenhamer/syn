@@ -6,6 +6,7 @@ from collections import Mapping
 from .meta import Attrs, Meta, create_hook
 from syn.base_utils import AttrDict, ReflexiveDict, message, get_mod, \
     get_typename, SeqDict, callables, istr, rgetattr
+from syn.types import Type
 
 #-------------------------------------------------------------------------------
 # Templates
@@ -450,6 +451,14 @@ class Base(object):
             if not res:
                 raise TypeError('Validation error for attribute {}: {}'.
                                 format(attr, message(e)))
+
+
+#-------------------------------------------------------------------------------
+# Type Registration
+
+
+class BaseType(Type):
+    type = Base
 
 
 #-------------------------------------------------------------------------------
