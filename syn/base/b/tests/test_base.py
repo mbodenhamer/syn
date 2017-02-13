@@ -59,7 +59,7 @@ def test_base():
 
     obj2 = A2(**kwargs)
     assert_type_equivalent(obj2.to_dict(), dict(a=5, b=3.4, c=u'abc'))
-    assert obj2.to_dict('getstate_exclude', include=True) == dict(b=3.4)
+    assert obj2.to_dict(include=['getstate_exclude']) == dict(b=3.4)
 
     obj3 = A3(**kwargs)
     assert obj3.to_tuple() == (5, 3.4, u'abc')

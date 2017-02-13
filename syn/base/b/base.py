@@ -6,7 +6,7 @@ from collections import Mapping
 from .meta import Attrs, Meta, create_hook
 from syn.base_utils import AttrDict, ReflexiveDict, message, get_mod, \
     get_typename, SeqDict, callables, istr, rgetattr
-from syn.types import Type
+from syn.types import Type, pairs
 
 #-------------------------------------------------------------------------------
 # Templates
@@ -268,7 +268,7 @@ class Base(object):
         cls._data.setstate_hooks = list(cls._data.setstate_hooks) + hooks
 
     def __getstate__(self):
-        return self.to_dict('getstate_exclude')
+        return self.to_dict(exclude=['getstate_exclude'])
 
     def __setstate__(self, state):
         for attr, val in state.items():
@@ -285,8 +285,8 @@ class Base(object):
         if type(self) is not type(other):
             return False
 
-        dct1 = self.to_dict('eq_exclude')
-        dct2 = other.to_dict('eq_exclude')
+        dct1 = self.to_dict(exclude=['eq_exclude'])
+        dct2 = other.to_dict(exclude=['eq_exclude'])
         return dct1 == dct2
 
     def __ne__(self, other):
@@ -305,7 +305,7 @@ class Base(object):
             return self._repr_template()
 
         out = '<' + get_mod(self) + '.' + get_typename(self) + ' '
-        out += str(self.to_dict('repr_exclude'))
+        out += str(self.to_dict(exclude=['repr_exclude']))
         out += '>'
         return out
 
@@ -314,7 +314,7 @@ class Base(object):
 
     def _istr_attrs(self, base, pretty, indent):
         strs = []
-        attrs = self.to_dict('str_exclude')
+        attrs = self.to_dict(exclude=['str_exclude'])
         for attr, val in sorted(attrs.items(), 
                                 key=lambda x: \
                                 self._data.attr_display_order.index(x[0])):
@@ -388,43 +388,26 @@ class Base(object):
                              "positional args")
         return cls(**cls._dict_from_sequence(seq))
 
-    def to_dict(self, *groups, **kwargs):
+    def to_dict(self, **kwargs):
         '''Convert the object into a dict of its declared attributes.
         
-        May exclude certain attribute groups by listing them in *groups.
+        May exclude certain attribute groups by listing them in exclude=[].
         
-        May include certain attribute groups (to the exclusion of all others) by listing them in *groups and supplying the include=True keyword argument.
+        May include certain attribute groups (to the exclusion of all others) by listing them in include=[].
         '''
-        include = kwargs.get('include', False)
+        return dict(pairs(self, **kwargs))
 
-        if not include:
-            if groups:
-                exclude = self._groups.union(*groups)
-            else:
-                exclude = set()
-        else:
-            exclude = self._groups.complement(*groups)
-
-        return {attr: getattr(self, attr) for attr in self._attrs.types
-                if attr not in exclude and hasattr(self, attr)}
-
-    def to_tuple(self, *groups, **kwargs):
+    def to_tuple(self, **kwargs):
         '''Convert the object into a tuple of its declared attribute values.
-
-        May exclude certain attribute groups by listing them in *groups.
-        
-        May include certain attribute groups (to the exclusion of all others) by listing them in *groups and supplying the include=True keyword argument.
-
-        If hash=True is included as a keyword argument, then the class name will be prepended to the beginning of the tuple.
         '''
+        exclude = kwargs.get('exclude', [])
         hash_mode = kwargs.get('hash', False)
         if hash_mode:
-            if 'hash_exclude' not in groups \
-               and not kwargs.get('include', False):
-                groups += ('hash_exclude',)
+            if 'hash_exclude' not in exclude:
+                exclude += ['hash_exclude']
 
-        dct = self.to_dict(*groups, **kwargs)
-        values = [dct[attr] for attr in sorted(dct.keys())]
+        kwargs['exclude'] = exclude
+        values = [val for attr, val in pairs(self, **kwargs)]
         if hash_mode:
             values.insert(0, get_typename(self))
         return tuple(values)
