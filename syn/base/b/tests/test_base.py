@@ -7,6 +7,7 @@ from syn.base_utils import assert_equivalent, assert_pickle_idempotent, \
     assert_inequivalent, assert_type_equivalent, \
     get_mod, SeqDict, is_hashable, this_module
 from syn.base.b import check_idempotence
+from syn.types import attrs
 
 #-------------------------------------------------------------------------------
 # Test basic functionality
@@ -532,6 +533,27 @@ def test_custom_hashability():
 
     assert hash(o1) == hash(1)
     assert hash(o2) != hash(o1)
+
+#-------------------------------------------------------------------------------
+# Test BaseType
+
+class BTTest(Base):
+    _attrs = dict(a = Attr(int, 1, group = 'hash_exclude'),
+                  b = Attr(float, 1.2, internal=True),
+                  c = Attr(str, 'abc', groups=('hash_exclude', 
+                                               'generate_exclude'),
+                           internal=True))
+
+def test_basetype():
+    obj = BTTest()
+    assert attrs(obj) == ['a', 'b', 'c']
+    assert attrs(obj, include=['_internal']) == ['b', 'c']
+    assert attrs(obj, include=['hash_exclude']) == ['a', 'c']
+    assert attrs(obj, exclude=['_internal']) == ['a']
+    assert attrs(obj, exclude=['hash_exclude']) == ['b']
+
+    assert_raises(TypeError, attrs, obj, include=['_internal'],
+                  exclude=['hash_exclude'])
 
 #-------------------------------------------------------------------------------
 # Update functionality

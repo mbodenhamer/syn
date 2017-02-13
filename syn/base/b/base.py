@@ -460,10 +460,28 @@ class Base(object):
 class BaseType(Type):
     type = Base
 
+    def attrs(self, **kwargs):
+        exclude = kwargs.get('exclude', [])
+        include = kwargs.get('include', [])
+
+        if include and exclude:
+            raise TypeError('Cannot specify both include and exclude')
+
+        if exclude:
+            exclude = self.obj._groups.union(*exclude)
+        else:
+            exclude = set()
+
+        if include:
+            exclude = self.obj._groups.complement(*include)
+
+        return sorted(attr for attr in self.obj._attrs.types
+                      if attr not in exclude and hasattr(self.obj, attr))
+
 
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Base', 'init_hook', 'coerce_hook', 'setstate_hook')
+__all__ = ('Base', 'BaseType', 'init_hook', 'coerce_hook', 'setstate_hook')
 
 #-------------------------------------------------------------------------------
