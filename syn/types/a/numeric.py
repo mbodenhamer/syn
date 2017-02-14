@@ -31,7 +31,7 @@ def complex_enumval(x, **kwargs):
 
 
 class Numeric(Type):
-    def _builtin_form(self, **kwargs):
+    def _primitive_form(self, **kwargs):
         return self.obj
 
     def estr(self, **kwargs):
