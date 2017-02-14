@@ -47,9 +47,6 @@ class Set(Type):
     def _generate(cls, **kwargs):
         return rand_set(**kwargs)
 
-    def _primitive_form(self, **kwargs):
-        return [primitive_form(item, **kwargs) for item in self.obj]
-
     def _rstr(self, **kwargs):
         # TODO: add pretty option
         parts = [rstr(item, **kwargs) for item in self.obj]

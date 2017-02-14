@@ -71,11 +71,6 @@ class Mapping(Type):
                     for key, value in self.obj.items())
         return tuple_prepend(get_fullname(self.obj), tup)
 
-    def _primitive_form(self, **kwargs):
-        ret = {key: primitive_form(val, **kwargs) 
-               for key,val in self.obj.items()}
-        return ret
-
     def _rstr(self, **kwargs):
         # TODO: add pretty option
         parts = ["{}: {}".format(rstr(key, **kwargs), rstr(value, **kwargs))

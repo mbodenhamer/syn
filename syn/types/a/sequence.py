@@ -82,9 +82,6 @@ class Sequence(Type):
         tup = tuple([hashable(item) for item in self.obj])
         return tuple_prepend(get_fullname(self.obj), tup)
 
-    def _primitive_form(self, **kwargs):
-        return [primitive_form(item, **kwargs) for item in self.obj]
-
     def _rstr(self, **kwargs):
         # TODO: add pretty option
         parts = [rstr(item, **kwargs) for item in self.obj]

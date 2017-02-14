@@ -241,11 +241,7 @@ class Type(object):
         return ret
 
     def _primitive_form(self, **kwargs):
-        if not self.attrs(**kwargs):
-            return self.obj
-        ret = {attr: primitive_form(val, **kwargs) 
-               for attr, val in self.pairs(**kwargs)}
-        return ret
+        return collect(self.obj, **kwargs)
 
     def primitive_form(self, **kwargs):
         if hasattr(self.obj, '_primitive_form'):
