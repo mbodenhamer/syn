@@ -4,7 +4,7 @@ from collections import Iterable
 from random import randrange, choice
 from syn.base_utils import hasmethod, message, nearest_base, get_typename, \
     istr, rand_primitive, collection_equivalent
-from syn.types import generate
+from syn.types import generate, enumeration_value
 
 #-------------------------------------------------------------------------------
 # Type Registry
@@ -69,6 +69,10 @@ class Type(object):
         '''Returns a quasi-intuitive string representation of the type.'''
         raise NotImplementedError
 
+    def enumeration_value(self, x, **kwargs):
+        '''Return the enumeration value for *x* for this type.'''
+        raise NotImplementedError
+
     def generate(self, **kwargs):
         '''Returns a value for this type.'''
         raise NotImplementedError
@@ -108,6 +112,18 @@ class AnyType(Type):
 
     def display(self):
         return 'any'
+
+    def enumeration_value(self, x, **kwargs):
+        max_enum = kwargs.get('max_enum', 20)
+        types = kwargs.get('types', GENERABLE_TYPE_REGISTRY)
+        N = randrange(min(len(types), max_enum))
+
+        for k, typ in enumerate(types):
+            if k == N:
+                try:
+                    return typ.enumeration_value(x, **kwargs)
+                except:
+                    return enumeration_value(int, x, **kwargs)
 
     def generate(self, **kwargs):
         max_enum = kwargs.get('max_enum', 20)
@@ -170,6 +186,9 @@ class TypeType(Type):
     def display(self):
         return get_typename(self.type)
 
+    def enumeration_value(self, x, **kwargs):
+        return enumeration_value(self.type, x, **kwargs)
+
     def generate(self, **kwargs):
         return generate(self.type, **kwargs)
 
@@ -225,6 +244,10 @@ class ValuesType(Type):
 
     def display(self):
         return istr(list(self.values))
+
+    def enumeration_value(self, x, **kwargs):
+        idx = x % len(self.indexed_values)
+        return self.indexed_values[idx]
 
     def generate(self, **kwargs):
         return choice(self.indexed_values)
@@ -292,6 +315,10 @@ class MultiType(Type):
     def display(self):
         strs = [typ.display() for typ in self.types]
         return ' | '.join(strs)
+
+    def enumeration_value(self, x, **kwargs):
+        idx = x % len(self.types)
+        return self.types[idx].enumeration_value(x, **kwargs)
 
     def generate(self, **kwargs):
         typ = choice(self.types)

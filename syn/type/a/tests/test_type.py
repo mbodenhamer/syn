@@ -3,7 +3,7 @@ from syn.five import xrange
 from nose.tools import assert_raises
 from syn.type.a import (Type, ValuesType, MultiType, TypeType, AnyType,
                         TypeExtension, Set, Schema)
-from syn.base_utils import is_hashable
+from syn.base_utils import is_hashable, feq
 
 from syn.base_utils import ngzwarn, on_error, elog
 from syn.globals import TEST_SAMPLES as SAMPLES
@@ -23,6 +23,7 @@ def test_type():
     assert_raises(NotImplementedError, t.check, 1)
     assert_raises(NotImplementedError, t.coerce, 1)
     assert_raises(NotImplementedError, t.display)
+    assert_raises(NotImplementedError, t.enumeration_value, 1)
     assert_raises(NotImplementedError, t.generate)
     assert_raises(NotImplementedError, t.rst)
     assert_raises(NotImplementedError, t.validate, 1)
@@ -289,6 +290,31 @@ def test_generation():
 
     assert ValuesType([1, 2, 3]).generate() in {1, 2, 3}
     assert isinstance(MultiType([int, float]).generate(), (int, float))
+
+#-------------------------------------------------------------------------------
+# Test enumeration values
+
+def test_enumeration_values():
+    assert TypeType(int).enumeration_value(0) == 0
+
+    v = ValuesType([1, 2, 3])
+    assert v.enumeration_value(0) == 1
+    assert v.enumeration_value(1) == 2
+    assert v.enumeration_value(2) == 3
+    assert v.enumeration_value(3) == 1
+
+    m = MultiType([int, float])
+    assert m.enumeration_value(0) == 0
+    assert feq(m.enumeration_value(1), 0.1)
+    assert m.enumeration_value(2) == 2
+    assert feq(m.enumeration_value(3), 0.3)
+    
+    anys = [AnyType().enumeration_value(k) for k in xrange(SAMPLES)]
+    if len(anys) > 2:
+        assert any(x is not None for x in anys)
+        
+    class Foo(object): pass
+    assert AnyType().enumeration_value(0, types=[Foo]) == 0
 
 #-------------------------------------------------------------------------------
 
