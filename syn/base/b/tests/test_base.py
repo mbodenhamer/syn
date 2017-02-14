@@ -4,10 +4,18 @@ from syn.five import STR
 from syn.base.b import Base, Attr, init_hook, coerce_hook, setstate_hook
 from syn.type.a import Type
 from syn.base_utils import assert_equivalent, assert_pickle_idempotent, \
-    assert_inequivalent, assert_type_equivalent, \
-    get_mod, SeqDict, is_hashable, this_module
+    assert_inequivalent, assert_type_equivalent, is_unique, first, \
+    get_mod, SeqDict, is_hashable, this_module, ngzwarn
 from syn.base.b import check_idempotence
-from syn.types import attrs
+from syn.types import attrs, deserialize, enumeration_value, \
+    estr, find_ne, generate, hashable, pairs, rstr, serialize, visit, \
+    DiffersAtAttribute, deep_feq
+from syn.types import enumerate as enum
+
+from syn.globals import TEST_SAMPLES as SAMPLES
+SAMPLES //= 10
+SAMPLES = max(SAMPLES, 1)
+ngzwarn(SAMPLES, 'SAMPLES')
 
 #-------------------------------------------------------------------------------
 # Test basic functionality
@@ -554,6 +562,54 @@ def test_basetype():
 
     assert_raises(TypeError, attrs, obj, include=['_internal'],
                   exclude=['hash_exclude'])
+
+#-------------------------------------------------------------------------------
+# Test syn.types functionality
+
+class SynTypesTest(Base):
+    _attrs = dict(a = Attr(int),
+                  b = Attr(float),
+                  c = Attr(STR))
+
+def test_syn_types_functionality():
+    s = SynTypesTest(a=1, b=1.2, c='abc')
+    s2 = SynTypesTest(a=1, b=1.2, c='abcd')
+
+    assert not is_hashable(s)
+    assert is_hashable(hashable(s))
+
+    assert find_ne(s, s) is None
+    assert find_ne(s, s2) == DiffersAtAttribute(s, s2, 'c')
+
+    e1 = eval(estr(s))
+    assert_equivalent(e1, s)
+
+    assert list(visit(s)) == [('a', 1), ('b', 1.2), ('c', 'abc')]
+    assert rstr(s) == "SynTypesTest(a = 1, b = 1.2, c = 'abc')"
+
+    assert attrs(s) == ['a', 'b', 'c']
+    assert pairs(s) == [('a', 1), ('b', 1.2), ('c', 'abc')]
+
+    sval = deserialize(serialize(s))
+    assert_equivalent(sval, s)
+    assert deep_feq(sval, s)
+
+    assert SynTypesTest is deserialize(serialize(SynTypesTest))
+
+    val = generate(SynTypesTest)
+    #assert type(val) is SynTypesTest
+
+    # buf = []
+    # last = None
+    # for item in enum(SynTypesTest,  max_enum=SAMPLES * 10, step=100):
+    #     assert type(item) is SynTypesTest
+    #     assert item != last
+    #     buf.append(item)
+    #     last = item
+
+    # assert enumeration_value(SynTypesTest, 0) == \
+    #     first(enum(SynTypesTest, max_enum=1))
+    # assert is_unique(buf)
 
 #-------------------------------------------------------------------------------
 # Update functionality

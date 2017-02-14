@@ -386,7 +386,7 @@ class Base(object):
     def _estr(self, **kwargs):
         kwargs = {attr: estr(val) for attr, val in pairs(self, **kwargs)}
         argstr = ','.join('{}={}'.format(attr, val) for attr, val in kwargs.items())
-        return '{}({})'.format(get_typename(self, argstr))
+        return '{}({})'.format(get_typename(self), argstr)
 
     def _find_ne(self, other, func, **kwargs):
         for attr, value in pairs(self, exclude=['eq_exclude']):
@@ -426,7 +426,8 @@ class Base(object):
         kwargs = dict(kwargs)
         exclude = list(kwargs.get('exclude', []))
         if 'getstate_exclude' not in exclude:
-            kwargs['exclude'] += ['getstate_exclude']
+            exclude += ['getstate_exclude']
+        kwargs['exclude'] = exclude
         dct[SER_KEYS.kwargs] = {attr: serialize(value, **kwargs)
                                 for attr, value in pairs(self, **kwargs)}
         return dct
