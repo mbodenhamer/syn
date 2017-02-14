@@ -421,7 +421,7 @@ class Base(object):
         return cls(**kwargs)
 
     def _hashable(self, **kwargs):
-        items = [hashable(val) for val in self.to_tuple(exclude=['hash_exclude'])]
+        items = [hashable(val, **kwargs) for val in self.to_tuple(exclude=['hash_exclude'])]
         items.insert(0, get_fullname(self))
         return tuple(items)
 
@@ -447,17 +447,7 @@ class Base(object):
     def to_tuple(self, **kwargs):
         '''Convert the object into a tuple of its declared attribute values.
         '''
-        exclude = list(kwargs.get('exclude', []))
-        hash_mode = kwargs.get('hash', False)
-        if hash_mode:
-            if 'hash_exclude' not in exclude:
-                exclude += ['hash_exclude']
-
-        kwargs = dict(kwargs)
-        kwargs['exclude'] = exclude
         values = [val for attr, val in pairs(self, **kwargs)]
-        if hash_mode:
-            values.insert(0, get_typename(self))
         return tuple(values)
 
     def validate(self):

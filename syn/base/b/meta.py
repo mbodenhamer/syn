@@ -119,7 +119,7 @@ class Meta(_Meta):
     def _set_hash(self):
         if self._get_opt('make_hashable', False):
             def hashf(self):
-                return hash(hashable(self.to_tuple(hash=True)))
+                return hash(self._hashable())
             setattr(self, '__hash__', hashf)
 
     def _populate_data(self):

@@ -47,7 +47,6 @@ def test_base():
     
     assert obj.to_dict() == kwargs
     assert obj.to_tuple() == (5, 3.4, u'abc')
-    assert obj.to_tuple(hash=True) == ('A', 5, 3.4, u'abc')
     assert not is_hashable(obj)
 
     assert obj != 5
@@ -71,11 +70,9 @@ def test_base():
 
     obj3 = A3(**kwargs)
     assert obj3.to_tuple() == (5, 3.4, u'abc')
-    assert obj3.to_tuple(hash=True) == ('A3', 5, u'abc')
     assert is_hashable(obj3)
 
     obj4 = A4(a=[1, 2, 3], b=3.4, c='abc')
-    assert not is_hashable(obj4.to_tuple(hash=True))
     assert is_hashable(obj4)
 
 #-------------------------------------------------------------------------------
