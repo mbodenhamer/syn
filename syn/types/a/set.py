@@ -2,7 +2,7 @@ from itertools import islice
 from syn.base_utils import get_fullname, rand_set, rand_frozenset, \
     escape_for_eval, get_typename
 from .base import Type, hashable, serialize, SER_KEYS, rstr, estr, \
-    safe_sorted, primitive_form
+    safe_sorted, primitive_form, collect
 from syn.base_utils.rand import HASHABLE_TYPES
 from .sequence import list_enumval
 from .ne import SetDifferences
@@ -25,6 +25,10 @@ class Set(Type):
         super(Set, self).__init__(*args, **kwargs)
         self.visit_buffer = []
         self.visit_iter = iter(self.obj)
+
+    def _collect(self, func, **kwargs):
+        ret = [collect(item, func, **kwargs) for item in self.obj]
+        return func(ret, **kwargs)
 
     @classmethod
     def _enumeration_value(cls, x, **kwargs):

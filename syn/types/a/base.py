@@ -1,6 +1,7 @@
 import six
 import operator as op
 from functools import wraps
+from collections import Iterable
 from syn.base_utils import nearest_base, is_hashable, tuple_prepend, \
     get_fullname, get_mod, get_typename, AttrDict, hasmethod, import_module, \
     quote_string, iteration_length, escape_for_eval, compose, safe_vars
@@ -82,6 +83,19 @@ class Type(object):
     def attrs(self, **kwargs):
         ret = sorted(safe_vars(self.obj).keys())
         return ret
+
+    def _collect(self, func, **kwargs):
+        if not self.attrs():
+            return func(self.obj)
+
+        ret = {attr: collect(val, func, **kwargs)
+               for attr, val in self.pairs(**kwargs)}
+        return func(ret, **kwargs)
+
+    def collect(self, func, **kwargs):
+        if hasmethod(self.obj, '_collect'):
+            return self.obj._collect(func, **kwargs)
+        return self._collect(func, **kwargs)
 
     @classmethod
     def dispatch(cls, obj):
@@ -359,6 +373,11 @@ class TypeType(Type):
 def attrs(obj, **kwargs):
     return Type.dispatch(obj).attrs(**kwargs)
 
+identity = lambda x, **kwargs: x
+
+def collect(obj, func=identity, **kwargs):
+    return Type.dispatch(obj).collect(func, **kwargs)
+
 def deserialize(obj, **kwargs):
     return Type.deserialize_dispatch(obj).deserialize(obj, **kwargs)
 
@@ -407,6 +426,9 @@ def visit(obj, k=0, **kwargs):
         yield item
 
 def safe_sorted(obj, **kwargs):
+    if not isinstance(obj, Iterable):
+        return obj
+
     try:
         return sorted(obj, **kwargs)
     except (TypeError, UnicodeDecodeError):
@@ -419,6 +441,6 @@ def safe_sorted(obj, **kwargs):
 __all__ = ('TYPE_REGISTRY', 'SER_KEYS', 'Type', 'TypeType',
            'deserialize', 'enumerate', 'estr', 'find_ne', 'generate', 'attrs',
            'hashable', 'rstr', 'serialize', 'visit', 'safe_sorted', 'pairs',
-           'enumeration_value', 'primitive_form')
+           'enumeration_value', 'primitive_form', 'collect')
 
 #-------------------------------------------------------------------------------

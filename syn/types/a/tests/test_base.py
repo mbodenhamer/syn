@@ -1,9 +1,10 @@
+import collections
 from nose.tools import assert_raises
 from syn.five import PY3
 from syn.types.a import Type, hashable, TYPE_REGISTRY, SER_KEYS, serialize, \
     deserialize, DifferentTypes, safe_sorted, estr, find_ne, \
     generate, DiffersAtAttribute, rstr, visit, deep_feq, attrs, \
-    NotEqual, pairs, enumeration_value, primitive_form
+    NotEqual, pairs, enumeration_value, primitive_form, collect
 from syn.types.a import enumerate as enum
 from syn.base_utils import get_fullname, is_hashable, assert_inequivalent, \
     assert_equivalent, first, get_typename, ngzwarn, is_unique
@@ -68,6 +69,11 @@ class Foo(object):
         return not self == other
 
     __hash__ = None
+
+    def _collect(self, func, **kwargs):
+        return func(dict(a = collect(self.a, **kwargs),
+                         b = collect(self.b, **kwargs)),
+                    **kwargs)
 
     def _primitive_form(self, **kwargs):
         return dict(a = primitive_form(self.a, **kwargs),
@@ -155,6 +161,7 @@ def test_custom_object():
     assert Foo is deserialize(serialize(Foo))
     assert primitive_form(Foo) is Foo
     assert primitive_form(f) == dict(a=1, b=1.2)
+    assert collect(f) == primitive_form(f)
 
     val = generate(Foo)
     assert type(val) is Foo
@@ -224,6 +231,17 @@ def test_normal_type():
 
     b4 = Bar(2, b2)
     assert primitive_form(b4) == dict(a=2, b=dict(a=1, b=2.4))
+
+    assert collect(b4) == primitive_form(b4)
+    
+    def dothing(obj):
+        if isinstance(obj, collections.Mapping):
+            return safe_sorted(obj.values())
+        return safe_sorted(obj)
+    assert collect(b4, dothing) in [[2, [1, 2.4]],
+                                    [2, [2.4, 1]],
+                                    [[1, 2.4], 2],
+                                    [[2.4, 1], 2]]
 
     # Because the types system knows nothing of the Bar class
     assert_raises(NotImplementedError, generate, Bar)
@@ -428,6 +446,7 @@ def test_misc():
 # safe_sorted
 
 def test_safe_sorted():
+    assert safe_sorted(1) == 1
     assert safe_sorted([2, 1]) == [1, 2]
     safe_sorted(['abc', 1, 1.2])
 

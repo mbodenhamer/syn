@@ -3,7 +3,7 @@ from syn.five import xrange
 from syn.base_utils import rand_list, rand_tuple, get_fullname, tuple_prepend, \
     get_typename, escape_for_eval
 from .base import Type, hashable, deserialize, serialize, SER_KEYS, rstr, \
-    estr, primitive_form
+    estr, primitive_form, collect
 from syn.base_utils.rand import SEQ_TYPES, MAX_DEPTH, PRIMITIVE_TYPES
 from .ne import DiffersAtIndex, DifferentLength
 
@@ -47,6 +47,10 @@ def list_enumval(x, **kwargs):
 
 class Sequence(Type):
     type = collections.Sequence
+
+    def _collect(self, func, **kwargs):
+        ret = [collect(item, func, **kwargs) for item in self.obj]
+        return func(ret, **kwargs)
 
     @classmethod
     def deserialize(cls, seq, **kwargs):

@@ -1,7 +1,7 @@
 from syn.five import xrange
 from syn.types.a import Type, Set, FrozenSet, \
     hashable, serialize, deserialize, estr, rstr, visit, find_ne, \
-    SetDifferences, deep_feq, safe_sorted, primitive_form
+    SetDifferences, deep_feq, safe_sorted, primitive_form, collect
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, on_error, elog, \
     ngzwarn, is_unique, subclasses, hangwatch
@@ -69,6 +69,7 @@ def test_set():
 
     s = {1, 2, (3, 4)}
     assert primitive_form(s) == [1, 2, [3, 4]]
+    assert collect(s) == primitive_form(s)
 
 #-------------------------------------------------------------------------------
 

@@ -2,7 +2,7 @@ import collections
 from syn.base_utils import rand_dict, get_fullname, tuple_prepend, \
     get_typename, escape_for_eval
 from .base import Type, serialize, hashable, rstr, estr, SER_KEYS, \
-    deserialize, safe_sorted, primitive_form
+    deserialize, safe_sorted, primitive_form, collect
 from .numeric import Int
 from .sequence import list_enumval
 from .set import set_enumval
@@ -29,6 +29,11 @@ class Mapping(Type):
         super(Mapping, self).__init__(*args, **kwargs)
         self.visit_buffer = []
         self.visit_iter = iter(self.obj)
+
+    def _collect(self, func, **kwargs):
+        ret = {key: collect(val, func, **kwargs)
+               for key, val in self.obj.items()}
+        return func(ret, **kwargs)
 
     @classmethod
     def deserialize(cls, dct, **kwargs):

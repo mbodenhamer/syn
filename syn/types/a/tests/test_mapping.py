@@ -1,8 +1,10 @@
 from six import PY2
+import collections
 from syn.five import xrange
 from syn.types.a import Type, Mapping, Dict, \
     hashable, serialize, deserialize, estr, rstr, visit, find_ne, \
-    DiffersAtKey, KeyDifferences, deep_feq, safe_sorted, primitive_form
+    DiffersAtKey, KeyDifferences, deep_feq, safe_sorted, primitive_form, \
+    collect
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, on_error, elog, \
     ngzwarn, is_unique, subclasses, hangwatch
@@ -14,11 +16,19 @@ ngzwarn(SAMPLES, 'SAMPLES')
 
 #-------------------------------------------------------------------------------
 
+def ss(obj):
+    if isinstance(obj, collections.Mapping):
+        return safe_sorted(obj.values())
+    return safe_sorted(obj)
+
+ss(1)
+ss({})
+
 def examine_mapping(cls, val):
     assert type(val) is cls.type
     assert is_hashable(hashable(val))
     sval = deserialize(serialize(val))
-    assert deep_feq(sval, val)
+    assert deep_feq(sval, val) or deep_feq(collect(sval, ss), collect(val, ss))
     assert isinstance(rstr(val), str)
 
     assert list(visit(val)) == safe_sorted(list(val.items()))
@@ -58,7 +68,6 @@ def test_mapping():
     assert is_hashable(hashable(d))
     examine_mapping(Dict, d)
 
-
     for cls in subclasses(Mapping):
         for k in xrange(SAMPLES):
             val = cls.generate()
@@ -77,11 +86,21 @@ def test_mapping():
 
     d = dict(a=1, b=[1, 2, (3, 4)])
     assert primitive_form(d) == dict(a=1, b=[1, 2, [3, 4]])
+    assert collect(d) == primitive_form(d)
 
 #-------------------------------------------------------------------------------
 # Bad test cases
 
-# def test_bad_cases():
+def test_bad_cases():
+    d = {'\x8a\x86k\xd1k\xafd\x12': set([-1.3846455538007134e+308, 
+                                         -2812529263850842664, 
+                                         (-3.90682317364909e+307+1.010644744358304e+308j), 
+                                         1.0698329510780509e+308]), 
+         (8.814339430527538e+307+7.59265276795928e+307j): None, 
+         -78098711297023825948717305522402599973510534836931705515263: ()}
+
+    examine_mapping(Dict, d)
+
 #     from syn.types.a import OrderedDict as OrderedDict_
 #     from collections import OrderedDict
 
