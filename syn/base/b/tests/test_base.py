@@ -574,6 +574,9 @@ class SynTypesTest(Base):
 class SynTypesTest2(SynTypesTest):
     _opts = dict(make_type_object = False)
 
+class SynTypesTest3(SynTypesTest):
+    _attrs = dict(d = Attr(int, group='generate_exclude'))
+
 def test_syn_types_functionality():
     s = SynTypesTest(a=1, b=1.2, c='abc')
     s2 = SynTypesTest(a=1, b=1.2, c='abcd')
@@ -617,6 +620,10 @@ def test_syn_types_functionality():
     val = generate(SynTypesTest2)
     assert type(val) is not SynTypesTest2
     assert type(val) is SynTypesTest
+
+    item = first(enum(SynTypesTest3, max_enum=1))
+    assert type(item) is SynTypesTest3
+    assert not hasattr(item, 'd')
 
 #-------------------------------------------------------------------------------
 # Update functionality
