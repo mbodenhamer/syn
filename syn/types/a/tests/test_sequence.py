@@ -6,6 +6,7 @@ from syn.types.a import Type, Sequence, List, Tuple, \
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, elog, ngzwarn, \
     is_unique, on_error, subclasses, hangwatch
+from .test_mapping import ss
 
 from syn.globals import TEST_SAMPLES as SAMPLES
 SAMPLES //= 10
@@ -18,7 +19,7 @@ def examine_sequence(cls, val):
     assert type(val) is cls.type
     assert is_hashable(hashable(val))
     sval = deserialize(serialize(val))
-    assert deep_feq(sval, val)
+    assert deep_feq(sval, val) or deep_feq(collect(sval, ss), collect(val, ss))
     assert isinstance(rstr(val), str)
 
     assert list(visit(val)) == list(val)
