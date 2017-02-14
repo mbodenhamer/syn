@@ -3,7 +3,7 @@ from syn.five import xrange
 from nose.tools import assert_raises
 from syn.types.a import Type, String, Unicode, Bytes, \
     hashable, serialize, deserialize, estr, rstr, generate, visit, find_ne, \
-    DifferentLength, DiffersAtIndex
+    DifferentLength, DiffersAtIndex, Basestring
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, subclasses, \
     on_error, elog, ngzwarn, is_unique
@@ -74,7 +74,7 @@ def test_string():
     assert find_ne('abc', 'abd') == DiffersAtIndex('abc', 'abd', 2)
 
     for cls in subclasses(String, [String]):
-        if cls.type is None:
+        if cls.type is None or cls is Basestring:
             continue
 
         for k in xrange(SAMPLES):
