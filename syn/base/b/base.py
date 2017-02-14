@@ -70,6 +70,7 @@ class Base(object):
                      id_equality = False,
                      init_validate = False,
                      make_hashable = False,
+                     make_type_object = True,
                      optional_none = False,
                      repr_template = '',
                      register_subclasses = False)
@@ -146,13 +147,6 @@ class Base(object):
 
         if self._opts.init_validate:
             self.validate()
-
-    # @classmethod
-    # def _generate(cls, **kwargs):
-    #     dct = {attr: info.type.generate(**kwargs) for attr, info in
-    #            cls._attrs.items() if attr not in 
-    #            cls._groups['generate_exclude']}
-    #     return cls(**dct)
 
     @classmethod
     def _generate_documentation_signature(cls, attrs):
@@ -268,6 +262,15 @@ class Base(object):
         hooks = cls._find_hooks('is_setstate_hook', _SetstateHook)
         cls._data.setstate_hooks = list(cls._data.setstate_hooks) + hooks
 
+    @classmethod
+    @create_hook
+    def _make_type_object(cls):
+        if cls._class_data.clsname == 'Base' or not cls._opts.make_type_object:
+            return
+
+        class BaseChildGeneratedType(BaseType):
+            type = cls
+
     def __getstate__(self):
         return self.to_dict(exclude=['getstate_exclude'])
 
@@ -378,7 +381,7 @@ class Base(object):
     def _enumeration_value(cls, x, **kwargs):
         kwargs = {}
         for attr, typ in cls._attrs.types.items():
-            if attr in cls._attrs.groups.generate_exclude:
+            if attr in cls._groups.generate_exclude:
                 continue
             kwargs[attr] = typ.enumeration_value(x, **kwargs)
         return cls(**kwargs)
@@ -412,7 +415,7 @@ class Base(object):
     def _generate(cls, **kwargs):
         kwargs = {}
         for attr, typ in cls._attrs.types.items():
-            if attr in cls._attrs.groups.generate_exclude:
+            if attr in cls._groups.generate_exclude:
                 continue
             kwargs[attr] = typ.generate(**kwargs)
         return cls(**kwargs)

@@ -571,6 +571,9 @@ class SynTypesTest(Base):
                   b = Attr(float),
                   c = Attr(STR))
 
+class SynTypesTest2(SynTypesTest):
+    _opts = dict(make_type_object = False)
+
 def test_syn_types_functionality():
     s = SynTypesTest(a=1, b=1.2, c='abc')
     s2 = SynTypesTest(a=1, b=1.2, c='abcd')
@@ -597,19 +600,23 @@ def test_syn_types_functionality():
     assert SynTypesTest is deserialize(serialize(SynTypesTest))
 
     val = generate(SynTypesTest)
-    #assert type(val) is SynTypesTest
+    assert type(val) is SynTypesTest
 
-    # buf = []
-    # last = None
-    # for item in enum(SynTypesTest,  max_enum=SAMPLES * 10, step=100):
-    #     assert type(item) is SynTypesTest
-    #     assert item != last
-    #     buf.append(item)
-    #     last = item
+    buf = []
+    last = None
+    for item in enum(SynTypesTest,  max_enum=SAMPLES * 10, step=100):
+        assert type(item) is SynTypesTest
+        assert item != last
+        buf.append(item)
+        last = item
 
-    # assert enumeration_value(SynTypesTest, 0) == \
-    #     first(enum(SynTypesTest, max_enum=1))
-    # assert is_unique(buf)
+    assert enumeration_value(SynTypesTest, 0) == \
+        first(enum(SynTypesTest, max_enum=1))
+    assert is_unique(buf)
+
+    val = generate(SynTypesTest2)
+    assert type(val) is not SynTypesTest2
+    assert type(val) is SynTypesTest
 
 #-------------------------------------------------------------------------------
 # Update functionality
