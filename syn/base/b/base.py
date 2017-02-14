@@ -5,8 +5,9 @@ from operator import itemgetter
 from collections import Mapping
 from .meta import Attrs, Meta, create_hook
 from syn.base_utils import AttrDict, ReflexiveDict, message, get_mod, \
-    get_typename, SeqDict, callables, istr, rgetattr
-from syn.types import Type, pairs
+    get_typename, SeqDict, callables, istr, rgetattr, get_fullname
+from syn.types import Type, pairs, estr, DiffersAtAttribute, hashable, \
+    SER_KEYS, serialize
 
 #-------------------------------------------------------------------------------
 # Templates
@@ -146,12 +147,12 @@ class Base(object):
         if self._opts.init_validate:
             self.validate()
 
-    @classmethod
-    def _generate(cls, **kwargs):
-        dct = {attr: info.type.generate(**kwargs) for attr, info in
-               cls._attrs.items() if attr not in 
-               cls._groups['generate_exclude']}
-        return cls(**dct)
+    # @classmethod
+    # def _generate(cls, **kwargs):
+    #     dct = {attr: info.type.generate(**kwargs) for attr, info in
+    #            cls._attrs.items() if attr not in 
+    #            cls._groups['generate_exclude']}
+    #     return cls(**dct)
 
     @classmethod
     def _generate_documentation_signature(cls, attrs):
@@ -374,6 +375,25 @@ class Base(object):
         return cls(**attrs)
 
     @classmethod
+    def _enumeration_value(cls, x, **kwargs):
+        kwargs = {}
+        for attr, typ in cls._attrs.types.items():
+            if attr in cls._attrs.groups.generate_exclude:
+                continue
+            kwargs[attr] = typ.enumeration_value(x, **kwargs)
+        return cls(**kwargs)
+
+    def _estr(self, **kwargs):
+        kwargs = {attr: estr(val) for attr, val in pairs(self, **kwargs)}
+        argstr = ','.join('{}={}'.format(attr, val) for attr, val in kwargs.items())
+        return '{}({})'.format(get_typename(self, argstr))
+
+    def _find_ne(self, other, func, **kwargs):
+        for attr, value in pairs(self, exclude=['eq_exclude']):
+            if not func(value, getattr(other, attr)):
+                return DiffersAtAttribute(self, other, attr)
+
+    @classmethod
     def from_mapping(cls, value):
         return cls(**cls._dict_from_mapping(value))
 
@@ -388,6 +408,29 @@ class Base(object):
                              "positional args")
         return cls(**cls._dict_from_sequence(seq))
 
+    @classmethod
+    def _generate(cls, **kwargs):
+        kwargs = {}
+        for attr, typ in cls._attrs.types.items():
+            if attr in cls._attrs.groups.generate_exclude:
+                continue
+            kwargs[attr] = typ.generate(**kwargs)
+        return cls(**kwargs)
+
+    def _hashable(self, **kwargs):
+        items = [hashable(val) for val in self.to_tuple(exclude=['hash_exclude'])]
+        items.insert(0, get_fullname(self))
+        return tuple(items)
+
+    def _serialize(self, dct, **kwargs):
+        kwargs = dict(kwargs)
+        exclude = list(kwargs.get('exclude', []))
+        if 'getstate_exclude' not in exclude:
+            kwargs['exclude'] += ['getstate_exclude']
+        dct[SER_KEYS.kwargs] = {attr: serialize(value, **kwargs)
+                                for attr, value in pairs(self, **kwargs)}
+        return dct
+
     def to_dict(self, **kwargs):
         '''Convert the object into a dict of its declared attributes.
         
@@ -400,12 +443,13 @@ class Base(object):
     def to_tuple(self, **kwargs):
         '''Convert the object into a tuple of its declared attribute values.
         '''
-        exclude = kwargs.get('exclude', [])
+        exclude = list(kwargs.get('exclude', []))
         hash_mode = kwargs.get('hash', False)
         if hash_mode:
             if 'hash_exclude' not in exclude:
                 exclude += ['hash_exclude']
 
+        kwargs = dict(kwargs)
         kwargs['exclude'] = exclude
         values = [val for attr, val in pairs(self, **kwargs)]
         if hash_mode:
