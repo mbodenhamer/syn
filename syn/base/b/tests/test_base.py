@@ -9,7 +9,7 @@ from syn.base_utils import assert_equivalent, assert_pickle_idempotent, \
 from syn.base.b import check_idempotence
 from syn.types import attrs, deserialize, enumeration_value, \
     estr, find_ne, generate, hashable, pairs, rstr, serialize, visit, \
-    DiffersAtAttribute, deep_feq
+    DiffersAtAttribute, deep_feq, primitive_form
 from syn.types import enumerate as enum
 
 from syn.globals import TEST_SAMPLES as SAMPLES
@@ -596,6 +596,9 @@ def test_syn_types_functionality():
     sval = deserialize(serialize(s))
     assert_equivalent(sval, s)
     assert deep_feq(sval, s)
+
+    assert primitive_form(s) == dict(a=1, b=1.2, c='abc')
+    assert primitive_form(SynTypesTest) is SynTypesTest
 
     assert SynTypesTest is deserialize(serialize(SynTypesTest))
 
