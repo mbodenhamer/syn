@@ -354,6 +354,9 @@ def enumerate(typ, **kwargs):
     for item in Type.type_dispatch(typ).enumerate(**kwargs):
         yield item
 
+def enumeration_value(typ, x, **kwargs):
+    return Type.type_dispatch(typ).enumeration_value(x, **kwargs)
+
 def estr(obj, **kwargs):
     '''Return a string that can evaluate into an equivalent object.
 
@@ -397,6 +400,7 @@ def safe_sorted(obj, **kwargs):
 
 __all__ = ('TYPE_REGISTRY', 'SER_KEYS', 'Type', 'TypeType',
            'deserialize', 'enumerate', 'estr', 'find_ne', 'generate', 'attrs',
-           'hashable', 'rstr', 'serialize', 'visit', 'safe_sorted', 'pairs')
+           'hashable', 'rstr', 'serialize', 'visit', 'safe_sorted', 'pairs',
+           'enumeration_value')
 
 #-------------------------------------------------------------------------------

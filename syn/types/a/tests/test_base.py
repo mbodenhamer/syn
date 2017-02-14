@@ -3,7 +3,7 @@ from syn.five import PY3
 from syn.types.a import Type, hashable, TYPE_REGISTRY, SER_KEYS, serialize, \
     deserialize, DifferentTypes, safe_sorted, estr, find_ne, \
     generate, DiffersAtAttribute, rstr, visit, deep_feq, attrs, \
-    NotEqual, pairs
+    NotEqual, pairs, enumeration_value
 from syn.types.a import enumerate as enum
 from syn.base_utils import get_fullname, is_hashable, assert_inequivalent, \
     assert_equivalent, first, get_typename, ngzwarn, is_unique
@@ -160,7 +160,8 @@ def test_custom_object():
         assert item != last
         buf.append(item)
         last = item
-        
+
+    assert enumeration_value(Foo, 0) == first(enum(Foo, max_enum=1))
     assert is_unique(buf)
 
 #-------------------------------------------------------------------------------
