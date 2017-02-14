@@ -1,9 +1,8 @@
 from six import PY2
 from syn.five import xrange
-from nose.tools import assert_raises
 from syn.types.a import Type, Sequence, List, Tuple, \
     hashable, serialize, deserialize, estr, rstr, visit, find_ne, \
-    DifferentLength, DiffersAtIndex, deep_feq, feq_comp, ValueExplorer
+    DifferentLength, DiffersAtIndex, deep_feq, primitive_form
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, elog, ngzwarn, \
     is_unique, on_error, subclasses, hangwatch
@@ -83,6 +82,9 @@ def test_sequence():
 
     assert list(visit(l, enumerate=True)) == [(0, 1), (1, 2.3), (2, 'abc')]
     assert list(visit([])) == []
+
+    l = [1, 2, (3, 4)]
+    assert primitive_form(l) == [1, 2, [3, 4]]
 
 #-------------------------------------------------------------------------------
 

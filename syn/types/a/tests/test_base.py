@@ -21,7 +21,6 @@ def test_type():
     assert t.obj == 1
     assert t.rstr() == '1'
     assert t.hashable() is t.obj
-    assert_raises(NotImplementedError, t._primitive_form)
 
     class Foo(object):
         __hash__ = None
@@ -154,7 +153,7 @@ def test_custom_object():
     assert deep_feq(sval, f)
 
     assert Foo is deserialize(serialize(Foo))
-    assert primitive_form(Foo) == serialize(Foo)
+    assert primitive_form(Foo) is Foo
     assert primitive_form(f) == dict(a=1, b=1.2)
 
     val = generate(Foo)
@@ -219,6 +218,12 @@ def test_normal_type():
     sval =  deserialize(serialize(b))
     assert_equivalent(b, sval)
     assert deep_feq(b, sval)
+
+    assert primitive_form(Bar) is Bar
+    assert primitive_form(b) == dict(a=1, b=2.3)
+
+    b4 = Bar(2, b2)
+    assert primitive_form(b4) == dict(a=2, b=dict(a=1, b=2.4))
 
     # Because the types system knows nothing of the Bar class
     assert_raises(NotImplementedError, generate, Bar)
@@ -295,6 +300,8 @@ def test_custom_type():
     assert deep_feq(sval, b)
 
     assert Baz is deserialize(serialize(Baz))
+    assert primitive_form(Baz) is Baz
+    assert primitive_form(b) == dict(a=1, b=2.3)
 
     val = generate(Baz)
     assert type(val) is Baz

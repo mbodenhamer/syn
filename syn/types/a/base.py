@@ -83,14 +83,6 @@ class Type(object):
         ret = sorted(safe_vars(self.obj).keys())
         return ret
 
-    def _primitive_form(self, **kwargs):
-        raise NotImplementedError
-
-    def primitive_form(self, **kwargs):
-        if hasattr(self.obj, '_primitive_form'):
-            return self.obj._primitive_form(**kwargs)
-        return self._primitive_form(**kwargs)
-
     @classmethod
     def dispatch(cls, obj):
         return cls.type_dispatch(type(obj))(obj)
@@ -233,6 +225,18 @@ class Type(object):
     def pairs(self, **kwargs):
         ret = [(attr, getattr(self.obj, attr)) for attr in self.attrs(**kwargs)]
         return ret
+
+    def _primitive_form(self, **kwargs):
+        if not self.attrs(**kwargs):
+            return self.obj
+        ret = {attr: primitive_form(val, **kwargs) 
+               for attr, val in self.pairs(**kwargs)}
+        return ret
+
+    def primitive_form(self, **kwargs):
+        if hasattr(self.obj, '_primitive_form'):
+            return self.obj._primitive_form(**kwargs)
+        return self._primitive_form(**kwargs)
 
     def _rstr(self, **kwargs):
         return str(self.obj)
@@ -385,9 +389,9 @@ def pairs(obj, **kwargs):
     return Type.dispatch(obj).pairs(**kwargs)
 
 def primitive_form(obj, **kwargs):
-    '''Return obj, if possible, in a form composed of primitive objects.'''
+    '''Return obj, if possible, in a form composed of primitive or builtin objects.'''
     if isinstance(obj, type):
-        return serialize(obj, **kwargs)
+        return obj
     return Type.dispatch(obj).primitive_form(**kwargs)
 
 def rstr(obj, **kwargs):

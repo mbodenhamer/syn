@@ -1,5 +1,6 @@
 from syn.types.a import Type, NONE, \
-    hashable, serialize, deserialize, estr, rstr, visit, find_ne, DifferentTypes
+    hashable, serialize, deserialize, estr, rstr, visit, find_ne, \
+    DifferentTypes, primitive_form
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable
 
@@ -19,6 +20,7 @@ def test_none():
     assert is_hashable(n)
     assert is_hashable(hashable(n))
     assert deserialize(serialize(n)) is n
+    assert primitive_form(None) is None
 
     val = NONE.generate()
     assert val is None

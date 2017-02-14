@@ -1,11 +1,10 @@
 from six import PY2, PY3
 from syn.five import xrange
-from nose.tools import assert_raises
-from syn.types.a import Type, String, Unicode, Bytes, \
+from syn.types.a import Type, String, Unicode, \
     hashable, serialize, deserialize, estr, rstr, generate, visit, find_ne, \
-    DifferentLength, DiffersAtIndex, Basestring
+    DifferentLength, DiffersAtIndex, Basestring, primitive_form
 from syn.types.a import enumerate as enumerate_
-from syn.base_utils import is_hashable, assert_equivalent, subclasses, \
+from syn.base_utils import is_hashable, subclasses, \
     on_error, elog, ngzwarn, is_unique
 
 from syn.globals import TEST_SAMPLES as SAMPLES
@@ -41,6 +40,7 @@ def examine_string(cls, val):
     assert is_hashable(hashable(val))
     assert deserialize(serialize(val)) == val
     assert isinstance(rstr(val), str)
+    assert primitive_form(val) == val
 
     assert list(visit(val)) == list(val)
     assert find_ne(val, val) is None

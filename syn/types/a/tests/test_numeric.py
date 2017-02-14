@@ -2,7 +2,7 @@ from six import PY2
 from syn.five import xrange
 from syn.types.a import Type, Numeric, Int, hashable, rstr, serialize, \
     deserialize, estr, generate, TYPE_REGISTRY, Long, visit, find_ne, \
-    NotEqual
+    NotEqual, primitive_form
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, collection_comp, assert_equivalent, \
     feq, cfeq, assert_type_equivalent, on_error, elog, ngzwarn, subclasses, \
@@ -20,6 +20,7 @@ def examine_numeric(cls, val):
     assert is_hashable(hashable(val))
     assert deserialize(serialize(val)) == val
     assert isinstance(rstr(val), str)
+    assert primitive_form(val) == val
 
     assert list(visit(val)) == [val]
     assert find_ne(val, val) is None

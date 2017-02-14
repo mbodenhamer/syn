@@ -2,7 +2,8 @@ import collections
 from syn.five import xrange
 from syn.base_utils import rand_list, rand_tuple, get_fullname, tuple_prepend, \
     get_typename, escape_for_eval
-from .base import Type, hashable, deserialize, serialize, SER_KEYS, rstr, estr
+from .base import Type, hashable, deserialize, serialize, SER_KEYS, rstr, \
+    estr, primitive_form
 from syn.base_utils.rand import SEQ_TYPES, MAX_DEPTH, PRIMITIVE_TYPES
 from .ne import DiffersAtIndex, DifferentLength
 
@@ -76,6 +77,9 @@ class Sequence(Type):
     def _hashable(self, **kwargs):
         tup = tuple([hashable(item) for item in self.obj])
         return tuple_prepend(get_fullname(self.obj), tup)
+
+    def _primitive_form(self, **kwargs):
+        return [primitive_form(item, **kwargs) for item in self.obj]
 
     def _rstr(self, **kwargs):
         # TODO: add pretty option

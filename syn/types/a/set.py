@@ -1,7 +1,8 @@
 from itertools import islice
 from syn.base_utils import get_fullname, rand_set, rand_frozenset, \
     escape_for_eval, get_typename
-from .base import Type, hashable, serialize, SER_KEYS, rstr, estr, safe_sorted
+from .base import Type, hashable, serialize, SER_KEYS, rstr, estr, \
+    safe_sorted, primitive_form
 from syn.base_utils.rand import HASHABLE_TYPES
 from .sequence import list_enumval
 from .ne import SetDifferences
@@ -41,6 +42,9 @@ class Set(Type):
     @classmethod
     def _generate(cls, **kwargs):
         return rand_set(**kwargs)
+
+    def _primitive_form(self, **kwargs):
+        return [primitive_form(item, **kwargs) for item in self.obj]
 
     def _rstr(self, **kwargs):
         # TODO: add pretty option

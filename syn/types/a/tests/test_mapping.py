@@ -1,9 +1,8 @@
 from six import PY2
 from syn.five import xrange
-from nose.tools import assert_raises
 from syn.types.a import Type, Mapping, Dict, \
     hashable, serialize, deserialize, estr, rstr, visit, find_ne, \
-    DiffersAtKey, KeyDifferences, deep_feq, safe_sorted
+    DiffersAtKey, KeyDifferences, deep_feq, safe_sorted, primitive_form
 from syn.types.a import enumerate as enumerate_
 from syn.base_utils import is_hashable, assert_equivalent, on_error, elog, \
     ngzwarn, is_unique, subclasses, hangwatch
@@ -75,6 +74,9 @@ def test_mapping():
             last = item
 
         assert is_unique(buf)
+
+    d = dict(a=1, b=[1, 2, (3, 4)])
+    assert primitive_form(d) == dict(a=1, b=[1, 2, [3, 4]])
 
 #-------------------------------------------------------------------------------
 # Bad test cases
