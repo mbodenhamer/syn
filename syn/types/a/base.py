@@ -83,6 +83,14 @@ class Type(object):
         ret = sorted(safe_vars(self.obj).keys())
         return ret
 
+    def _builtin_form(self, **kwargs):
+        raise NotImplementedError
+
+    def builtin_form(self, **kwargs):
+        if hasattr(self.obj, '_builtin_form'):
+            return self.obj._builtin_form(**kwargs)
+        return self._builtin_form(**kwargs)
+
     @classmethod
     def dispatch(cls, obj):
         return cls.type_dispatch(type(obj))(obj)
@@ -347,6 +355,12 @@ class TypeType(Type):
 def attrs(obj, **kwargs):
     return Type.dispatch(obj).attrs(**kwargs)
 
+def builtin_form(obj, **kwargs):
+    '''Return obj, if possible, in a form composed of nothing other than builtin type objects.'''
+    if isinstance(obj, type):
+        return serialize(obj, **kwargs)
+    return Type.dispatch(obj).builtin_form(**kwargs)
+
 def deserialize(obj, **kwargs):
     return Type.deserialize_dispatch(obj).deserialize(obj, **kwargs)
 
@@ -401,6 +415,6 @@ def safe_sorted(obj, **kwargs):
 __all__ = ('TYPE_REGISTRY', 'SER_KEYS', 'Type', 'TypeType',
            'deserialize', 'enumerate', 'estr', 'find_ne', 'generate', 'attrs',
            'hashable', 'rstr', 'serialize', 'visit', 'safe_sorted', 'pairs',
-           'enumeration_value')
+           'enumeration_value', 'builtin_form')
 
 #-------------------------------------------------------------------------------

@@ -3,7 +3,7 @@ from syn.five import PY3
 from syn.types.a import Type, hashable, TYPE_REGISTRY, SER_KEYS, serialize, \
     deserialize, DifferentTypes, safe_sorted, estr, find_ne, \
     generate, DiffersAtAttribute, rstr, visit, deep_feq, attrs, \
-    NotEqual, pairs, enumeration_value
+    NotEqual, pairs, enumeration_value, builtin_form
 from syn.types.a import enumerate as enum
 from syn.base_utils import get_fullname, is_hashable, assert_inequivalent, \
     assert_equivalent, first, get_typename, ngzwarn, is_unique
@@ -21,6 +21,7 @@ def test_type():
     assert t.obj == 1
     assert t.rstr() == '1'
     assert t.hashable() is t.obj
+    assert_raises(NotImplementedError, t._builtin_form)
 
     class Foo(object):
         __hash__ = None
@@ -68,6 +69,10 @@ class Foo(object):
         return not self == other
 
     __hash__ = None
+
+    def _builtin_form(self, **kwargs):
+        return dict(a = builtin_form(self.a, **kwargs),
+                    b = builtin_form(self.b, **kwargs))
 
     def _deserialize(self, dct):
         # Do something useful here
@@ -149,6 +154,8 @@ def test_custom_object():
     assert deep_feq(sval, f)
 
     assert Foo is deserialize(serialize(Foo))
+    assert builtin_form(Foo) == serialize(Foo)
+    assert builtin_form(f) == dict(a=1, b=1.2)
 
     val = generate(Foo)
     assert type(val) is Foo
