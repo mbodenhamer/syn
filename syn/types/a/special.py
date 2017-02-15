@@ -1,11 +1,20 @@
-from .base import Type
+from syn.base_utils import this_module
+from .base import Type, SER_KEYS
+
+NoneType = type(None)
 
 #-------------------------------------------------------------------------------
 # None
 
 
 class NONE(Type):
-    type = type(None)
+    type = NoneType
+
+    @classmethod
+    def deserialize(cls, dct, **kwargs):
+        if dct is None:
+            return
+        return type(None)
 
     @classmethod
     def _enumeration_value(cls, x, **kwargs):
@@ -20,6 +29,13 @@ class NONE(Type):
     @classmethod
     def _generate(cls, **kwargs):
         return None
+
+    @classmethod
+    def serialize_type(cls, typ, **kwargs):
+        dct = {SER_KEYS.name: 'NoneType',
+               SER_KEYS.mod: this_module().__name__,
+               SER_KEYS.is_type: True}
+        return dct
 
     def _visit(self, k, **kwargs):
         return None

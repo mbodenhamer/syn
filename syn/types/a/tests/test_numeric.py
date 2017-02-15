@@ -19,6 +19,7 @@ def examine_numeric(cls, val):
     assert type(val) is cls.type
     assert is_hashable(hashable(val))
     assert deserialize(serialize(val)) == val
+    assert deserialize(serialize(cls.type)) is cls.type
     assert isinstance(rstr(val), str)
     assert primitive_form(val) == val
 

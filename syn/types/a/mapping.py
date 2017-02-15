@@ -37,7 +37,9 @@ class Mapping(Type):
 
     @classmethod
     def deserialize(cls, dct, **kwargs):
-        # TODO: may need to have a special case if args or kwars is set (like for defaultdict)
+        if dct.get(SER_KEYS.is_type, False):
+            return super(Mapping, cls).deserialize(dct, **kwargs)
+
         for key in SER_KEYS.values():
             if key in dct:
                 del dct[key]

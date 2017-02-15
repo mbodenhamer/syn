@@ -29,6 +29,7 @@ def examine_mapping(cls, val):
     assert is_hashable(hashable(val))
     sval = deserialize(serialize(val))
     assert deep_feq(sval, val) or deep_feq(collect(sval, ss), collect(val, ss))
+    assert deserialize(serialize(cls.type)) is cls.type
     assert isinstance(rstr(val), str)
 
     assert list(visit(val)) == safe_sorted(list(val.items()))

@@ -20,6 +20,7 @@ def test_none():
     assert is_hashable(n)
     assert is_hashable(hashable(n))
     assert deserialize(serialize(n)) is n
+    assert deserialize(serialize(type(None))) is type(None)
     assert primitive_form(None) is None
 
     val = NONE.generate()

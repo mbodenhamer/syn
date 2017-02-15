@@ -18,6 +18,7 @@ def examine_set(cls, val):
     assert is_hashable(hashable(val))
     sval = deserialize(serialize(val))
     assert deep_feq(sval, val)
+    assert deserialize(serialize(cls.type)) is cls.type
     assert isinstance(rstr(val), str)
 
     assert list(visit(val)) == safe_sorted(list(val))
