@@ -1,6 +1,8 @@
 from nose.tools import assert_raises
-from syn.types.a import ValueExplorer, ExplorationError, DiffExplorer, visit
+from syn.types.a import ValueExplorer, ExplorationError, DiffExplorer, \
+    visit, find_ne
 from syn.base_utils import capture, assign
+import syn.base_utils.repl as repl
 
 #-------------------------------------------------------------------------------
 # NETypes
@@ -318,6 +320,25 @@ def test_diffexplorer():
 
         r._eval('l')
         assert last_lines(out) == ["A: {'a': 1}", "B: {'a': 2}"]
+
+    class Bar(object):
+        def __init__(self, a, b):
+            self.a = a
+            self.b = b
+
+    b1 = Bar(1, [2, 3, 'abc'])
+    b2 = Bar(1, [2, 3, 'adc'])
+
+    accum = []
+    def fake_input(prompt):
+        accum.append(1)
+        if sum(accum) <= 1:
+            return 'f'
+        return 'q'
+
+    r = find_ne(b1,b2)    
+    with assign(repl, 'raw_input', fake_input):
+        r()
 
 #-------------------------------------------------------------------------------
 # Utilities

@@ -468,6 +468,13 @@ class DiffExplorer(REPL):
         for _ in xrange(num):
             self.down()
 
+    @repl_command('f', 'find the inequality in the current values')
+    def command_find(self):
+        from .base import find_ne
+        ex = find_ne(self.A.current_value, self.B.current_value)
+        if ex is not None:
+            ex()
+
     @repl_command('n', 'step')
     def command_step(self, step='1'):
         step = int(step)
