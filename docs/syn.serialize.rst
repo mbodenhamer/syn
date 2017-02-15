@@ -1,6 +1,13 @@
 syn.serialize package
 =====================
 
+Subpackages
+-----------
+
+.. toctree::
+
+    syn.serialize.a
+
 Module contents
 ---------------
 

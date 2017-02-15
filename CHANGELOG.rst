@@ -1,10 +1,10 @@
 Changelog
 ---------
 
-0.0.13 (2017-02-19)
+0.0.13 (2017-02-14)
 ~~~~~~~~~~~~~~~~~~~
 - Fixed issue preventing definition of custom __hash__ methods
-- Integrated syn.types functionality into syn.base.b.Base
+- Integrated most syn.types functionality into syn.base.b.Base
 
 0.0.12 (2017-02-12)
 ~~~~~~~~~~~~~~~~~~
