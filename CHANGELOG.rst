@@ -1,6 +1,10 @@
 Changelog
 ---------
 
+0.0.14 (2017-02-17)
+~~~~~~~~~~~~~~~~~~~
+
+
 0.0.13 (2017-02-14)
 ~~~~~~~~~~~~~~~~~~~
 - Fixed issue preventing definition of custom __hash__ methods
