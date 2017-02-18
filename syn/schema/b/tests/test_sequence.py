@@ -57,7 +57,7 @@ def test_conversion():
     assert s[0].set is sw
 
     s = Sequence(int, float)
-    assert list(s) == [Set(TypeWrapper(int)), Set(TypeWrapper(float))]
+    assert list(s) == [Type(TypeWrapper(int)), Type(TypeWrapper(float))]
 
     s = Sequence({1, 2})
     assert list(s) == [Set(sw)]

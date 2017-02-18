@@ -214,6 +214,7 @@ def test_set():
 
 def test_schema():
     from syn.schema.b.sequence import Sequence
+    from syn.type.a import List
 
     t = Schema(Sequence(1, 2, 3))
     assert t == Schema(Sequence(1, 2, 3))
@@ -226,8 +227,17 @@ def test_schema():
     assert_raises(TypeError, t.validate, [1, 3, 2])
 
     assert t.generate() == [1, 2, 3]
-
     assert t.display() == t.rst() == '<Schema>'
+
+    
+    t = Schema(Sequence(int, float))
+    assert t.query([1, 2.3])
+    assert not t.query([1, 2])
+
+    t = Schema(Sequence(int, List(float)))
+    assert not t.query([1, 1.2])
+    assert not t.query([1, [1, 2]])
+    assert t.query([1, [1.2, 3.4]])
 
 #-------------------------------------------------------------------------------
 # dispatch_type

@@ -7,6 +7,7 @@ from copy import copy
 from syn.five import xrange, SET, STR
 from syn.base import Attr, init_hook, Base, ListWrapper
 from syn.tree import Node
+from syn.type import Type as Type_
 from syn.sets import SetNode, Union, Product, SetWrapper, TypeWrapper
 from syn.base_utils import flattened, is_proper_sequence, IterableList, message
 from operator import itemgetter
@@ -77,8 +78,8 @@ class SchemaNode(Node):
         for arg in args:
             if isinstance(arg, SchemaNode):
                 lst.append(arg)
-            elif isinstance(arg, type):
-                lst.append(Set(TypeWrapper(arg)))
+            elif isinstance(arg, (type, Type_)):
+                lst.append(Type(arg))
             elif isinstance(arg, SetNode):
                 lst.append(Set(arg))
             elif isinstance(arg, SET) or is_proper_sequence(arg):
