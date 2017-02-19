@@ -60,7 +60,8 @@ class Node(ListWrapper):
     _opts = dict(init_validate = False,
                  optional_none = True,
                  must_be_root = False,
-                 child_types = ())
+                 child_types = (),
+                 descendant_exclude = ())
 
     def __nonzero__(self):
         return True
@@ -273,6 +274,12 @@ class Node(ListWrapper):
             for c in self:
                 if not isinstance(c, child_types):
                     raise TypeError("Invalid child type '%s'" % type(c))
+
+        dex = self._opts.descendant_exclude
+        if dex:
+            for d in self.descendants():
+                if isinstance(d, dex):
+                    raise TypeError("Invalid descendant type '%s'" % type(d))
 
         for c in self:
             c.validate()

@@ -300,6 +300,26 @@ def test_child_types():
     assert_raises(TypeError, CTTest, CT1(), CT2())
 
 #-------------------------------------------------------------------------------
+# Descendant Exclude
+
+class DE1(Node):
+    pass
+
+class DE2(Node):
+    pass
+
+class DETest(Node):
+    _opts = dict(descendant_exclude = (DE2,),
+                 init_validate = True)
+
+def test_descendant_exclude():
+    DETest()
+    DETest(DE1())
+    
+    n = DE1(DE2())
+    assert_raises(TypeError, DETest, n)
+
+#-------------------------------------------------------------------------------
 # Schema Attrs
 
 class SA1(Node):
