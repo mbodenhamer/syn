@@ -201,6 +201,9 @@ def test_set():
     t.validate(1)
     assert_raises(TypeError, t.validate, 0)
 
+    assert t.coerce(1) == 1
+    assert_raises(TypeError, t.coerce, 0)
+
     s = set(xrange(1, 6))
     for k in xrange(SAMPLES):
         val = t.generate()
@@ -228,6 +231,7 @@ def test_schema():
 
     assert t.generate() == [1, 2, 3]
     assert t.display() == t.rst() == '<Schema>'
+    assert t.coerce(1) == 1
 
     
     t = Schema(Sequence(int, float))

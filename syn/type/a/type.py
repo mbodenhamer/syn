@@ -361,6 +361,13 @@ class Set(Type):
         if not self.set.hasmember(value):
             raise TypeError('Set does not contain value: {}'.format(value))
 
+    def coerce(self, value):
+        try:
+            self.check(value)
+        except TypeError as e:
+            raise TypeError('Cannot coerce {}: {}'.format(value, message(e)))
+        return value
+
     def display(self):
         return '<Set>'
 
@@ -397,6 +404,11 @@ class Schema(Type):
     def check(self, value):
         if not self.schema.match(value):
             raise TypeError('Schema does not match: {}'.format(value))
+
+    def coerce(self, value):
+        # NOTE: this might not be the right behavior, ideally considered.
+        # However, it is good enough for our present needs.
+        return value
 
     def display(self):
         return '<Schema>'
