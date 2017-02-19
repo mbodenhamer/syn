@@ -282,7 +282,25 @@ def test_attributes():
     assert sorted(list(a.attributes())) == [('a', 1), ('b', 1.2)]
 
 #-------------------------------------------------------------------------------
-# Schema attrs
+# Child Types
+
+class CT1(Node):
+    pass
+
+class CT2(Node):
+    pass
+
+class CTTest(Node):
+    _opts = dict(child_types = (CT1,),
+                 init_validate = True)
+
+def test_child_types():
+    CTTest()
+    CTTest(CT1())
+    assert_raises(TypeError, CTTest, CT1(), CT2())
+
+#-------------------------------------------------------------------------------
+# Schema Attrs
 
 class SA1(Node):
     pass
