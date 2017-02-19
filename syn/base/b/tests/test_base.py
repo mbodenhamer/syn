@@ -2,7 +2,9 @@ import six.moves.cPickle as pickle
 from nose.tools import assert_raises
 from syn.five import STR
 from syn.base.b import Base, Attr, init_hook, coerce_hook, setstate_hook
-from syn.type.a import Type
+from syn.type.a import Type, Schema, List, Set
+from syn.schema.b.sequence import Sequence
+from syn.sets.b import Range
 from syn.base_utils import assert_equivalent, assert_pickle_idempotent, \
     assert_inequivalent, assert_type_equivalent, is_unique, first, \
     get_mod, SeqDict, is_hashable, this_module, ngzwarn
@@ -624,6 +626,42 @@ def test_syn_types_functionality():
     item = first(enum(SynTypesTest3, max_enum=1))
     assert type(item) is SynTypesTest3
     assert not hasattr(item, 'd')
+
+#-------------------------------------------------------------------------------
+# Test schema attrs
+
+class SchemaTest(Base):
+    _opts = dict(init_validate = True,
+                 args = ('a', 'b', 'c'))
+    _attrs = dict(a = Attr(Schema(Sequence(Range(0,10), float))),
+                  b = Attr(Schema(Sequence(int, List(float)))),
+                  c = Attr(Set(Range(5,8))))
+
+def test_schema_attrs():
+    obj = SchemaTest([1, 2.3], [1, [2.3]], 5)
+    obj2 = SchemaTest([1, 2.3], [1, [2.4]], 5)
+
+    assert is_hashable(hashable(obj))
+    
+    assert find_ne(obj, obj) is None
+    assert find_ne(obj, obj2) == DiffersAtAttribute(obj, obj2, 'b')
+
+    e1 = eval(estr(obj))
+    assert_equivalent(e1, obj)
+
+    assert list(visit(obj)) == [('a', [1, 2.3]), ('b', [1, [2.3]]), ('c', 5)]
+    assert rstr(obj) == "SchemaTest(a = [1, 2.3], b = [1, [2.3]], c = 5)"
+
+    sval = deserialize(serialize(obj))
+    assert_equivalent(sval, obj)
+    assert deep_feq(sval, obj)
+
+    val = generate(SchemaTest)
+    assert type(val) is SchemaTest
+
+    assert_raises(TypeError, SchemaTest, [1], [2.3], 5)
+    assert_raises(TypeError, SchemaTest, [11, 2.3], [1, [2.3]], 5)
+    assert_raises(TypeError, SchemaTest, [1, 2.3], [1, [2.3]], 9)
 
 #-------------------------------------------------------------------------------
 # Update functionality
