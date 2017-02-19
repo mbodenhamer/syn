@@ -1,9 +1,9 @@
 Changelog
 ---------
 
-0.0.14 (2017-02-17)
+0.0.14 (2017-02-21)
 ~~~~~~~~~~~~~~~~~~~
-
+- Further integrated syn.schema and syn.sets into syn.type
 
 0.0.13 (2017-02-14)
 ~~~~~~~~~~~~~~~~~~~
