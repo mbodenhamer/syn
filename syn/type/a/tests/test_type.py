@@ -240,6 +240,7 @@ def test_schema():
     assert not t.query([1, 1.2])
     assert not t.query([1, [1, 2]])
     assert t.query([1, [1.2, 3.4]])
+    assert t.query([1, []])
     val = t.generate()
     assert t.query(val)
 
