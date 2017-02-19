@@ -25,10 +25,10 @@ class ListWrapper(Base):
         _args = self._opts.args
 
         if max_len is None or not _args:
-            _list = ltype.coerce(args)
+            _list = ltype.coerce(list(args))
             args = ()
         else:
-            _list = ltype.coerce(args[:max_len])
+            _list = ltype.coerce(list(args[:max_len]))
             args = args[max_len:]
 
         _list.extend(kwargs.get(_LIST, ltype.coerce([])))

@@ -11,6 +11,7 @@ from syn.base_utils import last, implies, consume
 IAttr = partial(Attr, internal=True)
 
 EQEX = Base.groups_enum().eq_exclude
+GENEX = Base.groups_enum().generate_exclude
 GSEX = Base.groups_enum().getstate_exclude
 REPREX = Base.groups_enum().repr_exclude
 STREX = Base.groups_enum().str_exclude
@@ -43,14 +44,16 @@ class TreeError(Exception):
 
 class Node(ListWrapper):
     _attrs = dict(_parent = IAttr(This, optional=True,
-                                  groups=(REPREX, STREX, EQEX, GSEX),
+                                  groups=(REPREX, STREX, EQEX, GSEX, GENEX),
                                   doc='Parent of this node'),
-                  _name = IAttr(STR, optional=True,
+                  _name = IAttr(STR, optional=True, groups=(STREX,),
                                 doc='Name of the node (for display purposes)'),
-                  _id = IAttr(int, optional=True, doc='Integer id of the node'),
-                  _list = IAttr(list, groups = (REPREX,),
+                  _id = IAttr(int, optional=True, groups=(STREX,),
+                              doc='Integer id of the node'),
+                  _list = IAttr(list, groups=(REPREX,),
                                 doc='Child nodes'),
-                  _node_count = IAttr(int, doc='The number of nodes in the subtree'
+                  _node_count = IAttr(int, groups=(GENEX, STREX),
+                                      doc='The number of nodes in the subtree'
                                       'rooted by this node.')
                  )
     _aliases = dict(_list = ['_children'])

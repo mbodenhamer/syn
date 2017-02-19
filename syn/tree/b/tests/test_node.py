@@ -2,8 +2,11 @@ from operator import attrgetter
 from nose.tools import assert_raises
 from syn.base.b import Attr
 from syn.tree.b import Node, TreeError
+from syn.type.a import Schema
+from syn.schema.b.sequence import Sequence
 from syn.base.b.tests.test_base import check_idempotence
 from syn.base_utils import assert_equivalent, assert_inequivalent, consume
+from syn.types.a import generate
 
 #-------------------------------------------------------------------------------
 # Tree Node Test 1
@@ -271,11 +274,36 @@ def test_node_must_be_root():
 
 class A1(Node):
     _attrs = dict(a = Attr(int),
-                  b = Attr(float))
+                  b = Attr(float),
+                  c = Attr(int, internal=True))
     
 def test_attributes():
-    a = A1(a = 1, b = 1.2)
+    a = A1(a = 1, b = 1.2, c = 3)
     assert sorted(list(a.attributes())) == [('a', 1), ('b', 1.2)]
+
+#-------------------------------------------------------------------------------
+# Schema attrs
+
+class SA1(Node):
+    pass
+
+class SA2(Node):
+    pass
+
+class SA3(Node):
+    pass
+
+class SchemaTest(Node):
+    _opts = dict(init_validate = True)
+    _attrs = dict(_list = Attr(Schema(Sequence(SA1, SA2))),
+                  a = Attr(int))
+
+def test_schema_attrs():
+    SchemaTest(SA1(), SA2(), a=1)
+    assert_raises(TypeError, SchemaTest, SA1(), SA3(), a=2)
+
+    # val = generate(SchemaTest)
+    # assert type(val) is SchemaTest
 
 #-------------------------------------------------------------------------------
 

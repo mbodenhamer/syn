@@ -5,6 +5,14 @@ from .node import Node, TreeError
 from syn.base_utils import get_typename, getitem, first
 
 #-------------------------------------------------------------------------------
+
+EQEX = Base.groups_enum().eq_exclude
+GENEX = Base.groups_enum().generate_exclude
+GSEX = Base.groups_enum().getstate_exclude
+REPREX = Base.groups_enum().repr_exclude
+STREX = Base.groups_enum().str_exclude
+
+#-------------------------------------------------------------------------------
 # Default search functions
 
 def do_nothing(*args, **kwargs):
@@ -21,15 +29,19 @@ class Tree(Base):
     _attrs = dict(root = Attr(Node, init=lambda self: Node(),
                               doc="The root node of the tree"),
                   nodes = Attr(List(Node), init=lambda self: list(),
+                               groups=(GENEX, STREX),
                                doc="List of all tree nodes"),
                   node_types = Attr(List(STR), init=lambda self: list(),
+                                    groups=(GENEX, STREX),
                                     doc="List of all tree node types"),
                   id_dict = Attr(Dict(Node), init=lambda self: dict(),
+                                 groups=(GENEX, STREX),
                                  doc="Mapping of ids to nodes"),
                   type_dict = Attr(Dict(List(Node)), init=lambda self: dict(),
+                                   groups=(GENEX, STREX),
                                    doc="Mapping of type names to node lists"),
                   node_counter = Attr(Counter, init=lambda self: Counter(),
-                                      groups = ('eq_exclude',),
+                                      groups=(EQEX, GENEX, STREX),
                                       doc='Node id counter'),
                  )
     _opts = dict(init_validate = True,
