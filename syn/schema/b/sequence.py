@@ -287,7 +287,7 @@ class Sequence(SchemaNode):
     def sample(self, **kwargs):
         '''Returns one possible sequence (list). The selection is randomized.
         '''
-        return flattened(self.set.sample(**kwargs))
+        return list(self.set.sample(**kwargs))
 
     def validate(self):
         super(Sequence, self).validate()

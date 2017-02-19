@@ -233,11 +233,15 @@ def test_schema():
     t = Schema(Sequence(int, float))
     assert t.query([1, 2.3])
     assert not t.query([1, 2])
+    val = t.generate()
+    assert t.query(val)
 
     t = Schema(Sequence(int, List(float)))
     assert not t.query([1, 1.2])
     assert not t.query([1, [1, 2]])
     assert t.query([1, [1.2, 3.4]])
+    val = t.generate()
+    assert t.query(val)
 
 #-------------------------------------------------------------------------------
 # dispatch_type
