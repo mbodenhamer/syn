@@ -302,8 +302,8 @@ def test_schema_attrs():
     SchemaTest(SA1(), SA2(), a=1)
     assert_raises(TypeError, SchemaTest, SA1(), SA3(), a=2)
 
-    # val = generate(SchemaTest)
-    # assert type(val) is SchemaTest
+    val = generate(SchemaTest)
+    assert type(val) is SchemaTest
 
 #-------------------------------------------------------------------------------
 

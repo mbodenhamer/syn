@@ -1,5 +1,6 @@
 import collections
 from syn.base_utils import istr
+from syn.type.a import Schema
 
 from .base import Base
 from .meta import Attr
@@ -57,6 +58,23 @@ class ListWrapper(Base):
 
     def __delitem__(self, item):
         del self._list[item]
+
+    @classmethod
+    def _generate(cls, **kwargs):
+        _list = []
+        typ = cls._attrs['_list'].type
+        kwargs['attrs'] = kwargs.get('attrs', {})
+
+        kwargs_ = dict(kwargs)
+        if isinstance(typ, Schema):
+            _list = typ.generate(**kwargs_)
+        elif cls._opts.min_len:
+            kwargs_['min_len'] = cls._opts.min_len
+            kwargs_['max_len'] = cls._opts.min_len # Don't generate more than we have to
+            _list = typ.generate(**kwargs_)
+
+        kwargs['attrs']['_list'] = _list
+        return super(ListWrapper, cls)._generate(**kwargs)
 
     def append(self, item):
         self._list.append(item)

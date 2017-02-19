@@ -412,12 +412,19 @@ class Base(object):
         return cls(**cls._dict_from_sequence(seq))
 
     @classmethod
-    def _generate(cls, **kwargs):
+    def _generate(cls, **kwargs_):
+        exclude = set(kwargs_.get('exclude', []))
+        exclude.update(cls._groups.generate_exclude)
+        attrs = kwargs_.get('attrs', {})
+
         kwargs = {}
         for attr, typ in cls._attrs.types.items():
-            if attr in cls._groups.generate_exclude:
+            if attr in exclude:
                 continue
-            kwargs[attr] = typ.generate(**kwargs)
+            if attr in attrs:
+                kwargs[attr] = attrs[attr]
+            else:
+                kwargs[attr] = typ.generate(**kwargs_)
         return cls(**kwargs)
 
     def _hashable(self, **kwargs):

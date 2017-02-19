@@ -3,6 +3,9 @@ from copy import deepcopy
 from nose.tools import assert_raises
 from syn.base.b import ListWrapper, Attr
 from syn.base.b.tests.test_base import check_idempotence
+from syn.types.a import generate
+from syn.type.a import Schema
+from syn.schema.b.sequence import Sequence
 
 #-------------------------------------------------------------------------------
 # ListWrapper
@@ -93,6 +96,37 @@ def test_listwrapper_positional_args():
     check_idempotence(lw)
 
     assert_raises(TypeError, LWPA, 1, 1.2, 'abc', 4, 5.3, 6.5)
+
+#-------------------------------------------------------------------------------
+# Test ListWrapper Generation
+
+class LWGT1(ListWrapper):
+    _opts = dict(init_validate = True)
+    _attrs = dict(a = Attr(int))
+
+class LWGT2(LWGT1):
+    _opts = dict(min_len = 2)
+
+class LWGT3(LWGT1):
+    _attrs = dict(_list = Attr(Schema(Sequence(int, float, int))))
+
+def test_listwrapper_generation():
+    lw1 = generate(LWGT1)
+    assert isinstance(lw1.a, int)
+    assert len(lw1) == 0
+    
+    lw2 = generate(LWGT2)
+    assert isinstance(lw2.a, int)
+    assert len(lw2) == 2
+
+    lw3 = generate(LWGT3)
+    assert isinstance(lw2.a, int)
+    assert len(lw3) == 3
+    assert isinstance(lw3[0], int)
+    assert isinstance(lw3[1], float)
+    assert isinstance(lw3[2], int)
+
+    assert_raises(TypeError, LWGT1, [], a=1.2)
 
 #-------------------------------------------------------------------------------
 
