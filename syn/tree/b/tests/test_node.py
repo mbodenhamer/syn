@@ -304,6 +304,10 @@ def test_schema_attrs():
 
     val = generate(SchemaTest)
     assert type(val) is SchemaTest
+    assert isinstance(val.a, int)
+    assert type(val[0]) is SA1
+    assert type(val[1]) is SA2
+    assert len(val) == 2
 
 #-------------------------------------------------------------------------------
 
