@@ -4,6 +4,8 @@ Changelog
 0.0.14 (2017-02-21)
 ~~~~~~~~~~~~~~~~~~~
 - Further integrated syn.schema and syn.sets into syn.type
+- Added generation capabilities to syn.b.tree
+- Added enhanced validation capabilities to syn.b.tree
 
 0.0.13 (2017-02-14)
 ~~~~~~~~~~~~~~~~~~~
