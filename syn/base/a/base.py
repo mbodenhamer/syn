@@ -19,13 +19,15 @@ class Base(object):
     def __init__(self, *args, **kwargs):
         _args = self._opts.args
 
+        self._set_by_default = set()
         for key in self._attrs.defaults:
             if key in _args:
                 if len(args) > _args.index(key):
                     continue # This value has been supplied as a non-kw arg
             if key not in kwargs:
                 kwargs[key] = self._attrs.defaults[key]
-        
+                self._set_by_default.add(key)
+
         if _args:
             if len(args) > len(_args):
                 raise TypeError('Too many positional arguments')

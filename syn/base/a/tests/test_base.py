@@ -86,6 +86,35 @@ def test_optional_none():
     obj.validate()
 
 #-------------------------------------------------------------------------------
+# Test default
+
+class DTest(Base):
+    _attrs = dict(a = Attr(int, 1),
+                  b = Attr(int, 2))
+    _opts = dict(args = ('a',))
+
+def test_default():
+    obj = DTest()
+    assert obj.a == 1
+    assert obj.b == 2
+    assert obj._set_by_default == {'a', 'b'}
+
+    obj = DTest(b=3)
+    assert obj.a == 1
+    assert obj.b == 3
+    assert obj._set_by_default == {'a',}
+    
+    obj = DTest(2)
+    assert obj.a == 2
+    assert obj.b == 2
+    assert obj._set_by_default == {'b',}
+
+    obj = DTest(2, b=3)
+    assert obj.a == 2
+    assert obj.b == 3
+    assert obj._set_by_default == set()
+
+#-------------------------------------------------------------------------------
 # Test init
 
 class F(B):
