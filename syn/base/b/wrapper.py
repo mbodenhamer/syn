@@ -65,12 +65,20 @@ class ListWrapper(Base):
         typ = cls._attrs['_list'].type
         kwargs['attrs'] = kwargs.get('attrs', {})
 
+        if cls._opts.max_len is not None:
+            max_len = cls._opts.max_len
+            if 'max_len' in kwargs:
+                if kwargs['max_len'] < max_len:
+                    max_len = kwargs['max_len']
+        else:
+            max_len = kwargs.get('max_len', cls._opts.min_len)
+
         kwargs_ = dict(kwargs)
         if isinstance(typ, Schema):
             _list = typ.generate(**kwargs_)
         elif cls._opts.min_len:
             kwargs_['min_len'] = cls._opts.min_len
-            kwargs_['max_len'] = cls._opts.min_len # Don't generate more than we have to
+            kwargs_['max_len'] = max_len
             _list = typ.generate(**kwargs_)
 
         kwargs['attrs']['_list'] = _list

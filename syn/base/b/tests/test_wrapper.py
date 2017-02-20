@@ -110,6 +110,9 @@ class LWGT2(LWGT1):
 class LWGT3(LWGT1):
     _attrs = dict(_list = Attr(Schema(Sequence(int, float, int))))
 
+class LWGT4(LWGT2):
+    _opts = dict(max_len = 4)
+
 def test_listwrapper_generation():
     lw1 = generate(LWGT1)
     assert isinstance(lw1.a, int)
@@ -125,6 +128,12 @@ def test_listwrapper_generation():
     assert isinstance(lw3[0], int)
     assert isinstance(lw3[1], float)
     assert isinstance(lw3[2], int)
+
+    lw4 = generate(LWGT4)
+    assert 2 <= len(lw4) <= 4
+
+    lw41 = generate(LWGT4, max_len=3)
+    assert 2 <= len(lw41) <= 3
 
     assert_raises(TypeError, LWGT1, [], a=1.2)
 
