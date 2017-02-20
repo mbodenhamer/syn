@@ -668,61 +668,69 @@ def test_schema_attrs():
 # Test using preprocess hooks to create alternative methods of
 # attribute specification
 
-# class AltAttrs(Base):
-#     _opts = dict(init_validate = True,
-#                  args = ('a',))
-#     _attrs = dict(a = Attr(int, doc='abc'))
+class AltAttrs(Base):
+    _opts = dict(init_validate = True,
+                 args = ('a',))
+    _attrs = dict(a = Attr(int, doc='abc'))
 
-#     # required = {}
-#     # optional = {}
-#     # default = {}
+    @pre_create_hook
+    def _harvest_attrs(clsdata):
+        dct = {}
+        clsdct = clsdata['dct']
 
-#     @classmethod
-#     @preprocess_hook
-#     def _harvest_attrs(cls):
-#         dct = {}
-        
-#         required = cls._class_data.dct.get('required', {})
-#         optional = cls._class_data.dct.get('optional', {})
-#         default = cls._class_data.dct.get('default', {})
+        attrs = clsdct.get('_attrs', {})
+        required = clsdct.get('required', {})
+        optional = clsdct.get('optional', {})
+        default = clsdct.get('default', {})
 
-#         for attr in required:
-#             typ = required[attr]
-#             if attr in default:
-#                 dct[attr] = Attr(typ, optional=False,  default=default[attr])
-#             else:
-#                 dct[attr] = Attr(typ, optional=False)
+        for attr in required:
+            typ = required[attr]
+            if attr in default:
+                dct[attr] = Attr(typ, optional=False,  default=default[attr])
+            else:
+                dct[attr] = Attr(typ, optional=False)
 
-#         for attr in optional:
-#             typ = optional[attr]
-#             if attr in default:
-#                 dct[attr] = Attr(typ, default=default[attr], optional=True)
-#             else:
-#                 dct[attr] = Attr(typ, optional=True)
+        for attr in optional:
+            typ = optional[attr]
+            if attr in default:
+                dct[attr] = Attr(typ, default=default[attr], optional=True)
+            else:
+                dct[attr] = Attr(typ, optional=True)
                 
-#         preserve_attr_data(cls._attrs, dct)
-#         cls._attrs.update(dct)
+        preserve_attr_data(attrs, dct)
+        attrs.update(dct)
+        clsdct['_attrs'] = attrs
 
-# class AA2(AltAttrs):
-#     required = dict(b = float)
-#     optional = dict(a = str)
-#     default = dict(b = 1.2)
+class AA2(AltAttrs):
+    required = dict(b = float)
+    optional = dict(a = str)
+    default = dict(b = 1.2)
 
-# class AA3(AltAttrs):
-#     required = dict(a = float)
-#     optional = dict(b = str)
-#     default = dict(a = 1.2)
+class AA3(AltAttrs):
+    required = dict(a = float)
+    optional = dict(b = str)
+    default = dict(a = 1.2)
 
-# def test_preprocess_hooks_alt_attrs():
-#     assert AA2._attrs.required == {'b'}
-#     assert AA2._attrs.optional == {'a'}
-#     assert AA2._attrs.defaults == dict(b = 1.2)
-#     assert AA2._attrs.doc == dict(a = 'abc')
+class AA4(AltAttrs):
+    required = dict(b = float)
+    optional = dict(c = str)
+    default = dict(c = 'abc')
 
-#     # assert AA3._attrs.required == {'a'}
-#     # assert AA3._attrs.optional == {'b'}
-#     # assert AA3._attrs.defaults == dict(a = 1.2)
-#     # assert AA3._attrs.doc == dict(a = 'abc')
+def test_preprocess_hooks_alt_attrs():
+    assert AA2._attrs.required == {'b'}
+    assert AA2._attrs.optional == {'a'}
+    assert AA2._attrs.defaults == dict(b = 1.2)
+    assert AA2._attrs.doc == dict(a = 'abc')
+
+    assert AA3._attrs.required == {'a'}
+    assert AA3._attrs.optional == {'b'}
+    assert AA3._attrs.defaults == dict(a = 1.2)
+    assert AA3._attrs.doc == dict(a = 'abc')
+
+    assert AA4._attrs.required == {'a', 'b'}
+    assert AA4._attrs.optional == {'c'}
+    assert AA4._attrs.defaults == dict(c = 'abc')
+    assert AA4._attrs.doc == dict(a = 'abc')
 
 #-------------------------------------------------------------------------------
 # Update functionality
