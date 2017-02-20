@@ -286,6 +286,17 @@ def test_hangwatch():
     except NotImplementedError as e:
         assert message(e) == 'bar'
 
+def test_getfunc():
+    from syn.base_utils import getfunc
+
+    class Foo(object):
+        def bar(x):
+            return 2*x
+
+    f = Foo()
+    assert getfunc(f, 'bar')(3) == 6
+    assert getfunc(Foo, 'bar')(3) == 6
+
 #-------------------------------------------------------------------------------
 # Sequence utilities
 

@@ -217,6 +217,11 @@ def hangwatch(timeout, func, *args, **kwargs):
         eprint(''.join(traceback.format_exception(*info)))
         raise e
 
+def getfunc(obj, name):
+    '''Get the function corresponding to name from obj, not the method.'''
+    x = getattr(obj, name)
+    return getattr(x, '__func__', x)
+
 #-------------------------------------------------------------------------------
 # Sequence utilities
 
@@ -441,6 +446,6 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'type_partition', 'subclasses', 'unzip', 'this_module',  'eprint',
            'that_module', 'harvest_metadata', 'tuple_append', 'get_fullname',
            'tuple_prepend', 'elog', 'ngzwarn', 'full_funcname', 'hangwatch',
-           'safe_vars',)
+           'safe_vars', 'getfunc')
 
 #-------------------------------------------------------------------------------
