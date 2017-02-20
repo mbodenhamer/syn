@@ -10,6 +10,22 @@ def combine(A, B):
     ret.update(B)
     return ret
 
+def preserve_attr_data(A, B):
+    '''Preserve attr data for combining B into A.
+    '''
+    for attr, B_data in B.items(): # defined object attrs
+        if getattr(B_data, 'override_parent', True):
+            continue
+        if attr in A:
+            A_data = A[attr]
+            for _attr in getattr(A_data, '_attrs', []): # Attr attrs, like type, default, & doc
+                if hasattr(A_data, _attr):
+                    if getattr(B_data, _attr, None) is not None:
+                        if _attr in getattr(B_data, '_set_by_default', []):
+                            setattr(B_data, _attr, getattr(A_data, _attr))
+                    else:
+                        setattr(B_data, _attr, getattr(A_data, _attr))
+
 def graft(coll, branch, index):
     '''Graft list branch into coll at index
     '''
@@ -179,6 +195,7 @@ class Meta(type):
         
         for base in self._class_data.bases:
             vals = dict(getattr(base, attr, {}))
+            preserve_attr_data(vals, values)
             values = combine(vals, values)
             
         setattr(self, attr, typ(values))

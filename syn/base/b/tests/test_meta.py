@@ -77,12 +77,14 @@ def test_attrs():
 # Meta
 
 def test_meta():
+    foo = lambda x: x
+
     @six.add_metaclass(Meta)
     class A(object):
         _groups = ReflexiveDict('g1', 'g2')
         _attrs = Attrs(a = Attr(int, doc='value 1', group=_groups.g1),
                        b = Attr(float, 3.4, group=_groups.g2),
-                       c = Attr(str, doc='value 2', optional=True)
+                       c = Attr(str, doc='value 2', optional=True, init=foo)
                       )
         _opts = AttrDict(x = 1,
                          y = 2.3)
@@ -93,6 +95,14 @@ def test_meta():
         _opts = dict(y = 3.4,
                      z = 'abc')
 
+    class B2(A):
+        _attrs = dict(c = Attr(dict, group=A.groups_enum().g1,
+                               override_parent=True),
+                      d = Attr(list, default=[1, 2]))
+        _opts = dict(y = 3.4,
+                     z = 'abc')
+
+
     assert A._attrs.types['a'].type is int
     assert A._attrs.types['b'].type is float
     assert A._attrs.types['c'].type is str
@@ -100,6 +110,7 @@ def test_meta():
     assert A._attrs.required == {'a', 'b'}
     assert A._attrs.optional == {'c'}
     assert A._attrs.defaults == dict(b = 3.4)
+    assert A._attrs.init == dict(c = foo)
     assert A._attrs.doc == dict(a = 'value 1',
                                 c = 'value 2')
     assert A._attrs.attrs == set(['a', 'b', 'c'])
@@ -114,13 +125,33 @@ def test_meta():
     assert B._attrs.types['c'].type is dict
     assert B._attrs.types['d'].type is list
 
-    assert B._attrs.required == {'a', 'b', 'c', 'd'}
-    assert B._attrs.optional == set([])
+    assert B._attrs.required == {'a', 'b', 'd'}
+    assert B._attrs.optional == set(['c'])
     assert B._attrs.defaults == dict(b = 3.4,
                                      d = [1, 2])
-    assert B._attrs.doc == dict(a = 'value 1')
+    assert B._attrs.init == dict(c = foo)
+    assert B._attrs.doc == dict(a = 'value 1',
+                                c = 'value 2')
     assert B._attrs.attrs == set(['a', 'b', 'c', 'd'])
     assert_type_equivalent(B._groups,
+                           GroupDict(_all = set(['a', 'b', 'c', 'd']),
+                                     _internal = set([]),
+                                     g1 = set(['a', 'c']),
+                                     g2 = set(['b'])))
+
+    assert B2._attrs.types['a'].type is int
+    assert B2._attrs.types['b'].type is float
+    assert B2._attrs.types['c'].type is dict
+    assert B2._attrs.types['d'].type is list
+
+    assert B2._attrs.required == {'a', 'b', 'c', 'd'}
+    assert B2._attrs.optional == set([])
+    assert B2._attrs.defaults == dict(b = 3.4,
+                                     d = [1, 2])
+    assert B2._attrs.init == dict()
+    assert B2._attrs.doc == dict(a = 'value 1')
+    assert B2._attrs.attrs == set(['a', 'b', 'c', 'd'])
+    assert_type_equivalent(B2._groups,
                            GroupDict(_all = set(['a', 'b', 'c', 'd']),
                                      _internal = set([]),
                                      g1 = set(['a', 'c']),
@@ -129,6 +160,7 @@ def test_meta():
 
     assert A._opts == dict(x = 1, y = 2.3)
     assert B._opts == dict(x = 1, y = 3.4, z = 'abc')
+    assert B2._opts == dict(x = 1, y = 3.4, z = 'abc')
 
 
     class M1(type):
@@ -151,11 +183,12 @@ def test_meta():
     assert D._attrs.types['d'].type is list
     assert D._attrs.types['e'].type is set
 
-    assert D._attrs.required == {'a', 'b', 'c', 'd', 'e'}
-    assert D._attrs.optional == set([])
+    assert D._attrs.required == {'a', 'b', 'd', 'e'}
+    assert D._attrs.optional == set(['c'])
     assert D._attrs.defaults == dict(b = 3.4,
                                      d = [1, 2])
-    assert D._attrs.doc == dict(a = 'value 1')
+    assert D._attrs.doc == dict(a = 'value 1',
+                                c = 'value 2')
 
     assert_type_equivalent(D._groups,
                            GroupDict(_all = set(['a', 'b', 'c', 'd', 'e']),

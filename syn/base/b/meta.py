@@ -30,6 +30,7 @@ dict(type = _OAttr(None, doc='Type of the attribute'),
      internal = _Attr(bool, False, 'Not treated as a constructor argument'),
      init = _OAttr(Callable, doc='Will be called with the object as the only '
                    'parameter for initializing the attribute'),
+     override_parent = _OAttr(bool, False, 'Skip preserve_attr_data for this attr')
     )
 
 #-------------------------------------------------------------------------------
