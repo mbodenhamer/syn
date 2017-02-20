@@ -6,6 +6,7 @@ Changelog
 - Further integrated syn.schema and syn.sets into syn.type
 - Added generation capabilities to syn.b.tree
 - Added enhanced validation capabilities to syn.b.tree
+- Added attribute attribute preservation for sub-class definitions
 
 0.0.13 (2017-02-14)
 ~~~~~~~~~~~~~~~~~~~
