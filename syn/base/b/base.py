@@ -271,6 +271,14 @@ class Base(object):
         class BaseChildGeneratedType(BaseType):
             type = cls
 
+    @classmethod
+    @create_hook
+    def _set_hash(cls):
+        if cls._get_opt('make_hashable', False):
+            def hashf(self):
+                return hash(self._hashable())
+            setattr(cls, '__hash__', hashf)
+
     def __getstate__(self):
         return self.to_dict(exclude=['getstate_exclude'])
 

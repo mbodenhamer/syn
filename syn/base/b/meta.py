@@ -6,7 +6,6 @@ from syn.type.a.ext import Callable, Sequence
 from syn.base_utils import GroupDict, AttrDict, SeqDict, ReflexiveDict,\
     callables, rgetattr, hasmethod
 from functools import partial
-from syn.types import hashable
 
 from syn.base.a.meta import Attr as _Attr
 from syn.base.a.meta import Attrs as _Attrs
@@ -103,7 +102,6 @@ class Meta(_Meta):
     def __init__(self, clsname, bases, dct):
         super(Meta, self).__init__(clsname, bases, dct)
 
-        self._set_hash()
         self._populate_data()
         self._combine_groups()
         self._process_create_hooks()
@@ -116,12 +114,6 @@ class Meta(_Meta):
             return rgetattr(self, attr, default)
         return rgetattr(self, attr)
         
-    def _set_hash(self):
-        if self._get_opt('make_hashable', False):
-            def hashf(self):
-                return hash(self._hashable())
-            setattr(self, '__hash__', hashf)
-
     def _populate_data(self):
         self._data = Data()
         opt = Meta._get_opt
