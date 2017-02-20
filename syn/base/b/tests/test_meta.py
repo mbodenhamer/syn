@@ -339,14 +339,16 @@ class PCHooks(object):
 
     @pre_create_hook
     def hook1(clsdata):
-        clsdata['dct']['a'] *= 2
+        dct = clsdata['dct']
+        if 'a' in dct:
+            dct['a'] *= 2
 
     @pre_create_hook(order=0, persist=False)
     def hook2(clsdata):
         clsdata['dct']['b'] += 2
 
 class PC2(PCHooks):
-    pass
+    b = 2
 
 class PC3(PC2):
     a = 1
@@ -356,17 +358,17 @@ class PC4(PC3):
     
     @pre_create_hook
     def hook1(clsdata):
-        getfunc(PC3, 'hook1')(clsdata)
+        getfunc(PC3.hook1)(clsdata)
         clsdata['dct']['a'] //= 2
 
 def test_preprocess_hooks():
     assert PCHooks.a == 2
     assert PC2.a == 2
-    assert PC3.a == 1
+    assert PC3.a == 2
     assert PC4.a == 10
 
     assert PCHooks.b == 5
-    assert PC2.b == 5
+    assert PC2.b == 2
 
 #-------------------------------------------------------------------------------
 # Test register_subclasses

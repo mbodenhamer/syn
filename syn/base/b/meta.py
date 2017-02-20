@@ -4,7 +4,7 @@ from syn.base.a import Base
 from syn.type.a import Type, This
 from syn.type.a.ext import Callable, Sequence
 from syn.base_utils import GroupDict, AttrDict, SeqDict, ReflexiveDict,\
-    callables, rgetattr, hasmethod
+    callables, rgetattr, hasmethod, getfunc
 from operator import attrgetter
 from functools import partial
 
@@ -134,6 +134,14 @@ class Meta(_Meta):
         hooks = {f for f in clsdata['dct'].values() 
                  if getattr(f, 'is_pre_create_hook', None) is _PreCreateHook}
 
+        names = {f.__name__ for f in hooks}
+        for base in clsdata['bases']:
+            hooks_ = rgetattr(base, '_data.pre_create_hooks', set())
+            for hook in hooks_:
+                if hook.__name__ not in names:
+                    hooks.add(hook)
+                    names.add(hook.__name__)
+
         hook_list = sorted(hooks, key=attrgetter('hook_order'))
         for hook in hook_list:
             hook(clsdata)
@@ -156,9 +164,16 @@ class Meta(_Meta):
     def _populate_data(self):
         self._data = Data()
         opt = Meta._get_opt
+
         # Generate attr display order
         self._data.attr_display_order = sorted(self._attrs.keys())
-        
+
+        # Gather persistent pre-create hooks
+        self._data.pre_create_hooks = \
+            {getfunc(f) for f in callables(self).values()
+             if getattr(f, 'is_pre_create_hook', None) is _PreCreateHook
+             and getattr(f, 'persist', False)}
+
         # Generate attr documentation order
         tmp = []
         attrs = list(self._data.attr_display_order)
