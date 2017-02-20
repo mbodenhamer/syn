@@ -5,6 +5,7 @@ from syn.type.a import Type, This
 from syn.type.a.ext import Callable, Sequence
 from syn.base_utils import GroupDict, AttrDict, SeqDict, ReflexiveDict,\
     callables, rgetattr, hasmethod
+from operator import attrgetter
 from functools import partial
 
 from syn.base.a.meta import Attr as _Attr
@@ -40,9 +41,19 @@ class _PreCreateHook(object):
     '''Dummy class to ensure that callable is really a pre-create hook.'''
     pass
 
-def pre_create_hook(f):
-    f.is_pre_create_hook = _PreCreateHook
-    return f
+def pre_create_hook(*args, **kwargs):
+    order = kwargs.get('order', float('inf'))
+    persist = kwargs.get('persist', True)
+
+    def wrap(f):
+        f.is_pre_create_hook = _PreCreateHook
+        f.hook_order = order
+        f.persist = persist
+        return f
+
+    if len(args) == 1 and not kwargs:
+        return wrap(args[0])
+    return partial(wrap)
 
 #-------------------------------------------------------------------------------
 # Create Hook
@@ -120,10 +131,11 @@ class Meta(_Meta):
 
     @classmethod
     def _process_pre_create_hooks(cls, clsdata):
-        hooks = [f for f in clsdata['dct'].values() 
-                 if getattr(f, 'is_pre_create_hook', None) is _PreCreateHook]
+        hooks = {f for f in clsdata['dct'].values() 
+                 if getattr(f, 'is_pre_create_hook', None) is _PreCreateHook}
 
-        for hook in hooks:
+        hook_list = sorted(hooks, key=attrgetter('hook_order'))
+        for hook in hook_list:
             hook(clsdata)
 
     def __init__(self, clsname, bases, dct):

@@ -335,10 +335,15 @@ def test_create_hooks():
 @six.add_metaclass(Meta)
 class PCHooks(object):
     a = 1
+    b = 3
 
     @pre_create_hook
     def hook1(clsdata):
         clsdata['dct']['a'] *= 2
+
+    @pre_create_hook(order=0, persist=False)
+    def hook2(clsdata):
+        clsdata['dct']['b'] += 2
 
 class PC2(PCHooks):
     pass
@@ -359,6 +364,9 @@ def test_preprocess_hooks():
     assert PC2.a == 2
     assert PC3.a == 1
     assert PC4.a == 10
+
+    assert PCHooks.b == 5
+    assert PC2.b == 5
 
 #-------------------------------------------------------------------------------
 # Test register_subclasses
