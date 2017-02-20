@@ -84,8 +84,6 @@ class Base(object):
                                             'create_hooks',
                                             'setstate_hooks'))
 
-    __hash__ = None
-
     def __init__(self, *args, **kwargs):
         _args = self._opts.args
 
@@ -158,6 +156,8 @@ class Base(object):
         dct1 = self.to_dict(exclude=['eq_exclude'])
         dct2 = other.to_dict(exclude=['eq_exclude'])
         return dct1 == dct2
+
+    __hash__ = None
 
     def __ne__(self, other):
         return not (self == other)
