@@ -1,11 +1,11 @@
 import six
 from nose.tools import assert_raises
 from syn.base_utils import (GroupDict, AttrDict, assert_type_equivalent,
-                            ReflexiveDict, SeqDict, feq)
+                            ReflexiveDict, SeqDict, feq, getfunc)
 from syn.type.a import AnyType, TypeType
 from syn.base.b.meta import Attr, Attrs, Meta, Data
 from syn.base.a.meta import mro
-from syn.base.b.meta import create_hook, preprocess_hook
+from syn.base.b.meta import create_hook, pre_create_hook
 
 #-------------------------------------------------------------------------------
 # Data Object
@@ -330,38 +330,35 @@ def test_create_hooks():
     assert isinstance(CHBad.b, PseudoHook)
 
 #-------------------------------------------------------------------------------
-# Test Pre-Process Hooks
+# Test Pre-Create Hooks
 
 @six.add_metaclass(Meta)
-class PPHooks(object):
+class PCHooks(object):
     a = 1
 
-    @classmethod
-    @preprocess_hook
-    def hook1(cls):
-        cls.a *= 2
+    @pre_create_hook
+    def hook1(clsdata):
+        clsdata['dct']['a'] *= 2
 
-class PP2(PPHooks):
+class PC2(PCHooks):
     pass
 
-class PP3(PP2):
+class PC3(PC2):
     a = 1
 
-class PP4(PP3):
+class PC4(PC3):
     a = 10
     
-    @classmethod
-    @preprocess_hook
-    def hook1(cls):
-        super(cls, cls).hook1()
-        #PP3.hook1.__func__(cls)
-        cls.a /= 2.0
+    @pre_create_hook
+    def hook1(clsdata):
+        getfunc(PC3, 'hook1')(clsdata)
+        clsdata['dct']['a'] //= 2
 
 def test_preprocess_hooks():
-    assert PPHooks.a == 2
-    assert PP2.a == 4
-    assert PP3.a == 2
-    assert feq(PP4.a, 10)
+    assert PCHooks.a == 2
+    assert PC2.a == 2
+    assert PC3.a == 1
+    assert PC4.a == 10
 
 #-------------------------------------------------------------------------------
 # Test register_subclasses

@@ -2,7 +2,7 @@ import six.moves.cPickle as pickle
 from nose.tools import assert_raises
 from syn.five import STR
 from syn.base.b import Base, Attr, init_hook, coerce_hook, setstate_hook, \
-    preprocess_hook, preserve_attr_data
+    pre_create_hook, preserve_attr_data
 from syn.type.a import Type, Schema, List, Set
 from syn.schema.b.sequence import Sequence
 from syn.sets.b import Range
@@ -668,61 +668,61 @@ def test_schema_attrs():
 # Test using preprocess hooks to create alternative methods of
 # attribute specification
 
-class AltAttrs(Base):
-    _opts = dict(init_validate = True,
-                 args = ('a',))
-    _attrs = dict(a = Attr(int, doc='abc'))
+# class AltAttrs(Base):
+#     _opts = dict(init_validate = True,
+#                  args = ('a',))
+#     _attrs = dict(a = Attr(int, doc='abc'))
 
-    # required = {}
-    # optional = {}
-    # default = {}
+#     # required = {}
+#     # optional = {}
+#     # default = {}
 
-    @classmethod
-    @preprocess_hook
-    def _harvest_attrs(cls):
-        dct = {}
+#     @classmethod
+#     @preprocess_hook
+#     def _harvest_attrs(cls):
+#         dct = {}
         
-        required = cls._class_data.dct.get('required', {})
-        optional = cls._class_data.dct.get('optional', {})
-        default = cls._class_data.dct.get('default', {})
+#         required = cls._class_data.dct.get('required', {})
+#         optional = cls._class_data.dct.get('optional', {})
+#         default = cls._class_data.dct.get('default', {})
 
-        for attr in required:
-            typ = required[attr]
-            if attr in default:
-                dct[attr] = Attr(typ, optional=False,  default=default[attr])
-            else:
-                dct[attr] = Attr(typ, optional=False)
+#         for attr in required:
+#             typ = required[attr]
+#             if attr in default:
+#                 dct[attr] = Attr(typ, optional=False,  default=default[attr])
+#             else:
+#                 dct[attr] = Attr(typ, optional=False)
 
-        for attr in optional:
-            typ = optional[attr]
-            if attr in default:
-                dct[attr] = Attr(typ, default=default[attr], optional=True)
-            else:
-                dct[attr] = Attr(typ, optional=True)
+#         for attr in optional:
+#             typ = optional[attr]
+#             if attr in default:
+#                 dct[attr] = Attr(typ, default=default[attr], optional=True)
+#             else:
+#                 dct[attr] = Attr(typ, optional=True)
                 
-        preserve_attr_data(cls._attrs, dct)
-        cls._attrs.update(dct)
+#         preserve_attr_data(cls._attrs, dct)
+#         cls._attrs.update(dct)
 
-class AA2(AltAttrs):
-    required = dict(b = float)
-    optional = dict(a = str)
-    default = dict(b = 1.2)
+# class AA2(AltAttrs):
+#     required = dict(b = float)
+#     optional = dict(a = str)
+#     default = dict(b = 1.2)
 
-class AA3(AltAttrs):
-    required = dict(a = float)
-    optional = dict(b = str)
-    default = dict(a = 1.2)
+# class AA3(AltAttrs):
+#     required = dict(a = float)
+#     optional = dict(b = str)
+#     default = dict(a = 1.2)
 
-def test_preprocess_hooks_alt_attrs():
-    assert AA2._attrs.required == {'b'}
-    assert AA2._attrs.optional == {'a'}
-    assert AA2._attrs.defaults == dict(b = 1.2)
-    assert AA2._attrs.doc == dict(a = 'abc')
+# def test_preprocess_hooks_alt_attrs():
+#     assert AA2._attrs.required == {'b'}
+#     assert AA2._attrs.optional == {'a'}
+#     assert AA2._attrs.defaults == dict(b = 1.2)
+#     assert AA2._attrs.doc == dict(a = 'abc')
 
-    # assert AA3._attrs.required == {'a'}
-    # assert AA3._attrs.optional == {'b'}
-    # assert AA3._attrs.defaults == dict(a = 1.2)
-    # assert AA3._attrs.doc == dict(a = 'abc')
+#     # assert AA3._attrs.required == {'a'}
+#     # assert AA3._attrs.optional == {'b'}
+#     # assert AA3._attrs.defaults == dict(a = 1.2)
+#     # assert AA3._attrs.doc == dict(a = 'abc')
 
 #-------------------------------------------------------------------------------
 # Update functionality

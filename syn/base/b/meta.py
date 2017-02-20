@@ -34,14 +34,14 @@ dict(type = _OAttr(None, doc='Type of the attribute'),
     )
 
 #-------------------------------------------------------------------------------
-# Pre-Process Hook
+# Pre-Create Hook
 
-class _PreProcessHook(object):
-    '''Dummy class to ensure that callable is really a pre-process hook.'''
+class _PreCreateHook(object):
+    '''Dummy class to ensure that callable is really a pre-create hook.'''
     pass
 
-def preprocess_hook(f):
-    f.is_preprocess_hook = _PreProcessHook
+def pre_create_hook(f):
+    f.is_pre_create_hook = _PreCreateHook
     return f
 
 #-------------------------------------------------------------------------------
@@ -111,15 +111,23 @@ class Meta(_Meta):
                                opts_type = AttrDict,
                                seq_opts_type = SeqDict)
 
-    def __init__(self, clsname, bases, dct):
-        super(_Meta, self).__init__(clsname, bases, dct)
+    def __new__(cls, clsname, bases, dct):
+        clsdata = dict(clsname=clsname, bases=bases, dct=dct)
+        cls._process_pre_create_hooks(clsdata)
+        ret = super(Meta, cls).__new__(cls, clsdata['clsname'], 
+                                       clsdata['bases'], clsdata['dct'])
+        return ret
 
-        self._set_class_data(clsname, bases, dct)
-        self._process_preprocess_hooks()
-        
-        self._resolve_this()
-        self._combine_attrs()
-        self._resolve_aliases()
+    @classmethod
+    def _process_pre_create_hooks(cls, clsdata):
+        hooks = [f for f in clsdata['dct'].values() 
+                 if getattr(f, 'is_pre_create_hook', None) is _PreCreateHook]
+
+        for hook in hooks:
+            hook(clsdata)
+
+    def __init__(self, clsname, bases, dct):
+        super(Meta, self).__init__(clsname, bases, dct)
 
         self._populate_data()
         self._combine_groups()
@@ -169,14 +177,6 @@ class Meta(_Meta):
                                 lst.append(self)
                             c._data.subclasses = lst
 
-    def _process_preprocess_hooks(self):
-        funcs = callables(self)
-        hooks = [f for f in funcs.values() 
-                 if getattr(f, 'is_preprocess_hook', None) is _PreProcessHook]
-
-        for hook in hooks:
-            hook()
-
     def _process_create_hooks(self):
         funcs = callables(self)
         hooks = [f for f in funcs.values() 
@@ -214,7 +214,7 @@ class Meta(_Meta):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Attr', 'Attrs', 'Meta', 'Data', 'create_hook', 'preprocess_hook',
+__all__ = ('Attr', 'Attrs', 'Meta', 'Data', 'create_hook', 'pre_create_hook',
            'This', 'preserve_attr_data')
 
 #-------------------------------------------------------------------------------
