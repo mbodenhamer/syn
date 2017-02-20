@@ -112,8 +112,14 @@ class Meta(_Meta):
                                seq_opts_type = SeqDict)
 
     def __init__(self, clsname, bases, dct):
+        super(_Meta, self).__init__(clsname, bases, dct)
+
+        self._set_class_data(clsname, bases, dct)
         self._process_preprocess_hooks()
-        super(Meta, self).__init__(clsname, bases, dct)
+        
+        self._resolve_this()
+        self._combine_attrs()
+        self._resolve_aliases()
 
         self._populate_data()
         self._combine_groups()

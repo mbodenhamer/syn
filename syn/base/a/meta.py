@@ -139,26 +139,30 @@ class Meta(type):
     def __init__(self, clsname, bases, dct):
         super(Meta, self).__init__(clsname, bases, dct)
 
+        self._set_class_data(clsname, bases, dct)
+        self._resolve_this()
+        self._combine_attrs()
+        self._resolve_aliases()
+
+    def _set_class_data(self, clsname, bases, dct):
         self._class_data = AttrDict()        
         self._class_data.bases = tuple(sorted_bases(bases))
         self._class_data.def_bases = bases
         self._class_data.clsname = clsname
         self._class_data.dct = dict(dct)
 
-        self._resolve_this()
-        self._combine_attr_fast_update('_attrs', 
-                                       self._metaclass_opts.attrs_type)
-        self._combine_attr('_opts', self._metaclass_opts.opts_type)
-        self._combine_attr_dct('_seq_opts', self._metaclass_opts.seq_opts_type)
-        self._combine_attr_dct('_aliases', self._metaclass_opts.aliases_type)
-
-        self._resolve_aliases()
-
     def _resolve_this(self):
         attrs = getattr(self, '_attrs', {}).values()
         for attr in attrs:
             if isinstance(attr.type, This):
                 attr.type = Type.dispatch(self)
+
+    def _combine_attrs(self):
+        self._combine_attr_fast_update('_attrs', 
+                                       self._metaclass_opts.attrs_type)
+        self._combine_attr('_opts', self._metaclass_opts.opts_type)
+        self._combine_attr_dct('_seq_opts', self._metaclass_opts.seq_opts_type)
+        self._combine_attr_dct('_aliases', self._metaclass_opts.aliases_type)
 
     def _combine_attr(self, attr, typ=None):
         values = getattr(self, attr, {})

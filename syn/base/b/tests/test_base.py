@@ -673,25 +673,25 @@ class AltAttrs(Base):
                  args = ('a',))
     _attrs = dict(a = Attr(int, doc='abc'))
 
-    required = {}
-    optional = {}
-    default = {}
+    # required = {}
+    # optional = {}
+    # default = {}
 
     @classmethod
     @preprocess_hook
     def _harvest_attrs(cls):
         dct = {}
         
-        required = cls.required
-        optional = cls.optional
-        default = cls.default
+        required = cls._class_data.dct.get('required', {})
+        optional = cls._class_data.dct.get('optional', {})
+        default = cls._class_data.dct.get('default', {})
 
         for attr in required:
             typ = required[attr]
             if attr in default:
-                dct[attr] = Attr(typ, default=default[attr])
+                dct[attr] = Attr(typ, optional=False,  default=default[attr])
             else:
-                dct[attr] = Attr(typ)
+                dct[attr] = Attr(typ, optional=False)
 
         for attr in optional:
             typ = optional[attr]
@@ -709,13 +709,20 @@ class AA2(AltAttrs):
     default = dict(b = 1.2)
 
 class AA3(AltAttrs):
-    pass
+    required = dict(a = float)
+    optional = dict(b = str)
+    default = dict(a = 1.2)
 
 def test_preprocess_hooks_alt_attrs():
     assert AA2._attrs.required == {'b'}
     assert AA2._attrs.optional == {'a'}
     assert AA2._attrs.defaults == dict(b = 1.2)
     assert AA2._attrs.doc == dict(a = 'abc')
+
+    # assert AA3._attrs.required == {'a'}
+    # assert AA3._attrs.optional == {'b'}
+    # assert AA3._attrs.defaults == dict(a = 1.2)
+    # assert AA3._attrs.doc == dict(a = 'abc')
 
 #-------------------------------------------------------------------------------
 # Update functionality

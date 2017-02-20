@@ -353,7 +353,8 @@ class PP4(PP3):
     @classmethod
     @preprocess_hook
     def hook1(cls):
-        PP3.hook1.__func__(cls)
+        super(cls, cls).hook1()
+        #PP3.hook1.__func__(cls)
         cls.a /= 2.0
 
 def test_preprocess_hooks():
