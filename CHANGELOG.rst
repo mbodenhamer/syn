@@ -13,7 +13,7 @@ Changelog
 - Integrated most syn.types functionality into syn.base.b.Base
 
 0.0.12 (2017-02-12)
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 - Added iteration methods to syn.tree.b.Node
 - Added syn.tree.query
 - Added syn.types
@@ -26,7 +26,7 @@ Changelog
 - Added automatic metadata harvesting for sub-packages
 
 0.0.10 (2016-08-12)
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 - Added lazy sampling and enumeration to syn.sets
 - Removed syn.sets.Complement
 - Added syn.sets.Product
