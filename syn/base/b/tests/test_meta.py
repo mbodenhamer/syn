@@ -1,11 +1,11 @@
 import six
 from nose.tools import assert_raises
 from syn.base_utils import (GroupDict, AttrDict, assert_type_equivalent,
-                            ReflexiveDict, SeqDict)
+                            ReflexiveDict, SeqDict, feq)
 from syn.type.a import AnyType, TypeType
 from syn.base.b.meta import Attr, Attrs, Meta, Data
 from syn.base.a.meta import mro
-from syn.base.b.base import create_hook
+from syn.base.b.meta import create_hook, preprocess_hook
 
 #-------------------------------------------------------------------------------
 # Data Object
@@ -328,6 +328,38 @@ def test_create_hooks():
 
     assert CHBad.a == 10
     assert isinstance(CHBad.b, PseudoHook)
+
+#-------------------------------------------------------------------------------
+# Test Pre-Process Hooks
+
+@six.add_metaclass(Meta)
+class PPHooks(object):
+    a = 1
+
+    @classmethod
+    @preprocess_hook
+    def hook1(cls):
+        cls.a *= 2
+
+class PP2(PPHooks):
+    pass
+
+class PP3(PP2):
+    a = 1
+
+class PP4(PP3):
+    a = 10
+    
+    @classmethod
+    @preprocess_hook
+    def hook1(cls):
+        cls.a /= 2.0
+
+def test_preprocess_hooks():
+    assert PPHooks.a == 2
+    assert PP2.a == 4
+    assert PP3.a == 2
+    assert feq(PP4.a, 5.0)
 
 #-------------------------------------------------------------------------------
 # Test register_subclasses

@@ -34,6 +34,17 @@ dict(type = _OAttr(None, doc='Type of the attribute'),
     )
 
 #-------------------------------------------------------------------------------
+# Pre-Process Hook
+
+class _PreProcessHook(object):
+    '''Dummy class to ensure that callable is really a pre-process hook.'''
+    pass
+
+def preprocess_hook(f):
+    f.is_preprocess_hook = _PreProcessHook
+    return f
+
+#-------------------------------------------------------------------------------
 # Create Hook
 
 class _CreateHook(object):
@@ -101,6 +112,7 @@ class Meta(_Meta):
                                seq_opts_type = SeqDict)
 
     def __init__(self, clsname, bases, dct):
+        self._process_preprocess_hooks()
         super(Meta, self).__init__(clsname, bases, dct)
 
         self._populate_data()
@@ -151,6 +163,14 @@ class Meta(_Meta):
                                 lst.append(self)
                             c._data.subclasses = lst
 
+    def _process_preprocess_hooks(self):
+        funcs = callables(self)
+        hooks = [f for f in funcs.values() 
+                 if getattr(f, 'is_preprocess_hook', None) is _PreProcessHook]
+
+        for hook in hooks:
+            hook()
+
     def _process_create_hooks(self):
         funcs = callables(self)
         hooks = [f for f in funcs.values() 
@@ -188,6 +208,7 @@ class Meta(_Meta):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Attr', 'Attrs', 'Meta', 'Data', 'create_hook', 'This')
+__all__ = ('Attr', 'Attrs', 'Meta', 'Data', 'create_hook', 'preprocess_hook',
+           'This')
 
 #-------------------------------------------------------------------------------
