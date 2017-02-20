@@ -668,11 +668,7 @@ def test_schema_attrs():
 # Test using preprocess hooks to create alternative methods of
 # attribute specification
 
-class AltAttrs(Base):
-    _opts = dict(init_validate = True,
-                 args = ('a',))
-    _attrs = dict(a = Attr(int, doc='abc'))
-
+class Harvester(object):
     @pre_create_hook
     def _harvest_attrs(clsdata):
         dct = {}
@@ -700,6 +696,11 @@ class AltAttrs(Base):
         preserve_attr_data(attrs, dct)
         attrs.update(dct)
         clsdct['_attrs'] = attrs
+
+class AltAttrs(Base, Harvester):
+    _opts = dict(init_validate = True,
+                 args = ('a',))
+    _attrs = dict(a = Attr(int, doc='abc'))
 
 class AA2(AltAttrs):
     required = dict(b = float)
