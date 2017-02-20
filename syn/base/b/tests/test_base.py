@@ -1,7 +1,8 @@
 import six.moves.cPickle as pickle
 from nose.tools import assert_raises
 from syn.five import STR
-from syn.base.b import Base, Attr, init_hook, coerce_hook, setstate_hook
+from syn.base.b import Base, Attr, init_hook, coerce_hook, setstate_hook, \
+    preprocess_hook, preserve_attr_data
 from syn.type.a import Type, Schema, List, Set
 from syn.schema.b.sequence import Sequence
 from syn.sets.b import Range
@@ -662,6 +663,59 @@ def test_schema_attrs():
     assert_raises(TypeError, SchemaTest, [1], [2.3], 5)
     assert_raises(TypeError, SchemaTest, [11, 2.3], [1, [2.3]], 5)
     assert_raises(TypeError, SchemaTest, [1, 2.3], [1, [2.3]], 9)
+
+#-------------------------------------------------------------------------------
+# Test using preprocess hooks to create alternative methods of
+# attribute specification
+
+class AltAttrs(Base):
+    _opts = dict(init_validate = True,
+                 args = ('a',))
+    _attrs = dict(a = Attr(int, doc='abc'))
+
+    required = {}
+    optional = {}
+    default = {}
+
+    @classmethod
+    @preprocess_hook
+    def _harvest_attrs(cls):
+        dct = {}
+        
+        required = cls.required
+        optional = cls.optional
+        default = cls.default
+
+        for attr in required:
+            typ = required[attr]
+            if attr in default:
+                dct[attr] = Attr(typ, default=default[attr])
+            else:
+                dct[attr] = Attr(typ)
+
+        for attr in optional:
+            typ = optional[attr]
+            if attr in default:
+                dct[attr] = Attr(typ, default=default[attr], optional=True)
+            else:
+                dct[attr] = Attr(typ, optional=True)
+                
+        preserve_attr_data(cls._attrs, dct)
+        cls._attrs.update(dct)
+
+class AA2(AltAttrs):
+    required = dict(b = float)
+    optional = dict(a = str)
+    default = dict(b = 1.2)
+
+class AA3(AltAttrs):
+    pass
+
+def test_preprocess_hooks_alt_attrs():
+    assert AA2._attrs.required == {'b'}
+    assert AA2._attrs.optional == {'a'}
+    assert AA2._attrs.defaults == dict(b = 1.2)
+    assert AA2._attrs.doc == dict(a = 'abc')
 
 #-------------------------------------------------------------------------------
 # Update functionality

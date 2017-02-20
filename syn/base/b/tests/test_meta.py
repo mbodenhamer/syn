@@ -353,13 +353,14 @@ class PP4(PP3):
     @classmethod
     @preprocess_hook
     def hook1(cls):
+        PP3.hook1.__func__(cls)
         cls.a /= 2.0
 
 def test_preprocess_hooks():
     assert PPHooks.a == 2
     assert PP2.a == 4
     assert PP3.a == 2
-    assert feq(PP4.a, 5.0)
+    assert feq(PP4.a, 10)
 
 #-------------------------------------------------------------------------------
 # Test register_subclasses

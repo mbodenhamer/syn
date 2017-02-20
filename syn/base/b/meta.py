@@ -10,7 +10,7 @@ from functools import partial
 from syn.base.a.meta import Attr as _Attr
 from syn.base.a.meta import Attrs as _Attrs
 from syn.base.a.meta import Meta as _Meta
-from syn.base.a.meta import combine
+from syn.base.a.meta import combine, preserve_attr_data
 
 _OAttr = partial(_Attr, optional=True)
 
@@ -209,6 +209,6 @@ class Meta(_Meta):
 # __all__
 
 __all__ = ('Attr', 'Attrs', 'Meta', 'Data', 'create_hook', 'preprocess_hook',
-           'This')
+           'This', 'preserve_attr_data')
 
 #-------------------------------------------------------------------------------
