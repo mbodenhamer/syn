@@ -217,10 +217,11 @@ def hangwatch(timeout, func, *args, **kwargs):
         eprint(''.join(traceback.format_exception(*info)))
         raise e
 
-def getfunc(obj, name):
+def getfunc(obj, name=''):
     '''Get the function corresponding to name from obj, not the method.'''
-    x = getattr(obj, name)
-    return getattr(x, '__func__', x)
+    if name:
+        obj = getattr(obj, name)
+    return getattr(obj, '__func__', obj)
 
 #-------------------------------------------------------------------------------
 # Sequence utilities

@@ -297,6 +297,9 @@ def test_getfunc():
     assert getfunc(f, 'bar')(3) == 6
     assert getfunc(Foo, 'bar')(3) == 6
 
+    assert getfunc(f.bar)(3) == 6
+    assert getfunc(Foo.bar)(3) == 6
+
 #-------------------------------------------------------------------------------
 # Sequence utilities
 
