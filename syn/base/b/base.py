@@ -148,6 +148,139 @@ class Base(object):
         if self._opts.init_validate:
             self.validate()
 
+    def __eq__(self, other):
+        if self._opts.id_equality:
+            return self is other
+
+        if type(self) is not type(other):
+            return False
+
+        dct1 = self.to_dict(exclude=['eq_exclude'])
+        dct2 = other.to_dict(exclude=['eq_exclude'])
+        return dct1 == dct2
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def __getstate__(self):
+        return self.to_dict(exclude=['getstate_exclude'])
+
+    def __repr__(self):
+        if self._opts.repr_template:
+            return self._repr_template()
+
+        out = '<' + get_mod(self) + '.' + get_typename(self) + ' '
+        out += str(self.to_dict(exclude=['repr_exclude']))
+        out += '>'
+        return out
+
+    def __setstate__(self, state):
+        for attr, val in state.items():
+            setattr(self, attr, val)
+
+        if self._data.setstate_hooks:
+            for hook in self._data.setstate_hooks:
+                hook(self)
+
+    def __str__(self):
+        return self.istr()
+
+    @classmethod
+    def coerce(cls, value):
+        if isinstance(value, Mapping):
+            dct = cls._dict_from_mapping(value)
+        else:
+            return cls(value)
+
+        if cls._data.coerce_hooks:
+            for hook in cls._data.coerce_hooks:
+                hook(dct)
+
+        if cls._opts.coerce_args:
+            return cls(**dct)
+
+        types = cls._attrs.types
+        attrs = {attr: types[attr].coerce(val) 
+                 for attr, val in dct.items()}
+        return cls(**attrs)
+
+    @classmethod
+    @create_hook
+    def _create_init_hooks(cls):
+        hooks = cls._find_hooks('is_init_hook', _InitHook)
+        cls._data.init_hooks = list(cls._data.init_hooks) + hooks
+
+    @classmethod
+    @create_hook
+    def _create_coerce_hooks(cls):
+        hooks = cls._find_hooks('is_coerce_hook', _CoerceHook)
+        cls._data.coerce_hooks = list(cls._data.coerce_hooks) + hooks
+
+    @classmethod
+    @create_hook
+    def _create_setstate_hooks(cls):
+        hooks = cls._find_hooks('is_setstate_hook', _SetstateHook)
+        cls._data.setstate_hooks = list(cls._data.setstate_hooks) + hooks
+
+    @classmethod
+    def _dict_from_mapping(cls, value):
+        return dict(value)
+
+    @classmethod
+    def _dict_from_object(cls, obj):
+        return {attr: getattr(obj, attr) for attr in cls._attrs.types
+                if hasattr(obj, attr)}
+
+    @classmethod
+    def _dict_from_sequence(cls, seq):
+        return {cls._opts.args[k]: val for k, val in enumerate(seq)}
+
+    @classmethod
+    def _enumeration_value(cls, x, **kwargs):
+        kwargs = {}
+        for attr, typ in cls._attrs.types.items():
+            if attr in cls._groups.generate_exclude:
+                continue
+            kwargs[attr] = typ.enumeration_value(x, **kwargs)
+        return cls(**kwargs)
+
+    @classmethod
+    def _find_hooks(cls, hook_attr, hook_type):
+        funcs = callables(cls)
+        return [f for f in funcs.values() 
+                if getattr(f, hook_attr, None) is hook_type]
+
+    @classmethod
+    def from_mapping(cls, value):
+        return cls(**cls._dict_from_mapping(value))
+
+    @classmethod
+    def from_object(cls, obj):
+        return cls(**cls._dict_from_object(obj))
+
+    @classmethod
+    def from_sequence(cls, seq):
+        if len(seq) > len(cls._opts.args):
+            raise ValueError("More elements in sequence than in object "
+                             "positional args")
+        return cls(**cls._dict_from_sequence(seq))
+
+    @classmethod
+    def _generate(cls, **kwargs_):
+        exclude = set(kwargs_.get('exclude', []))
+        exclude.update(cls._groups.generate_exclude)
+        attrs = kwargs_.get('attrs', {})
+
+        kwargs = {}
+        for attr, typ in cls._attrs.types.items():
+            if attr in exclude:
+                continue
+            if attr in attrs:
+                kwargs[attr] = attrs[attr]
+            else:
+                kwargs[attr] = typ.generate(**kwargs_)
+        return cls(**kwargs)
+
     @classmethod
     def _generate_documentation_signature(cls, attrs):
         sig = get_typename(cls) + '('
@@ -239,30 +372,6 @@ class Base(object):
         cls.__doc__ = doc
 
     @classmethod
-    def _find_hooks(cls, hook_attr, hook_type):
-        funcs = callables(cls)
-        return [f for f in funcs.values() 
-                if getattr(f, hook_attr, None) is hook_type]
-
-    @classmethod
-    @create_hook
-    def _create_init_hooks(cls):
-        hooks = cls._find_hooks('is_init_hook', _InitHook)
-        cls._data.init_hooks = list(cls._data.init_hooks) + hooks
-
-    @classmethod
-    @create_hook
-    def _create_coerce_hooks(cls):
-        hooks = cls._find_hooks('is_coerce_hook', _CoerceHook)
-        cls._data.coerce_hooks = list(cls._data.coerce_hooks) + hooks
-
-    @classmethod
-    @create_hook
-    def _create_setstate_hooks(cls):
-        hooks = cls._find_hooks('is_setstate_hook', _SetstateHook)
-        cls._data.setstate_hooks = list(cls._data.setstate_hooks) + hooks
-
-    @classmethod
     @create_hook
     def _make_type_object(cls):
         if cls._class_data.clsname == 'Base' or not cls._opts.make_type_object:
@@ -279,50 +388,20 @@ class Base(object):
                 return hash(self._hashable())
             setattr(cls, '__hash__', hashf)
 
-    def __getstate__(self):
-        return self.to_dict(exclude=['getstate_exclude'])
+    def _estr(self, **kwargs):
+        kwargs = {attr: estr(val) for attr, val in pairs(self, **kwargs)}
+        argstr = ','.join('{}={}'.format(attr, val) for attr, val in kwargs.items())
+        return '{}({})'.format(get_typename(self), argstr)
 
-    def __setstate__(self, state):
-        for attr, val in state.items():
-            setattr(self, attr, val)
+    def _find_ne(self, other, func, **kwargs):
+        for attr, value in pairs(self, exclude=['eq_exclude']):
+            if not func(value, getattr(other, attr)):
+                return DiffersAtAttribute(self, other, attr)
 
-        if self._data.setstate_hooks:
-            for hook in self._data.setstate_hooks:
-                hook(self)
-
-    def __eq__(self, other):
-        if self._opts.id_equality:
-            return self is other
-
-        if type(self) is not type(other):
-            return False
-
-        dct1 = self.to_dict(exclude=['eq_exclude'])
-        dct2 = other.to_dict(exclude=['eq_exclude'])
-        return dct1 == dct2
-
-    def __ne__(self, other):
-        return not (self == other)
-
-    def _repr_template(self):
-        dct = self.to_dict()
-        dct['__name__'] = get_typename(self)
-        dct['__mod__'] = get_mod(self)
-
-        template = self._opts.repr_template
-        return template.format(**dct)
-
-    def __repr__(self):
-        if self._opts.repr_template:
-            return self._repr_template()
-
-        out = '<' + get_mod(self) + '.' + get_typename(self) + ' '
-        out += str(self.to_dict(exclude=['repr_exclude']))
-        out += '>'
-        return out
-
-    def __str__(self):
-        return self.istr()
+    def _hashable(self, **kwargs):
+        items = [hashable(val, **kwargs) for val in self.to_tuple(exclude=['hash_exclude'])]
+        items.insert(0, get_fullname(self))
+        return tuple(items)
 
     def _istr_attrs(self, base, pretty, indent):
         strs = []
@@ -353,92 +432,13 @@ class Base(object):
         '''Returns a pretty-printed version if istr().'''
         return self.istr(pretty=True, indent=indent)
 
-    @classmethod
-    def _dict_from_mapping(cls, value):
-        return dict(value)
+    def _repr_template(self):
+        dct = self.to_dict()
+        dct['__name__'] = get_typename(self)
+        dct['__mod__'] = get_mod(self)
 
-    @classmethod
-    def _dict_from_object(cls, obj):
-        return {attr: getattr(obj, attr) for attr in cls._attrs.types
-                if hasattr(obj, attr)}
-
-    @classmethod
-    def _dict_from_sequence(cls, seq):
-        return {cls._opts.args[k]: val for k, val in enumerate(seq)}
-
-    @classmethod
-    def coerce(cls, value):
-        if isinstance(value, Mapping):
-            dct = cls._dict_from_mapping(value)
-        else:
-            return cls(value)
-
-        if cls._data.coerce_hooks:
-            for hook in cls._data.coerce_hooks:
-                hook(dct)
-
-        if cls._opts.coerce_args:
-            return cls(**dct)
-
-        types = cls._attrs.types
-        attrs = {attr: types[attr].coerce(val) 
-                 for attr, val in dct.items()}
-        return cls(**attrs)
-
-    @classmethod
-    def _enumeration_value(cls, x, **kwargs):
-        kwargs = {}
-        for attr, typ in cls._attrs.types.items():
-            if attr in cls._groups.generate_exclude:
-                continue
-            kwargs[attr] = typ.enumeration_value(x, **kwargs)
-        return cls(**kwargs)
-
-    def _estr(self, **kwargs):
-        kwargs = {attr: estr(val) for attr, val in pairs(self, **kwargs)}
-        argstr = ','.join('{}={}'.format(attr, val) for attr, val in kwargs.items())
-        return '{}({})'.format(get_typename(self), argstr)
-
-    def _find_ne(self, other, func, **kwargs):
-        for attr, value in pairs(self, exclude=['eq_exclude']):
-            if not func(value, getattr(other, attr)):
-                return DiffersAtAttribute(self, other, attr)
-
-    @classmethod
-    def from_mapping(cls, value):
-        return cls(**cls._dict_from_mapping(value))
-
-    @classmethod
-    def from_object(cls, obj):
-        return cls(**cls._dict_from_object(obj))
-
-    @classmethod
-    def from_sequence(cls, seq):
-        if len(seq) > len(cls._opts.args):
-            raise ValueError("More elements in sequence than in object "
-                             "positional args")
-        return cls(**cls._dict_from_sequence(seq))
-
-    @classmethod
-    def _generate(cls, **kwargs_):
-        exclude = set(kwargs_.get('exclude', []))
-        exclude.update(cls._groups.generate_exclude)
-        attrs = kwargs_.get('attrs', {})
-
-        kwargs = {}
-        for attr, typ in cls._attrs.types.items():
-            if attr in exclude:
-                continue
-            if attr in attrs:
-                kwargs[attr] = attrs[attr]
-            else:
-                kwargs[attr] = typ.generate(**kwargs_)
-        return cls(**kwargs)
-
-    def _hashable(self, **kwargs):
-        items = [hashable(val, **kwargs) for val in self.to_tuple(exclude=['hash_exclude'])]
-        items.insert(0, get_fullname(self))
-        return tuple(items)
+        template = self._opts.repr_template
+        return template.format(**dct)
 
     def _serialize(self, dct, **kwargs):
         kwargs = dict(kwargs)
