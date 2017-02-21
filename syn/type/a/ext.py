@@ -79,8 +79,12 @@ class Sequence(TypeExtension):
             self.item_type.check(value)
 
     def coerce(self, values, **kwargs):
+        seq_type_only = kwargs.get('seq_type_only', False)
         if not self.query(values):
-            newvals = [self.item_type.coerce(value, **kwargs) for value in values]
+            if seq_type_only:
+                newvals = values
+            else:
+                newvals = [self.item_type.coerce(value, **kwargs) for value in values]
             return self.seq_type.coerce(newvals, **kwargs)
         return values
         
