@@ -62,7 +62,7 @@ class Type(object):
         raise TypeError('Unable to dispatch appropriate type represetation'
                          ' for {}'.format(obj))
 
-    def coerce(self, value):
+    def coerce(self, value, **kwargs):
         raise NotImplementedError
 
     def display(self):
@@ -107,7 +107,7 @@ class AnyType(Type):
     def check(self, value):
         pass
 
-    def coerce(self, value):
+    def coerce(self, value, **kwargs):
         return value
 
     def display(self):
@@ -171,13 +171,13 @@ class TypeType(Type):
             raise TypeError('Expected value of type {}; got: {}'
                             .format(self.type, value))
 
-    def coerce(self, value):
+    def coerce(self, value, **kwargs):
         if self.query(value):
             return value
 
         try:
             if self.call_coerce:
-                return self.type.coerce(value)
+                return self.type.coerce(value, **kwargs)
             return self.type(value)
         except Exception as e:
             raise TypeError('Cannot coerce {} to type {}: {}'
@@ -235,7 +235,7 @@ class ValuesType(Type):
         if value not in self.values:
             raise TypeError('Invalid value: {}'.format(value))
 
-    def coerce(self, value):
+    def coerce(self, value, **kwargs):
         try:
             self.check(value)
         except TypeError as e:
@@ -302,10 +302,10 @@ class MultiType(Type):
         raise TypeError("Value '{}' is not any valid type: {}"
                         .format(value, self.typestr))
 
-    def coerce(self, value):
+    def coerce(self, value, **kwargs):
         for typ in self.types:
             try:
-                return typ.coerce(value)
+                return typ.coerce(value, **kwargs)
             except TypeError:
                 pass
 
@@ -361,7 +361,7 @@ class Set(Type):
         if not self.set.hasmember(value):
             raise TypeError('Set does not contain value: {}'.format(value))
 
-    def coerce(self, value):
+    def coerce(self, value, **kwargs):
         try:
             self.check(value)
         except TypeError as e:
@@ -405,7 +405,7 @@ class Schema(Type):
         if not self.schema.match(value):
             raise TypeError('Schema does not match: {}'.format(value))
 
-    def coerce(self, value):
+    def coerce(self, value, **kwargs):
         # NOTE: this might not be the right behavior, ideally considered.
         # However, it is good enough for our present needs.
         return value

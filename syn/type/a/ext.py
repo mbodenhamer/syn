@@ -78,10 +78,10 @@ class Sequence(TypeExtension):
         for value in values:
             self.item_type.check(value)
 
-    def coerce(self, values):
+    def coerce(self, values, **kwargs):
         if not self.query(values):
-            newvals = [self.item_type.coerce(value) for value in values]
-            return self.seq_type.coerce(newvals)
+            newvals = [self.item_type.coerce(value, **kwargs) for value in values]
+            return self.seq_type.coerce(newvals, **kwargs)
         return values
         
     def display(self):
@@ -153,7 +153,7 @@ class Tuple(TypeExtension):
             for k, typ in enumerate(self.types):
                 typ.check(values[k])
 
-    def coerce(self, values):
+    def coerce(self, values, **kwargs):
         if self.query(values):
             return values
 
@@ -162,9 +162,9 @@ class Tuple(TypeExtension):
                 raise TypeError('Tuple must be length {}'.format(self.length))
 
         if self.uniform:
-            values = [self.types.coerce(value) for value in values]
+            values = [self.types.coerce(value, **kwargs) for value in values]
         else:
-            values = [typ.coerce(values[k]) for k, typ in enumerate(self.types)]
+            values = [typ.coerce(values[k], **kwargs) for k, typ in enumerate(self.types)]
         return tuple(values)
 
     def display(self):
@@ -243,11 +243,11 @@ class Mapping(TypeExtension):
         for value in dct.values():
             self.value_type.check(value)
 
-    def coerce(self, dct):
+    def coerce(self, dct, **kwargs):
         if not self.query(dct):
-            newdct = {key:self.value_type.coerce(value) for key,value in
+            newdct = {key:self.value_type.coerce(value, **kwargs) for key,value in
                       dct.items()}
-            return self.map_type.coerce(newdct)
+            return self.map_type.coerce(newdct, **kwargs)
         return dct
 
     def display(self):

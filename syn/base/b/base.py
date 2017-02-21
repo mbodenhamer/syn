@@ -187,7 +187,7 @@ class Base(object):
         return self.istr()
 
     @classmethod
-    def coerce(cls, value):
+    def coerce(cls, value, **kwargs):
         if isinstance(value, Mapping):
             dct = cls._dict_from_mapping(value)
         else:
@@ -201,7 +201,7 @@ class Base(object):
             return cls(**dct)
 
         types = cls._attrs.types
-        attrs = {attr: types[attr].coerce(val) 
+        attrs = {attr: types[attr].coerce(val, **kwargs) 
                  for attr, val in dct.items()}
         return cls(**attrs)
 
