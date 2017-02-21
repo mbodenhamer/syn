@@ -297,7 +297,7 @@ class CTTest(Node):
 def test_child_types():
     CTTest()
     CTTest(CT1())
-    #assert_raises(TypeError, CTTest, CT1(), CT2())
+    assert_raises(TypeError, CTTest, CT1(), CT2())
 
 #-------------------------------------------------------------------------------
 # Descendant Exclude
@@ -346,6 +346,13 @@ def test_schema_attrs():
     assert type(val[0]) is SA1
     assert type(val[1]) is SA2
     assert len(val) == 2
+
+    def bad():
+        class SchemaTest2(Node):
+            schema = Sequence(SA1, SA2)
+            types = (SA1, SA1)
+
+    assert_raises(TypeError, bad)
 
 #-------------------------------------------------------------------------------
 

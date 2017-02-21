@@ -26,13 +26,13 @@ class ListWrapper(Base, Harvester):
         _args = self._opts.args
 
         if max_len is None or not _args:
-            _list = ltype.coerce(list(args))
+            _list = ltype.coerce(list(args), seq_type_only=True)
             args = ()
         else:
-            _list = ltype.coerce(list(args[:max_len]))
+            _list = ltype.coerce(list(args[:max_len]), seq_type_only=True)
             args = args[max_len:]
 
-        _list.extend(kwargs.get(_LIST, ltype.coerce([])))
+        _list.extend(kwargs.get(_LIST, ltype.coerce([], seq_type_only=True)))
 
         kwargs[_LIST] = _list
         super(ListWrapper, self).__init__(*args, **kwargs)
