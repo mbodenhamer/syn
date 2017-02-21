@@ -321,7 +321,14 @@ class MultiType(Type):
         return self.types[idx].enumeration_value(x, **kwargs)
 
     def generate(self, **kwargs):
-        typ = choice(self.types)
+        excludes = kwargs.get('exclude_types', [])
+        if excludes:
+            excludes = [Type.dispatch(typ) if not isinstance(typ, Type) else typ
+                        for typ in excludes]
+            types = [typ for typ in self.types if typ not in excludes]
+        else:
+            types = self.types
+        typ = choice(types)
         return typ.generate(**kwargs)
 
     def rst(self):

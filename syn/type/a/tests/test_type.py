@@ -308,7 +308,10 @@ def test_generation():
     assert_raises(NotImplementedError, TypeType(Foo).generate)
 
     assert ValuesType([1, 2, 3]).generate() in {1, 2, 3}
-    assert isinstance(MultiType([int, float]).generate(), (int, float))
+
+    t = MultiType([int, float])
+    assert isinstance(t.generate(), (int, float))
+    assert isinstance(t.generate(exclude_types=[float]), int)
 
 #-------------------------------------------------------------------------------
 # Test enumeration values
