@@ -1,9 +1,9 @@
 import collections
-from syn.base_utils import istr
-from syn.type.a import Schema
+from syn.base_utils import istr, getfunc
+from syn.type.a import Schema, List
 
-from .base import Base
-from .meta import Attr
+from .base import Base, Harvester
+from .meta import Attr, pre_create_hook, preserve_attr_data
 
 #-------------------------------------------------------------------------------
 # Constants
@@ -14,7 +14,7 @@ _LIST = '_list'
 # ListWrapper
 
 
-class ListWrapper(Base):
+class ListWrapper(Base, Harvester):
     _attrs = dict(_list = Attr(list, internal=True, groups=('str_exclude',),
                                doc='The wrapped list'))
     _opts = dict(max_len = None,
@@ -37,6 +37,29 @@ class ListWrapper(Base):
         kwargs[_LIST] = _list
         super(ListWrapper, self).__init__(*args, **kwargs)
 
+    @pre_create_hook
+    def _harvest_attrs(clsdata):
+        getfunc(Harvester._harvest_attrs)(clsdata)
+        
+        dct = {}
+        clsdct = clsdata['dct']
+        attrs = clsdct.get('_attrs', {})
+        types = clsdct.get('types', [])
+        schema = clsdct.get('schema', None)
+        
+        if types and schema:
+            raise TypeError('Cannot specify both types and schema in {}'
+                            .format(clsdata['clsname']))
+
+        if types:
+            dct['_list'] = Attr(List(tuple(types)))
+        elif schema:
+            dct['_list'] = Attr(Schema(schema))
+    
+        preserve_attr_data(attrs, dct)
+        attrs.update(dct)
+        clsdct['_attrs'] = attrs
+            
     def _istr_attrs(self, base, pretty, indent):
         attrs = super(ListWrapper, self)._istr_attrs(base, pretty, indent)
         strs = [istr(val, pretty, indent) for val in self]
