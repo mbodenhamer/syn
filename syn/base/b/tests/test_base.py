@@ -8,7 +8,7 @@ from syn.schema.b.sequence import Sequence
 from syn.sets.b import Range
 from syn.base_utils import assert_equivalent, assert_pickle_idempotent, \
     assert_inequivalent, assert_type_equivalent, is_unique, first, \
-    get_mod, SeqDict, is_hashable, this_module, ngzwarn
+    get_mod, SeqDict, is_hashable, this_module, ngzwarn, getfunc
 from syn.base.b import check_idempotence
 from syn.types import attrs, deserialize, enumeration_value, \
     estr, find_ne, generate, hashable, pairs, rstr, serialize, visit, \
@@ -702,6 +702,12 @@ class AltAttrs(Base, Harvester):
                  args = ('a',))
     _attrs = dict(a = Attr(int, doc='abc'))
 
+    @pre_create_hook
+    def _harvest_attrs(clsdata):
+        getfunc(Harvester._harvest_attrs)(clsdata)
+        clsdata['dct']['d'] = ''.join(attr for attr, value in 
+                                      sorted(clsdata['dct']['_attrs'].items()))
+        
 class AA2(AltAttrs):
     required = dict(b = float)
     optional = dict(a = str)
@@ -722,16 +728,19 @@ def test_preprocess_hooks_alt_attrs():
     assert AA2._attrs.optional == {'a'}
     assert AA2._attrs.defaults == dict(b = 1.2)
     assert AA2._attrs.doc == dict(a = 'abc')
+    assert AA2.d == 'ab'
 
     assert AA3._attrs.required == {'a'}
     assert AA3._attrs.optional == {'b'}
     assert AA3._attrs.defaults == dict(a = 1.2)
     assert AA3._attrs.doc == dict(a = 'abc')
+    assert AA3.d == 'ab'
 
     assert AA4._attrs.required == {'a', 'b'}
     assert AA4._attrs.optional == {'c'}
     assert AA4._attrs.defaults == dict(c = 'abc')
     assert AA4._attrs.doc == dict(a = 'abc')
+    assert AA4.d == 'bc'
 
 #-------------------------------------------------------------------------------
 # Update functionality
