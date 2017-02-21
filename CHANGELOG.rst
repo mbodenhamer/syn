@@ -9,6 +9,7 @@ Changelog
 - Added attribute attribute preservation for sub-class definitions
 - Added pre-create hooks
 - Added support for alternate means of attribute specification (syn.base.b.Harvester)
+- Added ordering utilities (syn.base_utils.order)
 
 0.0.13 (2017-02-14)
 ~~~~~~~~~~~~~~~~~~~

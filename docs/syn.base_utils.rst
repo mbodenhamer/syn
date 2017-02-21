@@ -76,6 +76,14 @@ syn.base_utils.logic module
     :undoc-members:
     :show-inheritance:
 
+syn.base_utils.order module
+---------------------------
+
+.. automodule:: syn.base_utils.order
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 syn.base_utils.py module
 ------------------------
 
