@@ -4,25 +4,25 @@ from nose.tools import assert_raises
 # Topological Sort
 
 def test_topological_sorting():
-    from syn.base_utils import topological_sorting, First, Last, LE
+    from syn.base_utils import topological_sorting, LE
 
     assert topological_sorting([LE(1, 2)]) == [1, 2]
-    assert topological_sorting([LE(First, 1)]) == [1]
-    assert topological_sorting([LE(1, Last)]) == [1]
 
-    rels = [LE(First, 1),
-            LE(1, 2),
-            LE(2, 3),
-            LE(3, Last)]
+    rels = [LE(1, 2),
+            LE(2, 3)]
     assert topological_sorting(rels) == [1, 2, 3]
+
+    rels = [LE(1, 10),
+            LE(2, 10)]
+    sort = topological_sorting(rels)
+    assert sorted(sort) == [1, 2, 10]
+    assert sort[0] == 1 or sort[0] == 2
+    assert sort[-1] == 10
 
     cycle = [LE(1, 2),
              LE(2, 3),
              LE(3, 2)]
     assert_raises(ValueError, topological_sorting, cycle)
-
-    assert_raises(ValueError, topological_sorting, [LE(1, First)])
-    assert_raises(ValueError, topological_sorting, [LE(Last, 1)])
 
 #-------------------------------------------------------------------------------
 

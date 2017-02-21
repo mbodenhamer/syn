@@ -1,15 +1,6 @@
 from collections import defaultdict
 
 #-------------------------------------------------------------------------------
-# Special Orders
-
-class First(object):
-    pass
-
-class Last(object):
-    pass
-
-#-------------------------------------------------------------------------------
 # Order Relations
 
 
@@ -59,14 +50,6 @@ def topological_sorting(relations):
     out = _outgoing(relations)
     free = _free_nodes(nodes, inc)
 
-    if First in nodes:
-        if not _is_free(First, inc):
-            raise ValueError("Node First has incoming edge")
-    
-    if Last in nodes:
-        if not _is_free(Last, out):
-            raise ValueError("Node Last has outgoing edge")
-
     while free:
         n = free.pop()
         ret.append(n)
@@ -80,17 +63,12 @@ def topological_sorting(relations):
 
     if not all(_is_free(node, inc) and _is_free(node, out) for node in nodes):
         raise ValueError("Cycle detected")
-
-    if First in ret:
-        ret.remove(First)
-    if Last in ret:
-        ret.remove(Last)
     return ret
 
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('First', 'Last', 'LE',
+__all__ = ('LE',
            'topological_sorting',)
 
 #-------------------------------------------------------------------------------
