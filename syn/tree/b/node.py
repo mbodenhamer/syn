@@ -68,6 +68,14 @@ class Node(ListWrapper):
     def __bool__(self):
         return True
 
+    @classmethod
+    def _generate(cls, **kwargs):
+        if cls._opts.descendant_exclude:
+            excludes = list(kwargs.get('exclude_types', []))
+            excludes.extend(list(cls._opts.descendant_exclude))
+            kwargs['exclude_types'] = excludes
+        return super(Node, cls)._generate(**kwargs)
+
     @init_hook
     def _initial_node_count(self):
         self._node_count = 1
@@ -268,7 +276,7 @@ class Node(ListWrapper):
             if self._parent is not None:
                 raise TreeError("node must be root, but has parent")
 
-        dex = self._opts.descendant_exclude
+        dex = tuple(self._opts.descendant_exclude)
         if dex:
             for d in self.descendants():
                 if isinstance(d, dex):

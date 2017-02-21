@@ -2,11 +2,17 @@ from operator import attrgetter
 from nose.tools import assert_raises
 from syn.base.b import Attr
 from syn.tree.b import Node, TreeError
-from syn.type.a import Schema
 from syn.schema.b.sequence import Sequence
 from syn.base.b.tests.test_base import check_idempotence
-from syn.base_utils import assert_equivalent, assert_inequivalent, consume
+from syn.base_utils import assert_equivalent, assert_inequivalent, consume, \
+    ngzwarn
 from syn.types.a import generate
+from syn.five import xrange
+
+from syn.globals import TEST_SAMPLES as SAMPLES
+SAMPLES //= 10
+SAMPLES = max(SAMPLES, 1)
+ngzwarn(SAMPLES, 'SAMPLES')
 
 #-------------------------------------------------------------------------------
 # Tree Node Test 1
@@ -291,13 +297,17 @@ class CT2(Node):
     pass
 
 class CTTest(Node):
-    _opts = dict(init_validate = True)
+    _opts = dict(init_validate = True,
+                 min_len = 1)
     types = [CT1]
 
 def test_child_types():
-    CTTest()
     CTTest(CT1())
     assert_raises(TypeError, CTTest, CT1(), CT2())
+
+    for k in xrange(SAMPLES):
+        val = generate(CTTest)
+        val.validate()
 
 #-------------------------------------------------------------------------------
 # Descendant Exclude
@@ -305,19 +315,32 @@ def test_child_types():
 class DE1(Node):
     pass
 
-class DE2(Node):
+class DE3(Node):
     pass
 
+class DE4(Node):
+    pass
+
+class DE2(Node):
+    _opts = dict(min_len = 1)
+    types = [DE3, DE4]
+
 class DETest(Node):
-    _opts = dict(descendant_exclude = (DE2,),
+    types = [DE1, DE2]
+    _opts = dict(descendant_exclude = [DE4],
+                 min_len = 1,
                  init_validate = True)
 
 def test_descendant_exclude():
-    DETest()
     DETest(DE1())
-    
-    n = DE1(DE2())
+    DETest(DE1(DE2(DE3())))
+
+    n = DE2(DE4())
     assert_raises(TypeError, DETest, n)
+
+    for k in xrange(SAMPLES):
+        val = generate(DETest)
+        val.validate()
 
 #-------------------------------------------------------------------------------
 # Schema Attrs
@@ -340,12 +363,13 @@ def test_schema_attrs():
     SchemaTest(SA1(), SA2(), a=1)
     assert_raises(TypeError, SchemaTest, SA1(), SA3(), a=2)
 
-    val = generate(SchemaTest)
-    assert type(val) is SchemaTest
-    assert isinstance(val.a, int)
-    assert type(val[0]) is SA1
-    assert type(val[1]) is SA2
-    assert len(val) == 2
+    for k in xrange(SAMPLES):
+        val = generate(SchemaTest)
+        assert type(val) is SchemaTest
+        assert isinstance(val.a, int)
+        assert type(val[0]) is SA1
+        assert type(val[1]) is SA2
+        assert len(val) == 2
 
     def bad():
         class SchemaTest2(Node):
