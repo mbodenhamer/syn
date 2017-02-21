@@ -3,7 +3,8 @@ import six
 from jinja2 import Template
 from operator import itemgetter
 from collections import Mapping
-from .meta import Attrs, Meta, create_hook
+from .meta import Attr, Attrs, Meta, create_hook, preserve_attr_data, \
+    pre_create_hook
 from syn.base_utils import AttrDict, ReflexiveDict, message, get_mod, \
     get_typename, SeqDict, callables, istr, rgetattr, get_fullname
 from syn.types import Type, pairs, estr, DiffersAtAttribute, hashable, \
@@ -516,8 +517,43 @@ class BaseType(Type):
 
 
 #-------------------------------------------------------------------------------
+# Alternate Attribute Specification Mixin
+
+
+class Harvester(object):
+    @pre_create_hook
+    def _harvest_attrs(clsdata):
+        dct = {}
+        clsdct = clsdata['dct']
+
+        attrs = clsdct.get('_attrs', {})
+        required = clsdct.get('required', {})
+        optional = clsdct.get('optional', {})
+        default = clsdct.get('default', {})
+
+        for attr in required:
+            typ = required[attr]
+            if attr in default:
+                dct[attr] = Attr(typ, optional=False,  default=default[attr])
+            else:
+                dct[attr] = Attr(typ, optional=False)
+
+        for attr in optional:
+            typ = optional[attr]
+            if attr in default:
+                dct[attr] = Attr(typ, default=default[attr], optional=True)
+            else:
+                dct[attr] = Attr(typ, optional=True)
+                
+        preserve_attr_data(attrs, dct)
+        attrs.update(dct)
+        clsdct['_attrs'] = attrs
+
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Base', 'BaseType', 'init_hook', 'coerce_hook', 'setstate_hook')
+__all__ = ('Base', 'BaseType', 'init_hook', 'coerce_hook', 'setstate_hook',
+           'Harvester')
 
 #-------------------------------------------------------------------------------

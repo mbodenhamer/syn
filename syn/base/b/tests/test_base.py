@@ -2,7 +2,7 @@ import six.moves.cPickle as pickle
 from nose.tools import assert_raises
 from syn.five import STR
 from syn.base.b import Base, Attr, init_hook, coerce_hook, setstate_hook, \
-    pre_create_hook, preserve_attr_data
+    pre_create_hook, Harvester
 from syn.type.a import Type, Schema, List, Set
 from syn.schema.b.sequence import Sequence
 from syn.sets.b import Range
@@ -665,37 +665,8 @@ def test_schema_attrs():
     assert_raises(TypeError, SchemaTest, [1, 2.3], [1, [2.3]], 9)
 
 #-------------------------------------------------------------------------------
-# Test using preprocess hooks to create alternative methods of
-# attribute specification
+# Harvester
 
-class Harvester(object):
-    @pre_create_hook
-    def _harvest_attrs(clsdata):
-        dct = {}
-        clsdct = clsdata['dct']
-
-        attrs = clsdct.get('_attrs', {})
-        required = clsdct.get('required', {})
-        optional = clsdct.get('optional', {})
-        default = clsdct.get('default', {})
-
-        for attr in required:
-            typ = required[attr]
-            if attr in default:
-                dct[attr] = Attr(typ, optional=False,  default=default[attr])
-            else:
-                dct[attr] = Attr(typ, optional=False)
-
-        for attr in optional:
-            typ = optional[attr]
-            if attr in default:
-                dct[attr] = Attr(typ, default=default[attr], optional=True)
-            else:
-                dct[attr] = Attr(typ, optional=True)
-                
-        preserve_attr_data(attrs, dct)
-        attrs.update(dct)
-        clsdct['_attrs'] = attrs
 
 class AltAttrs(Base, Harvester):
     _opts = dict(init_validate = True,
