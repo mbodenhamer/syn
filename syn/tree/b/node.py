@@ -60,7 +60,6 @@ class Node(ListWrapper):
     _opts = dict(init_validate = False,
                  optional_none = True,
                  must_be_root = False,
-                 child_types = (),
                  descendant_exclude = ())
 
     def __nonzero__(self):
@@ -268,12 +267,6 @@ class Node(ListWrapper):
         if self._opts.must_be_root:
             if self._parent is not None:
                 raise TreeError("node must be root, but has parent")
-
-        child_types = self._opts.child_types
-        if child_types:
-            for c in self:
-                if not isinstance(c, child_types):
-                    raise TypeError("Invalid child type '%s'" % type(c))
 
         dex = self._opts.descendant_exclude
         if dex:
