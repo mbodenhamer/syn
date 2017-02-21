@@ -7,6 +7,8 @@ Changelog
 - Added generation capabilities to syn.b.tree
 - Added enhanced validation capabilities to syn.b.tree
 - Added attribute attribute preservation for sub-class definitions
+- Added pre-create hooks
+- Added support for alternate means of attribute specification (syn.base.b.Harvester)
 
 0.0.13 (2017-02-14)
 ~~~~~~~~~~~~~~~~~~~
