@@ -10,6 +10,9 @@ class Precedes(object):
         self.B = B
 
 
+def Succeeds(A, B):
+    return Precedes(B, A)
+
 #-------------------------------------------------------------------------------
 # Utilities
 
@@ -68,7 +71,7 @@ def topological_sorting(nodes, relations):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Precedes',
+__all__ = ('Precedes', 'Succeeds',
            'topological_sorting',)
 
 #-------------------------------------------------------------------------------

@@ -4,7 +4,7 @@ from nose.tools import assert_raises
 # Topological Sort
 
 def test_topological_sorting():
-    from syn.base_utils import topological_sorting, Precedes
+    from syn.base_utils import topological_sorting, Precedes, Succeeds
 
     assert topological_sorting([], [Precedes(1, 2)]) == [1, 2]
 
@@ -13,7 +13,7 @@ def test_topological_sorting():
     assert topological_sorting([], rels) == [1, 2, 3]
 
     rels = [Precedes(1, 10),
-            Precedes(2, 10)]
+            Succeeds(10, 2)]
     sort = topological_sorting([], rels)
     assert sorted(sort) == [1, 2, 10]
     assert sort[0] == 1 or sort[0] == 2
