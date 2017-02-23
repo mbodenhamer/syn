@@ -41,11 +41,11 @@ def _free_nodes(nodes, edges):
 #-------------------------------------------------------------------------------
 # Topological Sort
 
-def topological_sorting(relations):
+def topological_sorting(nodes, relations):
     '''An implementation of Kahn's algorithm.
     '''
     ret = []
-    nodes = _nodes(relations)
+    nodes = set(nodes) | _nodes(relations)
     inc = _incoming(relations)
     out = _outgoing(relations)
     free = _free_nodes(nodes, inc)
