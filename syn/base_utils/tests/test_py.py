@@ -300,6 +300,29 @@ def test_getfunc():
     assert getfunc(f.bar)(3) == 6
     assert getfunc(Foo.bar)(3) == 6
 
+def test_partial():
+    from syn.base_utils import Partial
+
+    def foo(*args):
+        return list(args)
+
+    def bar(**kwargs):
+        return kwargs
+
+    p1 = Partial(foo, [1, 2])
+    assert p1() == [1, 2]
+    assert p1(3, 4) == [1, 2, 3, 4]
+
+    p2 = Partial(foo, [3, 4], [2, 1])
+    assert p2(1, 2) == [1, 4, 3, 2]
+    assert p2(1) == [1, 4, 3]
+    assert_raises(TypeError, p2)
+
+    p3 = Partial(bar, kwargs=dict(a=1))
+    assert p3() == dict(a=1)
+    assert p3(b=3) == dict(a=1, b=3)
+    assert p3(a=2, b=3) == dict(a=2, b=3)
+
 #-------------------------------------------------------------------------------
 # Sequence utilities
 

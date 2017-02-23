@@ -223,6 +223,45 @@ def getfunc(obj, name=''):
         obj = getattr(obj, name)
     return getattr(obj, '__func__', obj)
 
+
+class Partial(object):
+    '''Partial function object that allows specification of which indices are "baked in".
+    '''
+    def __init__(self, f, args=None, indexes=None, kwargs=None):
+        self.f = f
+        self.args = list(args) if args else []
+        self.indexes = list(indexes) if indexes else []
+        self.kwargs = dict(kwargs) if kwargs else {}
+
+    def _update_args(self, args_):
+        if not self.indexes:
+            return self.args + args_
+
+        idx = 0
+        ret = []
+        args = list(self.args)
+        while args_ or args:
+            if idx in self.indexes:
+                item = self.args[self.indexes.index(idx)]
+                args.pop(self.indexes.index(idx))
+            else:
+                item = args_.pop(0)
+            ret.append(item)
+            idx += 1
+
+        return ret
+
+    def __call__(self, *args_, **kwargs_):
+        try:
+            args = self._update_args(list(args_))
+        except IndexError:
+            raise TypeError("Not enough arguments supplied")
+
+        kwargs = self.kwargs
+        kwargs.update(kwargs_)
+        return getfunc(self.f)(*args, **kwargs)
+
+
 #-------------------------------------------------------------------------------
 # Sequence utilities
 
@@ -447,6 +486,6 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'type_partition', 'subclasses', 'unzip', 'this_module',  'eprint',
            'that_module', 'harvest_metadata', 'tuple_append', 'get_fullname',
            'tuple_prepend', 'elog', 'ngzwarn', 'full_funcname', 'hangwatch',
-           'safe_vars', 'getfunc')
+           'safe_vars', 'getfunc', 'Partial')
 
 #-------------------------------------------------------------------------------
