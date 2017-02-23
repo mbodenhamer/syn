@@ -4,7 +4,7 @@ from syn.base.a import Base
 from syn.type.a import Type, This
 from syn.type.a.ext import Callable, Sequence
 from syn.base_utils import GroupDict, AttrDict, SeqDict, ReflexiveDict,\
-    callables, rgetattr, hasmethod, getfunc, LE, topological_sorting
+    callables, rgetattr, hasmethod, getfunc, Precedes, topological_sorting
 from operator import attrgetter
 from functools import partial
 
@@ -143,7 +143,7 @@ class Meta(_Meta):
                     names.add(hook.__name__)
 
         relations = [hook.hook_order for hook in hooks 
-                     if isinstance(hook.hook_order, LE)]
+                     if isinstance(hook.hook_order, Precedes)]
         hook_list = topological_sorting(hooks, relations)
         for hook in hook_list:
             hook(clsdata)

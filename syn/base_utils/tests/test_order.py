@@ -4,27 +4,27 @@ from nose.tools import assert_raises
 # Topological Sort
 
 def test_topological_sorting():
-    from syn.base_utils import topological_sorting, LE
+    from syn.base_utils import topological_sorting, Precedes
 
-    assert topological_sorting([], [LE(1, 2)]) == [1, 2]
+    assert topological_sorting([], [Precedes(1, 2)]) == [1, 2]
 
-    rels = [LE(1, 2),
-            LE(2, 3)]
+    rels = [Precedes(1, 2),
+            Precedes(2, 3)]
     assert topological_sorting([], rels) == [1, 2, 3]
 
-    rels = [LE(1, 10),
-            LE(2, 10)]
+    rels = [Precedes(1, 10),
+            Precedes(2, 10)]
     sort = topological_sorting([], rels)
     assert sorted(sort) == [1, 2, 10]
     assert sort[0] == 1 or sort[0] == 2
     assert sort[-1] == 10
 
-    cycle = [LE(1, 2),
-             LE(2, 3),
-             LE(3, 2)]
+    cycle = [Precedes(1, 2),
+             Precedes(2, 3),
+             Precedes(3, 2)]
     assert_raises(ValueError, topological_sorting, [], cycle)
 
-    sort = topological_sorting([1, 2, 3], [LE(2, 3)])
+    sort = topological_sorting([1, 2, 3], [Precedes(2, 3)])
     assert sorted(sort) == [1, 2, 3]
     assert sort.index(2) < sort.index(3)
 

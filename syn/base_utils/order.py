@@ -4,7 +4,7 @@ from collections import defaultdict
 # Order Relations
 
 
-class LE(object):
+class Precedes(object):
     def __init__(self, A, B):
         self.A = A
         self.B = B
@@ -68,7 +68,7 @@ def topological_sorting(nodes, relations):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('LE',
+__all__ = ('Precedes',
            'topological_sorting',)
 
 #-------------------------------------------------------------------------------
