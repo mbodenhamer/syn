@@ -4,7 +4,7 @@ from syn.base.a import Base
 from syn.type.a import Type, This
 from syn.type.a.ext import Callable, Sequence
 from syn.base_utils import GroupDict, AttrDict, SeqDict, ReflexiveDict,\
-    callables, rgetattr, hasmethod, getfunc
+    callables, rgetattr, hasmethod, getfunc, LE, topological_sorting
 from operator import attrgetter
 from functools import partial
 
@@ -42,7 +42,7 @@ class _PreCreateHook(object):
     pass
 
 def pre_create_hook(*args, **kwargs):
-    order = kwargs.get('order', float('inf'))
+    order = kwargs.get('order', None)
     persist = kwargs.get('persist', True)
 
     def wrap(f):
@@ -142,7 +142,9 @@ class Meta(_Meta):
                     hooks.add(hook)
                     names.add(hook.__name__)
 
-        hook_list = sorted(hooks, key=attrgetter('hook_order'))
+        relations = [hook.hook_order for hook in hooks 
+                     if isinstance(hook.hook_order, LE)]
+        hook_list = topological_sorting(hooks, relations)
         for hook in hook_list:
             hook(clsdata)
 

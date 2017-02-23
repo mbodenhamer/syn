@@ -343,7 +343,7 @@ class PCHooks(object):
         if 'a' in dct:
             dct['a'] *= 2
 
-    @pre_create_hook(order=0, persist=False)
+    @pre_create_hook(persist=False)
     def hook2(clsdata):
         clsdata['dct']['b'] += 2
 
