@@ -1,11 +1,11 @@
 from collections import defaultdict
+from copy import copy
 from syn.five import STR
 from syn.base.a import Base
 from syn.type.a import Type, This
 from syn.type.a.ext import Callable, Sequence
 from syn.base_utils import GroupDict, AttrDict, SeqDict, ReflexiveDict,\
     callables, rgetattr, hasmethod, getfunc, Precedes, topological_sorting
-from operator import attrgetter
 from functools import partial
 
 from syn.base.a.meta import Attr as _Attr
@@ -46,8 +46,12 @@ def pre_create_hook(*args, **kwargs):
     persist = kwargs.get('persist', True)
 
     def wrap(f):
+        order_ = order
+        if order_ is not None:
+            order_ = order(f)
+
         f.is_pre_create_hook = _PreCreateHook
-        f.hook_order = order
+        f.hook_order = order_
         f.persist = persist
         return f
 
@@ -134,16 +138,22 @@ class Meta(_Meta):
         hooks = {f for f in clsdata['dct'].values() 
                  if getattr(f, 'is_pre_create_hook', None) is _PreCreateHook}
 
-        names = {f.__name__ for f in hooks}
+        names = {f.__name__: f for f in hooks}
         for base in clsdata['bases']:
             hooks_ = rgetattr(base, '_data.pre_create_hooks', set())
             for hook in hooks_:
                 if hook.__name__ not in names:
                     hooks.add(hook)
-                    names.add(hook.__name__)
+                    names[hook.__name__] = hook
 
-        relations = [hook.hook_order for hook in hooks 
+        relations = [copy(hook.hook_order) for hook in hooks 
                      if isinstance(hook.hook_order, Precedes)]
+        for rel in relations:
+            if isinstance(rel.A, STR):
+                rel.A = names[rel.A]
+            if isinstance(rel.B, STR):
+                rel.B = names[rel.B]
+
         hook_list = topological_sorting(hooks, relations)
         for hook in hook_list:
             hook(clsdata)

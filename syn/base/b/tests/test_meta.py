@@ -1,11 +1,14 @@
 import six
 from nose.tools import assert_raises
-from syn.base_utils import (GroupDict, AttrDict, assert_type_equivalent,
-                            ReflexiveDict, SeqDict, feq, getfunc)
+from syn.base_utils import GroupDict, AttrDict, assert_type_equivalent, \
+    ReflexiveDict, SeqDict, getfunc, Succeeds, Partial
 from syn.type.a import AnyType, TypeType
 from syn.base.b.meta import Attr, Attrs, Meta, Data
 from syn.base.a.meta import mro
 from syn.base.b.meta import create_hook, pre_create_hook
+from functools import partial
+
+Succ = partial(Partial, Succeeds, indexes=[1])
 
 #-------------------------------------------------------------------------------
 # Data Object
@@ -343,7 +346,7 @@ class PCHooks(object):
         if 'a' in dct:
             dct['a'] *= 2
 
-    @pre_create_hook(persist=False)
+    @pre_create_hook(order=Succ(['hook1']), persist=False)
     def hook2(clsdata):
         clsdata['dct']['b'] += 2
 
@@ -361,14 +364,37 @@ class PC4(PC3):
         getfunc(PC3.hook1)(clsdata)
         clsdata['dct']['a'] //= 2
 
+class PC5(PCHooks):
+    a = 1
+
+    @pre_create_hook(order=Succ(['hook1']))
+    def hook3(clsdata):
+        clsdata['dct']['c'] = clsdata['dct']['a'] * 3
+
+class PC6(PC4, PC5):
+    a = 10
+
+class PC7(PC5, PC4):
+    a = 10
+
 def test_preprocess_hooks():
     assert PCHooks.a == 2
     assert PC2.a == 2
     assert PC3.a == 2
     assert PC4.a == 10
+    assert PC5.a == 2
+    assert PC6.a == 10
+    assert PC7.a == 20
 
     assert PCHooks.b == 5
     assert PC2.b == 2
+    assert PC5.b == 5
+    assert PC6.b == 2
+    assert PC7.b == 2
+
+    assert PC5.c == 6
+    assert PC6.c == 30
+    assert PC7.c == 60
 
 #-------------------------------------------------------------------------------
 # Test register_subclasses
