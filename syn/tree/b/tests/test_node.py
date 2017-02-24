@@ -354,10 +354,20 @@ class SA2(Node):
 class SA3(Node):
     pass
 
+class SA4(Node):
+    _opts = dict(min_len = 1)
+    types = [SA2, SA3]
+
 class SchemaTest(Node):
     _opts = dict(init_validate = True)
     _attrs = dict(a = Attr(int))
     schema = Sequence(SA1, SA2)
+
+class ST2(Node):
+    _opts = dict(init_validate = True,
+                 descendant_exclude = [SA3])
+    schema = Sequence(SA1, SA4)
+    
 
 def test_schema_attrs():
     SchemaTest(SA1(), SA2(), a=1)
@@ -377,6 +387,17 @@ def test_schema_attrs():
             types = (SA1, SA1)
 
     assert_raises(TypeError, bad)
+
+    ST2(SA1(), SA4(SA2()))
+    SA4(SA3()).validate()
+    assert_raises(TypeError, ST2, SA1(), SA4(SA3()))
+
+    for k in xrange(SAMPLES):
+        val = generate(ST2)
+        assert type(val) is ST2
+        assert type(val[0]) is SA1
+        assert type(val[1]) is SA4
+        assert len(val) == 2
 
 #-------------------------------------------------------------------------------
 
