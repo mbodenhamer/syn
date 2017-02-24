@@ -5,8 +5,10 @@ from syn.tree.b import Node, TreeError
 from syn.schema.b.sequence import Sequence
 from syn.base.b.tests.test_base import check_idempotence
 from syn.base_utils import assert_equivalent, assert_inequivalent, consume, \
-    ngzwarn
-from syn.types.a import generate
+    ngzwarn, is_hashable
+from syn.types.a import generate, hashable, find_ne, DiffersAtAttribute, \
+    estr, visit, rstr, attrs, pairs, deserialize, serialize, deep_feq, \
+    primitive_form
 from syn.five import xrange
 
 from syn.globals import TEST_SAMPLES as SAMPLES
@@ -398,6 +400,26 @@ def test_schema_attrs():
         assert type(val[0]) is SA1
         assert type(val[1]) is SA4
         assert len(val) == 2
+
+#-------------------------------------------------------------------------------
+# syn.types functionality
+
+class STT1(Node):
+    _attrs = dict(a = Attr(int))
+
+class SynTypesTest(Node):
+    _opts = dict(min_len = 1)
+    _attrs = dict(a = Attr(int),
+                  b = Attr(float))
+    types = [STT1]
+
+def test_syn_types_functionality():
+    c1 = STT1(a=3)
+    n = SynTypesTest(c1, a=1, b=2.3)
+    n.validate()
+
+    # assert not is_hashable(n)
+    # assert is_hashable(hashable(n))
 
 #-------------------------------------------------------------------------------
 
