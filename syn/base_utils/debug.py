@@ -1,3 +1,6 @@
+import sys
+from contextlib import contextmanager
+
 #-------------------------------------------------------------------------------
 # Trace
 
@@ -14,33 +17,68 @@ class Trace(object):
 
         if event not in switch:
             raise RuntimeError('Invalid event: {}'.format(event))
-        switch[event](frame)
+        return switch[event](frame, arg)
 
-    def c_call(self, frame):
-        raise NotImplementedError
+    def c_call(self, frame, arg):
+        return self
 
-    def c_exception(self, frame):
-        raise NotImplementedError
+    def c_exception(self, frame, arg):
+        return self
 
-    def c_return(self, frame):
-        raise NotImplementedError
+    def c_return(self, frame, arg):
+        return self
 
-    def call(self, frame):
-        raise NotImplementedError
+    def call(self, frame, arg):
+        return self
 
-    def exception(self, frame):
-        raise NotImplementedError
+    def exception(self, frame, arg):
+        return self
 
-    def line(self, frame):
-        raise NotImplementedError
+    def line(self, frame, arg):
+        return self
 
-    def return_(self, frame):
-        raise NotImplementedError
+    def return_(self, frame, arg):
+        return self
 
+
+#-------------------------------------------------------------------------------
+# CallTrace
+
+
+class CallTrace(Trace):
+    def __init__(self, indent=0, sep='    '):
+        self.indent = indent
+        self.sep = sep
+
+    def call(self, frame, arg):
+        pre = self.sep * self.indent
+        print(pre + frame.f_code.co_name)
+        self.indent += 1
+        return self
+
+    def return_(self, frame, arg):
+        self.indent -= 1
+        return self
+
+
+#-------------------------------------------------------------------------------
+# Utilities
+
+def call_trace(**kwargs):
+    sys.settrace(CallTrace(**kwargs))
+
+@contextmanager
+def reset_trace():
+    tr = sys.gettrace()
+    try:
+        yield
+    finally:
+        sys.settrace(tr) # pragma: no cover
 
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Trace',)
+__all__ = ('Trace', 'CallTrace',
+           'call_trace', 'reset_trace')
 
 #-------------------------------------------------------------------------------
