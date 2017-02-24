@@ -1,14 +1,15 @@
 import six
 from nose.tools import assert_raises
 from syn.base_utils import GroupDict, AttrDict, assert_type_equivalent, \
-    ReflexiveDict, SeqDict, getfunc, Succeeds, Partial
+    ReflexiveDict, SeqDict, getfunc, Precedes
 from syn.type.a import AnyType, TypeType
 from syn.base.b.meta import Attr, Attrs, Meta, Data
 from syn.base.a.meta import mro
 from syn.base.b.meta import create_hook, pre_create_hook
 from functools import partial
 
-Succ = partial(Partial, Succeeds, indexes=[1])
+def Prec(x):
+    return partial(Precedes, x)
 
 #-------------------------------------------------------------------------------
 # Data Object
@@ -346,7 +347,7 @@ class PCHooks(object):
         if 'a' in dct:
             dct['a'] *= 2
 
-    @pre_create_hook(order=Succ(['hook1']), persist=False)
+    @pre_create_hook(order=Prec('hook1'), persist=False)
     def hook2(clsdata):
         clsdata['dct']['b'] += 2
 
@@ -367,7 +368,7 @@ class PC4(PC3):
 class PC5(PCHooks):
     a = 1
 
-    @pre_create_hook(order=Succ(['hook1']))
+    @pre_create_hook(order=Prec('hook1'))
     def hook3(clsdata):
         clsdata['dct']['c'] = clsdata['dct']['a'] * 3
 
