@@ -148,11 +148,11 @@ class Meta(_Meta):
 
         relations = [copy(hook.hook_order) for hook in hooks 
                      if isinstance(hook.hook_order, Precedes)]
+        # The preferred method of specifying order relations is by name;
+        # Resolve names if present
         for rel in relations:
-            if isinstance(rel.A, STR):
-                rel.A = names[rel.A]
-            if isinstance(rel.B, STR):
-                rel.B = names[rel.B]
+            rel.A = names[rel.A] if isinstance(rel.A, STR) else rel.A
+            rel.B = names[rel.B] if isinstance(rel.B, STR) else rel.B
 
         hook_list = topological_sorting(hooks, relations)
         for hook in hook_list:
