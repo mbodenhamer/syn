@@ -37,7 +37,7 @@ def test_call_trace():
             foo()
     assert sys.gettrace() is tr
 
-    assert out.getvalue() == 'foo\n    bar\n__exit__\n    reset_trace\n'
+    assert out.getvalue() == 'foo\n bar\n__exit__\n reset_trace\n'
     assert err.getvalue() == ''
 
     t = CallTrace()

@@ -46,12 +46,12 @@ class Trace(object):
 
 
 class CallTrace(Trace):
-    def __init__(self, indent=0, sep='    '):
+    def __init__(self, indent=0, tab=' '):
         self.indent = indent
-        self.sep = sep
+        self.tab = tab
 
     def call(self, frame, arg):
-        pre = self.sep * self.indent
+        pre = self.tab * self.indent
         print(pre + frame.f_code.co_name)
         self.indent += 1
         return self
