@@ -1,3 +1,4 @@
+import collections
 from nose.tools import assert_raises
 from syn.sets import SetWrapper
 from syn.util.constraint import Domain, Constraint, Problem
@@ -17,6 +18,8 @@ def test_domain():
     assert d['a'] == SetWrapper([1, 2])
     assert d['b'] == SetWrapper([3, 4])
     assert d['a'].to_set() == {1, 2}
+
+    assert isinstance(d, collections.Mapping)
 
 #-------------------------------------------------------------------------------
 # Constraint

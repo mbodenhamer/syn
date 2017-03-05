@@ -1,5 +1,4 @@
-import collections
-from collections import Sequence, defaultdict
+from collections import MutableMapping, Sequence, defaultdict
 from syn.base import Base, Attr, init_hook
 from syn.type import Mapping, List
 from syn.sets import SetNode, SetWrapper, TypeWrapper
@@ -46,7 +45,7 @@ class Domain(Base):
         return type(self)(self.vars.copy(*args, **kwargs))
 
 
-collections.MutableMapping.register(Domain)
+MutableMapping.register(Domain)
 
 #-------------------------------------------------------------------------------
 # Constraint
