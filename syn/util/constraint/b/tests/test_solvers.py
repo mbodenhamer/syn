@@ -13,6 +13,10 @@ def problem1(S):
     p = Problem(Domain(a=[1, 2, 3],
                        b=[2, 3]),
                 [lt])
+
+    if S is RecursiveBacktrackSolver:
+        S = partial(S, selection_method='random')
+
     s = S(p)
 
     assert set(hashable(list(s.solutions()))) == \
