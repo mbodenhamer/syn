@@ -19,6 +19,7 @@ Subpackages
     syn.tree
     syn.type
     syn.types
+    syn.util
 
 Module contents
 ---------------
