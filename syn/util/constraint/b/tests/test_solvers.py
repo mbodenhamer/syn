@@ -1,4 +1,5 @@
 import operator as op
+from functools import partial
 from syn.types import hashable
 from nose.tools import assert_raises
 from syn.util.constraint import Problem, Domain, Constraint, Solver, \
@@ -23,6 +24,10 @@ def problem2(S):
     p = Problem(Domain(a=[3, 4],
                        b=[1, 2]),
                 [lt])
+
+    if S is RecursiveBacktrackSolver:
+        S = partial(S, forward_checking=False)
+
     s = S(p)
 
     assert list(s.solutions()) == []
