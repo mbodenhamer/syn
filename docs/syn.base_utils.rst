@@ -20,6 +20,14 @@ syn.base_utils.context module
     :undoc-members:
     :show-inheritance:
 
+syn.base_utils.debug module
+---------------------------
+
+.. automodule:: syn.base_utils.debug
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 syn.base_utils.dict module
 --------------------------
 
