@@ -1,6 +1,9 @@
 Changelog
 ---------
 
+0.0.15 (2017-03-12)
+~~~~~~~~~~~~~~~~~~~
+
 0.0.14 (2017-03-05)
 ~~~~~~~~~~~~~~~~~~~
 - Further integrated syn.schema and syn.sets into syn.type
