@@ -51,8 +51,8 @@ def test_call_trace():
     t(sys._getframe(), 'return', None)
     assert t.indent == 0
 
-    def foo2():
-        foo2()
+    # def foo2():
+    #     foo2()
 
     # import pdb
     # from syn.base_utils import getfunc
