@@ -51,6 +51,36 @@ def test_call_trace():
     t(sys._getframe(), 'return', None)
     assert t.indent == 0
 
+    def foo2():
+        foo2()
+
+    # import pdb
+    # from syn.base_utils import getfunc
+    # class MyTrace(CallTrace):
+    #     def __init__(self, pred=None, indent=0, tab=' '):
+    #         super(MyTrace, self).__init__(indent, tab)
+    #         self.stack = []
+    #         self.pred = pred if pred is not None else lambda s: False
+
+    #     def call(self, frame, arg):
+    #         super(MyTrace, self).call(frame, arg)
+    #         self.stack.append(frame.f_code.co_name)
+    #         if getfunc(self.pred)(self.stack):
+    #             ret = pdb.Pdb()
+    #             ret.reset()
+    #             return ret.dispatch_call(frame, arg)
+    #         return self
+
+    #     def return_(self, frame, arg):
+    #         super(MyTrace, self).return_(frame, arg)
+    #         self.stack.pop()
+    #         return self
+
+    # filt = lambda s: len(list(filter(lambda x: x == 'foo2', s))) >= 3
+    # with reset_trace():
+    #     sys.settrace(MyTrace(filt))
+    #     foo2()
+
 #-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover

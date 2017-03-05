@@ -11,6 +11,7 @@ from syn.base_utils import last, implies, consume
 IAttr = partial(Attr, internal=True)
 
 EQEX = Base.groups_enum().eq_exclude
+HASHEX = Base.groups_enum().hash_exclude
 GENEX = Base.groups_enum().generate_exclude
 GSEX = Base.groups_enum().getstate_exclude
 REPREX = Base.groups_enum().repr_exclude
@@ -44,7 +45,7 @@ class TreeError(Exception):
 
 class Node(ListWrapper):
     _attrs = dict(_parent = IAttr(This, optional=True,
-                                  groups=(REPREX, STREX, EQEX, GSEX, GENEX),
+                                  groups=(REPREX, STREX, EQEX, GSEX, GENEX, HASHEX),
                                   doc='Parent of this node'),
                   _name = IAttr(STR, optional=True, groups=(STREX,),
                                 doc='Name of the node (for display purposes)'),

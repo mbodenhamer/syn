@@ -418,9 +418,9 @@ def test_syn_types_functionality():
     n = SynTypesTest(c1, a=1, b=2.3)
     n.validate()
 
-    # assert not is_hashable(n)
-    # assert is_hashable(hashable(n))
-
+    assert not is_hashable(n)
+    assert is_hashable(hashable(n))
+    
 #-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
