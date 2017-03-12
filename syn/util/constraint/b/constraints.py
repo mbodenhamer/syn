@@ -1,4 +1,5 @@
 from .base import Constraint, Attr
+from syn.base import init_hook
 from syn.type import Callable
 from syn.five import STR
 
@@ -33,6 +34,10 @@ class EqualConstraint(Constraint):
     _attrs = dict(arg = Attr(STR),
                   value = Attr(None))
     _opts = dict(args = ('arg', 'value'))
+
+    @init_hook
+    def _set_args(self):
+        self.args = [self.arg]
 
     def check(self, **kwargs):
         value = kwargs[self.arg]

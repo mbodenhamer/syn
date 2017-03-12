@@ -29,7 +29,7 @@ def test_domain():
 def test_constraint():
     c = Constraint()
     assert_raises(NotImplementedError, c.check)
-    assert_raises(NotImplementedError, c.preprocess, {})
+    assert c.preprocess({}) is None
 
 #-------------------------------------------------------------------------------
 # Problem

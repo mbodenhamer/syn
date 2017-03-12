@@ -65,7 +65,7 @@ class Constraint(Base):
         raise NotImplementedError
 
     def preprocess(self, domain, **kwargs):
-        raise NotImplementedError
+        pass
     
 
 #-------------------------------------------------------------------------------
@@ -84,6 +84,7 @@ class Problem(Base):
         self.var_constraint = defaultdict(set)
         
         for con in self.constraints:
+            con.preprocess(self.domain)
             for var in con.args:
                 self.var_constraint[var].add(con)
 
