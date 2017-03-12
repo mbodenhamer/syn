@@ -29,6 +29,11 @@ class SetNode(Node):
                 lst.append(SetWrapper(arg))
         super(SetNode, self).__init__(*lst, **kwargs)
 
+    def display(self, **kwargs):
+        '''Returns a pretty string representation of the set.
+        '''
+        raise NotImplementedError()
+
     def size(self):
         '''Returns the cardinality of the set.
         '''

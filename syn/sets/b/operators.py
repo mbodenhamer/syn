@@ -12,6 +12,13 @@ from .base import SetNode, Args
 
 
 class SetOperator(SetNode):
+    symbol = None
+
+    def display(self, **kwargs):
+        cs = [c.display(**kwargs) for c in self]
+        sep = ' ' + self.symbol + ' '
+        return '(' + sep.join(cs) + ')'
+
     def size(self):
         return len(self.to_set())
 
@@ -40,6 +47,8 @@ class SetOperator(SetNode):
 
 
 class Union(SetOperator):
+    symbol = '|'
+
     def size_limits(self):
         lbs, ubs = unzip(c.size_limits() for c in self)
         # Union can't be any smaller than the biggest set (at its smallest)
@@ -99,6 +108,8 @@ class Union(SetOperator):
 
 
 class Intersection(SetOperator):
+    symbol = '&'
+
     def size_limits(self):
         lbs, ubs = unzip(c.size_limits() for c in self)
         lb = 0
@@ -175,6 +186,7 @@ class Difference(SetOperator):
     _opts = dict(min_len = 2,
                  max_len = 2)
 
+    symbol = '-'
     A = property(itemgetter(0))
     B = property(itemgetter(1))
 
@@ -237,6 +249,7 @@ class Difference(SetOperator):
 
 class Product(SetOperator):
     '''Cartesian Product'''
+    symbol = 'x'
 
     def size_limits(self):
         lbs, ubs = unzip(c.size_limits() for c in self)

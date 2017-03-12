@@ -35,15 +35,17 @@ def test_union():
 
     assert u.to_set() == {1, 2, 3, 4, 5}
 
-    u2 = Union(Range(1, 3), Range(5, 7), Range(6, 9), NULL, {10, 11}, {13})
-    assert u2.to_set() == {1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 13}
-    assert sorted(u2.enumerate()) == [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 13]
+    u2 = Union(Range(1, 3), Range(5, 7), Range(6, 9), NULL, {10}, {13})
+    assert u2.to_set() == {1, 2, 3, 5, 6, 7, 8, 9, 10, 13}
+    assert sorted(u2.enumerate()) == [1, 2, 3, 5, 6, 7, 8, 9, 10, 13]
     assert len(list(u2.enumerate(max_enumerate = 2))) == 2
 
     for k in range(SAMPLES):
         item = u2.sample()
         with on_error(elog, u2.hasmember, (u2, item)):
             assert u2.hasmember(item)
+
+    assert u2.display() == '([1, 3] | [5, 7] | [6, 9] | {} | {10} | {13})'
 
     # Sanity Check
     class Foo(object): pass
@@ -121,6 +123,8 @@ def test_intersection():
     i6 = Intersection(Range(0, 100), Range(10, 90))
     assert list(i6.lazy_enumerate(max_enumerate=10)) == range(10, 20)
 
+    assert i6.display() == '([0, 100] & [10, 90])'
+
     # Sanity check
     i7 = Intersection(range(10), Range(0, 50))
     assert i7.to_set() == set(range(10))
@@ -159,6 +163,7 @@ def test_difference():
 
     d = Difference(Range(1, 5), Range(2, 3))
     assert d.to_set() == {1, 4, 5}
+    assert d.display() == '([1, 5] - [2, 3])'
 
     d = Difference(Range(1, 5), Range(3, 7))
     assert d.to_set() == {1, 2}
@@ -184,6 +189,8 @@ def test_product():
     assert (5, 6, 11) in ps
     assert (5, 10, 11) in ps
     assert (5, 10, 15) in ps
+
+    assert p.display() == '([1, 5] x [6, 10] x [11, 15])'
 
     assert feq(p.expected_size(), 125)
 

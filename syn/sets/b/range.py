@@ -17,6 +17,9 @@ class Range(SetLeaf):
                   ub = Attr(int, doc='The upper bound'))
     _opts = dict(args = ('lb', 'ub'))
 
+    def display(self, **kwargs):
+        return '[{}, {}]'.format(self.lb, self.ub)
+
     def size(self):
         return self.ub - self.lb + 1
 
@@ -171,6 +174,9 @@ class StrRange(Range):
         if isinstance(self.ub, STR):
             self.ub = ord(self.ub)
     
+    def display(self, **kwargs):
+        return '[{}, {}]'.format(unichr(self.lb), unichr(self.ub))
+
     def hasmember(self, other):
         return super(StrRange, self).hasmember(ord(other))
 
