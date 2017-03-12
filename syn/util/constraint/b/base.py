@@ -1,3 +1,4 @@
+from operator import itemgetter
 from collections import MutableMapping, Sequence, defaultdict
 from syn.base import Base, Attr, init_hook
 from syn.type import Mapping, List
@@ -47,6 +48,13 @@ class Domain(Base):
     def copy(self, *args, **kwargs):
         return type(self)(self.vars.copy(*args, **kwargs))
 
+    def display(self, **kwargs):
+        ret = 'Domain('
+        strs = ['{} = {}'.format(var, vals.display(**kwargs))
+                for var, vals in sorted(self.vars.items(), key=itemgetter(0))]
+        ret += ',\n       '.join(strs) + ')'
+        return ret
+
 
 MutableMapping.register(Domain)
 
@@ -63,6 +71,9 @@ class Constraint(Base):
 
     def check(self, **kwargs):
         raise NotImplementedError
+
+    def display(self, **kwargs):
+        pass
 
     def preprocess(self, domain, **kwargs):
         pass
@@ -87,6 +98,14 @@ class Problem(Base):
             con.preprocess(self.domain)
             for var in con.args:
                 self.var_constraint[var].add(con)
+
+    def display(self, **kwargs):
+        strs = [self.domain.display(**kwargs)]
+        for con in self.constraints:
+            s = con.display(**kwargs)
+            if s:
+                strs.append(s)
+        return '\n'.join(strs)
 
     def validate(self):
         super(Problem, self).validate()

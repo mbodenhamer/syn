@@ -23,12 +23,16 @@ def test_domain():
 
     assert isinstance(d, collections.Mapping)
 
+    d = Domain(a = [1], b = int)
+    assert d.display() == 'Domain(a = {1},\n       b = TypeWrapper(int))'
+
 #-------------------------------------------------------------------------------
 # Constraint
 
 def test_constraint():
     c = Constraint()
     assert_raises(NotImplementedError, c.check)
+    assert c.display() is None
     assert c.preprocess({}) is None
 
 #-------------------------------------------------------------------------------
@@ -43,6 +47,11 @@ def test_problem():
                                     b = {c2})
 
     assert_raises(ValueError, Problem, Domain(a=[1]), [c1, c2])
+
+    from syn.util.constraint import EqualConstraint
+    c1 = EqualConstraint('a', 1)
+    p = Problem(Domain(a=[1]), [c1])
+    assert p.display() == 'Domain(a = {1})\na == 1'
 
 #-------------------------------------------------------------------------------
 

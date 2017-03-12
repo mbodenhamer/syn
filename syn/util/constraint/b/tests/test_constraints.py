@@ -1,3 +1,4 @@
+from operator import eq
 from syn.util.constraint import FunctionConstraint, AllDifferentConstraint, \
     EqualConstraint, Domain
 
@@ -5,11 +6,12 @@ from syn.util.constraint import FunctionConstraint, AllDifferentConstraint, \
 # FunctionConstraint
 
 def test_functionconstraint():
-    c = FunctionConstraint(lambda a, b: a == b, ('a', 'b'))
+    c = FunctionConstraint(eq, ('a', 'b'))
     assert c.check(b=1, a=1)
     assert not c.check(a=2, b=1)
     assert c.check(b=1, a=1, c=1)
-    
+    assert c.display() == "Function({}, a, b)".format(eq)
+
 #-------------------------------------------------------------------------------
 # AllDifferent
 
@@ -19,6 +21,7 @@ def test_alldifferentconstraint():
     assert not c.check(a=1, b=2, c=1)
     assert c.check(a=1, b=2, c=3, d=1)
     assert not c.check(a=1, b=2, c=1, d=1)
+    assert c.display() == "AllDifferent(a, b, c)"
 
 #-------------------------------------------------------------------------------
 # EqualConstraint
@@ -29,6 +32,7 @@ def test_equalconstraint():
     assert not c.check(a=1)
     assert c.check(a=2, b=1)
     assert not c.check(a=1, b=1)
+    assert c.display() == 'a == 2'
 
     d = Domain(a = [1, 2, 3])
     assert d['a'].to_set() == {1, 2, 3}

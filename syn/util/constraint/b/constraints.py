@@ -15,6 +15,10 @@ class FunctionConstraint(Constraint):
         args = [kwargs[arg] for arg in self.args]
         return bool(self.func(*args))
 
+    def display(self, **kwargs):
+        return 'Function({}, {})'.format(self.func, 
+                                         ', '.join(map(str, self.args)))
+
 
 #-------------------------------------------------------------------------------
 # AllDifferent
@@ -24,6 +28,9 @@ class AllDifferentConstraint(Constraint):
     def check(self, **kwargs):
         vals = [kwargs[arg] for arg in self.args]
         return len(set(vals)) == len(self.args)
+
+    def display(self, **kwargs):
+        return 'AllDifferent({})'.format(', '.join(map(str, self.args)))
 
 
 #-------------------------------------------------------------------------------
@@ -42,6 +49,9 @@ class EqualConstraint(Constraint):
     def check(self, **kwargs):
         value = kwargs[self.arg]
         return value == self.value
+
+    def display(self, **kwargs):
+        return '{} == {}'.format(self.arg, self.value)
 
     def preprocess(self, domain, **kwargs):
         domain[self.arg] = [self.value]
