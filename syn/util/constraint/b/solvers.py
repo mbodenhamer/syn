@@ -95,11 +95,8 @@ class RecursiveBacktrackSolver(Solver):
                 theory[var] = val
                 kwargs['theory'] = theory
                 with self.forward_check(**kwargs):
-                    for con in self.problem.constraints:
-                        if set(con.args) <= set(theory):
-                            if not con.check(**theory):
-                                break
-
+                    if not self.problem.check(theory):
+                        break
                     else:
                         for sol in self.solutions(**kwargs):
                             yield sol

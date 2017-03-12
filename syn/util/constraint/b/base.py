@@ -99,6 +99,13 @@ class Problem(Base):
             for var in con.args:
                 self.var_constraint[var].add(con)
 
+    def check(self, theory):
+        for con in self.constraints:
+            if set(con.args) <= set(theory):
+                if not con.check(**theory):
+                    return False
+        return True
+
     def display(self, **kwargs):
         strs = [self.domain.display(**kwargs)]
         for con in self.constraints:
