@@ -1,5 +1,5 @@
 from syn.util.constraint import FunctionConstraint, AllDifferentConstraint, \
-    EqualConstraint
+    EqualConstraint, Domain
 
 #-------------------------------------------------------------------------------
 # FunctionConstraint
@@ -29,6 +29,12 @@ def test_equalconstraint():
     assert not c.check(a=1)
     assert c.check(a=2, b=1)
     assert not c.check(a=1, b=1)
+
+    d = Domain(a = [1, 2, 3])
+    assert d['a'].to_set() == {1, 2, 3}
+
+    c.preprocess(d)
+    assert d['a'].to_set() == {2,}
 
 #-------------------------------------------------------------------------------
 

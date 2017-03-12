@@ -39,8 +39,7 @@ class EqualConstraint(Constraint):
         return value == self.value
 
     def preprocess(self, domain, **kwargs):
-        pass
-# preprocess: domain of arg = [value]
+        domain[self.arg] = [self.value]
 
 
 #-------------------------------------------------------------------------------
