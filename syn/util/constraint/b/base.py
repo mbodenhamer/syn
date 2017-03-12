@@ -10,8 +10,7 @@ from syn.sets import SetNode, SetWrapper, TypeWrapper
 class Domain(Base):
     _attrs = dict(vars = Attr(Mapping(SetNode),
                               init=lambda self: dict()))
-    _opts = dict(init_validate = True,
-                 args = ('vars',))
+    _opts = dict(args = ('vars',))
 
     def __init__(self, *args, **kwargs):
         if not args and kwargs and not 'vars' in kwargs:
@@ -39,7 +38,11 @@ class Domain(Base):
         return len(self.vars)
 
     def __setitem__(self, key, value):
-        self.vars[key] = value
+        if not isinstance(value, SetNode):
+            if isinstance(value, type):
+                self.vars[key] = TypeWrapper(value)
+            else:
+                self.vars[key] = SetWrapper(value)
 
     def copy(self, *args, **kwargs):
         return type(self)(self.vars.copy(*args, **kwargs))
@@ -61,6 +64,9 @@ class Constraint(Base):
     def check(self, **kwargs):
         raise NotImplementedError
 
+    def preprocess(self, domain, **kwargs):
+        raise NotImplementedError
+    
 
 #-------------------------------------------------------------------------------
 # Problem
@@ -74,6 +80,7 @@ class Problem(Base):
 
     @init_hook
     def _init(self):
+        self.domain = self.domain.copy()
         self.var_constraint = defaultdict(set)
         
         for con in self.constraints:

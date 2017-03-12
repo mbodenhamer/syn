@@ -1,6 +1,6 @@
 import collections
 from nose.tools import assert_raises
-from syn.sets import SetWrapper
+from syn.sets import SetWrapper, TypeWrapper
 from syn.util.constraint import Domain, Constraint, Problem
 
 #-------------------------------------------------------------------------------
@@ -8,9 +8,11 @@ from syn.util.constraint import Domain, Constraint, Problem
 
 def test_domain():
     d = Domain()
-    d['a'] = 1
-    assert d['a'] == 1
+    d['a'] = [1]
+    assert d['a'] == SetWrapper([1])
     assert list(d) == ['a']
+    d['a'] = int
+    assert d['a'] == TypeWrapper(int)
     del d['a']
     assert list(d) == []
 
@@ -27,6 +29,7 @@ def test_domain():
 def test_constraint():
     c = Constraint()
     assert_raises(NotImplementedError, c.check)
+    assert_raises(NotImplementedError, c.preprocess, {})
 
 #-------------------------------------------------------------------------------
 # Problem

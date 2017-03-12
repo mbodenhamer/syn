@@ -1,5 +1,6 @@
 from .base import Constraint, Attr
 from syn.type import Callable
+from syn.five import STR
 
 #-------------------------------------------------------------------------------
 # Function
@@ -25,8 +26,26 @@ class AllDifferentConstraint(Constraint):
 
 
 #-------------------------------------------------------------------------------
+# EqualConstraint
+
+
+class EqualConstraint(Constraint):
+    _attrs = dict(arg = Attr(STR),
+                  value = Attr(None))
+    _opts = dict(args = ('arg', 'value'))
+
+    def check(self, **kwargs):
+        value = kwargs[self.arg]
+        return value == self.value
+
+    def preprocess(self, domain, **kwargs):
+        pass
+# preprocess: domain of arg = [value]
+
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('FunctionConstraint', 'AllDifferentConstraint')
+__all__ = ('FunctionConstraint', 'AllDifferentConstraint', 'EqualConstraint')
 
 #-------------------------------------------------------------------------------

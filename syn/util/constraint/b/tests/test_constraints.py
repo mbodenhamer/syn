@@ -1,4 +1,5 @@
-from syn.util.constraint import FunctionConstraint, AllDifferentConstraint
+from syn.util.constraint import FunctionConstraint, AllDifferentConstraint, \
+    EqualConstraint
 
 #-------------------------------------------------------------------------------
 # FunctionConstraint
@@ -18,6 +19,16 @@ def test_alldifferentconstraint():
     assert not c.check(a=1, b=2, c=1)
     assert c.check(a=1, b=2, c=3, d=1)
     assert not c.check(a=1, b=2, c=1, d=1)
+
+#-------------------------------------------------------------------------------
+# EqualConstraint
+
+def test_equalconstraint():
+    c = EqualConstraint('a', 2)
+    assert c.check(a=2)
+    assert not c.check(a=1)
+    assert c.check(a=2, b=1)
+    assert not c.check(a=1, b=1)
 
 #-------------------------------------------------------------------------------
 
