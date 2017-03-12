@@ -6,7 +6,7 @@ from syn.util.constraint import Problem, Domain, Constraint, Solver, \
     RecursiveBacktrackSolver, SimpleSolver, FunctionConstraint
 
 #-------------------------------------------------------------------------------
-# Solver Problems
+# Trivial Solver Problems
 
 def problem1(S):
     lt = FunctionConstraint(op.lt, ('a', 'b'))
@@ -45,6 +45,9 @@ def problem3(S):
 
     sols = list(s.solutions())
     assert sols
+
+#-------------------------------------------------------------------------------
+
 
 #-------------------------------------------------------------------------------
 # Solver

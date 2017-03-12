@@ -15,8 +15,18 @@ class FunctionConstraint(Constraint):
 
 
 #-------------------------------------------------------------------------------
+# AllDifferent
+
+
+class AllDifferent(Constraint):
+    def check(self, **kwargs):
+        vals = [kwargs[arg] for arg in self.args]
+        return len(set(vals)) == len(self.args)
+
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('FunctionConstraint',)
+__all__ = ('FunctionConstraint', 'AllDifferent')
 
 #-------------------------------------------------------------------------------
