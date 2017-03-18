@@ -67,6 +67,15 @@ def test_sequence():
     tree2 = from_ast(tree.to_ast(), mode='eval')
     assert tree2.emit() == '[1, 2]'
 
+    tree = eparse((1, 2))
+    assert tree.emit() == ' (1, 2)'
+
+    tree = eparse((1,))
+    assert tree.emit() == ' (1,)'
+
+    tree = eparse('{1}')
+    assert tree.emit() == '{1}'
+
 #-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
