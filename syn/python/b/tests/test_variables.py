@@ -1,10 +1,17 @@
-from syn.python.b import Name
+from syn.python.b import from_source, from_ast
+from functools import partial
+from syn.base_utils import compose
+
+eparse = compose(partial(from_source, mode='eval'), str)
 
 #-------------------------------------------------------------------------------
 # Name
 
 def test_name():
-    Name
+    tree = eparse('foo')
+    assert tree.emit() == 'foo'
+    tree2 = from_ast(tree.to_ast(), mode='eval')
+    assert tree2.emit() == 'foo'
 
 #-------------------------------------------------------------------------------
 
