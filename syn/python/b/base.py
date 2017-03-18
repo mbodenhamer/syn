@@ -41,7 +41,7 @@ class PythonNode(Node):
     @classmethod
     @create_hook
     def _register_ast(cls):
-        if cls.ast is None:
+        if cls._class_data.dct.get('ast', None) is None:
             cls.ast = getattr(ast, get_typename(cls), None)
 
         key = cls.ast

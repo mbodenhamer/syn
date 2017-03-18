@@ -58,6 +58,16 @@ def test_str():
     assert tree2.emit() == "'abc'"
 
 #-------------------------------------------------------------------------------
+# Sequence
+
+def test_sequence():
+    tree = eparse([1, 2])
+    assert tree.emit() == '[1, 2]'
+
+    tree2 = from_ast(tree.to_ast(), mode='eval')
+    assert tree2.emit() == '[1, 2]'
+
+#-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
     from syn.base_utils import run_all_tests
