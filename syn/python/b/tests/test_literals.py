@@ -1,5 +1,5 @@
 from functools import partial
-from syn.python.b import Literal, from_source
+from syn.python.b import Literal, from_source, from_ast
 from syn.base_utils import compose
 
 eparse = compose(partial(from_source, mode='eval'), str)
@@ -16,6 +16,19 @@ def test_literal():
 def test_num():
     tree = eparse(1)
     tree.emit() == '1'
+
+    tree2 = from_ast(tree.to_ast(), mode='eval')
+    assert tree2.emit() == '1'
+
+#-------------------------------------------------------------------------------
+# Str
+
+def test_str():
+    tree = eparse("'abc'")
+    tree.emit() == 'abc'
+
+    tree2 = from_ast(tree.to_ast(), mode='eval')
+    assert tree2.emit() == "'abc'"
 
 #-------------------------------------------------------------------------------
 
