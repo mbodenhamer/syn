@@ -34,6 +34,7 @@ class PythonNode(Node):
     
     _attrs = dict(lineno = OAttr(int, group=AST),
                   col_offset = OAttr(int, group=AST))
+    _opts = dict(optional_none = True)
 
     _groups = ReflexiveDict(AST, ACO)
 
@@ -85,6 +86,28 @@ class PythonNode(Node):
         kwargs_ = self._to_ast_kwargs(**kwargs)
         return self.ast(cs, **kwargs_)
 
+
+#-------------------------------------------------------------------------------
+# Contexts
+
+class Context(PythonNode):
+    _opts = dict(max_len = 0)
+
+    @classmethod
+    def from_ast(cls, ast, **kwargs):
+        return cls()
+
+    def to_ast(self, **kwargs):
+        return self.ast()
+
+class Load(Context):
+    pass
+
+class Store(Context):
+    pass
+
+class Del(Context):
+    pass
 
 #-------------------------------------------------------------------------------
 # Root Nodes
@@ -160,6 +183,7 @@ def from_source(src, mode='exec'):
 # __all__
 
 __all__ = ('PythonNode', 'PythonTree', 'AstUnsupported',
+           'Context', 'Load', 'Store', 'Del',
            'RootNode', 'Module', 'Expression', 'Interactive',
            'from_ast', 'from_source')
 

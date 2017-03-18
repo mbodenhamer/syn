@@ -1,5 +1,6 @@
+import ast
 from nose.tools import assert_raises
-from syn.python.b import PythonNode, from_ast, AstUnsupported
+from syn.python.b import PythonNode, from_ast, AstUnsupported, Context, Load
 
 #-------------------------------------------------------------------------------
 # Base Class
@@ -9,6 +10,14 @@ def test_pythonnode():
     assert PythonNode._groups['ast_convert_attr'] == set([])
     assert PythonNode._groups['eq_exclude'] == {'_parent'}
 
+#-------------------------------------------------------------------------------
+# Context
+
+def test_context():
+    assert Context.ast is None
+    assert from_ast(ast.Load()) == Load()
+    assert type(Load().to_ast()) is ast.Load
+    
 #-------------------------------------------------------------------------------
 # Module API
 
