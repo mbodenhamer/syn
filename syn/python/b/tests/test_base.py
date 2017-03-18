@@ -4,7 +4,9 @@ from syn.python.b import PythonNode
 # Base Class
 
 def test_pythonnode():
-    PythonNode()
+    assert sorted(PythonNode._groups['ast_attr']) == ['col_offset', 'lineno']
+    assert PythonNode._groups['ast_convert_attr'] == set([])
+    assert PythonNode._groups['eq_exclude'] == {'_parent'}
 
 #-------------------------------------------------------------------------------
 
