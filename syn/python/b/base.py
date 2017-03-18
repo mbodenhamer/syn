@@ -20,7 +20,7 @@ ACO = 'ast_convert_attr'
 
 #-------------------------------------------------------------------------------
 
-class ASTUnsupported(Exception):
+class AstUnsupported(Exception):
     pass
 
 #-------------------------------------------------------------------------------
@@ -147,7 +147,7 @@ def from_ast(ast, **kwargs):
     try:
         cls = AST_REGISTRY[type(ast)]
     except KeyError:
-        raise ASTUnsupported(get_typename(ast))
+        raise AstUnsupported(get_typename(ast))
     kwargs.update(cls._from_ast_kwargs(ast, **kwargs))
     return cls.from_ast(ast, **kwargs)
 
@@ -159,7 +159,7 @@ def from_source(src, mode='exec'):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('PythonNode', 'PythonTree',
+__all__ = ('PythonNode', 'PythonTree', 'AstUnsupported',
            'RootNode', 'Module', 'Expression', 'Interactive',
            'from_ast', 'from_source')
 

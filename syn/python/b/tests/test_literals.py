@@ -1,5 +1,7 @@
+import ast
+from nose.tools import assert_raises
 from functools import partial
-from syn.python.b import Literal, from_source, from_ast
+from syn.python.b import Literal, from_source, from_ast, PythonNode
 from syn.base_utils import compose
 
 eparse = compose(partial(from_source, mode='eval'), str)
@@ -18,15 +20,32 @@ def test_literal():
 def test_num():
     tree = eparse(1)
     assert tree.emit() == '1'
-
     tree2 = from_ast(tree.to_ast(), mode='eval')
     assert tree2.emit() == '1'
 
-    # tree3 = mparse(1)
-    # assert tree3.emit() == '1'
+    tree3 = mparse(1)
+    assert tree3.emit() == '1'
+    tree4 = from_ast(tree3.to_ast(), mode='exec')
+    assert tree4.emit() == '1'
 
-    # tree4 = from_ast(tree.to_ast(), mode='exec')
-    # assert tree4.emit() == '1'
+    tree5 = iparse(1)
+    assert tree5.emit() == '1'
+    tree6 = from_ast(tree5.to_ast(), mode='single')
+    assert tree6.emit() == '1'
+
+    tree7 = tree3.abstract()
+    assert any(n.lineno is not None for n in tree3.nodes)
+    assert all(n.lineno is None for n in tree7.nodes)
+
+    from syn.python.b import Num as Num_
+    import syn.python.b.base as pybbase
+
+    def bad():
+        class Num(PythonNode):
+            pass
+
+    assert_raises(TypeError, bad)
+    assert pybbase.AST_REGISTRY[ast.Num] is Num_
 
 #-------------------------------------------------------------------------------
 # Str
