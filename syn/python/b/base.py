@@ -70,26 +70,27 @@ class PythonNode(Node):
                 ret[attr] = val
         return ret
 
-    def emit(self, args):
-        raise NotImplementedError()
+    def emit(self, **kwargs):
+        cs = [c.emit(**kwargs) for c in self]
+        return '\n'.join(cs)
 
     @classmethod
     def from_ast(cls, ast, **kwargs):
-        raise NotImplementedError()
+        cs = [from_ast(obj, **kwargs) for obj in ast.body]
+        ret = cls(*cs)
+        return ret
 
-    def to_ast(self, args):
-        raise NotImplementedError()
+    def to_ast(self, **kwargs):
+        cs = [c.to_ast(**kwargs) for c in self]
+        kwargs_ = self._to_ast_kwargs(**kwargs)
+        return self.ast(cs, **kwargs_)
 
 
 #-------------------------------------------------------------------------------
 # Root Nodes
 
 class RootNode(PythonNode):
-    @classmethod
-    def from_ast(cls, ast, **kwargs):
-        cs = [from_ast(obj, **kwargs) for obj in ast.body]
-        ret = cls(*cs)
-        return ret
+    pass
 
 class Module(RootNode):
     pass
