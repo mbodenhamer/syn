@@ -2,7 +2,8 @@ from random import choice
 from functools import reduce
 from syn.base import Attr, init_hook
 from syn.type import List, Type
-from syn.base_utils import subclasses, rand_dispatch
+from syn.types import rstr
+from syn.base_utils import subclasses, get_typename
 from .base import SetNode, Args
 
 #-------------------------------------------------------------------------------
@@ -46,6 +47,9 @@ class SetLeaf(SetNode):
 class SetWrapper(SetLeaf):
     _attrs = dict(set = Attr(set, doc=''))
     _opts = dict(args = ('set',))
+
+    def display(self, **kwargs):
+        return rstr(self.set)
 
     def size(self):
         return len(self.set)
@@ -115,6 +119,9 @@ class TypeWrapper(SetLeaf):
         if not isinstance(self.type, Type):
             self.type = Type.dispatch(self.type)
 
+    def display(self, **kwargs):
+        return 'TypeWrapper({})'.format(self.type.display())
+
     def size(self):
         return float('inf')
 
@@ -155,6 +162,9 @@ class ClassWrapper(SetLeaf):
         super(ClassWrapper, self).__init__(*args, **kwargs)
         self.subclasses = [self.type] + subclasses(self.type)
 
+    def display(self, **kwargs):
+        return 'ClassWrapper({})'.format(get_typename(self.type))
+
     def size(self):
         return len(self.subclasses)
 
@@ -191,6 +201,9 @@ class Special(SetLeaf):
 
 
 class Empty(Special):
+    def display(self, **kwargs):
+        return '{}'
+
     def size(self):
         return 0
     

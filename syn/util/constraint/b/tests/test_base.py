@@ -1,6 +1,6 @@
 import collections
 from nose.tools import assert_raises
-from syn.sets import SetWrapper
+from syn.sets import SetWrapper, TypeWrapper
 from syn.util.constraint import Domain, Constraint, Problem
 
 #-------------------------------------------------------------------------------
@@ -8,9 +8,11 @@ from syn.util.constraint import Domain, Constraint, Problem
 
 def test_domain():
     d = Domain()
-    d['a'] = 1
-    assert d['a'] == 1
+    d['a'] = [1]
+    assert d['a'] == SetWrapper([1])
     assert list(d) == ['a']
+    d['a'] = int
+    assert d['a'] == TypeWrapper(int)
     del d['a']
     assert list(d) == []
 
@@ -21,12 +23,17 @@ def test_domain():
 
     assert isinstance(d, collections.Mapping)
 
+    d = Domain(a = [1], b = int)
+    assert d.display() == 'Domain(a = {1},\n       b = TypeWrapper(int))'
+
 #-------------------------------------------------------------------------------
 # Constraint
 
 def test_constraint():
     c = Constraint()
     assert_raises(NotImplementedError, c.check)
+    assert c.display() is None
+    assert c.preprocess({}) is None
 
 #-------------------------------------------------------------------------------
 # Problem
@@ -40,6 +47,11 @@ def test_problem():
                                     b = {c2})
 
     assert_raises(ValueError, Problem, Domain(a=[1]), [c1, c2])
+
+    from syn.util.constraint import EqualConstraint
+    c1 = EqualConstraint('a', 1)
+    p = Problem(Domain(a=[1]), [c1])
+    assert p.display() == 'Domain(a = {1})\na == 1'
 
 #-------------------------------------------------------------------------------
 

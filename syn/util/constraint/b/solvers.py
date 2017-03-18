@@ -42,7 +42,16 @@ class SimpleSolver(Solver):
 
 
 class RecursiveBacktrackSolver(Solver):
-    _attrs = dict(forward_checking = Attr(bool, True))
+    _attrs = dict(forward_checking = Attr(bool, True),
+                  selection_method = Attr(['mrv', 'random'], 'mrv'))
+
+    def choose_var(self, uvars, **kwargs):
+        if self.selection_method == 'mrv':
+            doms = {var: self.problem.domain[var] for var in uvars}
+            sort = sorted(doms.items(), 
+                          key=lambda pair: pair[1].expected_size())
+            return sort[0][0]
+        return choice(list(uvars))
 
     @contextmanager
     def forward_check(self, **kwargs):
@@ -81,19 +90,16 @@ class RecursiveBacktrackSolver(Solver):
             yield theory
 
         else:
-            var = choice(list(uvars)) # pick a variable
+            var = self.choose_var(uvars, **kwargs)
             for val in self.problem.domain[var].lazy_enumerate(**kwargs):
                 theory[var] = val
                 kwargs['theory'] = theory
                 with self.forward_check(**kwargs):
-                    for con in self.problem.constraints:
-                        if set(con.args) <= set(theory):
-                            if not con.check(**theory):
-                                break
-
+                    if not self.problem.check(theory):
+                        break
                     else:
-                        for ret in self.solutions(**kwargs):
-                            yield ret
+                        for sol in self.solutions(**kwargs):
+                            yield sol
 
 
 #-------------------------------------------------------------------------------

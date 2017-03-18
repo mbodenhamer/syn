@@ -13,6 +13,7 @@ def test_range():
     r1 = Range(1, 5)
     r2 = Range(2, 5)
     
+    assert r1.display() == '[1, 5]'
     assert r1.size() == 5
 
     assert r2.issubset(r1)
@@ -149,6 +150,7 @@ def test_strrange():
     assert s.lb == 97
     assert s.ub == 99
 
+    assert s.display() == '[a, c]'
     assert s.hasmember('a')
     assert s.hasmember(u'a')
     assert not s.hasmember('d')

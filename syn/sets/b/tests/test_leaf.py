@@ -12,7 +12,9 @@ def test_setwrapper():
     s1 = SetWrapper([1, 2, 3])
     s2 = {3, 4, 5}
     s3 = SetWrapper(s2)
+    s4 = SetWrapper(set([1]))
 
+    assert s4.display() == '{1}'
     assert s1.size() == s3.size() == 3
     assert s1.size_limits() == (3, 3)
 
@@ -63,6 +65,7 @@ def test_setwrapper():
 def test_typewrapper():
     tw = TypeWrapper(int)
 
+    assert tw.display() == 'TypeWrapper(int)'
     assert tw.size() == float('inf')
     
     for k in range(SAMPLES):
@@ -85,6 +88,7 @@ def test_classwrapper():
 
     cw = ClassWrapper(Foo)
     
+    assert cw.display() == 'ClassWrapper(Foo)'
     assert cw.size() == 3
 
     for k in range(SAMPLES):
@@ -109,7 +113,8 @@ def test_classwrapper():
 def test_empty():
     e = Empty()
     s = SetWrapper([1, 2, 3])
-    
+
+    assert e.display() == '{}'
     assert e.size() == 0
 
     assert e.issubset(s)
