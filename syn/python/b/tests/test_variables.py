@@ -1,4 +1,4 @@
-from syn.python.b import from_source, from_ast
+from syn.python.b import Name, from_source, from_ast
 from functools import partial
 from syn.base_utils import compose
 
@@ -12,6 +12,8 @@ def test_name():
     assert tree.emit() == 'foo'
     tree2 = from_ast(tree.to_ast(), mode='eval')
     assert tree2.emit() == 'foo'
+
+    assert tree.abstract().root[0] == Name('foo', _id=1)
 
 #-------------------------------------------------------------------------------
 
