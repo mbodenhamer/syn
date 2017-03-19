@@ -349,6 +349,13 @@ def message(e):
     return ''
 
 #-------------------------------------------------------------------------------
+# Language Utilities
+
+def pyversion():
+    ver = sys.version_info
+    return "{}.{}.{}".format(ver.major, ver.minor, ver.micro)
+
+#-------------------------------------------------------------------------------
 # Unit Test Collection
 
 NOSE_PATTERN = re.compile('(?:^|[\\b_\\.-])[Tt]est')
@@ -486,6 +493,6 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'type_partition', 'subclasses', 'unzip', 'this_module',  'eprint',
            'that_module', 'harvest_metadata', 'tuple_append', 'get_fullname',
            'tuple_prepend', 'elog', 'ngzwarn', 'full_funcname', 'hangwatch',
-           'safe_vars', 'getfunc', 'Partial')
+           'safe_vars', 'getfunc', 'Partial', 'pyversion')
 
 #-------------------------------------------------------------------------------

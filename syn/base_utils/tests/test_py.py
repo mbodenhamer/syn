@@ -425,6 +425,15 @@ def test_message():
     assert message(TypeError()) == ''
 
 #-------------------------------------------------------------------------------
+# Language Utilities
+
+def test_pyversion():
+    from syn.base_utils import pyversion
+    ver = pyversion()
+    assert isinstance(ver, str)
+    assert len(ver.split('.')) == 3
+
+#-------------------------------------------------------------------------------
 # Unit Test Collection
 
 def test_run_all_tests():
