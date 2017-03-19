@@ -40,6 +40,17 @@ class PythonNode(Node):
 
     @classmethod
     @create_hook
+    def _set_version(cls):
+        if cls.minver is None:
+            cls.minver = '0'
+        if cls.maxver is None:
+            cls.maxver = '100'
+            
+        cls.minver = str(cls.minver)
+        cls.maxver = str(cls.maxver)
+
+    @classmethod
+    @create_hook
     def _register_ast(cls):
         if cls._class_data.dct.get('ast', None) is None:
             cls.ast = getattr(ast, get_typename(cls), None)

@@ -10,6 +10,9 @@ def test_pythonnode():
     assert PythonNode._groups['ast_convert_attr'] == set([])
     assert PythonNode._groups['eq_exclude'] == {'_parent'}
 
+    assert PythonNode.minver == '0'
+    assert PythonNode.maxver == '100'
+
 #-------------------------------------------------------------------------------
 # Context
 
