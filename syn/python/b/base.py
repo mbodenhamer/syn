@@ -19,6 +19,13 @@ AST = 'ast_attr'
 ACO = 'ast_convert_attr'
 
 #-------------------------------------------------------------------------------
+# Utilities
+
+def col_offset(self, kwargs):
+    ret = kwargs.get('col_offset', self.col_offset)
+    return ret if ret is not None else 0
+
+#-------------------------------------------------------------------------------
 
 class AstUnsupported(Exception):
     pass

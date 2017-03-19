@@ -1,4 +1,4 @@
-from .base import PythonNode, Context, Attr, AST, ACO, Load
+from .base import PythonNode, Context, Attr, AST, ACO, Load, col_offset
 from syn.five import STR
 
 #-------------------------------------------------------------------------------
@@ -12,7 +12,7 @@ class Name(PythonNode):
                  args = ('id',))
 
     def emit(self, **kwargs):
-        ret = ' ' * kwargs.get('col_offset', self.col_offset)
+        ret = ' ' * col_offset(self, kwargs)
         ret += self.id
         return ret
 

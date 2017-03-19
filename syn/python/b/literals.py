@@ -1,4 +1,5 @@
-from .base import PythonNode, Attr, from_ast, Context, Load, AST, ACO
+from .base import PythonNode, Attr, from_ast, Context, Load, AST, ACO, \
+    col_offset
 from syn.base_utils import quote_string, setitem
 from syn.five import PY2, STR
 
@@ -24,16 +25,16 @@ class Num(Literal):
                  args = ('n',))
     _attrs = dict(n = Attr(n_type, doc='The numerical value'))
 
+    def emit(self, **kwargs):
+        ret = ' ' * col_offset(self, kwargs)
+        ret += str(self.n)
+        return ret
+    
     @classmethod
     def from_ast(cls, ast, **kwargs):
         ret = cls(n = ast.n, **kwargs)
         return ret
 
-    def emit(self, **kwargs):
-        ret = ' ' * kwargs.get('col_offset', self.col_offset)
-        ret += str(self.n)
-        return ret
-    
     def to_ast(self, **kwargs):
         kwargs_ = self._to_ast_kwargs(**kwargs)
         return self.ast(self.n, **kwargs_)
@@ -48,14 +49,14 @@ class Str(Literal):
                  args = ('s',))
     _attrs = dict(s = Attr(STR, doc='The string contents'))
 
+    def emit(self, **kwargs):
+        ret = ' ' * col_offset(self, kwargs)
+        ret += quote_string(self.s)
+        return ret
+
     @classmethod
     def from_ast(cls, ast, **kwargs):
         ret = cls(s = ast.s, **kwargs)
-        return ret
-
-    def emit(self, **kwargs):
-        ret = ' ' * kwargs.get('col_offset', self.col_offset)
-        ret += quote_string(self.s)
         return ret
 
     def to_ast(self, **kwargs):
@@ -78,7 +79,7 @@ class Sequence(Literal):
         if len(cs) == 1 and isinstance(self, Tuple):
             ret += ','
         ret = self.bounds[0] + ret + self.bounds[1]
-        ret = ' ' * kwargs.get('col_offset', self.col_offset) + ret
+        ret = ' ' * col_offset(self, kwargs) + ret
         return ret
 
     @classmethod
