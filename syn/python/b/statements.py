@@ -42,9 +42,25 @@ class Assign(Statement):
 
 
 #-------------------------------------------------------------------------------
+# Return
+
+
+class Return(Statement):
+    _attrs = dict(value = Attr(PythonNode, groups=(AST, ACO)))
+
+    def emit(self, **kwargs):
+        with setitem(kwargs, 'col_offset', 0):
+            val = self.value.emit(**kwargs)
+
+        ret = ' ' * col_offset(self, kwargs)
+        ret += 'return ' + val
+        return ret
+
+
+#-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('Statement',
-           'Assign')
+           'Assign', 'Return')
 
 #-------------------------------------------------------------------------------

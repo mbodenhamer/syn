@@ -91,19 +91,18 @@ class PythonNode(Node):
         return ret
 
     def emit(self, **kwargs):
-        cs = [c.emit(**kwargs) for c in self]
-        return '\n'.join(cs)
+        raise NotImplementedError
 
     @classmethod
     def from_ast(cls, ast, **kwargs):
-        cs = [from_ast(obj, **kwargs) for obj in ast.body]
-        ret = cls(*cs)
-        return ret
+        return cls(**kwargs)
 
     def to_ast(self, **kwargs):
         cs = [c.to_ast(**kwargs) for c in self]
         kwargs_ = self._to_ast_kwargs(**kwargs)
-        return self.ast(cs, **kwargs_)
+        if cs:
+            return self.ast(cs, **kwargs_)
+        return self.ast(**kwargs_)
 
 
 #-------------------------------------------------------------------------------
@@ -135,7 +134,15 @@ class Param(Context):
 # Root Nodes
 
 class RootNode(PythonNode):
-    pass
+    def emit(self, **kwargs):
+        cs = [c.emit(**kwargs) for c in self]
+        return '\n'.join(cs)
+
+    @classmethod
+    def from_ast(cls, ast, **kwargs):
+        cs = [from_ast(obj, **kwargs) for obj in ast.body]
+        ret = cls(*cs)
+        return ret
 
 class Module(RootNode):
     pass

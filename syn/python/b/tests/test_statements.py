@@ -30,6 +30,12 @@ def test_assign():
     examine('a, b = 1', '(a, b) = 1')
 
 #-------------------------------------------------------------------------------
+# Return
+
+def test_return():
+    examine('return 1')
+
+#-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
     from syn.base_utils import run_all_tests

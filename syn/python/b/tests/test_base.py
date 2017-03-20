@@ -13,6 +13,9 @@ def test_pythonnode():
     assert PythonNode.minver == '0'
     assert PythonNode.maxver == '100'
 
+    p = PythonNode()
+    assert_raises(NotImplementedError, p.emit)
+
 #-------------------------------------------------------------------------------
 # Context
 
