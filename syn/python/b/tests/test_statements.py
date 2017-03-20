@@ -5,6 +5,17 @@ from syn.python.b import Statement, from_source, from_ast
 mparse = compose(partial(from_source, mode='exec'), str)
 
 #-------------------------------------------------------------------------------
+# Utilities
+
+def examine(s, s2=None):
+    if s2 is None:
+        s2 = s
+    tree = mparse(s)
+    assert tree.emit() == s2
+    tree2 = from_ast(tree.to_ast(), mode='exec')
+    assert tree2.emit() == s2
+
+#-------------------------------------------------------------------------------
 # Statement
 
 def test_statement():
@@ -14,11 +25,9 @@ def test_statement():
 # Assign
 
 def test_assign():
-    tree = mparse('a = 1')
-    assert tree.emit() == 'a = 1'
-    tree2 = from_ast(tree.to_ast(), mode='exec')
-    assert tree2.emit() == 'a = 1'
-
+    examine('a = 1')
+    examine('a = b = 1')
+    examine('a, b = 1', '(a, b) = 1')
 
 #-------------------------------------------------------------------------------
 
