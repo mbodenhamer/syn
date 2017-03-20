@@ -14,10 +14,10 @@ def test_expr():
 # Binary Operators
 
 def test_binary_operators():
-    tree = eparse('1 + 2')
-    assert tree.emit() == '(1 + 2)'
+    tree = eparse('1 + (a / 3)')
+    assert tree.emit() == '(1 + (a / 3))'
     tree2 = from_ast(tree.to_ast(), mode='eval')
-    assert tree2.emit() == '(1 + 2)'
+    assert tree2.emit() == '(1 + (a / 3))'
     
 #-------------------------------------------------------------------------------
 
