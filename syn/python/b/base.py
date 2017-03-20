@@ -5,6 +5,7 @@ from operator import itemgetter
 from syn.base_utils import get_typename, ReflexiveDict
 from syn.tree.b import Node, Tree
 from syn.base.b import create_hook, Attr
+from syn.five import PY2
 
 OAttr = partial(Attr, optional=True)
 
@@ -127,6 +128,9 @@ class Store(Context):
 class Del(Context):
     pass
 
+class Param(Context):
+    maxver = '2.9999999999'
+
 #-------------------------------------------------------------------------------
 # Root Nodes
 
@@ -201,7 +205,7 @@ def from_source(src, mode='exec'):
 # __all__
 
 __all__ = ('PythonNode', 'PythonTree', 'AstUnsupported',
-           'Context', 'Load', 'Store', 'Del',
+           'Context', 'Load', 'Store', 'Del', 'Param',
            'RootNode', 'Module', 'Expression', 'Interactive',
            'from_ast', 'from_source')
 
