@@ -44,7 +44,7 @@ class If(Block):
         ret = self.emit_block(head, self.body, **kwargs)
         
         if self.orelse:
-            head = 'else:'
+            head = 'else'
             block = self.emit_block(head, self.orelse, **kwargs)
             ret += '\n' + block
 
