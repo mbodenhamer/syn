@@ -1,7 +1,8 @@
 from syn.base_utils import setitem
 from syn.type.a import List
 from .base import PythonNode, Attr, from_ast, col_offset
-
+from .literals import Tuple, List as List_
+from .variables import Name
 
 #-------------------------------------------------------------------------------
 # Block
@@ -65,9 +66,49 @@ class If(Block):
 
 
 #-------------------------------------------------------------------------------
+# For
+
+
+class For(Block):
+    _attrs = dict(target = Attr((Name, Tuple, List_)),
+                  iter = Attr(PythonNode),
+                  orelse = Attr(List(PythonNode)))
+    _opts = dict(args = ('target', 'iter', 'body', 'orelse'))
+    
+    def emit(self, **kwargs):
+        with setitem(kwargs, 'col_offset', 0):
+            head = 'for {} in {}'.format(self.target.emit(**kwargs),
+                                         self.iter.emit(**kwargs))
+
+        ret = self.emit_block(head, self.body, **kwargs)
+        
+        if self.orelse:
+            head = 'else'
+            block = self.emit_block(head, self.orelse, **kwargs)
+            ret += '\n' + block
+
+        return ret
+
+    @classmethod
+    def from_ast(cls, ast, **kwargs):
+        target = from_ast(ast.target, **kwargs)
+        iter = from_ast(ast.iter, **kwargs)
+        body = [from_ast(elem, **kwargs) for elem in ast.body]
+        orelse = [from_ast(elem, **kwargs) for elem in ast.orelse]
+        return cls(target, iter, body, orelse)
+
+    def to_ast(self, **kwargs):
+        target = self.target.to_ast(**kwargs)
+        iter = self.iter.to_ast(**kwargs)
+        body = [elem.to_ast(**kwargs) for elem in self.body]
+        orelse = [elem.to_ast(**kwargs) for elem in self.orelse]
+        return self.ast(target, iter, body, orelse)
+
+
+#-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('Block',
-           'If')
+           'If', 'For')
 
 #-------------------------------------------------------------------------------

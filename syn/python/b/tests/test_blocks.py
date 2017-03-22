@@ -17,6 +17,13 @@ def test_if():
             'if 1:\n    a = 1\nelse:\n    if 2:\n        a = 2\n    else:\n        a = 3')
 
 #-------------------------------------------------------------------------------
+# For
+
+def test_for():
+    examine('for x in [1, 2]:\n    a = x')
+    examine('for x in (1, 2):\n    a = x\nelse:\n    b = x')
+
+#-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
     from syn.base_utils import run_all_tests
