@@ -36,6 +36,14 @@ def test_return():
     examine('return 1')
 
 #-------------------------------------------------------------------------------
+# Empty Statements
+
+def test_empty_statements():
+    examine('break')
+    examine('continue')
+    examine('pass')
+
+#-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
     from syn.base_utils import run_all_tests

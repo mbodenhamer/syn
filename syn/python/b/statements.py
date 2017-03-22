@@ -1,5 +1,5 @@
 from .base import PythonNode, Attr, AST, ACO, col_offset, from_ast
-from syn.base_utils import setitem
+from syn.base_utils import setitem, get_typename
 from syn.type.a import List
 
 #-------------------------------------------------------------------------------
@@ -58,9 +58,33 @@ class Return(Statement):
 
 
 #-------------------------------------------------------------------------------
+# Empty Statements
+
+
+class EmptyStatement(Statement):
+    def emit(self, **kwargs):
+        ret = ' ' * col_offset(self, kwargs)
+        ret += get_typename(self).lower()
+        return ret
+
+
+class Break(EmptyStatement):
+    pass
+
+
+class Continue(EmptyStatement):
+    pass
+
+
+class Pass(EmptyStatement):
+    pass
+
+
+#-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('Statement',
-           'Assign', 'Return')
+           'Assign', 'Return',
+           'EmptyStatement', 'Break', 'Continue', 'Pass')
 
 #-------------------------------------------------------------------------------
