@@ -66,7 +66,7 @@ class Return(Statement):
 class Alias(Statement):
     ast = ast.alias
     _attrs = dict(name = Attr(STR, group=AST),
-                  asname = Attr(STR, optionl=True, group=AST))
+                  asname = Attr(STR, optional=True, group=AST))
     _opts = dict(args = ('name', 'asname'))
 
     def emit(self, **kwargs):
@@ -116,6 +116,7 @@ class Pass(EmptyStatement):
 
 __all__ = ('Statement',
            'Assign', 'Return',
+           'Alias', 'Import',
            'EmptyStatement', 'Break', 'Continue', 'Pass')
 
 #-------------------------------------------------------------------------------
