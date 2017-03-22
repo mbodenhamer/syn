@@ -24,6 +24,13 @@ def test_for():
     examine('for x in (1, 2):\n    a = x\nelse:\n    b = x')
 
 #-------------------------------------------------------------------------------
+# While
+
+def test_while():
+    examine('while 1:\n    a = x')
+    examine('while 1:\n    a = x\nelse:\n    b = x')
+
+#-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
     from syn.base_utils import run_all_tests

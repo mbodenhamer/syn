@@ -106,9 +106,45 @@ class For(Block):
 
 
 #-------------------------------------------------------------------------------
+# While
+
+
+class While(Block):
+    _attrs = dict(test = Attr(PythonNode),
+                  orelse = Attr(List(PythonNode)))
+    _opts = dict(args = ('test', 'body', 'orelse'))
+
+    def emit(self, **kwargs):
+        with setitem(kwargs, 'col_offset', 0):
+            head = 'while ' + self.test.emit(**kwargs)
+
+        ret = self.emit_block(head, self.body, **kwargs)
+        
+        if self.orelse:
+            head = 'else'
+            block = self.emit_block(head, self.orelse, **kwargs)
+            ret += '\n' + block
+
+        return ret
+
+    @classmethod
+    def from_ast(cls, ast, **kwargs):
+        test = from_ast(ast.test, **kwargs)
+        body = [from_ast(elem, **kwargs) for elem in ast.body]
+        orelse = [from_ast(elem, **kwargs) for elem in ast.orelse]
+        return cls(test, body, orelse)
+
+    def to_ast(self, **kwargs):
+        test = self.test.to_ast(**kwargs)
+        body = [elem.to_ast(**kwargs) for elem in self.body]
+        orelse = [elem.to_ast(**kwargs) for elem in self.orelse]
+        return self.ast(test, body, orelse)
+
+
+#-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('Block',
-           'If', 'For')
+           'If', 'For', 'While')
 
 #-------------------------------------------------------------------------------
