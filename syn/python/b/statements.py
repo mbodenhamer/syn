@@ -1,6 +1,8 @@
+import ast
 from .base import PythonNode, Attr, AST, ACO, col_offset, from_ast
 from syn.base_utils import setitem, get_typename
 from syn.type.a import List
+from syn.five import STR
 
 #-------------------------------------------------------------------------------
 # Statement
@@ -56,6 +58,35 @@ class Return(Statement):
         ret += 'return ' + val
         return ret
 
+
+#-------------------------------------------------------------------------------
+# Import
+
+
+class Alias(Statement):
+    ast = ast.alias
+    _attrs = dict(name = Attr(STR, group=AST),
+                  asname = Attr(STR, optionl=True, group=AST))
+    _opts = dict(args = ('name', 'asname'))
+
+    def emit(self, **kwargs):
+        ret = self.name
+        if self.asname:
+            ret += ' as ' + self.asname
+        return ret
+
+
+class Import(Statement):
+    _attrs = dict(names = Attr(List(Alias), groups=(AST, ACO)))
+
+    def emit(self, **kwargs):
+        with setitem(kwargs, 'col_offset', 0):
+            strs = [val.emit(**kwargs) for val in self.names]
+            names = ', '.join(strs)
+
+        ret = ' ' * col_offset(self, kwargs)
+        ret += 'import ' + names
+        return ret
 
 #-------------------------------------------------------------------------------
 # Empty Statements

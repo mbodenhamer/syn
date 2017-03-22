@@ -36,6 +36,15 @@ def test_return():
     examine('return 1')
 
 #-------------------------------------------------------------------------------
+# Import
+
+def test_import():
+    examine('import foo')
+    examine('import foo, bar, baz')
+    examine('import foo, bar as baz')
+    examine('import foo as bar, baz')
+
+#-------------------------------------------------------------------------------
 # Empty Statements
 
 def test_empty_statements():

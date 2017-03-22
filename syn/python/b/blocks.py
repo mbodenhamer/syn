@@ -18,6 +18,8 @@ class Block(PythonNode):
         ret = ' ' * block_offset
         ret += head + ':\n'
 
+        # TODO: check if indent was explicitly set on init and if so
+        # override with that value
         body_offset = body[0].col_offset if body[0].col_offset is not None else 0
         body_offset = (body_offset if body_offset > block_offset else 
                        block_offset + self.indent)

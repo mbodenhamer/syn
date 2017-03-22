@@ -76,7 +76,10 @@ class PythonNode(Node):
         for attr in cls._groups[AST]:
             val = getattr(ast, attr, None)
             if attr in cls._groups[ACO]:
-                val = from_ast(val, **kwargs)
+                if isinstance(val, list):
+                    val = [from_ast(v, **kwargs) for v in val]
+                else:
+                    val = from_ast(val, **kwargs)
             vals[attr] = val
         return vals
 
@@ -86,7 +89,10 @@ class PythonNode(Node):
             val = getattr(self, attr, None)
             if val is not None:
                 if attr in self._groups[ACO]:
-                    val = val.to_ast(**kwargs)
+                    if isinstance(val, list):
+                        val = [v.to_ast(**kwargs) for v in val]
+                    else:
+                        val = val.to_ast(**kwargs)
                 ret[attr] = val
         return ret
 
