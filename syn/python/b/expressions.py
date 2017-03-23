@@ -1,15 +1,23 @@
 from operator import attrgetter
 from syn.base_utils import setitem
-from .base import PythonNode, Attr, AST, ACO
+from .base import PythonNode, Attr, AST, ACO, Context, Load
+from syn.five import STR
+
+#-------------------------------------------------------------------------------
+# Expression
+
+
+class Expression_(PythonNode):
+    _opts = dict(max_len = 0)
+
 
 #-------------------------------------------------------------------------------
 # Expr
 
 
-class Expr(PythonNode):
+class Expr(Expression_):
     _attrs = dict(value = Attr(PythonNode, groups=(AST, ACO)))
-    _opts = dict(max_len = 0,
-                 args = ('value',))
+    _opts = dict(args = ('value',))
 
     def emit(self, **kwargs):
         return self.value.emit(**kwargs)
@@ -19,7 +27,7 @@ class Expr(PythonNode):
 # BinaryOperator
 
 
-class BinaryOperator(PythonNode):
+class BinaryOperator(Expression_):
     symbol = None
 
     def emit(self, **kwargs):
@@ -47,9 +55,8 @@ class Div(BinaryOperator):
 # BinOp
 
 
-class BinOp(PythonNode):
-    _opts = dict(max_len = 0,
-                 args = ('left', 'op', 'right'))
+class BinOp(Expression_):
+    _opts = dict(args = ('left', 'op', 'right'))
     _attrs = dict(op = Attr(BinaryOperator, groups=(AST, ACO)),
                   left = Attr(PythonNode, groups=(AST, ACO)),
                   right = Attr(PythonNode, groups=(AST, ACO)))
@@ -69,11 +76,30 @@ class BinOp(PythonNode):
 
 
 #-------------------------------------------------------------------------------
+# Attribute
+
+
+class Attribute(Expression_):
+    _attrs = dict(value = Attr(PythonNode, groups=(AST, ACO)),
+                  attr = Attr(STR, group=AST),
+                  ctx = Attr(Context, Load(), groups=(AST, ACO)))
+
+    def emit(self, **kwargs):
+        with setitem(kwargs, 'indent_level', 0):
+            value = self.value.emit(**kwargs)
+        
+        ret = self._indent(**kwargs)
+        ret += value + '.' + self.attr
+        return ret
+
+
+#-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Expr',
+__all__ = ('Expression_', 'Expr',
            'BinaryOperator', 'BinOp',
-           'Add', 'Sub', 'Mult', 'Div')
+           'Add', 'Sub', 'Mult', 'Div',
+           'Attribute',)
 
 #-------------------------------------------------------------------------------
 
