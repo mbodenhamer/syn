@@ -7,22 +7,12 @@ from .base import PythonNode, from_ast, Attr, AST, ACO, col_offset
 
 
 class Expr(PythonNode):
-    _opts = dict(min_len = 1,
-                 max_len = 1)
-    body = property(itemgetter(0))
+    _attrs = dict(value = Attr(PythonNode, groups=(AST, ACO)))
+    _opts = dict(max_len = 0,
+                 args = ('value',))
 
     def emit(self, **kwargs):
-        return self.body.emit(**kwargs)
-
-    @classmethod
-    def from_ast(cls, ast, **kwargs):
-        child = from_ast(ast.value, **kwargs)
-        ret = cls(child, **kwargs)
-        return ret
-
-    def to_ast(self, **kwargs):
-        body = self.body.to_ast(**kwargs)
-        return self.ast(body)
+        return self.value.emit(**kwargs)
 
 
 #-------------------------------------------------------------------------------
@@ -34,13 +24,6 @@ class BinaryOperator(PythonNode):
 
     def emit(self, **kwargs):
         return self.symbol
-
-    @classmethod
-    def from_ast(cls, ast, **kwargs):
-        return cls(**kwargs)
-
-    def to_ast(self, **kwargs):
-        return self.ast()
 
 
 #-------------------------------------------------------------------------------

@@ -16,15 +16,6 @@ class Name(PythonNode):
         ret += self.id
         return ret
 
-    @classmethod
-    def from_ast(cls, ast, **kwargs):
-        ret = cls(**kwargs)
-        return ret
-
-    def to_ast(self, **kwargs):
-        kwargs_ = self._to_ast_kwargs(**kwargs)
-        return self.ast(**kwargs_)
-
 
 #-------------------------------------------------------------------------------
 # __all__
