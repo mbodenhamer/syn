@@ -1,6 +1,7 @@
-from syn.python.b import Name, from_source, from_ast
+from syn.python.b import from_source
 from functools import partial
 from syn.base_utils import compose
+from .test_literals import examine
 
 eparse = compose(partial(from_source, mode='eval'), str)
 
@@ -8,12 +9,7 @@ eparse = compose(partial(from_source, mode='eval'), str)
 # Name
 
 def test_name():
-    tree = eparse('foo')
-    assert tree.emit() == 'foo'
-    tree2 = from_ast(tree.to_ast(), mode='eval')
-    assert tree2.emit() == 'foo'
-
-    assert tree.abstract().root[0] == Name('foo', _id=1)
+    examine('foo')
 
 #-------------------------------------------------------------------------------
 

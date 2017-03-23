@@ -9,6 +9,17 @@ iparse = compose(partial(from_source, mode='single'), str)
 mparse = compose(partial(from_source, mode='exec'), str)
 
 #-------------------------------------------------------------------------------
+# Utilities
+
+def examine(s, s2=None):
+    if s2 is None:
+        s2 = s
+    tree = eparse(s)
+    assert tree.emit() == s2
+    tree2 = from_ast(tree.to_ast(), mode='eval')
+    assert tree2.emit() == s2
+
+#-------------------------------------------------------------------------------
 # Base Class
 
 def test_literal():
@@ -51,30 +62,16 @@ def test_num():
 # Str
 
 def test_str():
-    tree = eparse("'abc'")
-    assert tree.emit() == "'abc'"
-
-    tree2 = from_ast(tree.to_ast(), mode='eval')
-    assert tree2.emit() == "'abc'"
+    examine("'abc'")
 
 #-------------------------------------------------------------------------------
 # Sequence
 
 def test_sequence():
-    tree = eparse([1, 2])
-    assert tree.emit() == '[1, 2]'
-
-    tree2 = from_ast(tree.to_ast(), mode='eval')
-    assert tree2.emit() == '[1, 2]'
-
-    tree = eparse((1, 2))
-    assert tree.emit() == ' (1, 2)'
-
-    tree = eparse((1,))
-    assert tree.emit() == ' (1,)'
-
-    tree = eparse('{1}')
-    assert tree.emit() == '{1}'
+    examine('[1, 2]')
+    # examine('(1, 2)')
+    # examine('(1,)')
+    examine('{1}')
 
 #-------------------------------------------------------------------------------
 
