@@ -1,6 +1,7 @@
 from operator import attrgetter
 from syn.base_utils import setitem
 from .base import PythonNode, Attr, AST, ACO, Context, Load
+from syn.type.a import List
 from syn.five import STR
 
 #-------------------------------------------------------------------------------
@@ -76,6 +77,70 @@ class BinOp(Expression_):
 
 
 #-------------------------------------------------------------------------------
+# Comparator
+
+
+class Comparator(BinaryOperator):
+    pass
+
+#-------------------------------------------------------------------------------
+# Comparators
+
+
+class Eq(Comparator):
+    symbol = '=='
+
+class NotEq(Comparator):
+    symbol = '!='
+
+class Lt(Comparator):
+    symbol = '<'
+
+class LtE(Comparator):
+    symbol = '<='
+
+class Gt(Comparator):
+    symbol = '>'
+
+class GtE(Comparator):
+    symbol = '>='
+
+class Is(Comparator):
+    symbol = 'is'
+
+class IsNot(Comparator):
+    symbol = 'is not'
+
+class In(Comparator):
+    symbol = 'in'
+
+class NotIn(Comparator):
+    symbol = 'not in'
+
+
+#-------------------------------------------------------------------------------
+# Compare
+
+
+class Compare(Expression_):
+    _attrs = dict(left = Attr(PythonNode, groups=(AST, ACO)),
+                  ops = Attr(List(Comparator), groups=(AST, ACO)),
+                  comparators = Attr(List(PythonNode), groups=(AST, ACO)))
+
+    def emit(self, **kwargs):
+        with setitem(kwargs, 'indent_level', 0):
+            left = self.left.emit(**kwargs)
+            ops = [op.emit(**kwargs) for op in self.ops]
+            comps = [comp.emit(**kwargs) for comp in self.comparators]
+
+        ret = self._indent(**kwargs) + left
+        for op, comp in zip(ops, comps):
+            ret += ' {} {}'.format(op, comp)
+        ret = '(' + ret + ')'
+        return ret
+            
+
+#-------------------------------------------------------------------------------
 # Attribute
 
 
@@ -99,6 +164,8 @@ class Attribute(Expression_):
 __all__ = ('Expression_', 'Expr',
            'BinaryOperator', 'BinOp',
            'Add', 'Sub', 'Mult', 'Div',
+           'Comparator', 'Compare',
+           'Eq', 'NotEq', 'Lt', 'LtE', 'Gt', 'GtE', 'Is', 'IsNot', 'In', 'NotIn',
            'Attribute',)
 
 #-------------------------------------------------------------------------------
