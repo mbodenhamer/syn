@@ -27,8 +27,8 @@ def test_for():
 # While
 
 def test_while():
-    examine('while 1:\n    a = x')
-    examine('while 1:\n    a = x\nelse:\n    b = x')
+    examine('while True:\n    a = x')
+    examine('while False:\n    a = x\nelse:\n    b = x')
 
 #-------------------------------------------------------------------------------
 
