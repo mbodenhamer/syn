@@ -285,6 +285,25 @@ class Call(Expression_):
 
 
 #-------------------------------------------------------------------------------
+# IfExp
+
+
+class IfExp(Expression_):
+    _attrs = dict(test = Attr(PythonNode, groups=(AST, ACO)),
+                  body = Attr(PythonNode, groups=(AST, ACO)),
+                  orelse = Attr(PythonNode, groups=(AST, ACO)))
+
+    def emit(self, **kwargs):
+        with setitem(kwargs, 'indent_level', 0):
+            test = self.test.emit(**kwargs)
+            body = self.body.emit(**kwargs)
+            orelse = self.orelse.emit(**kwargs)
+
+        ret = '({} if {} else {})'.format(body, test, orelse)
+        return ret
+
+
+#-------------------------------------------------------------------------------
 # Attribute
 
 
@@ -313,7 +332,7 @@ __all__ = ('Expression_', 'Expr',
            'And', 'Or',
            'Comparator', 'Compare',
            'Eq', 'NotEq', 'Lt', 'LtE', 'Gt', 'GtE', 'Is', 'IsNot', 'In', 'NotIn',
-           'Keyword', 'Call', 'Attribute',)
+           'Keyword', 'Call', 'IfExp', 'Attribute',)
 
 #-------------------------------------------------------------------------------
 
