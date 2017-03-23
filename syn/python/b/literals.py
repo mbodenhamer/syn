@@ -103,9 +103,24 @@ class Set(Sequence):
 
 
 #-------------------------------------------------------------------------------
+# NameConstant
+
+
+class NameConstant(Literal):
+    minver = '3.4'
+    _attrs = dict(value = Attr([True, False, None], group=AST))
+
+    def emit(self, **kwargs):
+        ret = self._indent(**kwargs)
+        ret += str(self.value)
+        return ret
+
+
+#-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('Literal', 'Num', 'Str', 'Bytes',
-           'Sequence', 'List', 'Tuple', 'Set')
+           'Sequence', 'List', 'Tuple', 'Set',
+           'NameConstant')
 
 #-------------------------------------------------------------------------------

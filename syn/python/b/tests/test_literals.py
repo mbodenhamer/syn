@@ -84,6 +84,14 @@ def test_sequence():
     examine('{1}')
 
 #-------------------------------------------------------------------------------
+# NameConstant
+
+def test_nameconstant():
+    examine('True')
+    examine('False')
+    examine('None')
+
+#-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
     from syn.base_utils import run_all_tests
