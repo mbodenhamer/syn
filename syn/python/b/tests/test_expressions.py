@@ -1,8 +1,9 @@
 from functools import partial
-from syn.base_utils import compose
-from syn.python.b import Expr, from_source
+from syn.base_utils import compose, pyversion
+from syn.python.b import Expr, from_source, MatMult
 from .test_literals import examine
 
+VER = pyversion()
 eparse = compose(partial(from_source, mode='eval'), str)
 
 #-------------------------------------------------------------------------------
@@ -27,6 +28,9 @@ def test_binary_operators():
     examine('(a | 1)')
     examine('(a ^ 1)')
     examine('(a & 1)')
+
+    if VER >= MatMult.minver:
+        examine('(a @ b)')
 
     examine('1 + (a / 3)', '(1 + (a / 3))')
     

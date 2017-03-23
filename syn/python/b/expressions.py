@@ -83,6 +83,10 @@ class BitXor(BinaryOperator):
 class BitAnd(BinaryOperator):
     symbol = '&'
 
+class MatMult(BinaryOperator):
+    minver = '3.5'
+    symbol = '@'
+    
 
 #-------------------------------------------------------------------------------
 # BinOp
@@ -235,7 +239,7 @@ class Attribute(Expression_):
 __all__ = ('Expression_', 'Expr',
            'Operator', 'BinaryOperator', 'BinOp',
            'Add', 'Sub', 'Mult', 'Div', 'FloorDiv', 'Mod', 'Pow', 'LShift',
-           'RShift', 'BitOr', 'BitXor', 'BitAnd',
+           'RShift', 'BitOr', 'BitXor', 'BitAnd', 'MatMult',
            'BooleanOperator', 'BoolOp',
            'And', 'Or',
            'Comparator', 'Compare',
