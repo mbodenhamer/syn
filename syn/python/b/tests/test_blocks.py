@@ -20,7 +20,7 @@ def test_if():
 # For
 
 def test_for():
-    examine('for x in [1, 2]:\n    a = x')
+    examine('for x in [1, 2]:\n    a = x\n    b = y')
     examine('for x in (1, 2):\n    a = x\nelse:\n    b = x')
 
 #-------------------------------------------------------------------------------
