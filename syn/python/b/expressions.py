@@ -1,8 +1,13 @@
+import ast
+from functools import partial
 from operator import attrgetter
-from syn.base_utils import setitem
+from syn.base_utils import setitem, pyversion
 from .base import PythonNode, Attr, AST, ACO, Context, Load
 from syn.type.a import List
 from syn.five import STR
+
+VER = pyversion()
+OAttr = partial(Attr, optional=True)
 
 #-------------------------------------------------------------------------------
 # Expression
@@ -216,6 +221,61 @@ class Compare(Expression_):
             
 
 #-------------------------------------------------------------------------------
+# keyword
+
+
+class Keyword(Expression_):
+    ast = ast.keyword
+    _attrs = dict(arg = Attr(STR, group=AST),
+                  value = Attr(PythonNode, groups=(AST, ACO)))
+
+    def emit(self, **kwargs):
+        with setitem(kwargs, 'indent_level', 0):
+            value = self.value.emit(**kwargs)
+
+        ret = '{}={}'.format(self.arg, value)
+        return ret
+
+
+#-------------------------------------------------------------------------------
+# Call
+
+
+class Call(Expression_):
+    _attrs = dict(func = Attr(PythonNode, groups=(AST, ACO)),
+                  args = OAttr(List(PythonNode), groups=(AST, ACO)),
+                  keywords = OAttr(List(Keyword), groups=(AST, ACO)))
+    
+    if VER < '3.5':
+        _attrs['starargs'] = OAttr(PythonNode, groups=(AST, ACO))
+        _attrs['kwargs'] = OAttr(PythonNode, groups=(AST, ACO))
+
+    def emit(self, **kwargs):
+        with setitem(kwargs, 'indent_level', 0):
+            func = self.func.emit(**kwargs)
+            args = [arg.emit(**kwargs) for arg in self.args] if self.args else []
+            kwds = [kw.emit(**kwargs) for kw in self.keywords] if self.keywords else []
+
+            if VER < '3.5':
+                starargs = self.starargs.emit(**kwargs) if self.starargs else ''
+                kwargs_ = self.kwargs.emit(**kwargs) if self.kwargs else ''
+
+        strs = []
+        ret = self._indent(**kwargs) + func + '('
+        if args:
+            strs.extend(args)
+        if kwds:
+            strs.extend(kwds)
+        if starargs:
+            strs.append('*' + starargs)
+        if kwargs_:
+            strs.append('**' + kwargs_)
+        ret += ', '.join(strs)
+        ret += ')'
+        return ret
+
+
+#-------------------------------------------------------------------------------
 # Attribute
 
 
@@ -244,7 +304,7 @@ __all__ = ('Expression_', 'Expr',
            'And', 'Or',
            'Comparator', 'Compare',
            'Eq', 'NotEq', 'Lt', 'LtE', 'Gt', 'GtE', 'Is', 'IsNot', 'In', 'NotIn',
-           'Attribute',)
+           'Keyword', 'Call', 'Attribute',)
 
 #-------------------------------------------------------------------------------
 

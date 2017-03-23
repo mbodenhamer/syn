@@ -60,6 +60,21 @@ def test_compare():
     examine('(a < 1 >= 2 <= c is not d)')
 
 #-------------------------------------------------------------------------------
+# Call
+
+def test_call():
+    examine('foo()')
+    examine('foo(1)')
+    examine('foo(1, 2, 3)')
+    examine('foo(a=1, b=2)')
+    examine('foo(1, 2, **d)')
+    examine('foo(a=2, *c)')
+    examine('foo(*c)')
+    examine('foo(**d)')
+    examine('foo(1, a=2, **b)')
+    examine('foo(1, 2, a=3, b=4, *c, **d)')
+
+#-------------------------------------------------------------------------------
 # Attribute
 
 def test_attribute():

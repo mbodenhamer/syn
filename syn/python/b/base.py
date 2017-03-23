@@ -5,7 +5,6 @@ from operator import itemgetter
 from syn.base_utils import get_typename, ReflexiveDict
 from syn.tree.b import Node, Tree
 from syn.base.b import create_hook, Attr
-from syn.five import PY2
 
 OAttr = partial(Attr, optional=True)
 
@@ -73,7 +72,7 @@ class PythonNode(Node):
             if attr in cls._groups[ACO]:
                 if isinstance(val, list):
                     val = [from_ast(v, **kwargs) for v in val]
-                else:
+                elif val is not None:
                     val = from_ast(val, **kwargs)
             vals[attr] = val
         return vals
@@ -91,7 +90,7 @@ class PythonNode(Node):
                 if attr in self._groups[ACO]:
                     if isinstance(val, list):
                         val = [v.to_ast(**kwargs) for v in val]
-                    else:
+                    elif val is not None:
                         val = val.to_ast(**kwargs)
                 ret[attr] = val
         return ret
