@@ -1,15 +1,22 @@
-from syn.python.b import from_source
-from functools import partial
-from syn.base_utils import compose
+from syn.base_utils import pyversion
+from syn.python.b import Starred
 from .test_literals import examine
+from .test_statements import examine as examine_
 
-eparse = compose(partial(from_source, mode='eval'), str)
+VER = pyversion()
 
 #-------------------------------------------------------------------------------
 # Name
 
 def test_name():
     examine('foo')
+
+#-------------------------------------------------------------------------------
+# Starred
+
+def test_starred():
+    if VER >= Starred.minver:
+        examine_('*b = c')
 
 #-------------------------------------------------------------------------------
 

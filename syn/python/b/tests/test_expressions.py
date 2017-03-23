@@ -68,11 +68,17 @@ def test_call():
     examine('foo(1, 2, 3)')
     examine('foo(a=1, b=2)')
     examine('foo(1, 2, **d)')
-    examine('foo(a=2, *c)')
+    if VER < '3.5':
+        examine('foo(a=2, *c)')
+    else:
+        examine('foo(*c, a=2)')
     examine('foo(*c)')
     examine('foo(**d)')
     examine('foo(1, a=2, **b)')
-    examine('foo(1, 2, a=3, b=4, *c, **d)')
+    if VER < '3.5':
+        examine('foo(1, 2, a=3, b=4, *c, **d)')
+    else:
+        examine('foo(1, 2, *c, a=3, b=4, **d)')
 
 #-------------------------------------------------------------------------------
 # Attribute

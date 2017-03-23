@@ -229,11 +229,17 @@ class Keyword(Expression_):
     _attrs = dict(arg = Attr(STR, group=AST),
                   value = Attr(PythonNode, groups=(AST, ACO)))
 
+    if VER >= '3.5':
+        _attrs['arg'] = Attr((STR, type(None)), group=AST)
+
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):
             value = self.value.emit(**kwargs)
 
-        ret = '{}={}'.format(self.arg, value)
+        if self.arg is None:
+            ret = '**' + value
+        else:
+            ret = '{}={}'.format(self.arg, value)
         return ret
 
 
@@ -259,6 +265,9 @@ class Call(Expression_):
             if VER < '3.5':
                 starargs = self.starargs.emit(**kwargs) if self.starargs else ''
                 kwargs_ = self.kwargs.emit(**kwargs) if self.kwargs else ''
+            else:
+                starargs = ''
+                kwargs_ = ''
 
         strs = []
         ret = self._indent(**kwargs) + func + '('
