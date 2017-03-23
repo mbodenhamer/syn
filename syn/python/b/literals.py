@@ -8,7 +8,7 @@ from syn.five import PY2, STR
 
 
 class Literal(PythonNode):
-    pass
+    _opts = dict(max_len = 0)
 
 
 #-------------------------------------------------------------------------------
@@ -21,8 +21,7 @@ else:
 
 
 class Num(Literal):
-    _opts = dict(max_len = 0,
-                 args = ('n',))
+    _opts = dict(args = ('n',))
     _attrs = dict(n = Attr(n_type, doc='The numerical value', group=AST))
 
     def emit(self, **kwargs):
@@ -36,13 +35,26 @@ class Num(Literal):
 
 
 class Str(Literal):
-    _opts = dict(max_len = 0,
-                 args = ('s',))
+    _opts = dict(args = ('s',))
     _attrs = dict(s = Attr(STR, doc='The string contents', group=AST))
 
     def emit(self, **kwargs):
         ret = self._indent(**kwargs)
         ret += quote_string(self.s)
+        return ret
+
+
+#-------------------------------------------------------------------------------
+# Bytes
+
+
+class Bytes(Literal):
+    minver = '3'
+    _attrs = dict(s = Attr(bytes, group=AST))
+
+    def emit(self, **kwargs):
+        ret = self._indent(**kwargs)
+        ret += str(self.s)
         return ret
 
 
@@ -93,7 +105,7 @@ class Set(Sequence):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Literal', 'Num', 'Str',
+__all__ = ('Literal', 'Num', 'Str', 'Bytes',
            'Sequence', 'List', 'Tuple', 'Set')
 
 #-------------------------------------------------------------------------------

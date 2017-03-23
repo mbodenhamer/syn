@@ -3,6 +3,7 @@ from nose.tools import assert_raises
 from functools import partial
 from syn.python.b import Literal, from_source, from_ast, PythonNode
 from syn.base_utils import compose
+from syn.five import PY3
 
 eparse = compose(partial(from_source, mode='eval'), str)
 iparse = compose(partial(from_source, mode='single'), str)
@@ -63,6 +64,15 @@ def test_num():
 
 def test_str():
     examine("'abc'")
+
+#-------------------------------------------------------------------------------
+# Bytes
+
+def test_bytes():
+    if PY3:
+        examine("b'abc'")
+    else:
+        examine("b'abc'", "'abc'")
 
 #-------------------------------------------------------------------------------
 # Sequence
