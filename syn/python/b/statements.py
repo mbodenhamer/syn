@@ -1,5 +1,5 @@
 import ast
-from .base import PythonNode, Attr, AST, ACO, col_offset
+from .base import PythonNode, Attr, AST, ACO
 from syn.base_utils import setitem, get_typename
 from syn.type.a import List
 from syn.five import STR
@@ -22,11 +22,11 @@ class Assign(Statement):
     _opts = dict(args = ('targets', 'value'))
 
     def emit(self, **kwargs):
-        with setitem(kwargs, 'col_offset', 0):
+        with setitem(kwargs, 'indent_level', 0):
             targs = [targ.emit(**kwargs) for targ in self.targets]
             val = self.value.emit(**kwargs)
 
-        ret = ' ' * col_offset(self, kwargs)
+        ret = self._indent(**kwargs)
         ret += ' = '.join(targs)
         ret += ' = ' + val
         return ret
@@ -40,10 +40,10 @@ class Return(Statement):
     _attrs = dict(value = Attr(PythonNode, groups=(AST, ACO)))
 
     def emit(self, **kwargs):
-        with setitem(kwargs, 'col_offset', 0):
+        with setitem(kwargs, 'indent_level', 0):
             val = self.value.emit(**kwargs)
 
-        ret = ' ' * col_offset(self, kwargs)
+        ret = self._indent(**kwargs)
         ret += 'return ' + val
         return ret
 
@@ -69,11 +69,11 @@ class Import(Statement):
     _attrs = dict(names = Attr(List(Alias), groups=(AST, ACO)))
 
     def emit(self, **kwargs):
-        with setitem(kwargs, 'col_offset', 0):
+        with setitem(kwargs, 'indent_level', 0):
             strs = [val.emit(**kwargs) for val in self.names]
             names = ', '.join(strs)
 
-        ret = ' ' * col_offset(self, kwargs)
+        ret = self._indent(**kwargs)
         ret += 'import ' + names
         return ret
 
@@ -84,7 +84,7 @@ class Import(Statement):
 
 class EmptyStatement(Statement):
     def emit(self, **kwargs):
-        ret = ' ' * col_offset(self, kwargs)
+        ret = self._indent(**kwargs)
         ret += get_typename(self).lower()
         return ret
 

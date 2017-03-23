@@ -20,13 +20,6 @@ AST = 'ast_attr'
 ACO = 'ast_convert_attr'
 
 #-------------------------------------------------------------------------------
-# Utilities
-
-def col_offset(self, kwargs):
-    ret = kwargs.get('col_offset', self.col_offset)
-    return ret if ret is not None else 0
-
-#-------------------------------------------------------------------------------
 
 class AstUnsupported(Exception):
     pass
@@ -41,7 +34,9 @@ class PythonNode(Node):
     maxver = None
     
     _attrs = dict(lineno = OAttr(int, group=AST),
-                  col_offset = OAttr(int, group=AST))
+                  col_offset = OAttr(int, group=AST),
+                  indent_amount = OAttr(int, 4, 'The number of spaces to indent '
+                                        'per indent level'))
     _opts = dict(optional_none = True)
 
     _groups = ReflexiveDict(AST, ACO)
@@ -82,6 +77,11 @@ class PythonNode(Node):
                     val = from_ast(val, **kwargs)
             vals[attr] = val
         return vals
+
+    def _indent(self, **kwargs):
+        level = kwargs.get('indent_level', 0)
+        n = self.indent_amount * level
+        return ' ' * n
 
     def _to_ast_kwargs(self, **kwargs):
         ret = {}
@@ -185,7 +185,6 @@ class PythonTree(Tree):
     def abstract(self):
         def op(node):
             node.lineno = None
-            node.col_offset = None
 
         ret = deepcopy(self)
         ret.depth_first(op)

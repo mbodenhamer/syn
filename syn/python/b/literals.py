@@ -1,5 +1,4 @@
-from .base import PythonNode, Attr, Context, Load, AST, ACO, \
-    col_offset
+from .base import PythonNode, Attr, Context, Load, AST, ACO
 from syn.base_utils import quote_string, setitem
 from syn.type.a import List
 from syn.five import PY2, STR
@@ -27,7 +26,7 @@ class Num(Literal):
     _attrs = dict(n = Attr(n_type, doc='The numerical value', group=AST))
 
     def emit(self, **kwargs):
-        ret = ' ' * col_offset(self, kwargs)
+        ret = self._indent(**kwargs)
         ret += str(self.n)
         return ret
     
@@ -42,7 +41,7 @@ class Str(Literal):
     _attrs = dict(s = Attr(STR, doc='The string contents', group=AST))
 
     def emit(self, **kwargs):
-        ret = ' ' * col_offset(self, kwargs)
+        ret = self._indent(**kwargs)
         ret += quote_string(self.s)
         return ret
 
@@ -57,13 +56,13 @@ class Sequence(Literal):
     _attrs = dict(elts = Attr(List(PythonNode), groups=(AST, ACO)))
     
     def emit(self, **kwargs):
-        with setitem(kwargs, 'col_offset', 0):
+        with setitem(kwargs, 'indent_level', 0):
             cs = [c.emit(**kwargs) for c in self.elts]
         ret = self.delim.join(cs)
         if len(cs) == 1 and isinstance(self, Tuple):
             ret += ','
         ret = self.bounds[0] + ret + self.bounds[1]
-        ret = ' ' * col_offset(self, kwargs) + ret
+        ret = self._indent(**kwargs) + ret
         return ret
 
 

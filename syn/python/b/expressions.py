@@ -1,6 +1,6 @@
 from operator import attrgetter
 from syn.base_utils import setitem
-from .base import PythonNode, Attr, AST, ACO, col_offset
+from .base import PythonNode, Attr, AST, ACO
 
 #-------------------------------------------------------------------------------
 # Expr
@@ -58,12 +58,12 @@ class BinOp(PythonNode):
     B = property(attrgetter('right'))
 
     def emit(self, **kwargs):
-        with setitem(kwargs, 'col_offset', 0):
+        with setitem(kwargs, 'indent_level', 0):
             A = self.A.emit(**kwargs)
             B = self.B.emit(**kwargs)
             op = self.op.emit(**kwargs)
 
-        ret = ' ' * col_offset(self, kwargs)
+        ret = self._indent(**kwargs)
         ret += '({} {} {})'.format(A, op, B)
         return ret
 

@@ -13,8 +13,8 @@ def test_block():
 def test_if():
     examine('if 1:\n    a = 1')
     examine('if 1:\n    a = 1\nelse:\n    a = 2')
-    # examine('if 1:\n    a = 1\nelif 2:\n    a = 2\nelse:\n    a = 3',
-    #         'if 1:\n    a = 1\nelse:\n    if 2:\n        a = 2\n    else:\n        a = 3')
+    examine('if 1:\n  a = 1\nelif 2:\n  a = 2\nelse:\n  a = 3',
+            'if 1:\n    a = 1\nelse:\n    if 2:\n        a = 2\n    else:\n        a = 3')
 
 #-------------------------------------------------------------------------------
 # For
