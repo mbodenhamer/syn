@@ -1,6 +1,6 @@
-from operator import itemgetter
+from operator import attrgetter
 from syn.base_utils import setitem
-from .base import PythonNode, from_ast, Attr, AST, ACO, col_offset
+from .base import PythonNode, Attr, AST, ACO, col_offset
 
 #-------------------------------------------------------------------------------
 # Expr
@@ -48,13 +48,14 @@ class Div(BinaryOperator):
 
 
 class BinOp(PythonNode):
-    _opts = dict(max_len = 2,
-                 min_len = 2,
-                 args = ('op',))
-    _attrs = dict(op = Attr(BinaryOperator, groups=(AST, ACO)))
+    _opts = dict(max_len = 0,
+                 args = ('left', 'op', 'right'))
+    _attrs = dict(op = Attr(BinaryOperator, groups=(AST, ACO)),
+                  left = Attr(PythonNode, groups=(AST, ACO)),
+                  right = Attr(PythonNode, groups=(AST, ACO)))
 
-    A = property(itemgetter(0))
-    B = property(itemgetter(1))
+    A = property(attrgetter('left'))
+    B = property(attrgetter('right'))
 
     def emit(self, **kwargs):
         with setitem(kwargs, 'col_offset', 0):
@@ -65,20 +66,6 @@ class BinOp(PythonNode):
         ret = ' ' * col_offset(self, kwargs)
         ret += '({} {} {})'.format(A, op, B)
         return ret
-
-    @classmethod
-    def from_ast(cls, ast, **kwargs):
-        A = from_ast(ast.left, **kwargs)
-        B = from_ast(ast.right, **kwargs)
-        op = from_ast(ast.op, **kwargs)
-        ret = cls(A, B, op=op)
-        return ret
-
-    def to_ast(self, **kwargs):
-        A = self.A.to_ast(**kwargs)
-        B = self.B.to_ast(**kwargs)
-        op = self.op.to_ast(**kwargs)
-        return self.ast(A, op, B)
 
 
 #-------------------------------------------------------------------------------

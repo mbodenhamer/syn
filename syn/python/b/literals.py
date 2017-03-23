@@ -1,6 +1,7 @@
-from .base import PythonNode, Attr, from_ast, Context, Load, AST, ACO, \
+from .base import PythonNode, Attr, Context, Load, AST, ACO, \
     col_offset
 from syn.base_utils import quote_string, setitem
+from syn.type.a import List
 from syn.five import PY2, STR
 
 #-------------------------------------------------------------------------------
@@ -23,22 +24,13 @@ else:
 class Num(Literal):
     _opts = dict(max_len = 0,
                  args = ('n',))
-    _attrs = dict(n = Attr(n_type, doc='The numerical value'))
+    _attrs = dict(n = Attr(n_type, doc='The numerical value', group=AST))
 
     def emit(self, **kwargs):
         ret = ' ' * col_offset(self, kwargs)
         ret += str(self.n)
         return ret
     
-    @classmethod
-    def from_ast(cls, ast, **kwargs):
-        ret = cls(n = ast.n, **kwargs)
-        return ret
-
-    def to_ast(self, **kwargs):
-        kwargs_ = self._to_ast_kwargs(**kwargs)
-        return self.ast(self.n, **kwargs_)
-
 
 #-------------------------------------------------------------------------------
 # Str
@@ -47,21 +39,12 @@ class Num(Literal):
 class Str(Literal):
     _opts = dict(max_len = 0,
                  args = ('s',))
-    _attrs = dict(s = Attr(STR, doc='The string contents'))
+    _attrs = dict(s = Attr(STR, doc='The string contents', group=AST))
 
     def emit(self, **kwargs):
         ret = ' ' * col_offset(self, kwargs)
         ret += quote_string(self.s)
         return ret
-
-    @classmethod
-    def from_ast(cls, ast, **kwargs):
-        ret = cls(s = ast.s, **kwargs)
-        return ret
-
-    def to_ast(self, **kwargs):
-        kwargs_ = self._to_ast_kwargs(**kwargs)
-        return self.ast(self.s, **kwargs_)
 
 
 #-------------------------------------------------------------------------------
@@ -71,28 +54,17 @@ class Str(Literal):
 class Sequence(Literal):
     bounds = ('[', ']')
     delim = ', '
+    _attrs = dict(elts = Attr(List(PythonNode), groups=(AST, ACO)))
     
     def emit(self, **kwargs):
         with setitem(kwargs, 'col_offset', 0):
-            cs = [c.emit(**kwargs) for c in self]
+            cs = [c.emit(**kwargs) for c in self.elts]
         ret = self.delim.join(cs)
         if len(cs) == 1 and isinstance(self, Tuple):
             ret += ','
         ret = self.bounds[0] + ret + self.bounds[1]
         ret = ' ' * col_offset(self, kwargs) + ret
         return ret
-
-    @classmethod
-    def from_ast(cls, ast, **kwargs):
-        elts = [from_ast(elt, **kwargs) for elt in ast.elts]
-        ret = cls(*elts, **kwargs)
-        return ret
-
-    def to_ast(self, **kwargs):
-        cs = [c.to_ast(**kwargs) for c in self]
-        kwargs = self._to_ast_kwargs(**kwargs)
-        kwargs['elts'] = cs
-        return self.ast(**kwargs)
 
 
 #-------------------------------------------------------------------------------
