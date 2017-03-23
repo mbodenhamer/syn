@@ -19,6 +19,14 @@ def test_binary_operators():
     examine('(a - 1)')
     examine('(a * 1)')
     examine('(a / 1)')
+    examine('(a // 1)')
+    examine('(a % 1)')
+    examine('(a ** 1)')
+    examine('(a << 1)')
+    examine('(a >> 1)')
+    examine('(a | 1)')
+    examine('(a ^ 1)')
+    examine('(a & 1)')
 
     examine('1 + (a / 3)', '(1 + (a / 3))')
     

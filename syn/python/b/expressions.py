@@ -59,6 +59,30 @@ class Mult(BinaryOperator):
 class Div(BinaryOperator):
     symbol = '/'
 
+class FloorDiv(BinaryOperator):
+    symbol = '//'
+
+class Mod(BinaryOperator):
+    symbol = '%'
+
+class Pow(BinaryOperator):
+    symbol = '**'
+
+class LShift(BinaryOperator):
+    symbol = '<<'
+
+class RShift(BinaryOperator):
+    symbol = '>>'
+
+class BitOr(BinaryOperator):
+    symbol = '|'
+
+class BitXor(BinaryOperator):
+    symbol = '^'
+
+class BitAnd(BinaryOperator):
+    symbol = '&'
+
 
 #-------------------------------------------------------------------------------
 # BinOp
@@ -210,7 +234,8 @@ class Attribute(Expression_):
 
 __all__ = ('Expression_', 'Expr',
            'Operator', 'BinaryOperator', 'BinOp',
-           'Add', 'Sub', 'Mult', 'Div',
+           'Add', 'Sub', 'Mult', 'Div', 'FloorDiv', 'Mod', 'Pow', 'LShift',
+           'RShift', 'BitOr', 'BitXor', 'BitAnd',
            'BooleanOperator', 'BoolOp',
            'And', 'Or',
            'Comparator', 'Compare',
