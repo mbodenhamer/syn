@@ -23,6 +23,14 @@ def test_binary_operators():
     examine('1 + (a / 3)', '(1 + (a / 3))')
     
 #-------------------------------------------------------------------------------
+# Boolean Operators
+
+def test_boolean_operators():
+    examine('(a and b)')
+    examine('(a or b)')
+    examine('(a or b or c or d)')
+
+#-------------------------------------------------------------------------------
 # Compare
 
 def test_compare():

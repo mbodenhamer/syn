@@ -25,14 +25,22 @@ class Expr(Expression_):
 
 
 #-------------------------------------------------------------------------------
-# BinaryOperator
+# Operator
 
 
-class BinaryOperator(Expression_):
+class Operator(Expression_):
     symbol = None
 
     def emit(self, **kwargs):
         return self.symbol
+
+
+#-------------------------------------------------------------------------------
+# BinaryOperator
+
+
+class BinaryOperator(Operator):
+    pass
 
 
 #-------------------------------------------------------------------------------
@@ -77,10 +85,48 @@ class BinOp(Expression_):
 
 
 #-------------------------------------------------------------------------------
+# BooleanOperator
+
+
+class BooleanOperator(Operator):
+    pass
+
+
+#-------------------------------------------------------------------------------
+# Boolean Operators
+
+
+class And(BooleanOperator):
+    symbol = 'and'
+
+class Or(BooleanOperator):
+    symbol = 'or'
+
+
+#-------------------------------------------------------------------------------
+# BoolOp
+
+
+class BoolOp(Expression_):
+    _attrs = dict(op = Attr(BooleanOperator, groups=(AST, ACO)),
+                  values = Attr(List(PythonNode), groups=(AST, ACO)))
+    
+    def emit(self, **kwargs):
+        with setitem(kwargs, 'indent_level', 0):
+            op = ' ' + self.op.emit(**kwargs) + ' '
+            vals = [val.emit(**kwargs) for val in self.values]
+
+        ret = op.join(vals)
+        ret = '(' + ret + ')'
+        ret = self._indent(**kwargs) + ret
+        return ret
+        
+
+#-------------------------------------------------------------------------------
 # Comparator
 
 
-class Comparator(BinaryOperator):
+class Comparator(Operator):
     pass
 
 #-------------------------------------------------------------------------------
@@ -133,10 +179,11 @@ class Compare(Expression_):
             ops = [op.emit(**kwargs) for op in self.ops]
             comps = [comp.emit(**kwargs) for comp in self.comparators]
 
-        ret = self._indent(**kwargs) + left
+        ret = left
         for op, comp in zip(ops, comps):
             ret += ' {} {}'.format(op, comp)
         ret = '(' + ret + ')'
+        ret = self._indent(**kwargs) + ret
         return ret
             
 
@@ -162,8 +209,10 @@ class Attribute(Expression_):
 # __all__
 
 __all__ = ('Expression_', 'Expr',
-           'BinaryOperator', 'BinOp',
+           'Operator', 'BinaryOperator', 'BinOp',
            'Add', 'Sub', 'Mult', 'Div',
+           'BooleanOperator', 'BoolOp',
+           'And', 'Or',
            'Comparator', 'Compare',
            'Eq', 'NotEq', 'Lt', 'LtE', 'Gt', 'GtE', 'Is', 'IsNot', 'In', 'NotIn',
            'Attribute',)
