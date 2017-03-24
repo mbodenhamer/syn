@@ -13,6 +13,15 @@ def test_expr():
     Expr
 
 #-------------------------------------------------------------------------------
+# Unary Operators
+
+def test_unary_operators():
+    examine('+a')
+    examine('-a')
+    examine('(not a)')
+    examine('~a')
+
+#-------------------------------------------------------------------------------
 # Binary Operators
 
 def test_binary_operators():

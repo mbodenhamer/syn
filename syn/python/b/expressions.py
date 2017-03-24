@@ -41,6 +41,52 @@ class Operator(Expression_):
 
 
 #-------------------------------------------------------------------------------
+# UnaryOperator
+
+
+class UnaryOperator(Operator):
+    pass
+
+
+#-------------------------------------------------------------------------------
+# Unary Operators
+
+
+class UAdd(UnaryOperator):
+    symbol = '+'
+
+class USub(UnaryOperator):
+    symbol = '-'
+
+class Not(UnaryOperator):
+    symbol = 'not'
+
+class Invert(UnaryOperator):
+    symbol = '~'
+
+
+#-------------------------------------------------------------------------------
+# UnaryOp
+
+
+class UnaryOp(Expression_):
+    _attrs = dict(op = Attr(UnaryOperator, groups=(AST, ACO)),
+                  operand = Attr(PythonNode, groups=(AST, ACO)))
+
+    def emit(self, **kwargs):
+        with setitem(kwargs, 'indent_level', 0):
+            op = self.op.emit(**kwargs)
+            operand = self.operand.emit(**kwargs)
+
+        ret = self._indent(**kwargs)
+        if isinstance(self.op, Not):
+            ret += '({} {})'.format(op, operand)
+        else:
+            ret += '{}{}'.format(op, operand)
+        return ret
+
+
+#-------------------------------------------------------------------------------
 # BinaryOperator
 
 
@@ -325,7 +371,9 @@ class Attribute(Expression_):
 # __all__
 
 __all__ = ('Expression_', 'Expr',
-           'Operator', 'BinaryOperator', 'BinOp',
+           'Operator', 'UnaryOperator', 'UnaryOp',
+           'UAdd', 'USub', 'Not', 'Invert',
+           'BinaryOperator', 'BinOp',
            'Add', 'Sub', 'Mult', 'Div', 'FloorDiv', 'Mod', 'Pow', 'LShift',
            'RShift', 'BitOr', 'BitXor', 'BitAnd', 'MatMult',
            'BooleanOperator', 'BoolOp',
