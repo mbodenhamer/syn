@@ -102,6 +102,25 @@ class While(Block):
 
 
 #-------------------------------------------------------------------------------
+# Arg
+
+
+class Arg(PythonNode):
+    if VER >= '3':
+        ast = ast.arg
+    
+    _opts = dict(max_len = 0)
+    _attrs = dict(arg = Attr(STR, group=AST),
+                  annotation = Attr(PythonNode, groups=(AST, ACO)))
+
+    def emit(self, **kwargs):
+        ret = self.arg
+        if self.annotation:
+            ret += ': {}'.format(self.annotation.emit(**kwargs))
+        return ret
+        
+
+#-------------------------------------------------------------------------------
 # Arguments
 
 
@@ -109,9 +128,19 @@ class Arguments(PythonNode):
     ast = ast.arguments
     _opts = dict(max_len = 0)
     _attrs = dict(args = Attr(List(Name), groups=(AST, ACO)),
-                  vararg = Attr(STR, group=AST),
-                  kwarg = Attr(STR, group=AST),
+                  vararg = OAttr(STR, group=AST),
+                  kwarg = OAttr(STR, group=AST),
                   defaults = Attr(List(PythonNode), groups=(AST, ACO)))
+
+    if VER >= '3.4':
+        _attrs = dict(args = Attr(List(Arg), groups=(AST, ACO)),
+                      kwonlyargs = Attr(List(Arg), groups=(AST, ACO)),
+                      vararg = OAttr(Arg, groups=(AST, ACO)),
+                      kwarg = OAttr(Arg, groups=(AST, ACO)),
+                      defaults = Attr(List(PythonNode), groups=(AST, ACO)),
+                      kw_defaults = Attr(List((PythonNode, type(None))), 
+                                              groups=(AST, ACO)))
+
 
     def emit2(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):
@@ -129,7 +158,28 @@ class Arguments(PythonNode):
         return ', '.join(strs)
 
     def emit3(self, **kwargs):
-        pass
+        with setitem(kwargs, 'indent_level', 0):
+            n_defs = len(self.defaults)
+            N = len(self.args) - n_defs
+            strs = [self.args[k].emit(**kwargs) for k in xrange(N)]
+            strs += ['{}={}'.format(self.args[k + N].emit(**kwargs),
+                                    self.defaults[k].emit(**kwargs))
+                     for k in xrange(n_defs)]
+
+            if self.vararg:
+                strs.append('*' + self.vararg.emit(**kwargs))
+
+            for kwonly, kwonlydef in zip(self.kwonlyargs, self.kw_defaults):
+                if kwonlydef is not None:
+                    strs.append('{}={}'.format(kwonly.emit(**kwargs),
+                                               kwonlydef.emit(**kwargs)))
+                else:
+                    strs.append(kwonly.emit(**kwargs))
+
+            if self.kwarg:
+                strs.append('**' + self.kwarg.emit(**kwargs))
+                
+        return ', '.join(strs)
 
     def emit(self, **kwargs):
         if VER >= '3':
@@ -146,6 +196,9 @@ class FunctionDef(Block):
                   args = Attr(Arguments, groups=(AST, ACO)),
                   decorator_list = OAttr(List(PythonNode), groups=(AST, ACO)))
 
+    if VER >= '3':
+        _attrs['returns'] = OAttr(PythonNode, groups=(AST, ACO))
+
     def emit_decorators(self, **kwargs):
         if not self.decorator_list:
             return ''
@@ -159,6 +212,10 @@ class FunctionDef(Block):
     def emit(self, **kwargs):
         ret = self.emit_decorators(**kwargs)
         head = 'def ' + self.name + '(' + self.args.emit(**kwargs) + ')'
+        if VER >= '3':
+            if self.returns:
+                with setitem(kwargs, 'indent_level', 0):
+                    head += ' -> {}'.format(self.returns.emit(**kwargs))
         ret += self.emit_block(head, self.body, **kwargs)
         return ret
 
@@ -168,6 +225,6 @@ class FunctionDef(Block):
 
 __all__ = ('Block',
            'If', 'For', 'While',
-           'Arguments', 'FunctionDef')
+           'Arg', 'Arguments', 'FunctionDef')
 
 #-------------------------------------------------------------------------------

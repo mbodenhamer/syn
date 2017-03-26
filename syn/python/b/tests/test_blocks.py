@@ -37,15 +37,20 @@ def test_while():
 # FunctionDef
 
 def test_functiondef():
+    examine('def foo():\n    pass')
+    examine('@dec1\n@dec2(a, 1)\ndef foo():\n    pass')
+    examine('def foo(a, b):\n    pass')
+    examine('def foo(a, b, c=3):\n    pass')
     if VER < '3':
-        examine('def foo():\n    pass')
-        examine('@dec1\n@dec2(a, 1)\ndef foo():\n    pass')
-        examine('def foo(a, b):\n    pass')
-        examine('def foo(a, b, c=3):\n    pass')
         examine('def foo(a, b, c=3, *args, **kwargs):\n    pass')
-        examine('def foo(c=3, *args, **kwargs):\n    pass')
-        examine('def foo(*args):\n    pass')
-        examine('def foo(**kwargs):\n    pass')
+    else:
+        examine('def foo(a, b, *args, c=3, **kwargs):\n    pass')
+    examine('def foo(c=3, *args, **kwargs):\n    pass')
+    examine('def foo(*args):\n    pass')
+    examine('def foo(**kwargs):\n    pass')
+
+    if VER >= '3':
+        examine("def foo(a: 'ann', b=1, c=2, *d, e, f=3, **g) -> 'r':\n    pass")
 
 #-------------------------------------------------------------------------------
 
