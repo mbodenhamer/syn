@@ -1,5 +1,8 @@
 from .test_statements import examine
 from syn.python.b import Block
+from syn.base_utils import pyversion
+
+VER = pyversion()
 
 #-------------------------------------------------------------------------------
 # Block
@@ -29,6 +32,20 @@ def test_for():
 def test_while():
     examine('while True:\n    a = x')
     examine('while False:\n    a = x\nelse:\n    b = x')
+
+#-------------------------------------------------------------------------------
+# FunctionDef
+
+def test_functiondef():
+    if VER < '3':
+        examine('def foo():\n    pass')
+        examine('@dec1\n@dec2(a, 1)\ndef foo():\n    pass')
+        examine('def foo(a, b):\n    pass')
+        examine('def foo(a, b, c=3):\n    pass')
+        examine('def foo(a, b, c=3, *args, **kwargs):\n    pass')
+        examine('def foo(c=3, *args, **kwargs):\n    pass')
+        examine('def foo(*args):\n    pass')
+        examine('def foo(**kwargs):\n    pass')
 
 #-------------------------------------------------------------------------------
 
