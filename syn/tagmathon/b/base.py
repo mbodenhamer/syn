@@ -12,7 +12,7 @@ class SyntagmathonNode(Node):
     def eval(self, env, **kwargs):
         raise NotImplementedError
 
-    def to_python(self, **kwargs):
+    def to_python(self, env, **kwargs):
         raise NotImplementedError
 
 
@@ -26,6 +26,10 @@ class Variable(SyntagmathonNode):
 
     def eval(self, env, **kwargs):
         return env[self.name]
+
+    def to_python(self, env, **kwargs):
+        from syn.python.b import Name
+        return Name(self.name)
 
 
 #-------------------------------------------------------------------------------

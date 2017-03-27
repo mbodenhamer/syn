@@ -7,7 +7,7 @@ from syn.tagmathon.b import SyntagmathonNode, Variable, Env, eval
 def test_syntagmathonnode():
     s = SyntagmathonNode()
     assert_raises(NotImplementedError, s.eval, None)
-    assert_raises(NotImplementedError, s.to_python)
+    assert_raises(NotImplementedError, s.to_python, None)
 
 #-------------------------------------------------------------------------------
 # Variable

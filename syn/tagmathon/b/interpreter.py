@@ -39,6 +39,9 @@ class Frame(Base):
         for key in self:
             yield key, self[key]
 
+    def gensym(self):
+        pass
+
     def set_global(self, key, value):
         self.globals[key] = value
         
@@ -75,6 +78,9 @@ class Env(Base):
     def items(self):
         for item in self.current_frame.items():
             yield item
+
+    def gensym(self):
+        pass
 
     def globals(self):
         return dict(self.current_frame.globals)
