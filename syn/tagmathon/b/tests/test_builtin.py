@@ -25,6 +25,13 @@ def test_builtins():
 
     assert eval(If(True, 1, 2)) == 1
     assert eval(If(False, 1, 2)) == 2
+    assert eval(If(False,
+                   1,
+                   If(True, 3, 4))) == 3
+    assert eval(If(False,
+                   1,
+                   If(False, 3, 4))) == 4
+
 
 #-------------------------------------------------------------------------------
 
