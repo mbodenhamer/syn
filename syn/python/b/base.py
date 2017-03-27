@@ -71,7 +71,8 @@ class PythonNode(Node):
             val = getattr(ast, attr, None)
             if attr in cls._groups[ACO]:
                 if isinstance(val, list):
-                    val = [from_ast(v, **kwargs) for v in val]
+                    val = [from_ast(v, **kwargs) if v is not None else None
+                           for v in val]
                 elif val is not None:
                     val = from_ast(val, **kwargs)
             vals[attr] = val
@@ -201,9 +202,6 @@ class PythonTree(Tree):
 # Module API
 
 def from_ast(ast, **kwargs):
-    if ast is None:
-        return ast
-
     try:
         cls = AST_REGISTRY[type(ast)]
     except KeyError:
