@@ -20,7 +20,7 @@ def test_builtins():
 
     e = Env()
     foo = Variable('foo')
-    assert eval(Set(foo, 2), e) == 'foo'
+    assert eval(Set(foo, 2), e) == 2
     assert e['foo'] == 2
 
     assert eval(If(True, 1, 2)) == 1

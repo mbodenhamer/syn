@@ -36,8 +36,9 @@ class SpecialForm(Special):
 def set_variable(env, name, value):
     if isinstance(name, Variable):
         name = name.name
-    env[name] = eval(value, env)
-    return name
+    value = eval(value, env)
+    env[name] = value
+    return value
 
 def if_(env, test, body, orelse):
     if eval(test, env):
