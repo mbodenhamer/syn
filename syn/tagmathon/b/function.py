@@ -27,9 +27,7 @@ class Function(SyntagmathonNode):
         return Call(self, args)
 
     def call(self, env, **kwargs):
-        for expr in self.body:
-            out = eval(expr, env, **kwargs)
-        return out
+        return eval(self.body, env, **kwargs)
 
     def eval(self, env, **kwargs):
         env[self.name] = self

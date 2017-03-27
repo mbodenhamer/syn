@@ -1,5 +1,5 @@
 from nose.tools import assert_raises
-from syn.tagmathon.b import BuiltinFunction, Variable, Add, Set, Env, eval
+from syn.tagmathon.b import BuiltinFunction, Variable, Add, Set, Env, eval, If
 
 #-------------------------------------------------------------------------------
 # BuiltinFunction
@@ -22,6 +22,9 @@ def test_builtins():
     foo = Variable('foo')
     assert eval(Set(foo, 2), e) == 'foo'
     assert e['foo'] == 2
+
+    assert eval(If(True, 1, 2)) == 1
+    assert eval(If(False, 1, 2)) == 2
 
 #-------------------------------------------------------------------------------
 

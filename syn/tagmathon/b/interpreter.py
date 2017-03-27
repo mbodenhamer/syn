@@ -105,6 +105,8 @@ def eval(obj, env=None, **kwargs):
         env = Env()
 
     if not isinstance(obj, SyntagmathonNode):
+        if isinstance(obj, list):
+            return [eval(item, env, **kwargs) for item in obj][-1]
         return obj
     return obj.eval(env, **kwargs)
 

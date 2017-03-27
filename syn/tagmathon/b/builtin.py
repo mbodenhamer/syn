@@ -31,13 +31,18 @@ class SpecialForm(Special):
     
 
 #-------------------------------------------------------------------------------
-# Utilities
+# Special Form Functions
 
 def set_variable(env, name, value):
     if isinstance(name, Variable):
         name = name.name
     env[name] = eval(value, env)
     return name
+
+def if_(env, test, body, orelse):
+    if eval(test, env):
+        return eval(body, env)
+    return eval(orelse, env)
 
 #-------------------------------------------------------------------------------
 # Builtins
@@ -48,13 +53,14 @@ Add = BuiltinFunction('Add', [a, b], op.add)
 Sub = BuiltinFunction('Sub', [a, b], op.sub)
 Mul = BuiltinFunction('Mul', [a, b], op.mul)
 
-Set = SpecialForm('Set', [Variable('name'), Variable('value')], set_variable)
+Set = SpecialForm('Set', list(vars('name', 'value')), set_variable)
+If = SpecialForm('If', list(vars('test', 'body', 'orelse')), if_)
 
 #-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('BuiltinFunction',
            'Add', 'Sub', 'Mul',
-           'Set')
+           'Set', 'If')
 
 #-------------------------------------------------------------------------------
