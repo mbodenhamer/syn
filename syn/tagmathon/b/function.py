@@ -1,4 +1,4 @@
-from .base import SyntagmathonNode
+from .base import SyntagmathonNode, Variable
 from .interpreter import eval
 from syn.base.b import Attr
 from syn.type.a import List
@@ -10,14 +10,14 @@ from syn.five import STR
 
 class Function(SyntagmathonNode):
     _attrs = dict(name = Attr(STR),
-                  signature = Attr(List(STR)),
+                  signature = Attr(List(Variable)),
                   body = Attr(List(SyntagmathonNode)))
     _opts = dict(args = ('name', 'signature', 'body'))
 
     def __call__(self, *args_, **kwargs):
         args = {}
         for k, arg in enumerate(args_):
-            args[self.signature[k]] = arg
+            args[self.signature[k].name] = arg
 
         for key, value in kwargs.items():
             if key in args:

@@ -1,5 +1,5 @@
 import operator as op
-from .base import Variable
+from .base import Variable, vars
 from .function import Function, Special
 from syn.base.b import Attr
 from syn.type.a import Callable
@@ -12,7 +12,7 @@ class BuiltinFunction(Function):
     _attrs = dict(body = Attr(Callable))
 
     def call(self, env, **kwargs):
-        args = [env[arg] for arg in self.signature]
+        args = [env[arg.name] for arg in self.signature]
         value = self.body(*args)
         return value
 
@@ -25,7 +25,7 @@ class SpecialForm(Special):
     _attrs = dict(body = Attr(Callable))
 
     def call(self, env, args_, **kwargs):
-        args = [args_[arg] for arg in self.signature]
+        args = [args_[arg.name] for arg in self.signature]
         return self.body(env, *args)
     
 
@@ -41,11 +41,13 @@ def set_variable(env, name, value):
 #-------------------------------------------------------------------------------
 # Builtins
 
-Add = BuiltinFunction('Add', ['a', 'b'], op.add)
-Sub = BuiltinFunction('Sub', ['a', 'b'], op.sub)
-Mul = BuiltinFunction('Mul', ['a', 'b'], op.mul)
+a, b = vars('a', 'b')
 
-Set = SpecialForm('Set', ['name', 'value'], set_variable)
+Add = BuiltinFunction('Add', [a, b], op.add)
+Sub = BuiltinFunction('Sub', [a, b], op.sub)
+Mul = BuiltinFunction('Mul', [a, b], op.mul)
+
+Set = SpecialForm('Set', [Variable('name'), Variable('value')], set_variable)
 
 #-------------------------------------------------------------------------------
 # __all__
