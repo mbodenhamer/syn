@@ -1,6 +1,7 @@
 import operator as op
 from .base import Variable, vars
 from .function import Function, Special
+from .interpreter import eval
 from syn.base.b import Attr
 from syn.type.a import Callable
 
@@ -35,7 +36,7 @@ class SpecialForm(Special):
 def set_variable(env, name, value):
     if isinstance(name, Variable):
         name = name.name
-    env[name] = value
+    env[name] = eval(value, env)
     return name
 
 #-------------------------------------------------------------------------------

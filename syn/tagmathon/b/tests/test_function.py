@@ -1,13 +1,13 @@
-from syn.tagmathon.b import Function, vars, Add, Sub, eval
+from syn.tagmathon.b import Function, vars, Add, Sub, Mul, Set, eval
 
 #-------------------------------------------------------------------------------
 # Function
 
 def test_function():
-    a, b = vars('a', 'b')
+    a, b, c = vars('a', 'b', 'c')
     f = Function('foo', [a, b],
-                 [Add(a, b),
-                  Sub(a, b)])
+                 [Set(c, Add(a, b)),
+                  Sub(c, Mul(b, 2))])
     
     assert eval(f(4, 3)) == 1
 
