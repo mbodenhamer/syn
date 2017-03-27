@@ -1,22 +1,27 @@
 from nose.tools import assert_raises
-from syn.tagmathon.b import SyntagmathonNode, Variable, Env, eval
+from syn.tagmathon.b import BuiltinFunction, Variable, Add, Set, Env, eval
 
 #-------------------------------------------------------------------------------
-# Base Class
+# BuiltinFunction
 
-def test_syntagmathonnode():
-    s = SyntagmathonNode()
-    assert_raises(NotImplementedError, s.eval, None)
-    assert_raises(NotImplementedError, s.to_python)
+def test_builtinfunction():
+    BuiltinFunction
 
 #-------------------------------------------------------------------------------
-# Variable
+# Builtins
 
-def test_variable():
-    v = Variable('foo')
+def test_builtins():
+    assert eval(Add(1, 2)) == 3
+    assert eval(Add(1, b=2)) == 3
+    assert eval(Add(a=1, b=2)) == 3
+    
+    assert_raises(TypeError, Add, 1, 2, a=1)
+    assert eval(Add) == Add.name
+
     e = Env()
-    e['foo'] = 3
-    assert eval(v, e) == 3
+    foo = Variable('foo')
+    assert eval(Set(foo, 2), e) == 'foo'
+    assert e['foo'] == 2
 
 #-------------------------------------------------------------------------------
 
