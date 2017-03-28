@@ -109,9 +109,10 @@ class Arg(PythonNode):
     if VER >= '3':
         ast = ast.arg
     
-    _opts = dict(max_len = 0)
+    _opts = dict(max_len = 0,
+                 args = ['arg', 'annotation'])
     _attrs = dict(arg = Attr(STR, group=AST),
-                  annotation = Attr(PythonNode, groups=(AST, ACO)))
+                  annotation = OAttr(PythonNode, groups=(AST, ACO)))
 
     def emit(self, **kwargs):
         ret = self.arg
@@ -126,21 +127,27 @@ class Arg(PythonNode):
 
 class Arguments(PythonNode):
     ast = ast.arguments
-    _opts = dict(max_len = 0)
+    _opts = dict(max_len = 0,
+                 args = ['args', 'vararg', 'kwarg', 'defaults'])
     _attrs = dict(args = Attr(List(Name), groups=(AST, ACO)),
                   vararg = OAttr(STR, group=AST),
                   kwarg = OAttr(STR, group=AST),
-                  defaults = Attr(List(PythonNode), groups=(AST, ACO)))
+                  defaults = Attr(List(PythonNode), groups=(AST, ACO),
+                                  init=lambda self: list()))
 
     if VER >= '3.4':
         _attrs = dict(args = Attr(List(Arg), groups=(AST, ACO)),
-                      kwonlyargs = Attr(List(Arg), groups=(AST, ACO)),
+                      kwonlyargs = Attr(List(Arg), groups=(AST, ACO),
+                                        init=lambda self: list()),
                       vararg = OAttr(Arg, groups=(AST, ACO)),
                       kwarg = OAttr(Arg, groups=(AST, ACO)),
-                      defaults = Attr(List(PythonNode), groups=(AST, ACO)),
+                      defaults = Attr(List(PythonNode), groups=(AST, ACO),
+                                      init=lambda self: list()),
                       kw_defaults = Attr(List((PythonNode, type(None))), 
-                                              groups=(AST, ACO)))
-
+                                              groups=(AST, ACO),
+                                         init=lambda self: list()))
+        _opts['args'] = ['args', 'vararg', 'kwonlyargs', 'kwarg', 
+                         'defaults', 'kw_defaults']
 
     def emit2(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):
@@ -192,12 +199,14 @@ class Arguments(PythonNode):
 
 
 class FunctionDef(Block):
+    _opts = dict(args = ['name', 'args', 'body', 'decorator_list'])
     _attrs = dict(name = Attr(STR, group=AST),
                   args = Attr(Arguments, groups=(AST, ACO)),
                   decorator_list = OAttr(List(PythonNode), groups=(AST, ACO)))
 
     if VER >= '3':
         _attrs['returns'] = OAttr(PythonNode, groups=(AST, ACO))
+        _opts['args'].append('returns')
 
     def emit_decorators(self, **kwargs):
         if not self.decorator_list:

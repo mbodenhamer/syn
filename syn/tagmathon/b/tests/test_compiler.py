@@ -1,10 +1,11 @@
 from syn.tagmathon.b import to_python
+from syn.python.b import Num
 
 #-------------------------------------------------------------------------------
 # to_python
 
 def test_to_python():
-    to_python
+    assert to_python(1) == Num(1)
 
 #-------------------------------------------------------------------------------
 

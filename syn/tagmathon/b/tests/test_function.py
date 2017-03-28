@@ -1,4 +1,5 @@
-from syn.tagmathon.b import Function, vars, Add, Sub, Mul, Set, eval
+from syn.tagmathon.b import Function, vars, Add, Sub, Mul, Set, eval, \
+    compile_to_python
 
 #-------------------------------------------------------------------------------
 # Function
@@ -10,6 +11,10 @@ def test_function():
                   Sub(c, Mul(b, 2))])
     
     assert eval(f(4, 3)) == 1
+    assert compile_to_python(f(4, 3)) == 'foo(4, 3)'
+    assert compile_to_python(f) == '''def foo(a, b):
+    c = (a + b)
+    return (c - (b * 2))'''
 
 #-------------------------------------------------------------------------------
 

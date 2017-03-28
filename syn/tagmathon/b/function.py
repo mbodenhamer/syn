@@ -1,8 +1,12 @@
 from .base import SyntagmathonNode, Variable
 from .interpreter import eval
+from .compiler import to_python
+from syn.base_utils import pyversion
 from syn.base.b import Attr
 from syn.type.a import List
 from syn.five import STR
+
+VER = pyversion()
 
 #-------------------------------------------------------------------------------
 # Function
@@ -33,6 +37,24 @@ class Function(SyntagmathonNode):
         env[self.name] = self
         return self.name
 
+    def to_python(self, env, **kwargs):
+        from syn.python.b import Arguments, FunctionDef, Return, Pass
+
+        if VER < '3':
+            args = Arguments([to_python(arg, env, **kwargs) 
+                              for arg in self.signature])
+        else:
+            from syn.python.b import Arg
+            args = Arguments([Arg(arg.name)
+                              for arg in self.signature])
+
+        body = to_python(self.body, env, **kwargs)
+        if not body:
+            body = [Pass()]
+        elif not isinstance(self.body[-1], Special):
+            body[-1] = Return(body[-1])
+        return FunctionDef(self.name, args, body)
+
 
 #-------------------------------------------------------------------------------
 # Special
@@ -61,6 +83,15 @@ class Call(SyntagmathonNode):
         env.pop()
         return ret
 
+    def to_python(self, env, **kwargs):
+        from syn.python.b import Call, Name
+        args = [to_python(self.args[arg.name], env, **kwargs)
+                for arg in self.func.signature]
+        if hasattr(self.func, 'python'):
+            return self.func.python(env, *args)
+        func = Name(self.func.name)
+        return Call(func, args)
+
 
 #-------------------------------------------------------------------------------
 # SpecialCall
@@ -70,6 +101,11 @@ class SpecialCall(Call):
     def eval(self, env, **kwargs):
         ret = self.func.call(env, self.args, **kwargs)
         return ret
+
+    def to_python(self, env, **kwargs):
+        args = [to_python(self.args[arg.name], env, **kwargs)
+                for arg in self.func.signature]
+        return self.func.python(env, *args)
 
 
 #-------------------------------------------------------------------------------

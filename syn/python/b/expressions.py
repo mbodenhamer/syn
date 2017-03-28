@@ -70,6 +70,7 @@ class Invert(UnaryOperator):
 
 
 class UnaryOp(Expression_):
+    _opts = dict(args = ['op', 'operand'])
     _attrs = dict(op = Attr(UnaryOperator, groups=(AST, ACO)),
                   operand = Attr(PythonNode, groups=(AST, ACO)))
 
@@ -294,6 +295,7 @@ class Keyword(Expression_):
 
 
 class Call(Expression_):
+    _opts = dict(args = ['func', 'args', 'keywords'])
     _attrs = dict(func = Attr(PythonNode, groups=(AST, ACO)),
                   args = OAttr(List(PythonNode), groups=(AST, ACO)),
                   keywords = OAttr(List(Keyword), groups=(AST, ACO)))
@@ -301,6 +303,7 @@ class Call(Expression_):
     if VER < '3.5':
         _attrs['starargs'] = OAttr(PythonNode, groups=(AST, ACO))
         _attrs['kwargs'] = OAttr(PythonNode, groups=(AST, ACO))
+        _opts['args'].extend(['starargs', 'kwargs'])
 
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):

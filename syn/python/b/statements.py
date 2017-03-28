@@ -38,6 +38,7 @@ class Assign(Statement):
 
 class Return(Statement):
     _attrs = dict(value = Attr(PythonNode, groups=(AST, ACO)))
+    _opts =  dict(args = ('value',))
 
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):

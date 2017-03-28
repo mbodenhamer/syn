@@ -1,5 +1,6 @@
 from nose.tools import assert_raises
-from syn.tagmathon.b import SyntagmathonNode, Variable, Env, eval
+from syn.tagmathon.b import SyntagmathonNode, Variable, Env, eval, \
+    compile_to_python
 
 #-------------------------------------------------------------------------------
 # Base Class
@@ -17,6 +18,7 @@ def test_variable():
     e = Env()
     e['foo'] = 3
     assert eval(v, e) == 3
+    assert compile_to_python(v) == 'foo'
 
 #-------------------------------------------------------------------------------
 

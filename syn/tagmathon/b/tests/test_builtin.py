@@ -1,5 +1,6 @@
 from nose.tools import assert_raises
-from syn.tagmathon.b import BuiltinFunction, Variable, Add, Set, Env, eval, If
+from syn.tagmathon.b import BuiltinFunction, Variable, Add, Set, Env, eval, \
+    If, compile_to_python
 
 #-------------------------------------------------------------------------------
 # BuiltinFunction
@@ -15,15 +16,21 @@ def test_builtins():
     assert eval(Add(1, b=2)) == 3
     assert eval(Add(a=1, b=2)) == 3
     
+    assert compile_to_python(Add(1, 2)) == '(1 + 2)'
+    assert compile_to_python(Add(1, b=2)) == '(1 + 2)'
+    assert compile_to_python(Add(a=1, b=2)) == '(1 + 2)'
+
     assert_raises(TypeError, Add, 1, 2, a=1)
     assert eval(Add) == Add.name
 
     e = Env()
     foo = Variable('foo')
     assert eval(Set(foo, 2), e) == 2
+    assert compile_to_python(Set(foo, 2)) == 'foo = 2'
     assert e['foo'] == 2
 
     assert eval(If(True, 1, 2)) == 1
+    assert compile_to_python(If(True, 1, 2)) == 'if True:\n    1\nelse:\n    2'
     assert eval(If(False, 1, 2)) == 2
     assert eval(If(False,
                    1,
@@ -31,7 +38,16 @@ def test_builtins():
     assert eval(If(False,
                    1,
                    If(False, 3, 4))) == 4
-
+    assert compile_to_python(If(False,
+                                1,
+                                If(False, 3, 4))) == '''if False:
+    1
+else:
+    if False:
+        3
+    else:
+        4'''
+    
 
 #-------------------------------------------------------------------------------
 
