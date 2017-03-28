@@ -1,4 +1,4 @@
-from syn.tagmathon.b import Function, vars, Add, Sub, Mul, Set, eval, \
+from syn.tagmathon.b import Function, vars, Add, Sub, Mul, If, LE, Set, eval, \
     compile_to_python
 
 #-------------------------------------------------------------------------------
@@ -15,6 +15,27 @@ def test_function():
     assert compile_to_python(f) == '''def foo(a, b):
     c = (a + b)
     return (c - (b * 2))'''
+
+    e = Function('empty', [], [])
+    assert eval(e()) is None
+    assert compile_to_python(e) == '''def empty():\n    pass'''
+
+    fact = Function('fact', [a], [])
+    fact.body = [If(LE(a, 0),
+                    1,
+                    Mul(a, fact(Sub(a, 1))))]
+
+    assert eval(fact(0)) == 1
+    assert eval(fact(2)) == 2
+    assert eval(fact(3)) == 6
+    assert eval(fact(5)) == 120
+    assert eval(fact(6)) == 720
+    assert compile_to_python(fact) == '''def fact(a):
+    if (a <= 0):
+        1
+    else:
+        (a * fact((a - 1)))'''
+
 
 #-------------------------------------------------------------------------------
 

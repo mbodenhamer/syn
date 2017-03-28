@@ -188,6 +188,7 @@ class Or(BooleanOperator):
 
 
 class BoolOp(Expression_):
+    _opts = dict(args = ('op', 'values'))
     _attrs = dict(op = Attr(BooleanOperator, groups=(AST, ACO)),
                   values = Attr(List(PythonNode), groups=(AST, ACO)))
     
@@ -249,6 +250,7 @@ class NotIn(Comparator):
 
 
 class Compare(Expression_):
+    _opts = dict(args = ('left', 'ops', 'comparators'))
     _attrs = dict(left = Attr(PythonNode, groups=(AST, ACO)),
                   ops = Attr(List(Comparator), groups=(AST, ACO)),
                   comparators = Attr(List(PythonNode), groups=(AST, ACO)))

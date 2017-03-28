@@ -7,7 +7,7 @@ from .interpreter import Env
 def _to_python_native(obj, **kwargs):
     from syn.python.b import Num
     
-    if Num._attrs.types['n'].check(obj):
+    if Num._attrs.types['n'].query(obj):
         return Num(obj)
     raise TypeError("Cannot compile: {}".format(obj))
 

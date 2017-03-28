@@ -61,6 +61,10 @@ def _py_mul(env, a, b):
     from syn.python.b import BinOp, Mult
     return BinOp(a, Mult(), b)
 
+def _py_le(env, a, b):
+    from syn.python.b import Compare, LtE
+    return Compare(a, [LtE()], [b])
+
 def _py_set_variable(env, name, value):
     from syn.python.b import Assign
     return Assign([name], value)
@@ -78,20 +82,21 @@ def _py_if(env, test, body, orelse):
 
 a, b = vars('a', 'b')
 
-Add = BuiltinFunction('Add', [a, b], op.add, python=_py_add)
-Sub = BuiltinFunction('Sub', [a, b], op.sub, python=_py_sub)
-Mul = BuiltinFunction('Mul', [a, b], op.mul, python=_py_mul)
+Add = BuiltinFunction('add', [a, b], op.add, python=_py_add)
+Sub = BuiltinFunction('sub', [a, b], op.sub, python=_py_sub)
+Mul = BuiltinFunction('mul', [a, b], op.mul, python=_py_mul)
+LE = BuiltinFunction('le', [a, b], op.le, python=_py_le)
 
-Set = SpecialForm('Set', list(vars('name', 'value')), _set_variable,
+Set = SpecialForm('set', list(vars('name', 'value')), _set_variable,
                   python=_py_set_variable)
-If = SpecialForm('If', list(vars('test', 'body', 'orelse')), _if,
+If = SpecialForm('if', list(vars('test', 'body', 'orelse')), _if,
                  python=_py_if)
 
 #-------------------------------------------------------------------------------
 # __all__
 
 __all__ = ('BuiltinFunction',
-           'Add', 'Sub', 'Mul',
+           'Add', 'Sub', 'Mul', 'LE',
            'Set', 'If')
 
 #-------------------------------------------------------------------------------

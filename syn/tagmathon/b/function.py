@@ -51,7 +51,7 @@ class Function(SyntagmathonNode):
         body = to_python(self.body, env, **kwargs)
         if not body:
             body = [Pass()]
-        elif not isinstance(self.body[-1], Special):
+        elif not isinstance(self.body[-1], SpecialCall):
             body[-1] = Return(body[-1])
         return FunctionDef(self.name, args, body)
 

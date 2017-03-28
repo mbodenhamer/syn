@@ -1,5 +1,5 @@
 from nose.tools import assert_raises
-from syn.tagmathon.b import Frame, Variable, Env, eval
+from syn.tagmathon.b import Frame, Env, eval
 
 #-------------------------------------------------------------------------------
 # Frame
@@ -31,6 +31,8 @@ def test_frame():
     f.update(dict(a=1))
     assert f.locals == dict(a=1, b=2)
 
+    f.gensym()
+
 #-------------------------------------------------------------------------------
 # Env
 
@@ -61,6 +63,8 @@ def test_env():
     assert e['a'] == 3
     del e['a']
     assert e['a'] == 4
+
+    e.gensym()
 
 #-------------------------------------------------------------------------------
 # eval
