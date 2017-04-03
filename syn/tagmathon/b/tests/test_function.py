@@ -17,6 +17,14 @@ def test_function():
     c = (a + b)
     return (c - (b * 2))'''
 
+    assert eval((If, (LE, 1, 2),
+                     (Add, 5, 2),
+                     (Sub, 5, 2))) == 7
+    assert eval((If, (LE, 2, 1),
+                     (Add, 5, 2),
+                     (Sub, 5, 2))) == 3
+
+
     e = Function('empty', [], [])
     assert eval(e()) is None
     assert compile_to_python(e) == '''def empty():\n    pass'''
