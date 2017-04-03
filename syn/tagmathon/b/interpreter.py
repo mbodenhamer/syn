@@ -116,6 +116,12 @@ def eval(obj, env=None, **kwargs):
             if lst:
                 return lst[-1]
             return None
+        elif isinstance(obj, tuple):
+            if not obj:
+                return []
+            func = obj[0]
+            args = obj[1:]
+            return func(*args).eval(env, **kwargs)
         return obj
     return obj.eval(env, **kwargs)
 

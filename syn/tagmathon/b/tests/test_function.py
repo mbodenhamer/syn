@@ -11,6 +11,7 @@ def test_function():
                   Sub(c, Mul(b, 2))])
     
     assert eval(f(4, 3)) == 1
+    assert eval((f, 4, 3)) == 1
     assert compile_to_python(f(4, 3)) == 'foo(4, 3)'
     assert compile_to_python(f) == '''def foo(a, b):
     c = (a + b)
