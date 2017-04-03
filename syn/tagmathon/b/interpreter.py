@@ -121,7 +121,7 @@ def eval(obj, env=None, **kwargs):
                 return []
             func = obj[0]
             args = obj[1:]
-            return func(*args).eval(env, **kwargs)
+            return eval(func(*args), env, **kwargs)
         return obj
     return obj.eval(env, **kwargs)
 
