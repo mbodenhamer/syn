@@ -23,6 +23,8 @@ def test_function():
     assert eval((If, (LE, 2, 1),
                      (Add, 5, 2),
                      (Sub, 5, 2))) == 3
+    assert eval([(Set, c, f),
+                 (c, 4, 3)]) == 1
 
 
     e = Function('empty', [], [])

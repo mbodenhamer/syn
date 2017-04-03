@@ -21,7 +21,7 @@ def test_builtins():
     assert compile_to_python(Add(a=1, b=2)) == '(1 + 2)'
 
     assert_raises(TypeError, Add, 1, 2, a=1)
-    assert eval(Add) == Add.name
+    assert eval(Add) is Add
 
     e = Env()
     foo = Variable('foo')

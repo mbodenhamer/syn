@@ -35,7 +35,7 @@ class Function(SyntagmathonNode):
 
     def eval(self, env, **kwargs):
         env[self.name] = self
-        return self.name
+        return self
 
     def to_python(self, env, **kwargs):
         from syn.python.b import Arguments, FunctionDef, Return, Pass
