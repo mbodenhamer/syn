@@ -89,7 +89,7 @@ class Call(SyntagmathonNode):
         args = [to_python(self.args[arg.name], **kwargs)
                 for arg in self.func.signature]
         if hasattr(self.func, 'python'):
-            return self.func.python(*args)
+            return self.func.python(*args, **kwargs)
         func = Name(self.func.name)
         return Call(func, args)
 
@@ -106,7 +106,7 @@ class SpecialCall(Call):
     def to_python(self, **kwargs):
         args = [to_python(self.args[arg.name], **kwargs)
                 for arg in self.func.signature]
-        return self.func.python(*args)
+        return self.func.python(*args, **kwargs)
 
 
 #-------------------------------------------------------------------------------

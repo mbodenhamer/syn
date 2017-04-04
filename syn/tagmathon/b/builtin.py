@@ -11,12 +11,14 @@ from syn.type.a import Callable
 
 class BuiltinFunction(Function):
     _attrs = dict(body = Attr(Callable),
-                  python = Attr(Callable))
+                  python = Attr(Callable),
+                  pass_kwargs = Attr(bool, False))
 
     def call(self, env, **kwargs):
         args = [env[arg.name] for arg in self.signature]
-        value = self.body(*args)
-        return value
+        if self.pass_kwargs:
+            return self.body(*args, **kwargs)
+        return self.body(*args)
         
 
 #-------------------------------------------------------------------------------
@@ -29,60 +31,60 @@ class SpecialForm(Special):
 
     def call(self, env, args_, **kwargs):
         args = [args_[arg.name] for arg in self.signature]
-        return self.body(env, *args)
+        return self.body(env, *args, **kwargs)
 
 
 #-------------------------------------------------------------------------------
 # Builtin Functions
 
-def _assert(a):
+def _assert(a, **kwargs):
     assert a
 
 #-------------------------------------------------------------------------------
 # Special Form Functions
 
-def _set_variable(env, name, value):
+def _set_variable(env, name, value, **kwargs):
     name = name.name
-    value = eval(value, env)
+    value = eval(value, env, **kwargs)
     env[name] = value
     return value
 
-def _if(env, test, body, orelse):
+def _if(env, test, body, orelse, **kwargs):
     if eval(test, env):
-        return eval(body, env)
-    return eval(orelse, env)
+        return eval(body, env, **kwargs)
+    return eval(orelse, env, **kwargs)
 
 #-------------------------------------------------------------------------------
 # Builtin python compilers
 
-def _py_add(a, b):
+def _py_add(a, b, **kwargs):
     from syn.python.b import BinOp, Add
     return BinOp(a, Add(), b)
 
-def _py_sub(a, b):
+def _py_sub(a, b, **kwargs):
     from syn.python.b import BinOp, Sub
     return BinOp(a, Sub(), b)
 
-def _py_mul(a, b):
+def _py_mul(a, b, **kwargs):
     from syn.python.b import BinOp, Mult
     return BinOp(a, Mult(), b)
 
-def _py_le(a, b):
+def _py_le(a, b, **kwargs):
     from syn.python.b import Compare, LtE
     return Compare(a, [LtE()], [b])
 
-def _py_eq(a, b):
+def _py_eq(a, b, **kwargs):
     from syn.python.b import Compare, Eq
     return Compare(a, [Eq()], [b])
 
-def _py_assert(a):
+def _py_assert(a, **kwargs):
     raise NotImplementedError
 
-def _py_set_variable(name, value):
+def _py_set_variable(name, value, **kwargs):
     from syn.python.b import Assign
     return Assign([name], value)
 
-def _py_if(test, body, orelse):
+def _py_if(test, body, orelse, **kwargs):
     from syn.python.b import If
     if not isinstance(body, list):
         body = [body]
@@ -100,7 +102,8 @@ Sub = BuiltinFunction('sub', [a, b], op.sub, python=_py_sub)
 Mul = BuiltinFunction('mul', [a, b], op.mul, python=_py_mul)
 LE = BuiltinFunction('le', [a, b], op.le, python=_py_le)
 Eq = BuiltinFunction('eq', [a, b], op.eq, python=_py_eq)
-Assert = BuiltinFunction('assert', [a], _assert, python=_py_assert)
+Assert = BuiltinFunction('assert', [a], _assert, python=_py_assert, 
+                         pass_kwargs=True)
 
 Set = SpecialForm('set', list(vars('name', 'value')), _set_variable,
                   python=_py_set_variable)
