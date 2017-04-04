@@ -13,6 +13,7 @@ def test_function():
     assert eval(f(4, 3)) == 1
     assert eval((f, 4, 3)) == 1
     assert compile_to_python(f(4, 3)) == 'foo(4, 3)'
+    assert compile_to_python((f, 4, 3)) == 'foo(4, 3)'
     assert compile_to_python(f) == '''def foo(a, b):
     c = (a + b)
     return (c - (b * 2))'''
@@ -25,6 +26,12 @@ def test_function():
                      (Sub, 5, 2))) == 3
     assert eval([(Set, c, f),
                  (c, 4, 3)]) == 1
+
+    # TODO: distinguish between function reference and function definition
+    # assert compile_to_python([(Set, c, f),
+    #                           (c, 4, 3)]) == 'c = f\nc(4, 3)'
+    assert compile_to_python([(Set, a, b),
+                              (a, 4, 3)]) == 'a = b\na(4, 3)'
 
 
     e = Function('empty', [], [])

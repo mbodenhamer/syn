@@ -1,6 +1,6 @@
 from functools import partial
 from syn.base_utils import compose, pyversion
-from syn.python.b import Expr, from_source, MatMult
+from syn.python.b import Expr, from_source, MatMult, Call, Name
 from .test_literals import examine
 
 VER = pyversion()
@@ -88,6 +88,8 @@ def test_call():
         examine('foo(1, 2, a=3, b=4, *c, **d)')
     else:
         examine('foo(1, 2, *c, a=3, b=4, **d)')
+
+    assert Call(Name('list')).emit() == 'list()'
 
 #-------------------------------------------------------------------------------
 # IfExp

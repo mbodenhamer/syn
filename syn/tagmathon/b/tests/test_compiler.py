@@ -1,5 +1,5 @@
 from nose.tools import assert_raises
-from syn.tagmathon.b import to_python
+from syn.tagmathon.b import to_python, compile_to_python
 from syn.python.b import Num
 
 #-------------------------------------------------------------------------------
@@ -7,6 +7,7 @@ from syn.python.b import Num
 
 def test_to_python():
     assert to_python(1) == Num(1)
+    assert compile_to_python(()) == 'list()'
     assert_raises(TypeError, to_python, lambda x: x)
     
 #-------------------------------------------------------------------------------
