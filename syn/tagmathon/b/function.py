@@ -38,18 +38,18 @@ class Function(SyntagmathonNode):
         env[name] = self
         return self
 
-    def to_python(self, env, **kwargs):
+    def to_python(self, **kwargs):
         from syn.python.b import Arguments, FunctionDef, Return, Pass
 
         if VER < '3':
-            args = Arguments([to_python(arg, env, **kwargs) 
+            args = Arguments([to_python(arg, **kwargs) 
                               for arg in self.signature])
         else:
             from syn.python.b import Arg
             args = Arguments([Arg(arg.name)
                               for arg in self.signature])
 
-        body = to_python(self.body, env, **kwargs)
+        body = to_python(self.body, **kwargs)
         if not body:
             body = [Pass()]
         elif not isinstance(self.body[-1], SpecialCall):
@@ -84,12 +84,12 @@ class Call(SyntagmathonNode):
         env.pop()
         return ret
 
-    def to_python(self, env, **kwargs):
+    def to_python(self, **kwargs):
         from syn.python.b import Call, Name
-        args = [to_python(self.args[arg.name], env, **kwargs)
+        args = [to_python(self.args[arg.name], **kwargs)
                 for arg in self.func.signature]
         if hasattr(self.func, 'python'):
-            return self.func.python(env, *args)
+            return self.func.python(*args)
         func = Name(self.func.name)
         return Call(func, args)
 
@@ -103,10 +103,10 @@ class SpecialCall(Call):
         ret = self.func.call(env, self.args, **kwargs)
         return ret
 
-    def to_python(self, env, **kwargs):
-        args = [to_python(self.args[arg.name], env, **kwargs)
+    def to_python(self, **kwargs):
+        args = [to_python(self.args[arg.name], **kwargs)
                 for arg in self.func.signature]
-        return self.func.python(env, *args)
+        return self.func.python(*args)
 
 
 #-------------------------------------------------------------------------------

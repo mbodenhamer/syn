@@ -55,34 +55,34 @@ def _if(env, test, body, orelse):
 #-------------------------------------------------------------------------------
 # Builtin python compilers
 
-def _py_add(env, a, b):
+def _py_add(a, b):
     from syn.python.b import BinOp, Add
     return BinOp(a, Add(), b)
 
-def _py_sub(env, a, b):
+def _py_sub(a, b):
     from syn.python.b import BinOp, Sub
     return BinOp(a, Sub(), b)
 
-def _py_mul(env, a, b):
+def _py_mul(a, b):
     from syn.python.b import BinOp, Mult
     return BinOp(a, Mult(), b)
 
-def _py_le(env, a, b):
+def _py_le(a, b):
     from syn.python.b import Compare, LtE
     return Compare(a, [LtE()], [b])
 
-def _py_eq(env, a, b):
+def _py_eq(a, b):
     from syn.python.b import Compare, Eq
     return Compare(a, [Eq()], [b])
 
-def _py_assert(env, a):
+def _py_assert(a):
     raise NotImplementedError
 
-def _py_set_variable(env, name, value):
+def _py_set_variable(name, value):
     from syn.python.b import Assign
     return Assign([name], value)
 
-def _py_if(env, test, body, orelse):
+def _py_if(test, body, orelse):
     from syn.python.b import If
     if not isinstance(body, list):
         body = [body]
