@@ -1,5 +1,5 @@
 from syn.tagmathon.b import Function, vars, Add, Sub, Mul, If, LE, Set, eval, \
-    compile_to_python
+    compile_to_python, Variable, Eq, Assert
 
 #-------------------------------------------------------------------------------
 # Function
@@ -61,6 +61,16 @@ def test_function():
                    [foo(1991)])
     assert eval([Set(y, 0), foo(3)]) == 3
     assert eval([Set(y, 0), bar(100)]) == 2091
+
+
+    fact = Variable('fact')
+    eval([Function(fact, [a], 
+                   (If, (LE, a, 0),
+                         1,
+                        (Mul, a, (fact, (Sub, a, 1))))),
+          (Assert, (Eq, (fact, 5), 120)),
+         ])
+
 
 #-------------------------------------------------------------------------------
 

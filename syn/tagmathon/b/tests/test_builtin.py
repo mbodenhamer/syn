@@ -1,6 +1,6 @@
 from nose.tools import assert_raises
 from syn.tagmathon.b import BuiltinFunction, Variable, Add, Set, Env, eval, \
-    If, compile_to_python
+    If, compile_to_python, LE, Eq, Assert
 
 #-------------------------------------------------------------------------------
 # BuiltinFunction
@@ -48,6 +48,17 @@ else:
     else:
         4'''
     
+    assert eval(LE(1, 2)) is True
+    assert eval(LE(2, 1)) is False
+    assert compile_to_python(LE(1, 2)) == '(1 <= 2)'
+
+    assert eval(Eq(1, 1)) is True
+    assert eval(Eq(1, 2)) is False
+    assert compile_to_python(Eq(1, 2)) == '(1 == 2)'
+    
+    eval(Assert(Eq(1, 1)))
+    assert_raises(AssertionError, eval, Assert(Eq(1, 2)))
+    assert_raises(NotImplementedError, compile_to_python, Assert(Eq(1, 2)))
 
 #-------------------------------------------------------------------------------
 

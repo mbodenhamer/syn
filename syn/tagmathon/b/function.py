@@ -13,9 +13,9 @@ VER = pyversion()
 
 
 class Function(SyntagmathonNode):
-    _attrs = dict(name = Attr(STR),
+    _attrs = dict(name = Attr((Variable, STR)),
                   signature = Attr(List(Variable)),
-                  body = Attr(List(SyntagmathonNode)))
+                  body = Attr((List(SyntagmathonNode), tuple)))
     _opts = dict(args = ('name', 'signature', 'body'))
 
     def __call__(self, *args_, **kwargs):
@@ -34,7 +34,8 @@ class Function(SyntagmathonNode):
         return eval(self.body, env, **kwargs)
 
     def eval(self, env, **kwargs):
-        env[self.name] = self
+        name = self.name if isinstance(self.name, STR) else self.name.name
+        env[name] = self
         return self
 
     def to_python(self, env, **kwargs):

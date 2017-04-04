@@ -33,6 +33,12 @@ class SpecialForm(Special):
 
 
 #-------------------------------------------------------------------------------
+# Builtin Functions
+
+def _assert(a):
+    assert a
+
+#-------------------------------------------------------------------------------
 # Special Form Functions
 
 def _set_variable(env, name, value):
@@ -65,6 +71,13 @@ def _py_le(env, a, b):
     from syn.python.b import Compare, LtE
     return Compare(a, [LtE()], [b])
 
+def _py_eq(env, a, b):
+    from syn.python.b import Compare, Eq
+    return Compare(a, [Eq()], [b])
+
+def _py_assert(env, a):
+    raise NotImplementedError
+
 def _py_set_variable(env, name, value):
     from syn.python.b import Assign
     return Assign([name], value)
@@ -86,6 +99,8 @@ Add = BuiltinFunction('add', [a, b], op.add, python=_py_add)
 Sub = BuiltinFunction('sub', [a, b], op.sub, python=_py_sub)
 Mul = BuiltinFunction('mul', [a, b], op.mul, python=_py_mul)
 LE = BuiltinFunction('le', [a, b], op.le, python=_py_le)
+Eq = BuiltinFunction('eq', [a, b], op.eq, python=_py_eq)
+Assert = BuiltinFunction('assert', [a], _assert, python=_py_assert)
 
 Set = SpecialForm('set', list(vars('name', 'value')), _set_variable,
                   python=_py_set_variable)
@@ -96,7 +111,7 @@ If = SpecialForm('if', list(vars('test', 'body', 'orelse')), _if,
 # __all__
 
 __all__ = ('BuiltinFunction',
-           'Add', 'Sub', 'Mul', 'LE',
+           'Add', 'Sub', 'Mul', 'LE', 'Eq', 'Assert',
            'Set', 'If')
 
 #-------------------------------------------------------------------------------
