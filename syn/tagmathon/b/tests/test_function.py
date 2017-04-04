@@ -54,6 +54,13 @@ def test_function():
     else:
         (a * fact((a - 1)))'''
 
+    x, y = vars('x', 'y')
+    foo = Function('foo', [x],
+                   [Add(x, y)])
+    bar = Function('bar', [y],
+                   [foo(1991)])
+    assert eval([Set(y, 0), foo(3)]) == 3
+    assert eval([Set(y, 0), bar(100)]) == 2091
 
 #-------------------------------------------------------------------------------
 
