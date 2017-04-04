@@ -1,5 +1,4 @@
-from syn.types import enumerate as enum
-from .base import SyntagmathonNode, Variable
+from .base import SyntagmathonNode
 from .interpreter import Env
 
 #-------------------------------------------------------------------------------
@@ -25,12 +24,6 @@ def to_python(obj, env=None, **kwargs):
                 return Call(Name('list'))
             func = obj[0]
             args = obj[1:]
-            if isinstance(func, Variable):
-                from .function import Function
-                names = enum(str, max_enum=len(args))
-                func = Function(func.name, 
-                                [Variable(name) for name in names],
-                                [])
             return to_python(func(*args), env, **kwargs)
         return _to_python_native(obj, **kwargs)
     return obj.to_python(env, **kwargs)

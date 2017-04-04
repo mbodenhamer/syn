@@ -1,3 +1,4 @@
+from syn.types.a import enumerate as enum
 from syn.base.b import Attr
 from syn.tree.b import Node
 from syn.five import STR
@@ -23,6 +24,14 @@ class SyntagmathonNode(Node):
 class Variable(SyntagmathonNode):
     _attrs = dict(name = Attr(STR))
     _opts = dict(args = ('name',))
+
+    def __call__(self, *args):
+        from .function import Function
+        names = enum(str, max_enum=len(args))
+        func = Function(self.name, 
+                        [Variable(name) for name in names],
+                        [])
+        return func(*args)
 
     def eval(self, env, **kwargs):
         return env[self.name]

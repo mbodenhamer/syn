@@ -64,13 +64,15 @@ def test_function():
 
 
     fact = Variable('fact')
-    eval([Function(fact, [a], 
-                   (If, (LE, a, 0),
-                         1,
-                        (Mul, a, (fact, (Sub, a, 1))))),
-          (Assert, (Eq, (fact, 5), 120)),
-         ])
-
+    val = eval([Function(fact, [a], 
+                         (If, (LE, a, 0),
+                               1,
+                              (Mul, a, (fact, (Sub, a, 1))))),
+                (Assert, (Eq, (fact, 5), 120)),
+                #Assert(Eq(fact(6), 720)),
+                fact(6),
+               ])
+    #assert val == 720
 
 #-------------------------------------------------------------------------------
 
