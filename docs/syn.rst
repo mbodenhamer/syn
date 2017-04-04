@@ -16,6 +16,7 @@ Subpackages
     syn.schema
     syn.serialize
     syn.sets
+    syn.tagmathon
     syn.tree
     syn.type
     syn.types
