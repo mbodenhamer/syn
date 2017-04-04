@@ -34,9 +34,11 @@ class Function(SyntagmathonNode):
         return eval(self.body, env, **kwargs)
 
     def eval(self, env, **kwargs):
-        name = self.name if isinstance(self.name, STR) else self.name.name
-        env[name] = self
+        env[self.get_name()] = self
         return self
+
+    def get_name(self):
+        return self.name if isinstance(self.name, STR) else self.name.name
 
     def to_python(self, **kwargs):
         from syn.python.b import Arguments, FunctionDef, Return, Pass
@@ -80,6 +82,13 @@ class Call(SyntagmathonNode):
         args = {name: eval(value, env, **kwargs) 
                 for name, value in self.args.items()}
         env.push(args)
+        if kwargs.get('trace', False):
+            depth = kwargs.get('depth', 0)
+            pre = kwargs.get('tab', '  ') * depth
+            argstr = ', '.join('{}={}'.format(name, value) 
+                               for name, value in args.items())
+            print(pre + '{}({})'.format(self.func.get_name(), argstr))
+            kwargs['depth'] = depth + 1
         ret = self.func.call(env, **kwargs)
         env.pop()
         return ret
