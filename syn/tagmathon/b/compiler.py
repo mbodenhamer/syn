@@ -1,3 +1,4 @@
+from syn.python.b import Module
 from .base import SyntagmathonNode
 
 #-------------------------------------------------------------------------------
@@ -27,7 +28,9 @@ def to_python(obj, **kwargs):
 def compile_to_python(obj, **kwargs):
     py = to_python(obj, **kwargs)
     if isinstance(py, list):
-        return '\n'.join(item.emit(**kwargs) for item in py)
+        py = Module(*py)
+    py.transform(**kwargs)
+    py.validate()
     return py.emit(**kwargs)
 
 #-------------------------------------------------------------------------------

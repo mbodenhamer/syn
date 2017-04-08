@@ -115,6 +115,8 @@ class PythonNode(Node):
             return self.ast(cs, **kwargs_)
         return self.ast(**kwargs_)
 
+    def transform(self, **kwargs):
+        pass
 
 #-------------------------------------------------------------------------------
 # Contexts
