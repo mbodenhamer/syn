@@ -1,5 +1,5 @@
 import ast
-from .base import PythonNode, Attr, AST, ACO
+from .base import PythonNode, Attr, AST, ACO, OAttr
 from syn.base_utils import setitem, get_typename
 from syn.type.a import List
 from syn.five import STR
@@ -37,16 +37,18 @@ class Assign(Statement):
 
 
 class Return(Statement):
-    _attrs = dict(value = Attr(PythonNode, groups=(AST, ACO)))
+    _attrs = dict(value = OAttr(PythonNode, groups=(AST, ACO)))
     _opts =  dict(args = ('value',))
 
     def emit(self, **kwargs):
-        with setitem(kwargs, 'indent_level', 0):
-            val = self.value.emit(**kwargs)
-
-        ret = self._indent(**kwargs)
-        ret += 'return ' + val
-        return ret
+        if self.value is not None:
+            with setitem(kwargs, 'indent_level', 0):
+                val = self.value.emit(**kwargs)
+                
+            ret = self._indent(**kwargs)
+            ret += 'return ' + val
+            return ret
+        return 'return'
 
 
 #-------------------------------------------------------------------------------
@@ -99,7 +101,8 @@ class Continue(EmptyStatement):
 
 
 class Pass(EmptyStatement):
-    pass
+    def add_return(self, **kwargs):
+        return Return()
 
 
 #-------------------------------------------------------------------------------

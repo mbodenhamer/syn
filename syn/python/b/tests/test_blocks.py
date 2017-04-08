@@ -1,5 +1,5 @@
 from .test_statements import examine
-from syn.python.b import Block
+from syn.python.b import Block, If, Num
 from syn.base_utils import pyversion
 
 VER = pyversion()
@@ -18,6 +18,11 @@ def test_if():
     examine('if 1:\n    a = 1\nelse:\n    a = 2')
     examine('if 1:\n  a = 1\nelif 2:\n  a = 2\nelse:\n  a = 3',
             'if 1:\n    a = 1\nelse:\n    if 2:\n        a = 2\n    else:\n        a = 3')
+
+    if1 = If(Num(1), [Num(2)], [Num(3)])
+    assert if1.emit() == 'if 1:\n    2\nelse:\n    3'
+    rif1 = if1.add_return()
+    assert rif1.emit() == 'if 1:\n    return 2\nelse:\n    return 3'
 
 #-------------------------------------------------------------------------------
 # For

@@ -1,7 +1,8 @@
 import ast
 from nose.tools import assert_raises
 from functools import partial
-from syn.python.b import Literal, from_source, from_ast, PythonNode
+from syn.python.b import Literal, from_source, from_ast, PythonNode, Return, \
+    Num
 from syn.base_utils import compose
 from syn.five import PY3
 
@@ -58,6 +59,11 @@ def test_num():
 
     assert_raises(TypeError, bad)
     assert pybbase.AST_REGISTRY[ast.Num] is Num_
+
+    n = Num(1)
+    assert n.emit() == '1'
+    rn = n.add_return()
+    assert rn.emit() == 'return 1'
 
 #-------------------------------------------------------------------------------
 # Str

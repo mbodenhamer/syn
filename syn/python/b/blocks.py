@@ -6,6 +6,7 @@ from syn.five import STR, xrange
 from .base import PythonNode, Attr, AST, ACO
 from .literals import Tuple, List as List_
 from .variables import Name
+from .statements import Return
 
 VER = pyversion()
 OAttr = partial(Attr, optional=True)
@@ -38,6 +39,12 @@ class If(Block):
     _attrs = dict(test = Attr(PythonNode, groups=(AST, ACO)),
                   orelse = Attr(List(PythonNode), groups=(AST, ACO)))
     _opts = dict(args = ('test', 'body', 'orelse'))
+
+    def add_return(self, **kwargs):
+        self.body[-1] = self.body[-1].add_return(**kwargs)
+        if self.orelse:
+            self.orelse[-1] = self.orelse[-1].add_return(**kwargs)
+        return self
 
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):

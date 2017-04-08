@@ -97,6 +97,10 @@ class PythonNode(Node):
                 ret[attr] = val
         return ret
 
+    def add_return(self, **kwargs):
+        from .statements import Return
+        return Return(self)
+
     def emit(self, **kwargs):
         raise NotImplementedError
 

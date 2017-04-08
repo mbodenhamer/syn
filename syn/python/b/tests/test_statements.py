@@ -1,6 +1,6 @@
 from functools import partial
 from syn.base_utils import compose
-from syn.python.b import Statement, from_source, from_ast
+from syn.python.b import Statement, from_source, from_ast, Pass
 
 mparse = compose(partial(from_source, mode='exec'), str)
 
@@ -33,6 +33,7 @@ def test_assign():
 # Return
 
 def test_return():
+    examine('return')
     examine('return 1')
 
 #-------------------------------------------------------------------------------
@@ -51,6 +52,11 @@ def test_empty_statements():
     examine('break')
     examine('continue')
     examine('pass')
+
+    p = Pass()
+    assert p.emit() == 'pass'
+    rp = p.add_return()
+    assert rp.emit() == 'return'
 
 #-------------------------------------------------------------------------------
 
