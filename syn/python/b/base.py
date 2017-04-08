@@ -2,9 +2,9 @@ import ast
 from copy import deepcopy
 from functools import partial
 from operator import itemgetter
-from syn.base_utils import get_typename, ReflexiveDict
+from syn.base_utils import get_typename, ReflexiveDict, AttrDict
 from syn.tree.b import Node, Tree
-from syn.base.b import create_hook, Attr
+from syn.base.b import create_hook, Attr, init_hook
 
 OAttr = partial(Attr, optional=True)
 
@@ -78,6 +78,31 @@ class PythonNode(Node):
             vals[attr] = val
         return vals
 
+    @init_hook
+    def _init(self):
+        if not self._children:
+            self._set_children()
+
+    def _set_children(self):
+        self._children = []
+        for attr in self._groups[ACO]:
+            val = getattr(self, attr)
+            if val is not None:
+                if isinstance(val, list):
+                    for item in val:
+                        if item is not None:
+                            self._children.append(item)
+                            item._parent = self
+                else:
+                    val._parent = self
+                    self._children.append(val)
+
+        # max_len and min_len allow for specifying positional args
+        # since the object has been initialized, set to avoid validation errors
+        self._opts = AttrDict(self._opts)
+        self._opts.max_len = len(self)
+        self._opts.min_len = len(self)
+
     def _indent(self, **kwargs):
         level = kwargs.get('indent_level', 0)
         n = self.indent_amount * level
@@ -109,17 +134,16 @@ class PythonNode(Node):
         return cls(**kwargs)
 
     def to_ast(self, **kwargs):
-        cs = [c.to_ast(**kwargs) for c in self]
         kwargs_ = self._to_ast_kwargs(**kwargs)
-        if cs:
-            return self.ast(cs, **kwargs_)
         return self.ast(**kwargs_)
 
     def transform(self, **kwargs):
         pass
 
+
 #-------------------------------------------------------------------------------
 # Contexts
+
 
 class Context(PythonNode):
     _opts = dict(max_len = 0)
@@ -131,20 +155,26 @@ class Context(PythonNode):
     def to_ast(self, **kwargs):
         return self.ast()
 
+
 class Load(Context):
     pass
+
 
 class Store(Context):
     pass
 
+
 class Del(Context):
     pass
+
 
 class Param(Context):
     maxver = '2.9999999999'
 
+
 #-------------------------------------------------------------------------------
 # Root Nodes
+
 
 class RootNode(PythonNode):
     def emit(self, **kwargs):
@@ -157,8 +187,15 @@ class RootNode(PythonNode):
         ret = cls(*cs)
         return ret
 
+    def to_ast(self, **kwargs):
+        cs = [c.to_ast(**kwargs) for c in self]
+        kwargs_ = self._to_ast_kwargs(**kwargs)
+        return self.ast(cs, **kwargs_)
+
+
 class Module(RootNode):
     pass
+
 
 class Expression(RootNode):
     _opts = dict(min_len = 1,
@@ -178,8 +215,13 @@ class Expression(RootNode):
         body = self.body.to_ast(**kwargs)
         return self.ast(body)
 
+
 class Interactive(RootNode):
     pass
+
+
+#-------------------------------------------------------------------------------
+# Special
 
 #-------------------------------------------------------------------------------
 # PythonTree
