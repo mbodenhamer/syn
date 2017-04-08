@@ -44,11 +44,12 @@ class Return(Statement):
         if self.value is not None:
             with setitem(kwargs, 'indent_level', 0):
                 val = self.value.emit(**kwargs)
-                
-            ret = self._indent(**kwargs)
-            ret += 'return ' + val
-            return ret
-        return 'return'
+
+        ret = self._indent(**kwargs)
+        ret += 'return'
+        if self.value is not None:
+            ret += ' ' + val
+        return ret
 
 
 #-------------------------------------------------------------------------------

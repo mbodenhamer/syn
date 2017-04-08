@@ -42,7 +42,7 @@ class Function(SyntagmathonNode):
         return self.name if isinstance(self.name, STR) else self.name.name
 
     def to_python(self, **kwargs):
-        from syn.python.b import Arguments, FunctionDef, Return, Pass
+        from syn.python.b import Arguments, FunctionDef, Pass
 
         if VER < '3':
             args = Arguments([to_python(arg, **kwargs) 
@@ -55,8 +55,7 @@ class Function(SyntagmathonNode):
         body = to_python(self.body, **kwargs)
         if not body:
             body = [Pass()]
-        elif not isinstance(self.body[-1], SpecialCall):
-            body[-1] = Return(body[-1])
+        body[-1] = body[-1].add_return()
         return FunctionDef(self.name, args, body)
 
 

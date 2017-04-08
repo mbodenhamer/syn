@@ -36,7 +36,7 @@ def test_function():
 
     e = Function('empty', [], [])
     assert eval(e()) is None
-    assert compile_to_python(e) == '''def empty():\n    pass'''
+    assert compile_to_python(e) == '''def empty():\n    return'''
 
     fact = Function('fact', [a], [])
     fact.body = [If(LE(a, 0),
@@ -50,9 +50,9 @@ def test_function():
     assert eval(fact(6)) == 720
     assert compile_to_python(fact) == '''def fact(a):
     if (a <= 0):
-        1
+        return 1
     else:
-        (a * fact((a - 1)))'''
+        return (a * fact((a - 1)))'''
 
     x, y = vars('x', 'y')
     foo = Function('foo', [x],
