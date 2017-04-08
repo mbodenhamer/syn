@@ -30,7 +30,8 @@ class Variable(SyntagmathonNode):
         names = enum(str, max_enum=len(args))
         func = Function(self.name, 
                         [Variable(name) for name in names],
-                        [])
+                        [],
+                        placeholder=True)
         return func(*args)
 
     def eval(self, env, **kwargs):

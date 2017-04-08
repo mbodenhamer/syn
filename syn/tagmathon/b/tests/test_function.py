@@ -62,6 +62,13 @@ def test_function():
     assert eval([Set(y, 0), foo(3)]) == 3
     assert eval([Set(y, 0), bar(100)]) == 2091
 
+    plus = Variable('plus')
+    val = eval([Function(plus, [a, b],
+                         (Add, a, b)),
+                (plus, 1, 2),
+                plus(2, 5),
+               ], trace=True)
+    assert val == 7
 
     fact = Variable('fact')
     val = eval([Function(fact, [a], 
@@ -69,10 +76,10 @@ def test_function():
                                1,
                               (Mul, a, (fact, (Sub, a, 1))))),
                 (Assert, (Eq, (fact, 5), 120)),
-                #Assert(Eq(fact(6), 720)),
+                Assert(Eq(fact(6), 720)),
                 fact(6),
                ], trace=True)
-    #assert val == 720
+    assert val == 720
 
 #-------------------------------------------------------------------------------
 

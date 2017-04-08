@@ -15,7 +15,8 @@ VER = pyversion()
 class Function(SyntagmathonNode):
     _attrs = dict(name = Attr((Variable, STR)),
                   signature = Attr(List(Variable)),
-                  body = Attr((List(SyntagmathonNode), tuple)))
+                  body = Attr((List(SyntagmathonNode), tuple)),
+                  placeholder = Attr(bool, False))
     _opts = dict(args = ('name', 'signature', 'body'))
 
     def __call__(self, *args_, **kwargs):
@@ -79,17 +80,23 @@ class Call(SyntagmathonNode):
     _opts = dict(args = ('func', 'args'))
 
     def eval(self, env, **kwargs):
+        func = self.func
         args = {name: eval(value, env, **kwargs) 
                 for name, value in self.args.items()}
+        if func.placeholder:
+            func = env[self.func.get_name()]
+            names = [name.name for name in self.func.signature]
+            args = {func.signature[names.index(name)].name: value 
+                    for name, value in args.items()}
         env.push(args)
         if kwargs.get('trace', False):
             depth = kwargs.get('depth', 0)
             pre = kwargs.get('tab', '  ') * depth
             argstr = ', '.join('{}={}'.format(name, value) 
                                for name, value in args.items())
-            print(pre + '{}({})'.format(self.func.get_name(), argstr))
+            print(pre + '{}({})'.format(func.get_name(), argstr))
             kwargs['depth'] = depth + 1
-        ret = self.func.call(env, **kwargs)
+        ret = func.call(env, **kwargs)
         env.pop()
         return ret
 
