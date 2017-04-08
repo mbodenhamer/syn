@@ -1,6 +1,7 @@
 from nose.tools import assert_raises
+from syn.base_utils import assert_equivalent
 from syn.tagmathon.b import SyntagmathonNode, Variable, Env, eval, \
-    compile_to_python
+    compile_to_python, vars
 
 #-------------------------------------------------------------------------------
 # Base Class
@@ -19,6 +20,21 @@ def test_variable():
     e['foo'] = 3
     assert eval(v, e) == 3
     assert compile_to_python(v) == 'foo'
+
+#-------------------------------------------------------------------------------
+# Utilities
+
+def test_vars():
+    a, b = vars('a', 'b')
+    assert_equivalent(a, Variable('a'))
+    assert_equivalent(b, Variable('b'))
+
+    c = vars('c')
+    assert_equivalent(c, Variable('c'))
+
+    d, e = vars('d e')
+    assert_equivalent(d, Variable('d'))
+    assert_equivalent(e, Variable('e'))
 
 #-------------------------------------------------------------------------------
 

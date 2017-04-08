@@ -46,6 +46,10 @@ class Variable(SyntagmathonNode):
 # Utilities
 
 def vars(*args):
+    if len(args) == 1:
+        args = args[0].split()
+    if len(args) == 1:
+        return Variable(args[0])
     return tuple([Variable(arg) for arg in args])
 
 #-------------------------------------------------------------------------------
