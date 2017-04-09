@@ -19,8 +19,12 @@ AST = 'ast_attr'
 ACO = 'ast_convert_attr'
 
 #-------------------------------------------------------------------------------
+# Custom Exceptions
 
 class AstUnsupported(Exception):
+    pass
+
+class PythonError(Exception):
     pass
 
 #-------------------------------------------------------------------------------
@@ -138,7 +142,7 @@ class PythonNode(Node):
         return self.ast(**kwargs_)
 
     def transform(self, **kwargs):
-        pass
+        return self
 
 
 #-------------------------------------------------------------------------------
@@ -192,6 +196,25 @@ class RootNode(PythonNode):
         kwargs_ = self._to_ast_kwargs(**kwargs)
         return self.ast(cs, **kwargs_)
 
+    def transform(self, **kwargs):
+        cs = []
+        for child in self:
+            out = child.transform(**kwargs)
+            if isinstance(out, list):
+                cs.extend(out)
+            else:
+                cs.append(out)
+
+        cs2 = []
+        for child in cs:
+            if isinstance(child, ProgN):
+                cs2.extend(child.transform(**kwargs))
+            else:
+                cs2.append(child)
+
+        self._children = cs2
+        return self
+
 
 class Module(RootNode):
     pass
@@ -222,6 +245,17 @@ class Interactive(RootNode):
 
 #-------------------------------------------------------------------------------
 # Special
+
+
+class Special(PythonNode):
+    def validate(self):
+        raise PythonError('Cannot exist in transformed PythonNode tree')
+
+
+class ProgN(Special):
+    def transform(self, **kwargs):
+        return self._children
+
 
 #-------------------------------------------------------------------------------
 # PythonTree
@@ -265,9 +299,10 @@ def from_source(src, mode='exec'):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('PythonNode', 'PythonTree', 'AstUnsupported',
+__all__ = ('PythonNode', 'PythonTree', 'AstUnsupported', 'PythonError',
            'Context', 'Load', 'Store', 'Del', 'Param',
-           'RootNode', 'Module', 'Expression', 'Interactive',
+           'RootNode', 'Module', 'Expression', 'Interactive', 
+           'Special', 'ProgN',
            'from_ast', 'from_source')
 
 #-------------------------------------------------------------------------------

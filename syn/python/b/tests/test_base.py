@@ -1,6 +1,7 @@
 import ast
 from nose.tools import assert_raises
-from syn.python.b import PythonNode, from_ast, AstUnsupported, Context, Load
+from syn.python.b import PythonNode, from_ast, AstUnsupported, Context, Load, \
+    Special, PythonError, ProgN
 
 #-------------------------------------------------------------------------------
 # Base Class
@@ -24,6 +25,17 @@ def test_context():
     assert from_ast(ast.Load()) == Load()
     assert type(Load().to_ast()) is ast.Load
     
+#-------------------------------------------------------------------------------
+# Special
+
+def test_special():
+    s = Special()
+    assert_raises(PythonError, s.validate)
+
+def test_progn():
+    p = ProgN()
+    assert_raises(PythonError, p.validate)
+
 #-------------------------------------------------------------------------------
 # Module API
 
