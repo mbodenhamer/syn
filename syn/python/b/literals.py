@@ -1,4 +1,4 @@
-from .base import PythonNode, Attr, Context, Load, AST, ACO
+from .base import PythonNode, Attr, Context, Load, AST, ACO, ProgN
 from syn.base_utils import quote_string, setitem
 from syn.type.a import List
 from syn.five import PY2, STR
@@ -50,11 +50,15 @@ class Str(Literal):
 
 class Bytes(Literal):
     minver = '3'
+    _opts = dict(args = ('s',))
     _attrs = dict(s = Attr(bytes, group=AST))
 
     def emit(self, **kwargs):
         ret = self._indent(**kwargs)
-        ret += str(self.s)
+        if PY2:
+            ret += quote_string(self.s)
+        else:
+            ret += str(self.s)
         return ret
 
 
@@ -65,6 +69,7 @@ class Bytes(Literal):
 class Sequence(Literal):
     bounds = ('[', ']')
     delim = ', '
+    _opts = dict(args = ('elts',))
     _attrs = dict(elts = Attr(List(PythonNode), groups=(AST, ACO)))
     
     def emit(self, **kwargs):
@@ -76,6 +81,11 @@ class Sequence(Literal):
         ret = self.bounds[0] + ret + self.bounds[1]
         ret = self._indent(**kwargs) + ret
         return ret
+
+    def transform(self, **kwargs):
+        elts = [elt.transform(**kwargs) for elt in self.elts]
+        self.elts = elts
+        return self
 
 
 #-------------------------------------------------------------------------------
@@ -108,6 +118,7 @@ class Set(Sequence):
 
 class NameConstant(Literal):
     minver = '3.4'
+    _opts = dict(args = ('value',))
     _attrs = dict(value = Attr([True, False, None], group=AST))
 
     def emit(self, **kwargs):

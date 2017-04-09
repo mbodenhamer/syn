@@ -2,7 +2,7 @@ import ast
 from copy import deepcopy
 from functools import partial
 from operator import itemgetter
-from syn.base_utils import get_typename, ReflexiveDict, AttrDict, assign
+from syn.base_utils import get_typename, ReflexiveDict, assign
 from syn.tree.b import Node, Tree
 from syn.base.b import create_hook, Attr, init_hook
 
@@ -40,7 +40,8 @@ class PythonNode(Node):
                   col_offset = OAttr(int, group=AST),
                   indent_amount = OAttr(int, 4, 'The number of spaces to indent '
                                         'per indent level'),
-                  _children_set = Attr(bool, False, internal=True))
+                  _children_set = Attr(bool, False, internal=True),
+                  _child_map = Attr(dict, internal=True, init=lambda self: dict()))
     _opts = dict(optional_none = True)
 
     _groups = ReflexiveDict(AST, ACO)
@@ -90,6 +91,7 @@ class PythonNode(Node):
 
     def _set_children(self):
         self._children = []
+        self._child_map = {}
         self._children_set = True
         for attr in self._groups[ACO]:
             val = getattr(self, attr)
@@ -258,6 +260,16 @@ class Special(PythonNode):
 class ProgN(Special):
     def transform(self, **kwargs):
         return self._children
+
+    def variable(self, **kwargs):
+        from .statement import Assign
+        for child in reversed(self._children):
+            if isinstance(child, Assign):
+                if len(child.targets) > 1:
+                    raise PythonError('Last ProgN Assign can only have one target')
+                return child.targets[0]
+        else:
+            raise PythonError('No Assign found')
 
 
 #-------------------------------------------------------------------------------
