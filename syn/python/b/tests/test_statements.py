@@ -1,6 +1,7 @@
 from functools import partial
 from syn.base_utils import compose
-from syn.python.b import Statement, from_source, from_ast, Pass
+from syn.python.b import Statement, from_source, from_ast, Pass, Num, Name, \
+    Assign, Return
 
 mparse = compose(partial(from_source, mode='exec'), str)
 
@@ -29,12 +30,32 @@ def test_assign():
     examine('a = b = 1')
     examine('a, b = 1', '(a, b) = 1')
 
+    a = Assign([Name('x')], Num(1))
+    assert a.emit() == 'x = 1'
+    assert a.emit(indent_level=1) == '    x = 1'
+    assert a.transform().emit() == 'x = 1'
+
+    a = Assign([Name('x'), Name('y')], Num(1))
+    assert a.emit() == 'x = y = 1'
+    assert a.emit(indent_level=1) == '    x = y = 1'
+    assert a.transform().emit() == 'x = y = 1'
+
 #-------------------------------------------------------------------------------
 # Return
 
 def test_return():
     examine('return')
     examine('return 1')
+
+    r = Return()
+    assert r.emit() == 'return'
+    assert r.emit(indent_level=1) == '    return'
+    assert r.transform().emit() == 'return'
+
+    r = Return(Num(1))
+    assert r.emit() == 'return 1'
+    assert r.emit(indent_level=1) == '    return 1'
+    assert r.transform().emit() == 'return 1'
 
 #-------------------------------------------------------------------------------
 # Import

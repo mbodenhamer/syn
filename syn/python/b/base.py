@@ -202,22 +202,17 @@ class RootNode(PythonNode):
         return self.ast(cs, **kwargs_)
 
     def transform(self, **kwargs):
-        cs = []
-        for child in self:
-            out = child.transform(**kwargs)
-            if isinstance(out, list):
-                cs.extend(out)
-            else:
-                cs.append(out)
+        cs = [c.transform(**kwargs) for c in self]
+        while any(isinstance(child, ProgN) for child in cs):
+            temp = []
+            for child in cs:
+                if isinstance(child, ProgN):
+                    temp.extend(child.transform(**kwargs))
+                else:
+                    temp.append(child)
+            cs = temp
 
-        cs2 = []
-        for child in cs:
-            if isinstance(child, ProgN):
-                cs2.extend(child.transform(**kwargs))
-            else:
-                cs2.append(child)
-
-        self._children = cs2
+        self._children = cs
         return self
 
 
@@ -262,11 +257,9 @@ class ProgN(Special):
         return self._children
 
     def variable(self, **kwargs):
-        from .statement import Assign
+        from .statements import Assign
         for child in reversed(self._children):
             if isinstance(child, Assign):
-                if len(child.targets) > 1:
-                    raise PythonError('Last ProgN Assign can only have one target')
                 return child.targets[0]
         else:
             raise PythonError('No Assign found')

@@ -3,10 +3,10 @@ from functools import partial
 from syn.base_utils import setitem, pyversion
 from syn.type.a import List
 from syn.five import STR, xrange
-from .base import PythonNode, Attr, AST, ACO
+from .base import PythonNode, Attr, AST, ACO, ProgN
 from .literals import Tuple, List as List_
 from .variables import Name
-from .statements import Return
+from .statements import Statement
 
 VER = pyversion()
 OAttr = partial(Attr, optional=True)
@@ -30,6 +30,19 @@ class Block(PythonNode):
         ret += '\n'.join(strs)
         return ret
 
+    def transform_block(self, body, **kwargs):
+        cs = [c.transform(**kwargs) for c in body]
+        while any(isinstance(child, ProgN) for child in cs):
+            temp = []
+            for child in cs:
+                if isinstance(child, ProgN):
+                    temp.extend(child.transform(**kwargs))
+                else:
+                    temp.append(child)
+            cs = temp
+
+        return cs
+
 
 #-------------------------------------------------------------------------------
 # If
@@ -37,7 +50,8 @@ class Block(PythonNode):
 
 class If(Block):
     _attrs = dict(test = Attr(PythonNode, groups=(AST, ACO)),
-                  orelse = Attr(List(PythonNode), groups=(AST, ACO)))
+                  orelse = Attr(List(PythonNode), groups=(AST, ACO),
+                                init=lambda self: list()))
     _opts = dict(args = ('test', 'body', 'orelse'))
 
     def add_return(self, **kwargs):
@@ -58,6 +72,25 @@ class If(Block):
             ret += '\n' + block
 
         return ret
+
+    def transform(self, **kwargs):
+        out = None
+        if isinstance(self.test, (Statement, Block)):
+            out = self.test.transform(**kwargs)
+            if isinstance(out, Statement):
+                out = ProgN(out)
+            else:
+                out = out.assign_value()
+            self.test = out.variable(**kwargs) # TODO: do we need to copy here?
+
+        self.body = self.transform_block(self.body, **kwargs)
+        if self.orelse:
+            self.orelse = self.transform_block(self.orelse, **kwargs)
+
+        self._set_children()
+        if out:
+            return ProgN(*(list(out) + [self]))
+        return self
 
 
 #-------------------------------------------------------------------------------

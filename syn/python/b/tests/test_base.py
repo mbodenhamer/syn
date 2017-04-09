@@ -1,7 +1,7 @@
 import ast
 from nose.tools import assert_raises
 from syn.python.b import PythonNode, from_ast, AstUnsupported, Context, Load, \
-    Special, PythonError, ProgN
+    Special, PythonError, ProgN, Assign, Num, Name
 
 #-------------------------------------------------------------------------------
 # Base Class
@@ -35,6 +35,10 @@ def test_special():
 def test_progn():
     p = ProgN()
     assert_raises(PythonError, p.validate)
+    assert_raises(PythonError, p.variable)
+
+    p = ProgN(Assign([Name('x')], Num(2)))
+    assert p.variable() == Name('x')
 
 #-------------------------------------------------------------------------------
 # Module API

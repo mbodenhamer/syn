@@ -85,6 +85,7 @@ class Sequence(Literal):
     def transform(self, **kwargs):
         elts = [elt.transform(**kwargs) for elt in self.elts]
         self.elts = elts
+        self._set_children()
         return self
 
 
