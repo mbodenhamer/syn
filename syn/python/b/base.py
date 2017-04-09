@@ -2,7 +2,7 @@ import ast
 from copy import deepcopy
 from functools import partial
 from operator import itemgetter
-from syn.base_utils import get_typename, ReflexiveDict, AttrDict
+from syn.base_utils import get_typename, ReflexiveDict, AttrDict, assign
 from syn.tree.b import Node, Tree
 from syn.base.b import create_hook, Attr, init_hook
 
@@ -39,7 +39,8 @@ class PythonNode(Node):
     _attrs = dict(lineno = OAttr(int, group=AST),
                   col_offset = OAttr(int, group=AST),
                   indent_amount = OAttr(int, 4, 'The number of spaces to indent '
-                                        'per indent level'))
+                                        'per indent level'),
+                  _children_set = Attr(bool, False, internal=True))
     _opts = dict(optional_none = True)
 
     _groups = ReflexiveDict(AST, ACO)
@@ -89,6 +90,7 @@ class PythonNode(Node):
 
     def _set_children(self):
         self._children = []
+        self._children_set = True
         for attr in self._groups[ACO]:
             val = getattr(self, attr)
             if val is not None:
@@ -100,12 +102,6 @@ class PythonNode(Node):
                 else:
                     val._parent = self
                     self._children.append(val)
-
-        # max_len and min_len allow for specifying positional args
-        # since the object has been initialized, set to avoid validation errors
-        self._opts = AttrDict(self._opts)
-        self._opts.max_len = len(self)
-        self._opts.min_len = len(self)
 
     def _indent(self, **kwargs):
         level = kwargs.get('indent_level', 0)
@@ -144,6 +140,13 @@ class PythonNode(Node):
     def transform(self, **kwargs):
         return self
 
+    def validate(self):
+        if self._children_set:
+            with assign(self, '_children', []):
+                super(PythonNode, self).validate()
+        else:
+            super(PythonNode, self).validate()
+            
 
 #-------------------------------------------------------------------------------
 # Contexts
