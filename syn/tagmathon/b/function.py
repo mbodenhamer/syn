@@ -55,7 +55,7 @@ class Function(SyntagmathonNode):
         body = to_python(self.body, **kwargs)
         if not body:
             body = [Pass()]
-        body[-1] = body[-1].add_return()
+        body[-1] = body[-1].as_return()
         return FunctionDef(self.name, args, body)
 
 

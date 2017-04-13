@@ -72,7 +72,7 @@ def test_empty_statements():
 
     p = Pass()
     assert p.emit() == 'pass'
-    rp = p.add_return()
+    rp = p.as_return()
     assert rp.emit() == 'return'
 
 #-------------------------------------------------------------------------------

@@ -64,7 +64,7 @@ def test_num():
     assert n.emit() == '1'
     assert n.emit(indent_level=1) == '    1'
 
-    rn = n.add_return()
+    rn = n.as_return()
     assert rn.emit() == 'return 1'
 
 #-------------------------------------------------------------------------------

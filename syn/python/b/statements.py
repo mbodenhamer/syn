@@ -102,7 +102,7 @@ class Continue(EmptyStatement):
 
 
 class Pass(EmptyStatement):
-    def add_return(self, **kwargs):
+    def as_return(self, **kwargs):
         return Return()
 
 

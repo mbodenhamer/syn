@@ -41,11 +41,12 @@ class If(Block):
                                 init=lambda self: list()))
     _opts = dict(args = ('test', 'body', 'orelse'))
 
-    def add_return(self, **kwargs):
-        self.body[-1] = self.body[-1].add_return(**kwargs)
-        if self.orelse:
-            self.orelse[-1] = self.orelse[-1].add_return(**kwargs)
-        return self
+    def as_return(self, **kwargs):
+        ret = self.copy()
+        ret.body[-1] = ret.body[-1].as_return(**kwargs)
+        if ret.orelse:
+            ret.orelse[-1] = ret.orelse[-1].as_return(**kwargs)
+        return ret
 
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):

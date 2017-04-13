@@ -23,7 +23,7 @@ def test_if():
     if1 = If(Num(1), [Num(2)], [Num(3)])
     assert if1.emit() == 'if 1:\n    2\nelse:\n    3'
 
-    rif1 = if1.add_return()
+    rif1 = if1.as_return()
     assert rif1.emit() == 'if 1:\n    return 2\nelse:\n    return 3'
 
     if2 = If(Assign([Name('x')], Num(2)),

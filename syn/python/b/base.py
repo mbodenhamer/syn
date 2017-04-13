@@ -124,9 +124,12 @@ class PythonNode(Node):
                 ret[attr] = val
         return ret
 
-    def add_return(self, **kwargs):
+    def as_return(self, **kwargs):
         from .statements import Return
-        return Return(self)
+        return Return(self.copy())
+
+    def as_value(self, **kwargs):
+        return self.copy()
 
     def emit(self, **kwargs):
         raise NotImplementedError
