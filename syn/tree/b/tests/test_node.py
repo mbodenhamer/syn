@@ -212,6 +212,12 @@ def treenode_tst_3(cls):
     assert n4.root() is n1
     assert n5.root() is n1
 
+    assert_equivalent(n1, n1.copy())
+    assert_equivalent(n2, n2.copy())
+    assert_equivalent(n3, n3.copy())
+    assert_equivalent(n4, n4.copy())
+    assert_equivalent(n5, n5.copy())
+
     assert n1.node_count() == 5
     n4.add_child(Node())
     assert n1.node_count() == 6

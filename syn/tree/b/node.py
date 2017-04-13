@@ -86,6 +86,9 @@ class Node(ListWrapper):
     @init_hook
     @setstate_hook
     def set_child_parents(self, parent=None, recurse=False):
+        if getattr(self, '_from_copy_', False):
+            return
+
         if parent is None:
             parent = self
 

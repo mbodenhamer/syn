@@ -15,7 +15,8 @@ _LIST = '_list'
 
 
 class ListWrapper(Base, Harvester):
-    _attrs = dict(_list = Attr(list, internal=True, groups=('str_exclude',),
+    _attrs = dict(_list = Attr(list, internal=True, 
+                               groups=('str_exclude', 'copy_copy'),
                                doc='The wrapped list'))
     _opts = dict(max_len = None,
                  min_len = None)

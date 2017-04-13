@@ -216,6 +216,7 @@ class Base(object):
             if attr in dct:
                 dct[attr] = copy(dct[attr])
 
+        dct['_from_copy_'] = True
         return type(self)(**dct)
 
     def copy(self, **kwargs):

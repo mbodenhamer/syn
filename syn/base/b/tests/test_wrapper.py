@@ -6,6 +6,7 @@ from syn.base.b.tests.test_base import check_idempotence
 from syn.types.a import generate
 from syn.type.a import Schema
 from syn.schema.b.sequence import Sequence
+from syn.base_utils import assert_equivalent
 
 #-------------------------------------------------------------------------------
 # ListWrapper
@@ -13,6 +14,11 @@ from syn.schema.b.sequence import Sequence
 def test_listwrapper():
     obj = ListWrapper(1, 2, 3)
     check_idempotence(obj)
+
+    objc = obj.copy()
+    assert_equivalent(obj, objc)
+    assert_equivalent(obj._list, objc._list)
+    assert obj._list is not objc._list
 
     assert isinstance(obj, collections.MutableSequence)
     assert issubclass(ListWrapper, collections.MutableSequence)
