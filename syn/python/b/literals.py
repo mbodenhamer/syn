@@ -82,12 +82,6 @@ class Sequence(Literal):
         ret = self._indent(**kwargs) + ret
         return ret
 
-    def transform(self, **kwargs):
-        elts = [elt.transform(**kwargs) for elt in self.elts]
-        self.elts = elts
-        self._set_children()
-        return self
-
 
 #-------------------------------------------------------------------------------
 # List

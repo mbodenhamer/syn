@@ -33,12 +33,10 @@ def test_assign():
     a = Assign([Name('x')], Num(1))
     assert a.emit() == 'x = 1'
     assert a.emit(indent_level=1) == '    x = 1'
-    assert a.transform().emit() == 'x = 1'
 
     a = Assign([Name('x'), Name('y')], Num(1))
     assert a.emit() == 'x = y = 1'
     assert a.emit(indent_level=1) == '    x = y = 1'
-    assert a.transform().emit() == 'x = y = 1'
 
 #-------------------------------------------------------------------------------
 # Return
@@ -50,12 +48,10 @@ def test_return():
     r = Return()
     assert r.emit() == 'return'
     assert r.emit(indent_level=1) == '    return'
-    assert r.transform().emit() == 'return'
 
     r = Return(Num(1))
     assert r.emit() == 'return 1'
     assert r.emit(indent_level=1) == '    return 1'
-    assert r.transform().emit() == 'return 1'
 
 #-------------------------------------------------------------------------------
 # Import

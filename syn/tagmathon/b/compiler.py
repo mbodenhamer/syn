@@ -29,9 +29,8 @@ def compile_to_python(obj, **kwargs):
     py = to_python(obj, **kwargs)
     if isinstance(py, list):
         py = Module(*py)
-    trans = py.transform(**kwargs)
-    trans.validate()
-    return trans.emit(**kwargs)
+    py.validate()
+    return py.emit(**kwargs)
 
 #-------------------------------------------------------------------------------
 # __all__

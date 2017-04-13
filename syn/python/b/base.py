@@ -139,9 +139,6 @@ class PythonNode(Node):
         kwargs_ = self._to_ast_kwargs(**kwargs)
         return self.ast(**kwargs_)
 
-    def transform(self, **kwargs):
-        return self
-
     def validate(self):
         if self._children_set:
             with assign(self, '_children', []):
@@ -201,20 +198,6 @@ class RootNode(PythonNode):
         kwargs_ = self._to_ast_kwargs(**kwargs)
         return self.ast(cs, **kwargs_)
 
-    def transform(self, **kwargs):
-        cs = [c.transform(**kwargs) for c in self]
-        while any(isinstance(child, ProgN) for child in cs):
-            temp = []
-            for child in cs:
-                if isinstance(child, ProgN):
-                    temp.extend(child.transform(**kwargs))
-                else:
-                    temp.append(child)
-            cs = temp
-
-        self._children = cs
-        return self
-
 
 class Module(RootNode):
     pass
@@ -253,9 +236,6 @@ class Special(PythonNode):
 
 
 class ProgN(Special):
-    def transform(self, **kwargs):
-        return self._children
-
     def variable(self, **kwargs):
         from .statements import Assign
         for child in reversed(self._children):

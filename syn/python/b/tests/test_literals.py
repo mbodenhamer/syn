@@ -63,7 +63,6 @@ def test_num():
     n = Num(1)
     assert n.emit() == '1'
     assert n.emit(indent_level=1) == '    1'
-    assert n.transform() is n
 
     rn = n.add_return()
     assert rn.emit() == 'return 1'
@@ -77,7 +76,6 @@ def test_str():
     s = Str('abc')
     assert s.emit() == "'abc'"
     assert s.emit(indent_level=1) == "    'abc'"
-    assert s.transform() is s
 
 #-------------------------------------------------------------------------------
 # Bytes
@@ -88,13 +86,11 @@ def test_bytes():
         b = Bytes(b'abc')
         assert b.emit() == "b'abc'"
         assert b.emit(indent_level=1) == "    b'abc'"
-        assert b.transform() is b
     else:
         examine("b'abc'", "'abc'")
         b = Bytes(b'abc')
         assert b.emit() == "'abc'"
         assert b.emit(indent_level=1) == "    'abc'"
-        assert b.transform() is b
 
 #-------------------------------------------------------------------------------
 # Sequence
@@ -108,17 +104,14 @@ def test_sequence():
     l = List([Num(1), Num(2)])
     assert l.emit() == '[1, 2]'
     assert l.emit(indent_level=1) == '    [1, 2]'
-    assert l.transform().emit() == '[1, 2]'
 
     t = Tuple([Num(1), Num(2)])
     assert t.emit() == '(1, 2)'
     assert t.emit(indent_level=1) == '    (1, 2)'
-    assert t.transform().emit() == '(1, 2)'
 
     s = Set([Num(1), Num(2)])
     assert s.emit() == '{1, 2}'
     assert s.emit(indent_level=1) == '    {1, 2}'
-    assert s.transform().emit() == '{1, 2}'
 
 #-------------------------------------------------------------------------------
 # NameConstant

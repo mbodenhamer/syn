@@ -30,19 +30,6 @@ class Block(PythonNode):
         ret += '\n'.join(strs)
         return ret
 
-    def transform_block(self, body, **kwargs):
-        cs = [c.transform(**kwargs) for c in body]
-        while any(isinstance(child, ProgN) for child in cs):
-            temp = []
-            for child in cs:
-                if isinstance(child, ProgN):
-                    temp.extend(child.transform(**kwargs))
-                else:
-                    temp.append(child)
-            cs = temp
-
-        return cs
-
 
 #-------------------------------------------------------------------------------
 # If
@@ -72,25 +59,6 @@ class If(Block):
             ret += '\n' + block
 
         return ret
-
-    def transform(self, **kwargs):
-        out = None
-        if isinstance(self.test, (Statement, Block)):
-            out = self.test.transform(**kwargs)
-            if isinstance(out, Statement):
-                out = ProgN(out)
-            else:
-                out = out.assign_value()
-            self.test = out.variable(**kwargs) # TODO: do we need to copy here?
-
-        self.body = self.transform_block(self.body, **kwargs)
-        if self.orelse:
-            self.orelse = self.transform_block(self.orelse, **kwargs)
-
-        self._set_children()
-        if out:
-            return ProgN(*(list(out) + [self]))
-        return self
 
 
 #-------------------------------------------------------------------------------
