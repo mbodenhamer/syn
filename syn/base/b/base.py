@@ -1,5 +1,6 @@
 import os
 import six
+from copy import copy
 from jinja2 import Template
 from operator import itemgetter
 from collections import Mapping
@@ -58,6 +59,8 @@ class Base(object):
     _aliases = SeqDict()
     _groups = ReflexiveDict('_all',
                             '_internal',
+                            'copy_exclude',
+                            'copy_copy',
                             'eq_exclude',
                             'hash_exclude',
                             'generate_exclude',
@@ -204,6 +207,19 @@ class Base(object):
         attrs = {attr: types[attr].coerce(val, **kwargs) 
                  for attr, val in dct.items()}
         return cls(**attrs)
+
+    def __copy__(self, **kwargs):
+        kwargs['exclude'] = kwargs.get('exclude', []) + ['copy_exclude']
+        dct = self.to_dict(**kwargs)
+        
+        for attr in self._groups.copy_copy:
+            if attr in dct:
+                dct[attr] = copy(dct[attr])
+
+        return type(self)(**dct)
+
+    def copy(self, **kwargs):
+        return self.__copy__(**kwargs)
 
     @classmethod
     @create_hook

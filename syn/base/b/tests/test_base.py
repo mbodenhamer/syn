@@ -1,4 +1,5 @@
 import six.moves.cPickle as pickle
+from copy import copy
 from nose.tools import assert_raises
 from syn.five import STR
 from syn.base.b import Base, Attr, init_hook, coerce_hook, setstate_hook, \
@@ -712,6 +713,39 @@ def test_preprocess_hooks_alt_attrs():
     assert AA4._attrs.defaults == dict(c = 'abc')
     assert AA4._attrs.doc == dict(a = 'abc')
     assert AA4.d == 'bc'
+
+#-------------------------------------------------------------------------------
+# Copy functionality
+
+class CopyTest(Base):
+    _attrs = dict(a = Attr(int),
+                  b = Attr(float),
+                  c = Attr(STR))
+    _opts = dict(args = ['a', 'b', 'c'],
+                 init_validate = True)
+
+class CopyTest2(CopyTest):
+    _attrs = dict(d = Attr(list, group='copy_copy'),
+                  e = Attr(list, optional=True, group='copy_exclude'))
+
+class CopyTest3(CopyTest2):
+    _attrs = dict(f = Attr(int, optional=True, group='eq_exclude'))
+
+def test_copy():
+    c = CopyTest(1, 1.2, 'abc')
+    assert_equivalent(c, c.copy())
+
+    c2 = CopyTest2(1, 2.3, 'abc', d=[1, 2], e=[3, 4])
+    c2c = c2.copy()
+    assert_equivalent(c2.d, c2c.d)
+    assert c2.e == [3, 4]
+    assert not hasattr(c2c, 'e')
+
+    c3 = CopyTest3(1, 2.3, 'abc', d=[1, 2], e=[3, 4], f=5)
+    c3c = copy(c3)
+    assert c3c.to_dict() == dict(a=1, b=2.3, c='abc', d=[1,2], f=5)
+    assert c3.copy(exclude=['eq_exclude']).to_dict() == \
+        dict(a=1, b=2.3, c='abc', d=[1,2])
 
 #-------------------------------------------------------------------------------
 # Update functionality
