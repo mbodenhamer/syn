@@ -129,6 +129,7 @@ class PythonNode(Node):
         return Return(self.copy())
 
     def as_value(self, **kwargs):
+        '''Must return either an Expression or a ProgN.'''
         return self.copy()
 
     def emit(self, **kwargs):
@@ -239,7 +240,7 @@ class Special(PythonNode):
 
 
 class ProgN(Special):
-    def variable(self, **kwargs):
+    def value(self, **kwargs):
         from .statements import Assign
         for child in reversed(self._children):
             if isinstance(child, Assign):

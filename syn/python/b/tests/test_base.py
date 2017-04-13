@@ -35,10 +35,10 @@ def test_special():
 def test_progn():
     p = ProgN()
     assert_raises(PythonError, p.validate)
-    assert_raises(PythonError, p.variable)
+    assert_raises(PythonError, p.value)
 
     p = ProgN(Assign([Name('x')], Num(2)))
-    assert p.variable() == Name('x')
+    assert p.value() == Name('x')
 
 #-------------------------------------------------------------------------------
 # Module API

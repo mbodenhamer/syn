@@ -63,9 +63,11 @@ def test_num():
     n = Num(1)
     assert n.emit() == '1'
     assert n.emit(indent_level=1) == '    1'
+    assert n.as_value().emit() == '1'
 
     rn = n.as_return()
     assert rn.emit() == 'return 1'
+    assert n.emit() == '1'
 
 #-------------------------------------------------------------------------------
 # Str
