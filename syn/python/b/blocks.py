@@ -3,7 +3,7 @@ from functools import partial
 from syn.base_utils import setitem, pyversion
 from syn.type.a import List
 from syn.five import STR, xrange
-from .base import PythonNode, Attr, AST, ACO, ProgN, Statement
+from .base import PythonNode, Attr, AST, ACO, ProgN, Statement, Expression
 from .literals import Tuple, List as List_
 from .variables import Name
 
@@ -15,7 +15,7 @@ OAttr = partial(Attr, optional=True)
 
 
 class Block(Statement):
-    _attrs = dict(body = Attr(List(PythonNode), groups=(AST, ACO)))
+    _attrs = dict(body = Attr(List((Expression, Statement)), groups=(AST, ACO)))
     _opts = dict(max_len = 0)
 
     def emit_block(self, head, body, **kwargs):
@@ -36,7 +36,7 @@ class Block(Statement):
 
 class If(Block):
     _attrs = dict(test = Attr(PythonNode, groups=(AST, ACO)),
-                  orelse = Attr(List(PythonNode), groups=(AST, ACO),
+                  orelse = Attr(List((Expression, Statement)), groups=(AST, ACO),
                                 init=lambda self: list()))
     _opts = dict(args = ('test', 'body', 'orelse'))
 
@@ -67,8 +67,8 @@ class If(Block):
 
 class For(Block):
     _attrs = dict(target = Attr((Name, Tuple, List_), groups=(AST, ACO)),
-                  iter = Attr(PythonNode, groups=(AST, ACO)),
-                  orelse = Attr(List(PythonNode), groups=(AST, ACO)))
+                  iter = Attr(Expression, groups=(AST, ACO)),
+                  orelse = Attr(List((Expression, Statement)), groups=(AST, ACO)))
     _opts = dict(args = ('target', 'iter', 'body', 'orelse'))
     
     def emit(self, **kwargs):
@@ -91,8 +91,8 @@ class For(Block):
 
 
 class While(Block):
-    _attrs = dict(test = Attr(PythonNode, groups=(AST, ACO)),
-                  orelse = Attr(List(PythonNode), groups=(AST, ACO)))
+    _attrs = dict(test = Attr(Expression, groups=(AST, ACO)),
+                  orelse = Attr(List((Expression, Statement)), groups=(AST, ACO)))
     _opts = dict(args = ('test', 'body', 'orelse'))
 
     def emit(self, **kwargs):
@@ -120,7 +120,7 @@ class Arg(PythonNode):
     _opts = dict(max_len = 0,
                  args = ['arg', 'annotation'])
     _attrs = dict(arg = Attr(STR, group=AST),
-                  annotation = OAttr(PythonNode, groups=(AST, ACO)))
+                  annotation = OAttr(Expression, groups=(AST, ACO)))
 
     def emit(self, **kwargs):
         ret = self.arg
@@ -140,7 +140,7 @@ class Arguments(PythonNode):
     _attrs = dict(args = Attr(List(Name), groups=(AST, ACO)),
                   vararg = OAttr(STR, group=AST),
                   kwarg = OAttr(STR, group=AST),
-                  defaults = Attr(List(PythonNode), groups=(AST, ACO),
+                  defaults = Attr(List(Expression), groups=(AST, ACO),
                                   init=lambda self: list()))
 
     if VER >= '3.4':
@@ -149,9 +149,9 @@ class Arguments(PythonNode):
                                         init=lambda self: list()),
                       vararg = OAttr(Arg, groups=(AST, ACO)),
                       kwarg = OAttr(Arg, groups=(AST, ACO)),
-                      defaults = Attr(List(PythonNode), groups=(AST, ACO),
+                      defaults = Attr(List(Expression), groups=(AST, ACO),
                                       init=lambda self: list()),
-                      kw_defaults = Attr(List((PythonNode, type(None))), 
+                      kw_defaults = Attr(List((Expression, type(None))), 
                                               groups=(AST, ACO),
                                          init=lambda self: list()))
         _opts['args'] = ['args', 'vararg', 'kwonlyargs', 'kwarg', 
@@ -210,10 +210,10 @@ class FunctionDef(Block):
     _opts = dict(args = ['name', 'args', 'body', 'decorator_list'])
     _attrs = dict(name = Attr(STR, group=AST),
                   args = Attr(Arguments, groups=(AST, ACO)),
-                  decorator_list = OAttr(List(PythonNode), groups=(AST, ACO)))
+                  decorator_list = OAttr(List(Expression), groups=(AST, ACO)))
 
     if VER >= '3':
-        _attrs['returns'] = OAttr(PythonNode, groups=(AST, ACO))
+        _attrs['returns'] = OAttr(Expression, groups=(AST, ACO))
         _opts['args'].append('returns')
 
     def emit_decorators(self, **kwargs):

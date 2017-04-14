@@ -1,5 +1,5 @@
 import ast
-from .base import PythonNode, Attr, AST, ACO, OAttr, Statement
+from .base import Attr, AST, ACO, OAttr, Statement, Expression
 from syn.base_utils import setitem, get_typename
 from syn.type.a import List
 from syn.five import STR
@@ -9,8 +9,8 @@ from syn.five import STR
 
 
 class Assign(Statement):
-    _attrs = dict(targets = Attr(List(PythonNode), groups=(AST, ACO)),
-                  value = Attr(PythonNode, groups=(AST, ACO)))
+    _attrs = dict(targets = Attr(List(Expression), groups=(AST, ACO)),
+                  value = Attr(Expression, groups=(AST, ACO)))
     _opts = dict(args = ('targets', 'value'))
 
     def emit(self, **kwargs):
@@ -29,7 +29,7 @@ class Assign(Statement):
 
 
 class Return(Statement):
-    _attrs = dict(value = OAttr(PythonNode, groups=(AST, ACO)))
+    _attrs = dict(value = OAttr(Expression, groups=(AST, ACO)))
     _opts =  dict(args = ('value',))
 
     def emit(self, **kwargs):

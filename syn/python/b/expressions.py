@@ -64,7 +64,7 @@ class Invert(UnaryOperator):
 class UnaryOp(Expression):
     _opts = dict(args = ['op', 'operand'])
     _attrs = dict(op = Attr(UnaryOperator, groups=(AST, ACO)),
-                  operand = Attr(PythonNode, groups=(AST, ACO)))
+                  operand = Attr(Expression, groups=(AST, ACO)))
 
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):
@@ -139,8 +139,8 @@ class MatMult(BinaryOperator):
 class BinOp(Expression):
     _opts = dict(args = ('left', 'op', 'right'))
     _attrs = dict(op = Attr(BinaryOperator, groups=(AST, ACO)),
-                  left = Attr(PythonNode, groups=(AST, ACO)),
-                  right = Attr(PythonNode, groups=(AST, ACO)))
+                  left = Attr(Expression, groups=(AST, ACO)),
+                  right = Attr(Expression, groups=(AST, ACO)))
 
     A = property(attrgetter('left'))
     B = property(attrgetter('right'))
@@ -182,7 +182,7 @@ class Or(BooleanOperator):
 class BoolOp(Expression):
     _opts = dict(args = ('op', 'values'))
     _attrs = dict(op = Attr(BooleanOperator, groups=(AST, ACO)),
-                  values = Attr(List(PythonNode), groups=(AST, ACO)))
+                  values = Attr(List(Expression), groups=(AST, ACO)))
     
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):
@@ -243,9 +243,9 @@ class NotIn(Comparator):
 
 class Compare(Expression):
     _opts = dict(args = ('left', 'ops', 'comparators'))
-    _attrs = dict(left = Attr(PythonNode, groups=(AST, ACO)),
+    _attrs = dict(left = Attr(Expression, groups=(AST, ACO)),
                   ops = Attr(List(Comparator), groups=(AST, ACO)),
-                  comparators = Attr(List(PythonNode), groups=(AST, ACO)))
+                  comparators = Attr(List(Expression), groups=(AST, ACO)))
 
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):
@@ -268,7 +268,7 @@ class Compare(Expression):
 class Keyword(Expression):
     ast = ast.keyword
     _attrs = dict(arg = Attr(STR, group=AST),
-                  value = Attr(PythonNode, groups=(AST, ACO)))
+                  value = Attr(Expression, groups=(AST, ACO)))
 
     if VER >= '3.5':
         _attrs['arg'] = Attr((STR, type(None)), group=AST)
@@ -290,8 +290,8 @@ class Keyword(Expression):
 
 class Call(Expression):
     _opts = dict(args = ['func', 'args', 'keywords'])
-    _attrs = dict(func = Attr(PythonNode, groups=(AST, ACO)),
-                  args = OAttr(List(PythonNode), groups=(AST, ACO)),
+    _attrs = dict(func = Attr(Expression, groups=(AST, ACO)),
+                  args = OAttr(List(Expression), groups=(AST, ACO)),
                   keywords = OAttr(List(Keyword), groups=(AST, ACO)))
     
     if VER < '3.5':
@@ -332,9 +332,9 @@ class Call(Expression):
 
 
 class IfExp(Expression):
-    _attrs = dict(test = Attr(PythonNode, groups=(AST, ACO)),
-                  body = Attr(PythonNode, groups=(AST, ACO)),
-                  orelse = Attr(PythonNode, groups=(AST, ACO)))
+    _attrs = dict(test = Attr(Expression, groups=(AST, ACO)),
+                  body = Attr(Expression, groups=(AST, ACO)),
+                  orelse = Attr(Expression, groups=(AST, ACO)))
 
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):
@@ -351,7 +351,7 @@ class IfExp(Expression):
 
 
 class Attribute(Expression):
-    _attrs = dict(value = Attr(PythonNode, groups=(AST, ACO)),
+    _attrs = dict(value = Attr(Expression, groups=(AST, ACO)),
                   attr = Attr(STR, group=AST),
                   ctx = Attr(Context, Load(), groups=(AST, ACO)))
 

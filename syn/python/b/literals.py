@@ -70,7 +70,7 @@ class Sequence(Literal):
     bounds = ('[', ']')
     delim = ', '
     _opts = dict(args = ('elts',))
-    _attrs = dict(elts = Attr(List(PythonNode), groups=(AST, ACO)))
+    _attrs = dict(elts = Attr(List(Expression), groups=(AST, ACO)))
     
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):
