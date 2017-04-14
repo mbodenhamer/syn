@@ -29,8 +29,9 @@ def compile_to_python(obj, **kwargs):
     py = to_python(obj, **kwargs)
     if isinstance(py, list):
         py = Module(*py)
-    py.validate()
-    return py.emit(**kwargs)
+    out = py.expressify_statements().resolve_progn()
+    out.validate()
+    return out.emit(**kwargs)
 
 #-------------------------------------------------------------------------------
 # __all__

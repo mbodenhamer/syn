@@ -5,7 +5,7 @@ from operator import itemgetter
 from syn.base_utils import get_typename, ReflexiveDict, assign
 from syn.tree.b import Node, Tree
 from syn.base.b import create_hook, Attr, init_hook
-from syn.type.a import TypeType, MultiType
+from syn.type.a import TypeType, MultiType, Sequence
 from syn.five import xrange
 
 OAttr = partial(Attr, optional=True)
@@ -37,7 +37,9 @@ def is_expression_type(typ):
         return issubclass(typ.type, Expression)
     elif isinstance(typ, MultiType):
         return any(is_expression_type(t) for t in typ.types)
-    return False
+    elif isinstance(typ, Sequence):
+        return is_expression_type(typ.item_type)
+    raise PythonError('Should never query for: {}'.format(typ))
 
 #-------------------------------------------------------------------------------
 # Utility Classes
@@ -159,15 +161,17 @@ class PythonNode(Node):
             typ = obj._attrs[attr].type
             if is_expression_type(typ):
                 val = getattr(self, attr)
-                if isinstance(val, list):
-                    res = [item.expressify_statements(**kwargs) for item in val]
-                    res_ = [item if isinstance(item, (Expression, ProgN)) else
-                            item.as_value(**kwargs) for item in res]
-                    setattr(obj, attr, res_)
-                else:
-                    res = val.expressify_statements(**kwargs)
-                    if not isinstance(res, (Expression, ProgN)):
-                        setattr(obj, attr, res.as_value(**kwargs))
+                if val is not None:
+                    if isinstance(val, list):
+                        res = [item.expressify_statements(**kwargs) 
+                               for item in val]
+                        res_ = [item if typ.item_type.query(item) else
+                                item.as_value(**kwargs) for item in res]
+                        setattr(obj, attr, res_)
+                    else:
+                        res = val.expressify_statements(**kwargs)
+                        if not typ.query(res):
+                            setattr(obj, attr, res.as_value(**kwargs))
         return obj
 
     @classmethod
@@ -179,21 +183,22 @@ class PythonNode(Node):
         obj = self.copy()
         for attr in obj._groups[ACO]:
             val = getattr(obj, attr)
-            if isinstance(val, list):
-                res = [item.resolve_progn(**kwargs) for item in val]
-                for k in xrange(len(res)):
-                    item = res[k]
-                    if isinstance(item, ProgN):
-                        res[k] = item.value(**kwargs)
-                        progns.append(item)
-                setattr(obj, attr, res)
-            else:
-                res = val.resolve_progn(**kwargs)
-                if isinstance(res, ProgN):
-                    setattr(obj, attr, res.value(**kwargs))
-                    progns.append(res)
-                else:
+            if val is not None:
+                if isinstance(val, list):
+                    res = [item.resolve_progn(**kwargs) for item in val]
+                    for k in xrange(len(res)):
+                        item = res[k]
+                        if isinstance(item, ProgN):
+                            res[k] = item.value(**kwargs)
+                            progns.append(item)
                     setattr(obj, attr, res)
+                else:
+                    res = val.resolve_progn(**kwargs)
+                    if isinstance(res, ProgN):
+                        setattr(obj, attr, res.value(**kwargs))
+                        progns.append(res)
+                    else:
+                        setattr(obj, attr, res)
 
         if progns:
             ret = progns[0]
@@ -278,6 +283,7 @@ class RootNode(PythonNode):
                 out.append(item)
 
         ret._children = out
+        ret._init_bookkeeping()
         return ret
 
     def to_ast(self, **kwargs):
@@ -355,6 +361,7 @@ class ProgN(Special):
                 out.append(item)
 
         ret._children = out
+        ret._init_bookkeeping()
         return ret
 
     def value(self, **kwargs):

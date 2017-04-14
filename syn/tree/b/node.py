@@ -77,6 +77,10 @@ class Node(ListWrapper):
             kwargs['exclude_types'] = excludes
         return super(Node, cls)._generate(**kwargs)
 
+    def _init_bookkeeping(self):
+        self.set_child_parents(override=True)
+        self._initial_node_count()
+
     @init_hook
     def _initial_node_count(self):
         self._node_count = 1
@@ -85,8 +89,8 @@ class Node(ListWrapper):
 
     @init_hook
     @setstate_hook
-    def set_child_parents(self, parent=None, recurse=False):
-        if getattr(self, '_from_copy_', False):
+    def set_child_parents(self, parent=None, recurse=False, override=False):
+        if getattr(self, '_from_copy_', False) and not override:
             return
 
         if parent is None:
