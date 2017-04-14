@@ -213,6 +213,7 @@ class PythonNode(Node):
                         if not typ.query(res):
                             setattr(obj, attr, res.as_value(**kwargs))
 
+        obj._set_children()
         obj._init()
         return obj
 
@@ -252,6 +253,7 @@ class PythonNode(Node):
                     else:
                         setattr(obj, attr, res)
 
+        obj._set_children()
         obj._init()
         if progns:
             ret = progns[0]
