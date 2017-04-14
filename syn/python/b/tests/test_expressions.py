@@ -1,6 +1,8 @@
 from functools import partial
+from nose.tools import assert_raises
 from syn.base_utils import compose, pyversion
-from syn.python.b import Expr, from_source, MatMult, Call, Name
+from syn.python.b import Expr, from_source, MatMult, Call, Name, BinOp, \
+    Add, Assign, Module, Num, Return
 from .test_literals import examine
 
 VER = pyversion()
@@ -43,6 +45,34 @@ def test_binary_operators():
 
     examine('1 + (a / 3)', '(1 + (a / 3))')
     
+    p1 = Module(BinOp(Assign([Name('x')], Num(5)),
+                      Add(),
+                      Num(2)))
+    assert p1.emit() == '(x = 5 + 2)'
+    assert_raises(TypeError, p1.validate) # Indeed, this is not valid python
+    p1r = p1.expressify_statements().resolve_progn()
+    assert p1r.emit() == 'x = 5\n(x + 2)'
+
+    # p2 = Module(Return(BinOp(Assign([Name('x')], Num(5)),
+    #                          Add(),
+    #                          Num(2))))
+    # assert p2.emit() == 'return (x = 5 + 2)'
+    # assert_raises(TypeError, p2.validate)
+    # p2r = p2.expressify_statements().resolve_progn()
+    # assert p2r.emit() == 'x = 5\nreturn (x + 2)'
+
+    # p3 = Module(BinOp(Assign([Name('x')],
+    #                          BinOp(Assign([Name('y')],
+    #                                       Num(5)),
+    #                                Add(),
+    #                                Num(1))),
+    #                   Add(),
+    #                   Num(2)))
+    # assert p3.emit() == '(x = (y = 5 + 1) + 2)'
+    # assert_raises(TypeError, p3.validate)
+    # p3r = p3.expressify_statements().resolve_progn()
+    # assert p3r.emit() == 'y = 5\nx = (y + 1)\n(x + 2)'
+
 #-------------------------------------------------------------------------------
 # Boolean Operators
 

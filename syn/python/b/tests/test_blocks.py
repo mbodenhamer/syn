@@ -41,6 +41,14 @@ def test_if():
 if x:
     return 5'''
 
+    if3 = Module(If(Assign([Name('x')], Num(2)),
+                    [Assign([Name('y')], Name('x'))]))
+    if3r = if3.expressify_statements().resolve_progn()
+    if3r.validate()
+    assert if3r.emit() == '''x = 2
+if x:
+    y = x'''
+
 #-------------------------------------------------------------------------------
 # For
 
