@@ -17,6 +17,9 @@ class Name(Expression):
         ret += self.id
         return ret
 
+    def variables(self, **kwargs):
+        return {self.id}
+
 
 #-------------------------------------------------------------------------------
 # Starred

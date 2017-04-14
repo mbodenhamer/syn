@@ -235,7 +235,13 @@ class PythonNode(Node):
                 super(PythonNode, self).validate()
         else:
             super(PythonNode, self).validate()
-            
+
+    def variables(self, **kwargs):
+        ret = set()
+        for c in self._children:
+            ret.update(c.variables(**kwargs))
+        return ret
+
 
 #-------------------------------------------------------------------------------
 # Contexts

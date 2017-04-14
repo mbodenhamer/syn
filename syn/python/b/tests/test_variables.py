@@ -1,5 +1,5 @@
 from syn.base_utils import pyversion
-from syn.python.b import Starred
+from syn.python.b import Starred, Name
 from .test_literals import examine
 from .test_statements import examine as examine_
 
@@ -10,6 +10,11 @@ VER = pyversion()
 
 def test_name():
     examine('foo')
+
+    n = Name('x')
+    assert n.emit() == 'x'
+    assert n.emit(indent_level=1) == '    x'
+    assert n.variables() == {'x'}
 
 #-------------------------------------------------------------------------------
 # Starred
