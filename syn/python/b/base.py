@@ -4,13 +4,14 @@ from functools import partial
 from operator import itemgetter
 from syn.base_utils import get_typename, ReflexiveDict, assign
 from syn.tree.b import Node, Tree
-from syn.base.b import create_hook, Attr, init_hook
+from syn.base.b import create_hook, Attr, init_hook, Base, Counter
 from syn.type.a import TypeType, MultiType, Sequence
 from syn.five import xrange
 
 OAttr = partial(Attr, optional=True)
 
 #-------------------------------------------------------------------------------
+# Registry
 
 AST_REGISTRY = {}
 
@@ -54,8 +55,33 @@ def resolve_progn(lst, **kwargs):
 #-------------------------------------------------------------------------------
 # Utility Classes
 
+
 class NoAST(object):
-    pass
+    '''Dummy class to prevent binding to a specific ast object.'''
+
+
+class GenSym(Base):
+    _attrs = dict(names = Attr(set, init=lambda self: set()),
+                  counter = Attr(Counter, init=lambda self: Counter()))
+    _opts = dict(args = ('names',),
+                 init_validate = True)
+
+    def add(self, name):
+        self.names.add(name)
+
+    def _generate(self):
+        return '_gensym_{}'.format(self.counter())
+
+    def generate(self):
+        ret = self._generate()
+        while ret in self.names:
+            ret = self._generate()
+        self.add(ret)
+        return ret
+
+    def update(self, names):
+        self.names.update(names)
+
 
 #-------------------------------------------------------------------------------
 # Base Class

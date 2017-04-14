@@ -4,6 +4,41 @@ from syn.python.b import PythonNode, from_ast, AstUnsupported, Context, Load, \
     Special, PythonError, ProgN, Assign, Num, Name
 
 #-------------------------------------------------------------------------------
+# Utilities
+
+def test_is_expression_type():
+    from syn.python.b.base import is_expression_type
+    assert_raises(PythonError, is_expression_type, 1)
+
+#-------------------------------------------------------------------------------
+# Utility Classes
+
+def test_gensym():
+    from syn.python.b.base import GenSym
+
+    g = GenSym({'a', 'b'})
+    assert g.names == {'a', 'b'}
+    assert g.counter.peek() == -1
+    gen = g.generate()
+    assert gen == '_gensym_0'
+    assert g.names == {'a', 'b', '_gensym_0'}
+    assert g.counter.peek() == 0
+    gen2 = g.generate()
+    assert gen2 == '_gensym_1'
+    assert g.names == {'a', 'b', '_gensym_0', '_gensym_1'}
+    assert g.counter.peek() == 1
+
+    g2 = GenSym({'a', '_gensym_0'})
+    gen = g2.generate()
+    assert gen == '_gensym_1'
+    assert g2.names == {'a', '_gensym_0', '_gensym_1'}
+    assert g2.counter.peek() == 1
+
+    g2.update({'b'})
+    assert g2.names == {'a', 'b', '_gensym_0', '_gensym_1'}
+    assert g2.counter.peek() == 1
+
+#-------------------------------------------------------------------------------
 # Base Class
 
 def test_pythonnode():
