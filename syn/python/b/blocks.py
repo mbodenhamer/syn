@@ -3,10 +3,9 @@ from functools import partial
 from syn.base_utils import setitem, pyversion
 from syn.type.a import List
 from syn.five import STR, xrange
-from .base import PythonNode, Attr, AST, ACO, ProgN
+from .base import PythonNode, Attr, AST, ACO, ProgN, Statement
 from .literals import Tuple, List as List_
 from .variables import Name
-from .statements import Statement
 
 VER = pyversion()
 OAttr = partial(Attr, optional=True)
@@ -15,7 +14,7 @@ OAttr = partial(Attr, optional=True)
 # Block
 
 
-class Block(PythonNode):
+class Block(Statement):
     _attrs = dict(body = Attr(List(PythonNode), groups=(AST, ACO)))
     _opts = dict(max_len = 0)
 

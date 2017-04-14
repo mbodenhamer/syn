@@ -1,4 +1,4 @@
-from .base import PythonNode, Context, Attr, AST, ACO, Load
+from .base import Expression, Context, Attr, AST, ACO, Load
 from syn.base_utils import setitem
 from syn.five import STR
 
@@ -6,7 +6,7 @@ from syn.five import STR
 # Name
 
 
-class Name(PythonNode):
+class Name(Expression):
     _attrs = dict(ctx = Attr(Context, Load(), groups=(AST, ACO)),
                   id = Attr(STR, group=AST))
     _opts = dict(max_len = 0,
@@ -22,9 +22,9 @@ class Name(PythonNode):
 # Starred
 
 
-class Starred(PythonNode):
+class Starred(Expression):
     minver = '3'
-    _attrs = dict(value = Attr(PythonNode, groups=(AST, ACO)),
+    _attrs = dict(value = Attr(Name, groups=(AST, ACO)),
                   ctx = Attr(Context, Load(), groups=(AST, ACO)))
     _opts = dict(max_len = 0,
                  args = ('value', 'ctx'))

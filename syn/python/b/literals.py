@@ -1,4 +1,4 @@
-from .base import PythonNode, Attr, Context, Load, AST, ACO, ProgN
+from .base import PythonNode, Attr, Context, Load, AST, ACO, Expression
 from syn.base_utils import quote_string, setitem
 from syn.type.a import List
 from syn.five import PY2, STR
@@ -7,7 +7,7 @@ from syn.five import PY2, STR
 # Base Class
 
 
-class Literal(PythonNode):
+class Literal(Expression):
     _opts = dict(max_len = 0)
 
 
