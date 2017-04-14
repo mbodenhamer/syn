@@ -3,7 +3,8 @@ from functools import partial
 from syn.base_utils import setitem, pyversion
 from syn.type.a import List
 from syn.five import STR, xrange
-from .base import PythonNode, Attr, AST, ACO, ProgN, Statement, Expression
+from .base import PythonNode, Attr, AST, ACO, Statement, Expression, \
+    resolve_progn
 from .literals import Tuple, List as List_
 from .variables import Name
 
@@ -35,7 +36,7 @@ class Block(Statement):
 
 
 class If(Block):
-    _attrs = dict(test = Attr(PythonNode, groups=(AST, ACO)),
+    _attrs = dict(test = Attr(Expression, groups=(AST, ACO)),
                   orelse = Attr(List((Expression, Statement)), groups=(AST, ACO),
                                 init=lambda self: list()))
     _opts = dict(args = ('test', 'body', 'orelse'))
@@ -59,6 +60,15 @@ class If(Block):
             ret += '\n' + block
 
         return ret
+
+    def resolve_progn(self, **kwargs):
+        temp = self.copy()
+        temp.body = resolve_progn(temp.body, **kwargs)
+        if temp.orelse:
+            temp.orelse = resolve_progn(temp.orelse, **kwargs)
+        temp._init()
+        kwargs['attr_exclude'] = ['body', 'orelse']
+        return super(If, temp).resolve_progn(**kwargs)
 
 
 #-------------------------------------------------------------------------------

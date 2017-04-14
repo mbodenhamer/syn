@@ -1,5 +1,5 @@
 import ast
-from .base import Attr, AST, ACO, OAttr, Statement, Expression
+from .base import Attr, AST, ACO, OAttr, Statement, Expression, ProgN
 from syn.base_utils import setitem, get_typename
 from syn.type.a import List
 from syn.five import STR
@@ -12,6 +12,9 @@ class Assign(Statement):
     _attrs = dict(targets = Attr(List(Expression), groups=(AST, ACO)),
                   value = Attr(Expression, groups=(AST, ACO)))
     _opts = dict(args = ('targets', 'value'))
+
+    def as_value(self, **kwargs):
+        return ProgN(self.copy())
 
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):

@@ -1,6 +1,6 @@
 from nose.tools import assert_raises
 from .test_statements import examine
-from syn.python.b import Block, If, Num, Assign, Name, Return, Module
+from syn.python.b import Block, If, Num, Assign, Name, Return, Module, ProgN
 from syn.base_utils import pyversion
 
 VER = pyversion()
@@ -29,6 +29,17 @@ def test_if():
     if2 = If(Assign([Name('x')], Num(2)),
              [Return(Num(5))])
     assert if2.emit() == 'if x = 2:\n    return 5'
+    assert_raises(TypeError, if2.validate) # Indeed, this isn't valid python
+    if2r = if2.expressify_statements().resolve_progn()
+    assert isinstance(if2r, ProgN) # Bad
+
+    if2m = Module(if2)
+    if2r = if2m.expressify_statements().resolve_progn()
+    assert isinstance(if2r, Module) # Good
+    if2r.validate()
+    assert if2r.emit() == '''x = 2
+if x:
+    return 5'''
 
 #-------------------------------------------------------------------------------
 # For

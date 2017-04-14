@@ -192,7 +192,13 @@ class PythonNode(Node):
     def resolve_progn(self, **kwargs):
         progns = []
         obj = self.copy()
+        excludes = []
+        if 'attr_exclude' in kwargs:
+            excludes = kwargs['attr_exclude']
+            del kwargs['attr_exclude']
         for attr in obj._groups[ACO]:
+            if attr in excludes:
+                continue
             val = getattr(obj, attr)
             if val is not None:
                 if isinstance(val, list):
