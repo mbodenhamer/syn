@@ -315,6 +315,7 @@ class RootNode(PythonNode):
     def expressify_statements(self, **kwargs):
         ret = self.copy()
         ret._children = [item.expressify_statements(**kwargs) for item in ret]
+        ret._init()
         return ret
 
     @classmethod
