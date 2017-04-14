@@ -5,6 +5,8 @@ from operator import itemgetter
 from syn.base_utils import get_typename, ReflexiveDict, assign
 from syn.tree.b import Node, Tree
 from syn.base.b import create_hook, Attr, init_hook
+from syn.type.a import TypeType, MultiType
+from syn.five import xrange
 
 OAttr = partial(Attr, optional=True)
 
@@ -26,6 +28,16 @@ class AstUnsupported(Exception):
 
 class PythonError(Exception):
     pass
+
+#-------------------------------------------------------------------------------
+# Utilities
+
+def is_expression_type(typ):
+    if isinstance(typ, TypeType):
+        return issubclass(typ.type, Expression)
+    elif isinstance(typ, MultiType):
+        return any(is_expression_type(t) for t in typ.types)
+    return False
 
 #-------------------------------------------------------------------------------
 # Utility Classes
@@ -136,14 +148,60 @@ class PythonNode(Node):
 
     def as_value(self, **kwargs):
         '''Must return either an Expression or a ProgN.'''
-        return self.copy()
+        raise NotImplementedError
 
     def emit(self, **kwargs):
         raise NotImplementedError
 
+    def expressify_statements(self, **kwargs):
+        obj = self.copy()
+        for attr in obj._groups[ACO]:
+            typ = obj._attrs[attr].type
+            if is_expression_type(typ):
+                val = getattr(self, attr)
+                if isinstance(val, list):
+                    res = [item.expressify_statements(**kwargs) for item in val]
+                    res_ = [item if isinstance(item, (Expression, ProgN)) else
+                            item.as_value(**kwargs) for item in res]
+                    setattr(obj, attr, res_)
+                else:
+                    res = val.expressify_statements(**kwargs)
+                    if not isinstance(res, (Expression, ProgN)):
+                        setattr(obj, attr, res.as_value(**kwargs))
+        return obj
+
     @classmethod
     def from_ast(cls, ast, **kwargs):
         return cls(**kwargs)
+
+    def resolve_progn(self, **kwargs):
+        progns = []
+        obj = self.copy()
+        for attr in obj._groups[ACO]:
+            val = getattr(obj, attr)
+            if isinstance(val, list):
+                res = [item.resolve_progn(**kwargs) for item in val]
+                for k in xrange(len(res)):
+                    item = res[k]
+                    if isinstance(item, ProgN):
+                        res[k] = item.value(**kwargs)
+                        progns.append(item)
+                setattr(obj, attr, res)
+            else:
+                res = val.resolve_progn(**kwargs)
+                if isinstance(res, ProgN):
+                    setattr(obj, attr, res.value(**kwargs))
+                    progns.append(res)
+                else:
+                    setattr(obj, attr, res)
+
+        if progns:
+            ret = progns[0]
+            for progn in progns[1:]:
+                ret.extend(progn)
+            ret.append(obj)
+            return ret
+        return obj
 
     def to_ast(self, **kwargs):
         kwargs_ = self._to_ast_kwargs(**kwargs)
@@ -197,10 +255,29 @@ class RootNode(PythonNode):
         cs = [c.emit(**kwargs) for c in self]
         return '\n'.join(cs)
 
+    def expressify_statements(self, **kwargs):
+        ret = self.copy()
+        ret._children = [item.expressify_statements(**kwargs) for item in ret]
+        return ret
+
     @classmethod
     def from_ast(cls, ast, **kwargs):
         cs = [from_ast(obj, **kwargs) for obj in ast.body]
         ret = cls(*cs)
+        return ret
+
+    def resolve_progn(self, **kwargs):
+        ret = self.copy()
+        res = [item.resolve_progn(**kwargs) for item in ret]
+
+        out = []
+        for item in res:
+            if isinstance(item, ProgN):
+                out.extend(item)
+            else:
+                out.append(item)
+
+        ret._children = out
         return ret
 
     def to_ast(self, **kwargs):
@@ -245,6 +322,9 @@ class Expression(PythonNode):
     _opts = dict(max_len = 0)
     ast = NoAST
 
+    def as_value(self, **kwargs):
+        return self.copy()
+
 
 class Statement(PythonNode):
     _opts = dict(max_len = 0)
@@ -260,13 +340,32 @@ class Special(PythonNode):
 
 
 class ProgN(Special):
+    def expressify_statements(self, **kwargs):
+        raise NotImplementedError
+
+    def resolve_progn(self, **kwargs):
+        ret = self.copy()
+        res = [item.resolve_progn(**kwargs) for item in ret]
+
+        out = []
+        for item in res:
+            if isinstance(item, ProgN):
+                out.extend(item)
+            else:
+                out.append(item)
+
+        ret._children = out
+        return ret
+
     def value(self, **kwargs):
         from .statements import Assign
         for child in reversed(self._children):
             if isinstance(child, Assign):
                 return child.targets[0]
+            if isinstance(child, ProgN):
+                return child.value(**kwargs)
         else:
-            raise PythonError('No Assign found')
+            raise PythonError('No value found')
 
 
 #-------------------------------------------------------------------------------

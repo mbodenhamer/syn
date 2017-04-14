@@ -16,6 +16,7 @@ def test_pythonnode():
 
     p = PythonNode()
     assert_raises(NotImplementedError, p.emit)
+    assert_raises(NotImplementedError, p.as_value)
 
 #-------------------------------------------------------------------------------
 # Context
