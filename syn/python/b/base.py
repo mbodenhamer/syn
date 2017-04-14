@@ -212,6 +212,8 @@ class PythonNode(Node):
                         res = val.expressify_statements(**kwargs)
                         if not typ.query(res):
                             setattr(obj, attr, res.as_value(**kwargs))
+
+        obj._init()
         return obj
 
     @classmethod
@@ -219,12 +221,16 @@ class PythonNode(Node):
         return cls(**kwargs)
 
     def resolve_progn(self, **kwargs):
-        progns = []
-        obj = self.copy()
+        if 'gensym' not in kwargs:
+            kwargs['gensym'] = GenSym(self.variables(**kwargs))
+
         excludes = []
         if 'attr_exclude' in kwargs:
             excludes = kwargs['attr_exclude']
             del kwargs['attr_exclude']
+
+        progns = []
+        obj = self.copy()
         for attr in obj._groups[ACO]:
             if attr in excludes:
                 continue
@@ -246,6 +252,7 @@ class PythonNode(Node):
                     else:
                         setattr(obj, attr, res)
 
+        obj._init()
         if progns:
             ret = progns[0]
             for progn in progns[1:]:
