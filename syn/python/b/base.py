@@ -41,6 +41,16 @@ def is_expression_type(typ):
         return is_expression_type(typ.item_type)
     raise PythonError('Should never query for: {}'.format(typ))
 
+def resolve_progn(lst, **kwargs):
+    out = []
+    res = [item.resolve_progn(**kwargs) for item in lst]
+    for item in res:
+        if isinstance(item, ProgN):
+            out.extend(item)
+        else:
+            out.append(item)
+    return out
+
 #-------------------------------------------------------------------------------
 # Utility Classes
 
@@ -274,16 +284,7 @@ class RootNode(PythonNode):
 
     def resolve_progn(self, **kwargs):
         ret = self.copy()
-        res = [item.resolve_progn(**kwargs) for item in ret]
-
-        out = []
-        for item in res:
-            if isinstance(item, ProgN):
-                out.extend(item)
-            else:
-                out.append(item)
-
-        ret._children = out
+        ret._children = resolve_progn(ret, **kwargs)
         ret._init()
         return ret
 
@@ -352,16 +353,7 @@ class ProgN(Special):
 
     def resolve_progn(self, **kwargs):
         ret = self.copy()
-        res = [item.resolve_progn(**kwargs) for item in ret]
-
-        out = []
-        for item in res:
-            if isinstance(item, ProgN):
-                out.extend(item)
-            else:
-                out.append(item)
-
-        ret._children = out
+        ret._children = resolve_progn(ret, **kwargs)
         ret._init()
         return ret
 
