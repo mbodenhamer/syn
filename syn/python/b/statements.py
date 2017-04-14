@@ -1,16 +1,8 @@
 import ast
-from .base import PythonNode, Attr, AST, ACO, OAttr
+from .base import PythonNode, Attr, AST, ACO, OAttr, Statement
 from syn.base_utils import setitem, get_typename
 from syn.type.a import List
 from syn.five import STR
-
-#-------------------------------------------------------------------------------
-# Statement
-
-
-class Statement(PythonNode):
-    _opts = dict(max_len = 0)
-
 
 #-------------------------------------------------------------------------------
 # Assign
@@ -109,8 +101,7 @@ class Pass(EmptyStatement):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Statement',
-           'Assign', 'Return',
+__all__ = ('Assign', 'Return',
            'Alias', 'Import',
            'EmptyStatement', 'Break', 'Continue', 'Pass')
 

@@ -238,6 +238,19 @@ class Interactive(RootNode):
 
 
 #-------------------------------------------------------------------------------
+# Base Classes
+
+
+class Expression(PythonNode):
+    _opts = dict(max_len = 0)
+    ast = NoAST
+
+
+class Statement(PythonNode):
+    _opts = dict(max_len = 0)
+
+
+#-------------------------------------------------------------------------------
 # Special
 
 
@@ -301,7 +314,7 @@ def from_source(src, mode='exec'):
 __all__ = ('PythonNode', 'PythonTree', 'AstUnsupported', 'PythonError',
            'Context', 'Load', 'Store', 'Del', 'Param',
            'RootNode', 'Module', 'Expression_', 'Interactive', 
-           'Special', 'ProgN', 'NoAST',
+           'Special', 'ProgN', 'NoAST', 'Expression', 'Statement',
            'from_ast', 'from_source')
 
 #-------------------------------------------------------------------------------

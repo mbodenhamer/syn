@@ -2,21 +2,12 @@ import ast
 from functools import partial
 from operator import attrgetter
 from syn.base_utils import setitem, pyversion
-from .base import PythonNode, Attr, AST, ACO, Context, Load, NoAST
+from .base import PythonNode, Attr, AST, ACO, Context, Load, Expression
 from syn.type.a import List
 from syn.five import STR
 
 VER = pyversion()
 OAttr = partial(Attr, optional=True)
-
-#-------------------------------------------------------------------------------
-# Expression
-
-
-class Expression(PythonNode):
-    _opts = dict(max_len = 0)
-    ast = NoAST
-
 
 #-------------------------------------------------------------------------------
 # Expr
@@ -376,7 +367,7 @@ class Attribute(Expression):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Expression', 'Expr',
+__all__ = ('Expr',
            'Operator', 'UnaryOperator', 'UnaryOp',
            'UAdd', 'USub', 'Not', 'Invert',
            'BinaryOperator', 'BinOp',
