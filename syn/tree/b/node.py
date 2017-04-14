@@ -77,7 +77,7 @@ class Node(ListWrapper):
             kwargs['exclude_types'] = excludes
         return super(Node, cls)._generate(**kwargs)
 
-    def _init_bookkeeping(self):
+    def _init(self):
         self.set_child_parents(override=True)
         self._initial_node_count()
 

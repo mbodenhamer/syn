@@ -108,6 +108,7 @@ class PythonNode(Node):
     def _init(self):
         if not self._children:
             self._set_children()
+        super(PythonNode, self)._init()
 
     def _set_children(self):
         self._children = []
@@ -283,7 +284,7 @@ class RootNode(PythonNode):
                 out.append(item)
 
         ret._children = out
-        ret._init_bookkeeping()
+        ret._init()
         return ret
 
     def to_ast(self, **kwargs):
@@ -361,7 +362,7 @@ class ProgN(Special):
                 out.append(item)
 
         ret._children = out
-        ret._init_bookkeeping()
+        ret._init()
         return ret
 
     def value(self, **kwargs):
