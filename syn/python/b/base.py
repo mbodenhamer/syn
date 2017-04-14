@@ -193,6 +193,9 @@ class PythonNode(Node):
         raise NotImplementedError
 
     def expressify_statements(self, **kwargs):
+        if 'gensym' not in kwargs:
+            kwargs['gensym'] = GenSym(self.variables(**kwargs))
+
         obj = self.copy()
         for attr in obj._groups[ACO]:
             typ = obj._attrs[attr].type
