@@ -2,7 +2,7 @@ import ast
 from functools import partial
 from operator import attrgetter
 from syn.base_utils import setitem, pyversion
-from .base import PythonNode, Attr, AST, ACO, Context, Load
+from .base import PythonNode, Attr, AST, ACO, Context, Load, NoAST
 from syn.type.a import List
 from syn.five import STR
 
@@ -13,15 +13,16 @@ OAttr = partial(Attr, optional=True)
 # Expression
 
 
-class Expression_(PythonNode):
+class Expression(PythonNode):
     _opts = dict(max_len = 0)
+    ast = NoAST
 
 
 #-------------------------------------------------------------------------------
 # Expr
 
 
-class Expr(Expression_):
+class Expr(Expression):
     _attrs = dict(value = Attr(PythonNode, groups=(AST, ACO)))
     _opts = dict(args = ('value',))
 
@@ -33,7 +34,7 @@ class Expr(Expression_):
 # Operator
 
 
-class Operator(Expression_):
+class Operator(Expression):
     symbol = None
 
     def emit(self, **kwargs):
@@ -69,7 +70,7 @@ class Invert(UnaryOperator):
 # UnaryOp
 
 
-class UnaryOp(Expression_):
+class UnaryOp(Expression):
     _opts = dict(args = ['op', 'operand'])
     _attrs = dict(op = Attr(UnaryOperator, groups=(AST, ACO)),
                   operand = Attr(PythonNode, groups=(AST, ACO)))
@@ -144,7 +145,7 @@ class MatMult(BinaryOperator):
 # BinOp
 
 
-class BinOp(Expression_):
+class BinOp(Expression):
     _opts = dict(args = ('left', 'op', 'right'))
     _attrs = dict(op = Attr(BinaryOperator, groups=(AST, ACO)),
                   left = Attr(PythonNode, groups=(AST, ACO)),
@@ -187,7 +188,7 @@ class Or(BooleanOperator):
 # BoolOp
 
 
-class BoolOp(Expression_):
+class BoolOp(Expression):
     _opts = dict(args = ('op', 'values'))
     _attrs = dict(op = Attr(BooleanOperator, groups=(AST, ACO)),
                   values = Attr(List(PythonNode), groups=(AST, ACO)))
@@ -249,7 +250,7 @@ class NotIn(Comparator):
 # Compare
 
 
-class Compare(Expression_):
+class Compare(Expression):
     _opts = dict(args = ('left', 'ops', 'comparators'))
     _attrs = dict(left = Attr(PythonNode, groups=(AST, ACO)),
                   ops = Attr(List(Comparator), groups=(AST, ACO)),
@@ -273,7 +274,7 @@ class Compare(Expression_):
 # keyword
 
 
-class Keyword(Expression_):
+class Keyword(Expression):
     ast = ast.keyword
     _attrs = dict(arg = Attr(STR, group=AST),
                   value = Attr(PythonNode, groups=(AST, ACO)))
@@ -296,7 +297,7 @@ class Keyword(Expression_):
 # Call
 
 
-class Call(Expression_):
+class Call(Expression):
     _opts = dict(args = ['func', 'args', 'keywords'])
     _attrs = dict(func = Attr(PythonNode, groups=(AST, ACO)),
                   args = OAttr(List(PythonNode), groups=(AST, ACO)),
@@ -339,7 +340,7 @@ class Call(Expression_):
 # IfExp
 
 
-class IfExp(Expression_):
+class IfExp(Expression):
     _attrs = dict(test = Attr(PythonNode, groups=(AST, ACO)),
                   body = Attr(PythonNode, groups=(AST, ACO)),
                   orelse = Attr(PythonNode, groups=(AST, ACO)))
@@ -358,7 +359,7 @@ class IfExp(Expression_):
 # Attribute
 
 
-class Attribute(Expression_):
+class Attribute(Expression):
     _attrs = dict(value = Attr(PythonNode, groups=(AST, ACO)),
                   attr = Attr(STR, group=AST),
                   ctx = Attr(Context, Load(), groups=(AST, ACO)))
@@ -375,7 +376,7 @@ class Attribute(Expression_):
 #-------------------------------------------------------------------------------
 # __all__
 
-__all__ = ('Expression_', 'Expr',
+__all__ = ('Expression', 'Expr',
            'Operator', 'UnaryOperator', 'UnaryOp',
            'UAdd', 'USub', 'Not', 'Invert',
            'BinaryOperator', 'BinOp',

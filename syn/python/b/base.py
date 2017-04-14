@@ -28,6 +28,12 @@ class PythonError(Exception):
     pass
 
 #-------------------------------------------------------------------------------
+# Utility Classes
+
+class NoAST(object):
+    pass
+
+#-------------------------------------------------------------------------------
 # Base Class
 
 
@@ -64,7 +70,7 @@ class PythonNode(Node):
             cls.ast = getattr(ast, get_typename(cls), None)
 
         key = cls.ast
-        if key is not None:
+        if key is not None and key is not NoAST:
             if key in AST_REGISTRY:
                 raise TypeError("Class already registered for ast node '{}'"
                                  .format(key))
@@ -207,7 +213,8 @@ class Module(RootNode):
     pass
 
 
-class Expression(RootNode):
+class Expression_(RootNode):
+    ast = ast.Expression
     _opts = dict(min_len = 1,
                  max_len = 1)
     body = property(itemgetter(0))
@@ -293,8 +300,8 @@ def from_source(src, mode='exec'):
 
 __all__ = ('PythonNode', 'PythonTree', 'AstUnsupported', 'PythonError',
            'Context', 'Load', 'Store', 'Del', 'Param',
-           'RootNode', 'Module', 'Expression', 'Interactive', 
-           'Special', 'ProgN',
+           'RootNode', 'Module', 'Expression_', 'Interactive', 
+           'Special', 'ProgN', 'NoAST',
            'from_ast', 'from_source')
 
 #-------------------------------------------------------------------------------
