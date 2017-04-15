@@ -296,6 +296,19 @@ def getitem(mapping, item, default=None, allow_none_default=False, delete=False)
         del mapping[item]
     return ret
 
+def getkey(mapping, value, default=None, use_id=False):
+    '''Returns the first key mapping to value, as encountered via iteritems(), otherwise default.  Obviously, works best for injective maps.
+    '''
+    if use_id:
+        for key, val in mapping.items():
+            if val is value:
+                return key
+    else:
+        for key, val in mapping.items():
+            if val == value:
+                return key
+    return default
+
 #-------------------------------------------------------------------------------
 # Module utilities
 
@@ -493,6 +506,6 @@ __all__ = ('mro', 'hasmethod', 'import_module', 'message', 'run_all_tests',
            'type_partition', 'subclasses', 'unzip', 'this_module',  'eprint',
            'that_module', 'harvest_metadata', 'tuple_append', 'get_fullname',
            'tuple_prepend', 'elog', 'ngzwarn', 'full_funcname', 'hangwatch',
-           'safe_vars', 'getfunc', 'Partial', 'pyversion')
+           'safe_vars', 'getfunc', 'Partial', 'pyversion', 'getkey')
 
 #-------------------------------------------------------------------------------

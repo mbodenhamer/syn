@@ -376,6 +376,26 @@ def test_getitem():
     assert getitem(dct, 'c', delete=True) == 'abc'
     assert 'c' not in dct
 
+def test_getkey():
+    from syn.base_utils import getkey
+
+    d = dict(a = 1, b = 1, c = 2, d = 3)
+    ka = getkey(d, 1)
+    assert ka == 'a' or ka == 'b'
+    assert getkey(d, 2) == 'c'
+    assert getkey(d, 3) == 'd'
+    assert getkey(d, 4) is None
+
+    s = 'abc'
+    s2 = s.lower()
+    s3 = s.lower()
+    d = dict(a = s, b = s2, c = 'def')
+    ka = getkey(d, s3)
+    assert ka == 'a' or ka == 'b'
+    assert getkey(d, s3, use_id=True) is None
+    assert getkey(d, s, use_id=True) == 'a'
+    assert getkey(d, s2, use_id=True) == 'b'
+
 #-------------------------------------------------------------------------------
 # Module utilities
 
