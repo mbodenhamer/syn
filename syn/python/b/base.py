@@ -409,14 +409,25 @@ class ProgN(Special):
         return ret
 
     def value(self, **kwargs):
-        from .statements import Assign
-        for child in reversed(self._children):
-            if isinstance(child, Assign):
-                return child.targets[0]
-            if isinstance(child, ProgN):
-                return child.value(**kwargs)
-        else:
+        if not self._children:
             raise PythonError('No value found')
+
+        child = self[-1]
+        from .statements import Assign
+        if isinstance(child, Assign):
+            return child.targets[0]
+
+        if isinstance(child, ProgN):
+            return child.value(**kwargs)
+
+        # TODO: this needs to go in a valuify() method
+        # from .variables import Name
+        # if 'gensym' not in kwargs:
+        #     kwargs['gensym'] = GenSym(self.variables(**kwargs))
+        # name = Name(kwargs['gensym'].generate())
+        
+        # if isinstance(child, Expression):
+        #     pass
 
 
 #-------------------------------------------------------------------------------
