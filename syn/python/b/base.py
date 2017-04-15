@@ -145,6 +145,24 @@ class PythonNode(Node):
         if not self._children:
             self._set_children()
         super(PythonNode, self)._init()
+    
+    def _child_attr(self, k):
+        spec = self._child_map[k]
+        if isinstance(spec, tuple):
+            return spec[0]
+        return spec
+
+    def _child_attr_type(self, k):
+        return self._attrs[self._child_attr(k)].type 
+
+    def _child_type_query(self, k, value):
+        typ = self._child_attr_type(k)
+        if isinstance(typ, Sequence):
+            return typ.item_type.query(value)
+        return typ.query(value)
+
+    def _is_child_attr_expression_type(self, k):
+        return is_expression_type(self._child_attr_type(k))
 
     def _set_children(self):
         k = 0
@@ -215,24 +233,32 @@ class PythonNode(Node):
             kwargs['gensym'] = GenSym(self.variables(**kwargs))
 
         obj = self.copy()
-        for attr in obj._groups[ACO]:
-            typ = obj._attrs[attr].type
-            if is_expression_type(typ):
-                val = getattr(self, attr)
-                if val is not None:
-                    if isinstance(val, list):
-                        res = [item.expressify_statements(**kwargs) 
-                               for item in val]
-                        res_ = [item if typ.item_type.query(item) else
-                                item.as_value(**kwargs) for item in res]
-                        setattr(obj, attr, res_)
-                    else:
-                        res = val.expressify_statements(**kwargs)
-                        if not typ.query(res):
-                            setattr(obj, attr, res.as_value(**kwargs))
+        for k, val in enumerate(obj):
+            if obj._is_child_attr_expression_type(k):
+                if not obj._child_type_query(k, val):
+                    res = val.expressify_statements(**kwargs)
+                    if not obj._child_type_query(k, res):
+                        res = res.as_value(**kwargs)
+                    obj._set_child(k, res)
 
-        obj._set_children()
-        obj._init()
+        # for attr in obj._groups[ACO]:
+        #     typ = obj._attrs[attr].type
+        #     if is_expression_type(typ):
+        #         val = getattr(self, attr)
+        #         if val is not None:
+        #             if isinstance(val, list):
+        #                 res = [item.expressify_statements(**kwargs) 
+        #                        for item in val]
+        #                 res_ = [item if typ.item_type.query(item) else
+        #                         item.as_value(**kwargs) for item in res]
+        #                 setattr(obj, attr, res_)
+        #             else:
+        #                 res = val.expressify_statements(**kwargs)
+        #                 if not typ.query(res):
+        #                     setattr(obj, attr, res.as_value(**kwargs))
+
+        # obj._set_children()
+        # obj._init()
         return obj
 
     @classmethod
