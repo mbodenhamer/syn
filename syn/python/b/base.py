@@ -233,7 +233,7 @@ class PythonNode(Node):
             kwargs['gensym'] = GenSym(self.variables(**kwargs))
 
         obj = self.copy()
-        for k, val in enumerate(obj):
+        for k, val in enumerate(obj._children):
             if obj._is_child_attr_expression_type(k):
                 if not obj._child_type_query(k, val):
                     res = val.expressify_statements(**kwargs)
@@ -258,29 +258,16 @@ class PythonNode(Node):
 
         progns = []
         obj = self.copy()
-        for attr in obj._groups[ACO]:
-            if attr in excludes:
+        for k, val in enumerate(obj._children):
+            if obj._child_attr(k) in excludes:
                 continue
-            val = getattr(obj, attr)
-            if val is not None:
-                if isinstance(val, list):
-                    res = [item.resolve_progn(**kwargs) for item in val]
-                    for k in xrange(len(res)):
-                        item = res[k]
-                        if isinstance(item, ProgN):
-                            res[k] = item.value(**kwargs)
-                            progns.append(item)
-                    setattr(obj, attr, res)
-                else:
-                    res = val.resolve_progn(**kwargs)
-                    if isinstance(res, ProgN):
-                        setattr(obj, attr, res.value(**kwargs))
-                        progns.append(res)
-                    else:
-                        setattr(obj, attr, res)
 
-        obj._set_children()
-        obj._init()
+            res = val.resolve_progn(**kwargs)
+            if isinstance(res, ProgN):
+                progns.append(res)
+                res = res.value(**kwargs)
+            obj._set_child(k, res)
+
         if progns:
             ret = progns[0]
             for progn in progns[1:]:
