@@ -2,8 +2,8 @@ import ast
 from nose.tools import assert_raises
 from functools import partial
 from syn.python.b import Literal, from_source, from_ast, PythonNode, \
-    Num, Str, Bytes, List, Tuple, Set, NameConstant
-from syn.base_utils import compose
+    Num, Str, Bytes, List, Tuple, Set, NameConstant, Load
+from syn.base_utils import compose, getkey
 from syn.five import PY3
 
 eparse = compose(partial(from_source, mode='eval'), str)
@@ -114,6 +114,14 @@ def test_sequence():
     s = Set([Num(1), Num(2)])
     assert s.emit() == '{1, 2}'
     assert s.emit(indent_level=1) == '    {1, 2}'
+
+    assert s._node_count == 3
+    assert s._children == s.elts
+    k = getkey(s._child_map, ('elts', 1))
+    s._set_child(k, Tuple([Num(3), Num(4)]))
+    assert s.emit() == '{1, (3, 4)}'
+    assert s._children == [Num(1), Tuple([Num(3), Num(4)], ctx=Load())]
+    assert s._node_count == 6
 
 #-------------------------------------------------------------------------------
 # NameConstant

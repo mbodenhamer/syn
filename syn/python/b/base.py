@@ -147,6 +147,7 @@ class PythonNode(Node):
         super(PythonNode, self)._init()
 
     def _set_children(self):
+        k = 0
         self._children = []
         self._child_map = {}
         self._children_set = True
@@ -154,13 +155,30 @@ class PythonNode(Node):
             val = getattr(self, attr)
             if val is not None:
                 if isinstance(val, list):
-                    for item in val:
+                    for idx, item in enumerate(val):
                         if item is not None:
                             self._children.append(item)
                             item._parent = self
+                            self._child_map[k] = (attr, idx)
+                            k += 1
                 else:
                     val._parent = self
                     self._children.append(val)
+                    self._child_map[k] = attr
+                    k += 1
+
+    def _set_child(self, k, value):
+        value._parent = self
+        diff = value._node_count - self._children[k]._node_count
+        self._children[k] = value
+        self._node_count += diff
+
+        spec = self._child_map[k]
+        if isinstance(spec, tuple): # list element
+            attr, idx = spec
+            getattr(self, attr)[idx] = value
+        else:
+            setattr(self, spec, value)
 
     def _indent(self, **kwargs):
         level = kwargs.get('indent_level', 0)

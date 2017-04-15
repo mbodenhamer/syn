@@ -12,7 +12,16 @@ eparse = compose(partial(from_source, mode='eval'), str)
 # Expr
 
 def test_expr():
-    Expr
+    e = Expr(Num(1))
+    assert e.emit() == '1'
+    assert e.emit(indent_level=1) == '    1'
+
+    assert e._children == [Num(1)]
+    assert e._node_count == 2
+    e._set_child(0, Num(2))
+    assert e.emit() == '2'
+    assert e._children == [Num(2)]
+    assert e._node_count == 2
 
 #-------------------------------------------------------------------------------
 # Unary Operators
