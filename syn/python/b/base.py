@@ -241,24 +241,6 @@ class PythonNode(Node):
                         res = res.as_value(**kwargs)
                     obj._set_child(k, res)
 
-        # for attr in obj._groups[ACO]:
-        #     typ = obj._attrs[attr].type
-        #     if is_expression_type(typ):
-        #         val = getattr(self, attr)
-        #         if val is not None:
-        #             if isinstance(val, list):
-        #                 res = [item.expressify_statements(**kwargs) 
-        #                        for item in val]
-        #                 res_ = [item if typ.item_type.query(item) else
-        #                         item.as_value(**kwargs) for item in res]
-        #                 setattr(obj, attr, res_)
-        #             else:
-        #                 res = val.expressify_statements(**kwargs)
-        #                 if not typ.query(res):
-        #                     setattr(obj, attr, res.as_value(**kwargs))
-
-        # obj._set_children()
-        # obj._init()
         return obj
 
     @classmethod
