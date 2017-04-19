@@ -2,7 +2,7 @@ import ast
 from copy import deepcopy
 from functools import partial
 from operator import itemgetter
-from syn.base_utils import get_typename, ReflexiveDict, assign
+from syn.base_utils import get_typename, ReflexiveDict, assign, getkey
 from syn.tree.b import Node, Tree
 from syn.base.b import create_hook, Attr, init_hook, Base, Counter
 from syn.type.a import TypeType, MultiType, Sequence

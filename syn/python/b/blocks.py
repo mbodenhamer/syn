@@ -66,6 +66,7 @@ class If(Block):
         temp.body = resolve_progn(temp.body, **kwargs)
         if temp.orelse:
             temp.orelse = resolve_progn(temp.orelse, **kwargs)
+        temp._set_children()
         temp._init()
         kwargs['attr_exclude'] = ['body', 'orelse']
         return super(If, temp).resolve_progn(**kwargs)

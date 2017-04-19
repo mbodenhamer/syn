@@ -1,7 +1,7 @@
 from nose.tools import assert_raises
 from .test_statements import examine
 from syn.python.b import Block, If, Num, Assign, Name, Return, Module, ProgN
-from syn.base_utils import pyversion
+from syn.base_utils import pyversion, collection_equivalent
 
 VER = pyversion()
 
@@ -49,6 +49,8 @@ if x:
 if x:
     y = x'''
     assert if3r.variables() == {'x', 'y'}
+    assert collection_equivalent(if3r._children[1]._children,
+                                 [Assign([Name('y')], Name('x')), Name('x')])
 
 #-------------------------------------------------------------------------------
 # For
