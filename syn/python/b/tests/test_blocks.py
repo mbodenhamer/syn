@@ -82,6 +82,16 @@ else:
 else:
     x = 3'''
 
+    if7 = If(Num(1),
+             [Assign([Name('y')], Num(2))],
+             [Assign([Name('x')], Num(3))])
+    assert if7.emit() == 'if 1:\n    y = 2\nelse:\n    x = 3'
+    assert Module(if7.as_value()).resolve_progn().emit() == '''if 1:
+    y = 2
+else:
+    x = 3
+    y = x'''
+
 #-------------------------------------------------------------------------------
 # For
 
