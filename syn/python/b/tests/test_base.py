@@ -72,9 +72,11 @@ def test_progn():
     p = ProgN()
     assert_raises(PythonError, p.validate)
     assert_raises(PythonError, p.value)
+    assert_raises(PythonError, p.valuify)
     assert_raises(NotImplementedError, p.expressify_statements)
 
     p = ProgN(Assign([Name('x')], Num(2)))
+    assert p.valuify() is p
     assert p.value() == Name('x')
 
     ppp = ProgN(Num(1),
@@ -86,6 +88,12 @@ def test_progn():
                                         Num(2), 
                                         Num(3), 
                                         Assign([Name('y')], Num(4)))
+
+    p = ProgN(Num(2))
+    assert_raises(PythonError, p.value)
+    pv = p.valuify()
+    assert pv == ProgN(Assign([Name('_gensym_0')], Num(2)))
+    assert pv.value() == Name('_gensym_0')
 
 #-------------------------------------------------------------------------------
 # Module API

@@ -264,6 +264,7 @@ class PythonNode(Node):
 
             res = val.resolve_progn(**kwargs)
             if isinstance(res, ProgN):
+                res = res.valuify(**kwargs)
                 progns.append(res)
                 res = res.value(**kwargs)
             obj._set_child(k, res)
@@ -433,14 +434,34 @@ class ProgN(Special):
         if isinstance(child, ProgN):
             return child.value(**kwargs)
 
-        # TODO: this needs to go in a valuify() method
-        # from .variables import Name
-        # if 'gensym' not in kwargs:
-        #     kwargs['gensym'] = GenSym(self.variables(**kwargs))
-        # name = Name(kwargs['gensym'].generate())
+        raise PythonError('No value found')
+
+    def _valuify(self, **kwargs):
+        if not self._children:
+            raise PythonError('Cannot valuify empty ProgN')
+
+        ret = self.copy()
+        from .variables import Name
+        from .statements import Assign
+
+        if 'gensym' not in kwargs:
+            kwargs['gensym'] = GenSym(ret.variables(**kwargs))
+        name = Name(kwargs['gensym'].generate())
         
-        # if isinstance(child, Expression):
-        #     pass
+        child = ret[-1]
+        if not isinstance(child, Expression):
+            child = child.as_value(**kwargs).resolve_progn(**kwargs)
+
+        ret[-1] = Assign([name], child)
+        ret._init()
+        return ret
+
+    def valuify(self, **kwargs):
+        try:
+            self.value(**kwargs)
+            return self
+        except PythonError:
+            return self._valuify(**kwargs)
 
 
 #-------------------------------------------------------------------------------
