@@ -52,6 +52,36 @@ if x:
     assert collection_equivalent(if3r._children[1]._children,
                                  [Assign([Name('y')], Name('x')), Name('x')])
 
+    if4 = If(Num(1),
+             [Num(2)],
+             [Num(3)])
+    assert if4.emit() == 'if 1:\n    2\nelse:\n    3'
+    if4v = if4.as_value()
+    assert isinstance(if4v, ProgN)
+    assert if4v.value() == Name('_gensym_0')
+    assert Module(if4v).resolve_progn().emit() == '''if 1:
+    _gensym_0 = 2
+else:
+    _gensym_0 = 3'''
+
+    if5 = If(Num(1),
+             [Assign([Name('x')], Num(2))],
+             [Num(3)])
+    assert if5.emit() == 'if 1:\n    x = 2\nelse:\n    3'
+    assert Module(if5.as_value()).resolve_progn().emit() == '''if 1:
+    x = 2
+else:
+    x = 3'''
+
+    if6 = If(Num(1),
+             [Num(2)],
+             [Assign([Name('x')], Num(3))])
+    assert if6.emit() == 'if 1:\n    2\nelse:\n    x = 3'
+    assert Module(if6.as_value()).resolve_progn().emit() == '''if 1:
+    x = 2
+else:
+    x = 3'''
+
 #-------------------------------------------------------------------------------
 # For
 

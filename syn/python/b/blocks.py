@@ -4,8 +4,9 @@ from syn.base_utils import setitem, pyversion
 from syn.type.a import List
 from syn.five import STR, xrange
 from .base import PythonNode, Attr, AST, ACO, Statement, Expression, \
-    resolve_progn
+    resolve_progn, GenSym, ProgN
 from .literals import Tuple, List as List_
+from .statements import Assign
 from .variables import Name
 
 VER = pyversion()
@@ -30,6 +31,16 @@ class Block(Statement):
         ret += '\n'.join(strs)
         return ret
 
+    def valuify_block(self, body, name, **kwargs):
+        child = body[-1]
+        if isinstance(child, Assign):
+            if name in child.targets:
+                return
+
+        if not isinstance(child, Expression):
+            child = child.as_value(**kwargs).resolve_progn(**kwargs)
+        body[-1] = Assign([name], child)
+
 
 #-------------------------------------------------------------------------------
 # If
@@ -46,7 +57,32 @@ class If(Block):
         ret.body[-1] = ret.body[-1].as_return(**kwargs)
         if ret.orelse:
             ret.orelse[-1] = ret.orelse[-1].as_return(**kwargs)
+        ret._set_children()
+        ret._init()
         return ret
+
+    def as_value(self, **kwargs):
+        ret = self.copy()
+
+        var = None
+        if isinstance(ret.body[-1], Assign):
+            var = ret.body[-1].targets[0]
+        if var is None and ret.orelse:
+            if isinstance(ret.orelse[-1], Assign):
+                var = ret.orelse[-1].targets[0]
+        if var is None:
+            if 'gensym' not in kwargs:
+                kwargs['gensym'] = GenSym(ret.variables(**kwargs))
+            var = Name(kwargs['gensym'].generate())
+            
+        ret.valuify_block(ret.body, var, **kwargs)
+        if ret.orelse:
+            ret.valuify_block(ret.orelse, var, **kwargs)
+
+        ret._set_children()
+        ret._init()
+        ret._progn_value = var
+        return ProgN(ret)
 
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):

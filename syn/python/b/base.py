@@ -434,6 +434,9 @@ class ProgN(Special):
         if isinstance(child, ProgN):
             return child.value(**kwargs)
 
+        if hasattr(child, '_progn_value'):
+            return child._progn_value
+
         raise PythonError('No value found')
 
     def _valuify(self, **kwargs):
