@@ -92,6 +92,21 @@ else:
     x = 3
     y = x'''
 
+#     if8 = If(If(Assign([Name('x')],
+#                        Num(2)),
+#                 [Num(3)],
+#                 [Num(4)]),
+#              [Return(Num(5))])
+#     assert_raises(TypeError, if8.validate)
+#     assert Module(if8).expressify_statements().resolve_progn().emit() == \
+#         '''x = 2
+# if x:
+#     _gensym_0 = 3
+# else:
+#     _gensym_0 = 4
+# if _gensym_0:
+#     return 5'''
+
 #-------------------------------------------------------------------------------
 # For
 
