@@ -1,4 +1,5 @@
 from functools import partial
+from nose.tools import assert_raises
 from syn.base_utils import compose
 from syn.python.b import Statement, from_source, from_ast, Pass, Num, Name, \
     Assign, Return, ProgN, Module
@@ -44,6 +45,23 @@ def test_assign():
     assert a.resolve_progn() == ProgN(Assign([Name('y')], Num(2)), 
                                       Assign([Name('x')], Name('y')))
     assert Module(a).resolve_progn().emit() == 'y = 2\nx = y'
+
+    a = Assign([Name('x')],
+               Assign([Name('y')],
+                      Num(2)))
+    assert a.emit() == 'x = y = 2'
+    assert_raises(TypeError, a.validate)
+    assert Module(a).expressify_statements().resolve_progn().emit() == \
+        'y = 2\nx = y'
+
+    a = Assign([Name('x')],
+               Assign([Name('y')],
+                      Assign([Name('z')],
+                             Num(2))))
+    assert a.emit() == 'x = y = z = 2'
+    assert_raises(TypeError, a.validate)
+    assert Module(a).expressify_statements().resolve_progn().emit() == \
+        'z = 2\ny = z\nx = y'
 
 #-------------------------------------------------------------------------------
 # Return
