@@ -1,7 +1,7 @@
 from functools import partial
 from syn.base_utils import compose
 from syn.python.b import Statement, from_source, from_ast, Pass, Num, Name, \
-    Assign, Return
+    Assign, Return, ProgN, Module
 
 mparse = compose(partial(from_source, mode='exec'), str)
 
@@ -37,6 +37,13 @@ def test_assign():
     a = Assign([Name('x'), Name('y')], Num(1))
     assert a.emit() == 'x = y = 1'
     assert a.emit(indent_level=1) == '    x = y = 1'
+
+    a =  Assign([Name('x')], 
+                ProgN(Assign([Name('y')],
+                             Num(2))))
+    assert a.resolve_progn() == ProgN(Assign([Name('y')], Num(2)), 
+                                      Assign([Name('x')], Name('y')))
+    assert Module(a).resolve_progn().emit() == 'y = 2\nx = y'
 
 #-------------------------------------------------------------------------------
 # Return

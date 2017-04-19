@@ -274,6 +274,7 @@ class PythonNode(Node):
             for progn in progns[1:]:
                 ret.extend(progn)
             ret.append(obj)
+            ret._init()
             return ret
         return obj
 
