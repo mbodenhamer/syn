@@ -1,11 +1,13 @@
 import syn.util
 import syn.util.constraint as con
+import syn.util.log as log
 
 #-------------------------------------------------------------------------------
 # Test Imports
 
 def test_imports():
     assert syn.util.constraint is con
+    assert syn.util.log is log
 
 #-------------------------------------------------------------------------------
 
