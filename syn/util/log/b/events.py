@@ -7,7 +7,7 @@ from syn.base_utils import get_typename
 
 
 class StringEvent(Event):
-    _attrs = dict(s = Attr(STR))
+    _attrs = dict(s = Attr(STR, ''))
 
     def plaintext(self, **kwargs):
         indent_level = kwargs.get('indent_level', 0)

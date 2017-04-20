@@ -22,6 +22,8 @@ def test_stringevent():
 StringEvent(def
  StringEvent(ghi))'''
 
+    assert StringEvent().plaintext() == 'StringEvent()'
+
 #-------------------------------------------------------------------------------
 
 if __name__ == '__main__': # pragma: no cover
