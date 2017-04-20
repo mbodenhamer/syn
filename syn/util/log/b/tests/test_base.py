@@ -1,10 +1,11 @@
+from nose.tools import assert_raises
 from syn.util.log.b import Event, Logger
 
 #-------------------------------------------------------------------------------
 # Event
 
 def test_event():
-    Event
+    Event()
 
 #-------------------------------------------------------------------------------
 # Logger
