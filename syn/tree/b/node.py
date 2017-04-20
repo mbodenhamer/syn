@@ -182,16 +182,14 @@ class Node(ListWrapper):
                     include_toplevel=True, top_level=True, depth=0, 
                     yield_depth=False):
 
-        def ret(val):
-            if yield_depth:
-                return (depth, val)
-            return val
-
         if implies(top_level, include_toplevel):
             if filt(self):
                 res = func(self)
                 if not reverse:
-                    yield ret(res)
+                    if yield_depth:
+                        yield (depth, res)
+                    else:
+                        yield res
 
         for c in self.children(reverse=reverse):
             for x in c.depth_first(func, filt, reverse, 
@@ -200,7 +198,10 @@ class Node(ListWrapper):
                 yield x
 
         if reverse:
-            yield ret(res)
+            if yield_depth:
+                yield (depth, res)
+            else:
+                yield res
 
     def rootward(self, func=identity, filt=true, include_toplevel=True,
                  top_level=True):
