@@ -9,12 +9,15 @@ from syn.base_utils import get_typename
 class StringEvent(Event):
     _attrs = dict(s = Attr(STR, ''))
 
+    def _plaintext(self, **kwargs):
+        return get_typename(self) + '(' + self.s
+
     def plaintext(self, **kwargs):
         indent_level = kwargs.get('indent_level', 0)
         indent = kwargs.get('indent', ' ')
         pre = indent * indent_level
 
-        ret = pre + get_typename(self) + '(' + self.s
+        ret = pre + self._plaintext(**kwargs)
         if self._children:
             kwargs['indent_level'] = indent_level + 1
             ret += '\n' + super(StringEvent, self).plaintext(**kwargs)
