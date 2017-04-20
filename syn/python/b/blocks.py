@@ -1,10 +1,10 @@
 import ast
 from functools import partial
-from syn.base_utils import setitem, pyversion
+from syn.base_utils import setitem, pyversion, get_typename
 from syn.type.a import List
 from syn.five import STR, xrange
 from .base import PythonNode, Attr, AST, ACO, Statement, Expression, \
-    resolve_progn, GenSym, ProgN
+    resolve_progn, GenSym, ProgN, AsValue, ResolveProgN
 from .literals import Tuple, List as List_
 from .statements import Assign
 from .variables import Name
@@ -62,6 +62,9 @@ class If(Block):
         return ret
 
     def as_value(self, **kwargs):
+        logger = kwargs.get('logger', None)
+        if logger:
+            logger.push(AsValue(s=get_typename(self), obj=self))
         ret = self.copy()
 
         var = None
@@ -82,6 +85,8 @@ class If(Block):
         ret._set_children()
         ret._init()
         ret._progn_value = var
+        if logger:
+            logger.pop()
         return ProgN(ret)
 
     def emit(self, **kwargs):
@@ -98,6 +103,9 @@ class If(Block):
         return ret
 
     def resolve_progn(self, **kwargs):
+        logger = kwargs.get('logger', None)
+        if logger:
+            logger.push(ResolveProgN(s=get_typename(self), obj=self))
         temp = self.copy()
         temp.body = resolve_progn(temp.body, **kwargs)
         if temp.orelse:
@@ -105,7 +113,10 @@ class If(Block):
         temp._set_children()
         temp._init()
         kwargs['attr_exclude'] = ['body', 'orelse']
-        return super(If, temp).resolve_progn(**kwargs)
+        ret = super(If, temp).resolve_progn(**kwargs)
+        if logger:
+            logger.pop()
+        return ret
 
 
 #-------------------------------------------------------------------------------

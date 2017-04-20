@@ -2,11 +2,12 @@ import ast
 from copy import deepcopy
 from functools import partial
 from operator import itemgetter
-from syn.base_utils import get_typename, ReflexiveDict, assign, getkey
+from syn.base_utils import get_typename, ReflexiveDict, assign
+from syn.util.log.b import StringEvent
 from syn.tree.b import Node, Tree
 from syn.base.b import create_hook, Attr, init_hook, Base, Counter
 from syn.type.a import TypeType, MultiType, Sequence
-from syn.five import xrange
+from syn.types.a import attrs
 
 OAttr = partial(Attr, optional=True)
 
@@ -28,6 +29,18 @@ class AstUnsupported(Exception):
     pass
 
 class PythonError(Exception):
+    pass
+
+#-------------------------------------------------------------------------------
+# Custom Logging Events
+
+class AsValue(StringEvent):
+    pass
+
+class Expressify(StringEvent):
+    pass
+
+class ResolveProgN(StringEvent):
     pass
 
 #-------------------------------------------------------------------------------
@@ -229,6 +242,9 @@ class PythonNode(Node):
         raise NotImplementedError
 
     def expressify_statements(self, **kwargs):
+        logger = kwargs.get('logger', None)
+        if logger:
+            logger.push(Expressify(s=get_typename(self), obj=self))
         if 'gensym' not in kwargs:
             kwargs['gensym'] = GenSym(self.variables(**kwargs))
 
@@ -241,6 +257,8 @@ class PythonNode(Node):
                         res = res.as_value(**kwargs)
                     obj._set_child(k, res)
 
+        if logger:
+            logger.pop()
         return obj
 
     @classmethod
@@ -248,6 +266,9 @@ class PythonNode(Node):
         return cls(**kwargs)
 
     def resolve_progn(self, **kwargs):
+        logger = kwargs.get('logger', None)
+        if logger:
+            logger.push(ResolveProgN(s=get_typename(self), obj=self))
         if 'gensym' not in kwargs:
             kwargs['gensym'] = GenSym(self.variables(**kwargs))
 
@@ -268,6 +289,9 @@ class PythonNode(Node):
                 progns.append(res)
                 res = res.value(**kwargs)
             obj._set_child(k, res)
+
+        if logger:
+            logger.pop()
 
         if progns:
             ret = progns[0]
@@ -293,6 +317,26 @@ class PythonNode(Node):
         ret = set()
         for c in self._children:
             ret.update(c.variables(**kwargs))
+        return ret
+
+    def viewable(self, **kwargs):
+        ret = self.copy()
+        excludes = kwargs.get('excludes', ['lineno', 'col_offset', 'ctx'])
+
+        if ret._children_set:
+            for k, val in enumerate(ret._children):
+                ret._set_child(k, val.viewable(**kwargs))
+            ret._children = []
+        else:
+            ret._children = [c.viewable(**kwargs) for c in ret]
+
+        excl = ret._groups['str_exclude']
+        excl.update(excludes)
+        for attr in attrs(ret):
+            if attr not in ret._groups[AST]:
+                excl.add(attr)
+        
+        ret._groups['str_exclude'] = excl
         return ret
 
 
@@ -337,9 +381,14 @@ class RootNode(PythonNode):
         return '\n'.join(cs)
 
     def expressify_statements(self, **kwargs):
+        logger = kwargs.get('logger', None)
+        if logger:
+            logger.push(Expressify(s=get_typename(self), obj=self))
         ret = self.copy()
         ret._children = [item.expressify_statements(**kwargs) for item in ret]
         ret._init()
+        if logger:
+            logger.pop()
         return ret
 
     @classmethod
@@ -349,9 +398,14 @@ class RootNode(PythonNode):
         return ret
 
     def resolve_progn(self, **kwargs):
+        logger = kwargs.get('logger', None)
+        if logger:
+            logger.push(ResolveProgN(s=get_typename(self), obj=self))
         ret = self.copy()
         ret._children = resolve_progn(ret, **kwargs)
         ret._init()
+        if logger:
+            logger.pop()
         return ret
 
     def to_ast(self, **kwargs):
@@ -397,6 +451,9 @@ class Expression(PythonNode):
     ast = NoAST
 
     def as_value(self, **kwargs):
+        logger = kwargs.get('logger', None)
+        if logger:
+            logger.add(AsValue(s=get_typename(self), obj=self))
         return self.copy()
 
 
@@ -418,9 +475,14 @@ class ProgN(Special):
         raise NotImplementedError
 
     def resolve_progn(self, **kwargs):
+        logger = kwargs.get('logger', None)
+        if logger:
+            logger.push(ResolveProgN(s=get_typename(self), obj=self))
         ret = self.copy()
         ret._children = resolve_progn(ret, **kwargs)
         ret._init()
+        if logger:
+            logger.pop()
         return ret
 
     def value(self, **kwargs):

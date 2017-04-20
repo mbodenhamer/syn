@@ -1,5 +1,6 @@
 from nose.tools import assert_raises
 from .test_statements import examine
+from syn.util.log.b import Logger
 from syn.python.b import Block, If, Num, Assign, Name, Return, Module, ProgN
 from syn.base_utils import pyversion, collection_equivalent
 
@@ -92,13 +93,20 @@ else:
     x = 3
     y = x'''
 
-#     if8 = If(If(Assign([Name('x')],
-#                        Num(2)),
-#                 [Num(3)],
-#                 [Num(4)]),
-#              [Return(Num(5))])
-#     assert_raises(TypeError, if8.validate)
-#     assert Module(if8).expressify_statements().resolve_progn().emit() == \
+    lgr = Logger()
+    if8 = If(If(Assign([Name('x')],
+                       Num(2)),
+                [Num(3)],
+                [Num(4)]),
+             [Return(Num(5))])
+    assert_raises(TypeError, if8.validate)
+    print(if8.viewable().pretty())
+    ex = Module(if8).expressify_statements(logger=lgr)
+    print(ex.viewable().pretty())
+    re = ex.resolve_progn(logger=lgr)
+    print(re.viewable().pretty())
+
+#     assert Module(if8).expressify_statements(logger=lgr).resolve_progn(logger=lgr).emit() == \
 #         '''x = 2
 # if x:
 #     _gensym_0 = 3
