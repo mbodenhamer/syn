@@ -346,6 +346,15 @@ class PythonNode(Node):
         if self._children_set:
             with assign(self, '_children', []):
                 super(PythonNode, self).validate()
+                for attr in self._groups[ACO]:
+                    val = getattr(self, attr)
+                    if val is not None:
+                        if isinstance(val, list):
+                            for item in val:
+                                if item is not None:
+                                    item.validate()
+                        else:
+                            val.validate()
         else:
             super(PythonNode, self).validate()
 

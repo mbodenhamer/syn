@@ -62,13 +62,16 @@ def test_binary_operators():
     p1r = p1.expressify_statements().resolve_progn()
     assert p1r.emit() == 'x = 5\n(x + 2)'
 
-    # p2 = Module(Return(BinOp(Assign([Name('x')], Num(5)),
-    #                          Add(),
-    #                          Num(2))))
-    # assert p2.emit() == 'return (x = 5 + 2)'
-    # assert_raises(TypeError, p2.validate)
-    # p2r = p2.expressify_statements().resolve_progn()
-    # assert p2r.emit() == 'x = 5\nreturn (x + 2)'
+    p2 = Module(Return(BinOp(Assign([Name('x')], Num(5)),
+                             Add(),
+                             Num(2))))
+    assert p2.emit() == 'return (x = 5 + 2)'
+    # import ipdb; ipdb.set_trace()
+    # p2.validate()
+    assert_raises(TypeError, p2.validate)
+    p2ex = p2.expressify_statements()
+    p2r = p2ex.resolve_progn()
+    #assert p2r.emit() == 'x = 5\nreturn (x + 2)'
 
     # p3 = Module(BinOp(Assign([Name('x')],
     #                          BinOp(Assign([Name('y')],
