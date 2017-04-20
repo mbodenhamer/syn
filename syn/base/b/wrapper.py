@@ -65,7 +65,10 @@ class ListWrapper(Base, Harvester):
         attrs = super(ListWrapper, self)._istr_attrs(base, pretty, indent)
         strs = [istr(val, pretty, indent) for val in self]
         ret = base.join(strs)
-        ret = base.join([ret, attrs])
+        if ret:
+            ret = base.join([ret, attrs])
+        else:
+            ret = attrs
         return ret
 
     def __iter__(self):
