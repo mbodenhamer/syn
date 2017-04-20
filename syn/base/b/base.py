@@ -433,9 +433,11 @@ class Base(object):
             strs.append(tmp)
         return base.join(strs)
 
-    def istr(self, pretty=False, indent=0):
+    def istr(self, pretty=False, indent=0, toplevel=False):
         '''Returns a string that, if evaluated, produces an equivalent object.'''
         ret = '{}('.format(get_typename(self))
+        if pretty and toplevel and indent:
+            ret = (' ' * indent) + ret
         base = ','
         if pretty:
             indent += len(ret)
@@ -448,7 +450,7 @@ class Base(object):
         
     def pretty(self, indent=0):
         '''Returns a pretty-printed version if istr().'''
-        return self.istr(pretty=True, indent=indent)
+        return self.istr(pretty=True, indent=indent, toplevel=True)
 
     def _repr_template(self):
         dct = self.to_dict()
