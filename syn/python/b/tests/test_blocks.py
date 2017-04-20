@@ -113,6 +113,7 @@ else:
     print(lgr.plaintext())
     assert len(lgr.nodes) > 10
 
+    re.validate()
     assert re.emit() == '''x = 2
 if x:
     _gensym_0 = 3
