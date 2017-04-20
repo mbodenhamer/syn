@@ -1,6 +1,6 @@
 import ast
 from .base import Attr, AST, ACO, OAttr, Statement, Expression, ProgN, \
-    AsValue
+    AsValue, logging
 from syn.base_utils import setitem, get_typename
 from syn.type.a import List
 from syn.five import STR
@@ -14,12 +14,9 @@ class Assign(Statement):
                   value = Attr(Expression, groups=(AST, ACO)))
     _opts = dict(args = ('targets', 'value'))
 
+    @logging(AsValue, push=False)
     def as_value(self, **kwargs):
-        logger = kwargs.get('logger', None)
-        ret = ProgN(self.copy())
-        if logger:
-            logger.add(AsValue(s=get_typename(self), obj=self, ret=ret))
-        return ret
+        return ProgN(self.copy())
 
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):

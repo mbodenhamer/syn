@@ -110,6 +110,9 @@ else:
         print('-' * 80)
         print(event.display(depth))
 
+    print(lgr.plaintext())
+    assert len(lgr.nodes) > 10
+
     assert re.emit() == '''x = 2
 if x:
     _gensym_0 = 3

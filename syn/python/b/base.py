@@ -1,7 +1,7 @@
 import ast
 from copy import deepcopy
-from functools import partial
 from operator import itemgetter
+from functools import partial, wraps
 from syn.base_utils import get_typename, ReflexiveDict, assign
 from syn.util.log.b import StringEvent
 from syn.tree.b import Node, Tree
@@ -85,6 +85,29 @@ def resolve_progn(lst, **kwargs):
         else:
             out.append(item)
     return out
+
+class logging(object):
+    def __init__(self, event_type, push=True):
+        self.event_type = event_type
+        self.push = push
+
+    def __call__(self, f):
+        @wraps(f)
+        def func(obj, *args, **kwargs):
+            logger = kwargs.get('logger', None)
+            if logger:
+                event = self.event_type(s=get_typename(obj), obj=obj)
+                if self.push:
+                    logger.push(event)
+                else:
+                    logger.add(event)
+            ret = f(obj, *args, **kwargs)
+            if logger:
+                event.ret = ret
+                if self.push:
+                    logger.pop()
+            return ret
+        return func
 
 #-------------------------------------------------------------------------------
 # Utility Classes
@@ -263,11 +286,8 @@ class PythonNode(Node):
     def emit(self, **kwargs):
         raise NotImplementedError
 
+    @logging(Expressify)
     def expressify_statements(self, **kwargs):
-        logger = kwargs.get('logger', None)
-        if logger:
-            event = Expressify(s=get_typename(self), obj=self)
-            logger.push(event)
         if 'gensym' not in kwargs:
             kwargs['gensym'] = GenSym(self.variables(**kwargs))
 
@@ -280,20 +300,14 @@ class PythonNode(Node):
                         res = res.as_value(**kwargs)
                     obj._set_child(k, res)
 
-        if logger:
-            event.ret = obj
-            logger.pop()
         return obj
 
     @classmethod
     def from_ast(cls, ast, **kwargs):
         return cls(**kwargs)
 
+    @logging(ResolveProgN)
     def resolve_progn(self, **kwargs):
-        logger = kwargs.get('logger', None)
-        if logger:
-            event = ResolveProgN(s=get_typename(self), obj=self)
-            logger.push(event)
         if 'gensym' not in kwargs:
             kwargs['gensym'] = GenSym(self.variables(**kwargs))
 
@@ -321,13 +335,7 @@ class PythonNode(Node):
                 ret.extend(progn)
             ret.append(obj)
             ret._init()
-            if logger:
-                event.ret = ret
-                logger.pop()
             return ret
-        if logger:
-            event.ret = obj
-            logger.pop()
         return obj
 
     def to_ast(self, **kwargs):
@@ -408,17 +416,11 @@ class RootNode(PythonNode):
         cs = [c.emit(**kwargs) for c in self]
         return '\n'.join(cs)
 
+    @logging(Expressify)
     def expressify_statements(self, **kwargs):
-        logger = kwargs.get('logger', None)
-        if logger:
-            event = Expressify(s=get_typename(self), obj=self)
-            logger.push(event)
         ret = self.copy()
         ret._children = [item.expressify_statements(**kwargs) for item in ret]
         ret._init()
-        if logger:
-            event.ret = ret
-            logger.pop()
         return ret
 
     @classmethod
@@ -427,17 +429,11 @@ class RootNode(PythonNode):
         ret = cls(*cs)
         return ret
 
+    @logging(ResolveProgN)
     def resolve_progn(self, **kwargs):
-        logger = kwargs.get('logger', None)
-        if logger:
-            event = ResolveProgN(s=get_typename(self), obj=self)
-            logger.push(event)
         ret = self.copy()
         ret._children = resolve_progn(ret, **kwargs)
         ret._init()
-        if logger:
-            event.ret = ret
-            logger.pop()
         return ret
 
     def to_ast(self, **kwargs):
@@ -482,12 +478,9 @@ class Expression(PythonNode):
     _opts = dict(max_len = 0)
     ast = NoAST
 
+    @logging(AsValue, push=False)
     def as_value(self, **kwargs):
-        logger = kwargs.get('logger', None)
-        ret = self.copy()
-        if logger:
-            logger.add(AsValue(s=get_typename(self), obj=self, ret=ret))
-        return ret
+        return self.copy()
 
 
 class Statement(PythonNode):
@@ -507,55 +500,35 @@ class ProgN(Special):
     def expressify_statements(self, **kwargs):
         raise NotImplementedError
 
+    @logging(ResolveProgN)
     def resolve_progn(self, **kwargs):
-        logger = kwargs.get('logger', None)
-        if logger:
-            event = ResolveProgN(s=get_typename(self), obj=self)
-            logger.push(event)
         ret = self.copy()
         ret._children = resolve_progn(ret, **kwargs)
         ret._init()
-        if logger:
-            event.ret = ret
-            logger.pop()
         return ret
 
+    @logging(ProgNValue)
     def value(self, **kwargs):
         if not self._children:
             raise PythonError('No value found')
 
-        logger = kwargs.get('logger', None)
-        if logger:
-            event = ProgNValue(s=get_typename(self), obj=self)
-            logger.add(event)
-
         child = self[-1]
         from .statements import Assign
         if isinstance(child, Assign):
-            if logger:
-                event.ret = child.targets[0]
             return child.targets[0]
 
         if isinstance(child, ProgN):
-            if logger:
-                event.ret = child.value(**kwargs)
             return child.value(**kwargs)
 
         if child._progn_value is not None:
-            if logger:
-                event.ret = child._progn_value
             return child._progn_value
 
         raise PythonError('No value found')
 
+    @logging(ProgNValuify)
     def _valuify(self, **kwargs):
         if not self._children:
             raise PythonError('Cannot valuify empty ProgN')
-
-        logger = kwargs.get('logger', None)
-        if logger:
-            event = ProgNValuify(s=get_typename(self), obj=self)
-            logger.push(event)
 
         ret = self.copy()
         from .variables import Name
@@ -571,9 +544,6 @@ class ProgN(Special):
 
         ret[-1] = Assign([name], child)
         ret._init()
-        if logger:
-            event.ret = ret
-            logger.pop()
         return ret
 
     def valuify(self, **kwargs):
