@@ -34,13 +34,34 @@ class PythonError(Exception):
 #-------------------------------------------------------------------------------
 # Custom Logging Events
 
-class AsValue(StringEvent):
+class TransformEvent(StringEvent):
+    _attrs = dict(obj = Attr(object),
+                  ret = Attr(object, optional=True))
+    _opts = dict(optional_none = True)
+
+    def display(self, depth=None):
+        pre = ' ' * depth
+        ret = pre + self._plaintext() + ' ({})\n'.format(self._id)
+        if self.obj:
+            ret += self.obj.viewable().pretty(indent=depth)
+        if self.ret:
+            ret += '\n'
+            ret += self.ret.viewable().pretty(indent=depth)
+        return ret
+
+class AsValue(TransformEvent):
     pass
 
-class Expressify(StringEvent):
+class Expressify(TransformEvent):
     pass
 
-class ResolveProgN(StringEvent):
+class ResolveProgN(TransformEvent):
+    pass
+
+class ProgNValue(TransformEvent):
+    pass
+
+class ProgNValuify(TransformEvent):
     pass
 
 #-------------------------------------------------------------------------------
@@ -110,7 +131,8 @@ class PythonNode(Node):
                   indent_amount = OAttr(int, 4, 'The number of spaces to indent '
                                         'per indent level'),
                   _children_set = Attr(bool, False, internal=True),
-                  _child_map = Attr(dict, internal=True, init=lambda self: dict()))
+                  _child_map = Attr(dict, internal=True, init=lambda self: dict()),
+                  _progn_value = OAttr(object, internal=True))
     _opts = dict(optional_none = True)
 
     _groups = ReflexiveDict(AST, ACO)
@@ -244,7 +266,8 @@ class PythonNode(Node):
     def expressify_statements(self, **kwargs):
         logger = kwargs.get('logger', None)
         if logger:
-            logger.push(Expressify(s=get_typename(self), obj=self))
+            event = Expressify(s=get_typename(self), obj=self)
+            logger.push(event)
         if 'gensym' not in kwargs:
             kwargs['gensym'] = GenSym(self.variables(**kwargs))
 
@@ -258,6 +281,7 @@ class PythonNode(Node):
                     obj._set_child(k, res)
 
         if logger:
+            event.ret = obj
             logger.pop()
         return obj
 
@@ -268,7 +292,8 @@ class PythonNode(Node):
     def resolve_progn(self, **kwargs):
         logger = kwargs.get('logger', None)
         if logger:
-            logger.push(ResolveProgN(s=get_typename(self), obj=self))
+            event = ResolveProgN(s=get_typename(self), obj=self)
+            logger.push(event)
         if 'gensym' not in kwargs:
             kwargs['gensym'] = GenSym(self.variables(**kwargs))
 
@@ -290,16 +315,19 @@ class PythonNode(Node):
                 res = res.value(**kwargs)
             obj._set_child(k, res)
 
-        if logger:
-            logger.pop()
-
         if progns:
             ret = progns[0]
             for progn in progns[1:]:
                 ret.extend(progn)
             ret.append(obj)
             ret._init()
+            if logger:
+                event.ret = ret
+                logger.pop()
             return ret
+        if logger:
+            event.ret = obj
+            logger.pop()
         return obj
 
     def to_ast(self, **kwargs):
@@ -383,11 +411,13 @@ class RootNode(PythonNode):
     def expressify_statements(self, **kwargs):
         logger = kwargs.get('logger', None)
         if logger:
-            logger.push(Expressify(s=get_typename(self), obj=self))
+            event = Expressify(s=get_typename(self), obj=self)
+            logger.push(event)
         ret = self.copy()
         ret._children = [item.expressify_statements(**kwargs) for item in ret]
         ret._init()
         if logger:
+            event.ret = ret
             logger.pop()
         return ret
 
@@ -400,11 +430,13 @@ class RootNode(PythonNode):
     def resolve_progn(self, **kwargs):
         logger = kwargs.get('logger', None)
         if logger:
-            logger.push(ResolveProgN(s=get_typename(self), obj=self))
+            event = ResolveProgN(s=get_typename(self), obj=self)
+            logger.push(event)
         ret = self.copy()
         ret._children = resolve_progn(ret, **kwargs)
         ret._init()
         if logger:
+            event.ret = ret
             logger.pop()
         return ret
 
@@ -452,9 +484,10 @@ class Expression(PythonNode):
 
     def as_value(self, **kwargs):
         logger = kwargs.get('logger', None)
+        ret = self.copy()
         if logger:
-            logger.add(AsValue(s=get_typename(self), obj=self))
-        return self.copy()
+            logger.add(AsValue(s=get_typename(self), obj=self, ret=ret))
+        return ret
 
 
 class Statement(PythonNode):
@@ -477,11 +510,13 @@ class ProgN(Special):
     def resolve_progn(self, **kwargs):
         logger = kwargs.get('logger', None)
         if logger:
-            logger.push(ResolveProgN(s=get_typename(self), obj=self))
+            event = ResolveProgN(s=get_typename(self), obj=self)
+            logger.push(event)
         ret = self.copy()
         ret._children = resolve_progn(ret, **kwargs)
         ret._init()
         if logger:
+            event.ret = ret
             logger.pop()
         return ret
 
@@ -489,15 +524,26 @@ class ProgN(Special):
         if not self._children:
             raise PythonError('No value found')
 
+        logger = kwargs.get('logger', None)
+        if logger:
+            event = ProgNValue(s=get_typename(self), obj=self)
+            logger.add(event)
+
         child = self[-1]
         from .statements import Assign
         if isinstance(child, Assign):
+            if logger:
+                event.ret = child.targets[0]
             return child.targets[0]
 
         if isinstance(child, ProgN):
+            if logger:
+                event.ret = child.value(**kwargs)
             return child.value(**kwargs)
 
-        if hasattr(child, '_progn_value'):
+        if child._progn_value is not None:
+            if logger:
+                event.ret = child._progn_value
             return child._progn_value
 
         raise PythonError('No value found')
@@ -505,6 +551,11 @@ class ProgN(Special):
     def _valuify(self, **kwargs):
         if not self._children:
             raise PythonError('Cannot valuify empty ProgN')
+
+        logger = kwargs.get('logger', None)
+        if logger:
+            event = ProgNValuify(s=get_typename(self), obj=self)
+            logger.push(event)
 
         ret = self.copy()
         from .variables import Name
@@ -520,6 +571,9 @@ class ProgN(Special):
 
         ret[-1] = Assign([name], child)
         ret._init()
+        if logger:
+            event.ret = ret
+            logger.pop()
         return ret
 
     def valuify(self, **kwargs):

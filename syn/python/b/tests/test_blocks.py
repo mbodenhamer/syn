@@ -106,14 +106,17 @@ else:
     re = ex.resolve_progn(logger=lgr)
     print(re.viewable().pretty())
 
-#     assert Module(if8).expressify_statements(logger=lgr).resolve_progn(logger=lgr).emit() == \
-#         '''x = 2
-# if x:
-#     _gensym_0 = 3
-# else:
-#     _gensym_0 = 4
-# if _gensym_0:
-#     return 5'''
+    for depth, event in lgr.root[1].depth_first(yield_depth=True):
+        print('-' * 80)
+        print(event.display(depth))
+
+    assert re.emit() == '''x = 2
+if x:
+    _gensym_0 = 3
+else:
+    _gensym_0 = 4
+if _gensym_0:
+    return 5'''
 
 #-------------------------------------------------------------------------------
 # For

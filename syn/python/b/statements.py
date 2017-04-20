@@ -16,9 +16,10 @@ class Assign(Statement):
 
     def as_value(self, **kwargs):
         logger = kwargs.get('logger', None)
+        ret = ProgN(self.copy())
         if logger:
-            logger.add(AsValue(s=get_typename(self), obj=self))
-        return ProgN(self.copy())
+            logger.add(AsValue(s=get_typename(self), obj=self, ret=ret))
+        return ret
 
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):

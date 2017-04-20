@@ -64,7 +64,8 @@ class If(Block):
     def as_value(self, **kwargs):
         logger = kwargs.get('logger', None)
         if logger:
-            logger.push(AsValue(s=get_typename(self), obj=self))
+            event = AsValue(s=get_typename(self), obj=self)
+            logger.push(event)
         ret = self.copy()
 
         var = None
@@ -86,6 +87,7 @@ class If(Block):
         ret._init()
         ret._progn_value = var
         if logger:
+            event.ret = ret
             logger.pop()
         return ProgN(ret)
 
@@ -105,7 +107,8 @@ class If(Block):
     def resolve_progn(self, **kwargs):
         logger = kwargs.get('logger', None)
         if logger:
-            logger.push(ResolveProgN(s=get_typename(self), obj=self))
+            event = ResolveProgN(s=get_typename(self), obj=self)
+            logger.push(event)
         temp = self.copy()
         temp.body = resolve_progn(temp.body, **kwargs)
         if temp.orelse:
@@ -115,6 +118,7 @@ class If(Block):
         kwargs['attr_exclude'] = ['body', 'orelse']
         ret = super(If, temp).resolve_progn(**kwargs)
         if logger:
+            event.ret = ret
             logger.pop()
         return ret
 
