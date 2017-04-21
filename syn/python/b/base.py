@@ -87,9 +87,8 @@ def resolve_progn(lst, **kwargs):
     return out
 
 class logging(object):
-    def __init__(self, event_type, push=True):
+    def __init__(self, event_type):
         self.event_type = event_type
-        self.push = push
 
     def __call__(self, f):
         @wraps(f)
@@ -97,15 +96,11 @@ class logging(object):
             logger = kwargs.get('logger', None)
             if logger:
                 event = self.event_type(s=get_typename(obj), obj=obj)
-                if self.push:
-                    logger.push(event)
-                else:
-                    logger.add(event)
+                logger.push(event)
             ret = f(obj, *args, **kwargs)
             if logger:
                 event.ret = ret
-                if self.push:
-                    logger.pop()
+                logger.pop()
             return ret
         return func
 
@@ -514,9 +509,6 @@ class Special(PythonNode):
 
 
 class ProgN(Special):
-    # def as_value(self, **kwargs):
-    #     raise NotImplementedError
-
     def expressify_statements(self, **kwargs):
         raise NotImplementedError
 
@@ -559,9 +551,6 @@ class ProgN(Special):
         name = Name(kwargs['gensym'].generate())
         
         child = ret[-1]
-        if not isinstance(child, Expression):
-            child = child.as_value(**kwargs).resolve_progn(**kwargs)
-
         ret[-1] = Assign([name], child)
         ret._init()
         return ret

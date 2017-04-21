@@ -14,7 +14,7 @@ class Assign(Statement):
                   value = Attr(Expression, groups=(AST, ACO)))
     _opts = dict(args = ('targets', 'value'))
 
-    @logging(AsValue, push=False)
+    @logging(AsValue)
     def as_value(self, **kwargs):
         return ProgN(self.copy())
 
