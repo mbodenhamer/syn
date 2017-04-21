@@ -3,7 +3,7 @@ from functools import partial
 from syn.base_utils import setitem, pyversion
 from syn.type.a import List
 from syn.five import STR, xrange
-from .base import PythonNode, Attr, AST, ACO, Statement, Expression, \
+from .base import PythonNode, Attr, AST, ACO, CC, Statement, Expression, \
     resolve_progn, GenSym, ProgN, AsValue, ResolveProgN, logging
 from .literals import Tuple, List as List_
 from .statements import Assign
@@ -17,7 +17,8 @@ OAttr = partial(Attr, optional=True)
 
 
 class Block(Statement):
-    _attrs = dict(body = Attr(List((Expression, Statement)), groups=(AST, ACO)))
+    _attrs = dict(body = Attr(List((Expression, Statement)), 
+                              groups=(AST, ACO, CC)))
     _opts = dict(max_len = 0)
 
     def emit_block(self, head, body, **kwargs):
@@ -48,8 +49,8 @@ class Block(Statement):
 
 class If(Block):
     _attrs = dict(test = Attr(Expression, groups=(AST, ACO)),
-                  orelse = Attr(List((Expression, Statement)), groups=(AST, ACO),
-                                init=lambda self: list()))
+                  orelse = Attr(List((Expression, Statement)), 
+                                groups=(AST, ACO, CC), init=lambda self: list()))
     _opts = dict(args = ('test', 'body', 'orelse'))
 
     def as_return(self, **kwargs):
@@ -118,7 +119,8 @@ class If(Block):
 class For(Block):
     _attrs = dict(target = Attr((Name, Tuple, List_), groups=(AST, ACO)),
                   iter = Attr(Expression, groups=(AST, ACO)),
-                  orelse = Attr(List((Expression, Statement)), groups=(AST, ACO)))
+                  orelse = Attr(List((Expression, Statement)), 
+                                groups=(AST, ACO, CC)))
     _opts = dict(args = ('target', 'iter', 'body', 'orelse'))
     
     def emit(self, **kwargs):
@@ -142,7 +144,8 @@ class For(Block):
 
 class While(Block):
     _attrs = dict(test = Attr(Expression, groups=(AST, ACO)),
-                  orelse = Attr(List((Expression, Statement)), groups=(AST, ACO)))
+                  orelse = Attr(List((Expression, Statement)), 
+                                groups=(AST, ACO, CC)))
     _opts = dict(args = ('test', 'body', 'orelse'))
 
     def emit(self, **kwargs):
@@ -187,22 +190,22 @@ class Arguments(PythonNode):
     ast = ast.arguments
     _opts = dict(max_len = 0,
                  args = ['args', 'vararg', 'kwarg', 'defaults'])
-    _attrs = dict(args = Attr(List(Name), groups=(AST, ACO)),
+    _attrs = dict(args = Attr(List(Name), groups=(AST, ACO, CC)),
                   vararg = OAttr(STR, group=AST),
                   kwarg = OAttr(STR, group=AST),
-                  defaults = Attr(List(Expression), groups=(AST, ACO),
+                  defaults = Attr(List(Expression), groups=(AST, ACO, CC),
                                   init=lambda self: list()))
 
     if VER >= '3.4':
-        _attrs = dict(args = Attr(List(Arg), groups=(AST, ACO)),
-                      kwonlyargs = Attr(List(Arg), groups=(AST, ACO),
+        _attrs = dict(args = Attr(List(Arg), groups=(AST, ACO, CC)),
+                      kwonlyargs = Attr(List(Arg), groups=(AST, ACO, CC),
                                         init=lambda self: list()),
                       vararg = OAttr(Arg, groups=(AST, ACO)),
                       kwarg = OAttr(Arg, groups=(AST, ACO)),
-                      defaults = Attr(List(Expression), groups=(AST, ACO),
+                      defaults = Attr(List(Expression), groups=(AST, ACO, CC),
                                       init=lambda self: list()),
                       kw_defaults = Attr(List((Expression, type(None))), 
-                                              groups=(AST, ACO),
+                                              groups=(AST, ACO, CC),
                                          init=lambda self: list()))
         _opts['args'] = ['args', 'vararg', 'kwonlyargs', 'kwarg', 
                          'defaults', 'kw_defaults']
@@ -260,7 +263,8 @@ class FunctionDef(Block):
     _opts = dict(args = ['name', 'args', 'body', 'decorator_list'])
     _attrs = dict(name = Attr(STR, group=AST),
                   args = Attr(Arguments, groups=(AST, ACO)),
-                  decorator_list = OAttr(List(Expression), groups=(AST, ACO)))
+                  decorator_list = OAttr(List(Expression), 
+                                         groups=(AST, ACO, CC)))
 
     if VER >= '3':
         _attrs['returns'] = OAttr(Expression, groups=(AST, ACO))

@@ -2,7 +2,7 @@ import ast
 from functools import partial
 from operator import attrgetter
 from syn.base_utils import setitem, pyversion
-from .base import PythonNode, Attr, AST, ACO, Context, Load, Expression
+from .base import PythonNode, Attr, AST, ACO, Context, Load, Expression, CC
 from syn.type.a import List
 from syn.five import STR
 
@@ -182,7 +182,7 @@ class Or(BooleanOperator):
 class BoolOp(Expression):
     _opts = dict(args = ('op', 'values'))
     _attrs = dict(op = Attr(BooleanOperator, groups=(AST, ACO)),
-                  values = Attr(List(Expression), groups=(AST, ACO)))
+                  values = Attr(List(Expression), groups=(AST, ACO, CC)))
     
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):
@@ -244,8 +244,8 @@ class NotIn(Comparator):
 class Compare(Expression):
     _opts = dict(args = ('left', 'ops', 'comparators'))
     _attrs = dict(left = Attr(Expression, groups=(AST, ACO)),
-                  ops = Attr(List(Comparator), groups=(AST, ACO)),
-                  comparators = Attr(List(Expression), groups=(AST, ACO)))
+                  ops = Attr(List(Comparator), groups=(AST, ACO, CC)),
+                  comparators = Attr(List(Expression), groups=(AST, ACO, CC)))
 
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):
@@ -291,8 +291,8 @@ class Keyword(Expression):
 class Call(Expression):
     _opts = dict(args = ['func', 'args', 'keywords'])
     _attrs = dict(func = Attr(Expression, groups=(AST, ACO)),
-                  args = OAttr(List(Expression), groups=(AST, ACO)),
-                  keywords = OAttr(List(Keyword), groups=(AST, ACO)))
+                  args = OAttr(List(Expression), groups=(AST, ACO, CC)),
+                  keywords = OAttr(List(Keyword), groups=(AST, ACO, CC)))
     
     if VER < '3.5':
         _attrs['starargs'] = OAttr(PythonNode, groups=(AST, ACO))

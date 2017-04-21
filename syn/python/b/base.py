@@ -21,6 +21,7 @@ AST_REGISTRY = {}
 
 AST = 'ast_attr'
 ACO = 'ast_convert_attr'
+CC = 'copy_copy'
 
 #-------------------------------------------------------------------------------
 # Custom Exceptions

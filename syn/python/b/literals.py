@@ -1,4 +1,4 @@
-from .base import PythonNode, Attr, Context, Load, AST, ACO, Expression
+from .base import Attr, Context, Load, AST, ACO, Expression, CC
 from syn.base_utils import quote_string, setitem
 from syn.type.a import List
 from syn.five import PY2, STR
@@ -70,7 +70,7 @@ class Sequence(Literal):
     bounds = ('[', ']')
     delim = ', '
     _opts = dict(args = ('elts',))
-    _attrs = dict(elts = Attr(List(Expression), groups=(AST, ACO)))
+    _attrs = dict(elts = Attr(List(Expression), groups=(AST, ACO, CC)))
     
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):
