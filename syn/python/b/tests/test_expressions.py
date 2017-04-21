@@ -77,19 +77,25 @@ def test_binary_operators():
         print('-' * 80)
         print(event.display(depth))
 
+    p2r.validate()
     assert p2r.emit() == 'x = 5\n_gensym_0 = (x + 2)\nreturn _gensym_0'
 
-    # p3 = Module(BinOp(Assign([Name('x')],
-    #                          BinOp(Assign([Name('y')],
-    #                                       Num(5)),
-    #                                Add(),
-    #                                Num(1))),
-    #                   Add(),
-    #                   Num(2)))
-    # assert p3.emit() == '(x = (y = 5 + 1) + 2)'
-    # assert_raises(TypeError, p3.validate)
-    # p3r = p3.expressify_statements().resolve_progn()
-    # assert p3r.emit() == 'y = 5\nx = (y + 1)\n(x + 2)'
+    p3 = Module(Return(BinOp(Assign([Name('x')],
+                                    BinOp(Assign([Name('y')],
+                                                 Num(5)),
+                                          Add(),
+                                          Num(1))),
+                             Add(),
+                             Num(2))))
+    assert p3.emit() == 'return (x = (y = 5 + 1) + 2)'
+    assert_raises(TypeError, p3.validate)
+    p3r = p3.expressify_statements().resolve_progn()
+    p3r.validate()
+    assert p3r.emit() == '''y = 5
+_gensym_0 = (y + 1)
+x = _gensym_0
+_gensym_1 = (x + 2)
+return _gensym_1'''
 
 #-------------------------------------------------------------------------------
 # Boolean Operators
