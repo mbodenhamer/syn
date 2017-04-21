@@ -2,7 +2,7 @@ from functools import partial
 from nose.tools import assert_raises
 from syn.base_utils import compose
 from syn.python.b import Statement, from_source, from_ast, Pass, Num, Name, \
-    Assign, Return, ProgN, Module
+    Assign, Return, ProgN, Module, Alias, Import, Break, Continue
 
 mparse = compose(partial(from_source, mode='exec'), str)
 
@@ -87,6 +87,16 @@ def test_import():
     examine('import foo, bar as baz')
     examine('import foo as bar, baz')
 
+    a = Alias('foo')
+    assert a.emit() == 'foo'
+    
+    a = Alias('foo', 'bar')
+    assert a.emit() == 'foo as bar'
+
+    i = Import([Alias('foo'), Alias('bar', 'baz')])
+    assert i.emit() == 'import foo, bar as baz'
+    assert i.emit(indent_level=1) == '    import foo, bar as baz'
+
 #-------------------------------------------------------------------------------
 # Empty Statements
 
@@ -99,6 +109,13 @@ def test_empty_statements():
     assert p.emit() == 'pass'
     rp = p.as_return()
     assert rp.emit() == 'return'
+
+    b = Break()
+    assert b.emit() == 'break'
+    assert b.emit(indent_level=1) == '    break'
+
+    c = Continue()
+    assert c.emit() == 'continue'
 
 #-------------------------------------------------------------------------------
 

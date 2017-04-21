@@ -30,7 +30,7 @@ class Starred(Expression):
     _attrs = dict(value = Attr(Name, groups=(AST, ACO)),
                   ctx = Attr(Context, Load(), groups=(AST, ACO)))
     _opts = dict(max_len = 0,
-                 args = ('value', 'ctx'))
+                 args = ('value',))
 
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):

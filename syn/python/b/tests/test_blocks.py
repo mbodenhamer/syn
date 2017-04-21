@@ -1,7 +1,8 @@
 from nose.tools import assert_raises
 from .test_statements import examine
 from syn.util.log.b import Logger
-from syn.python.b import Block, If, Num, Assign, Name, Return, Module, ProgN
+from syn.python.b import Block, If, Num, Assign, Name, Return, Module, ProgN, \
+    For, While, Call
 from syn.base_utils import pyversion, collection_equivalent
 
 VER = pyversion()
@@ -129,12 +130,54 @@ def test_for():
     examine('for x in [1, 2]:\n    a = x\n    b = y')
     examine('for x in (1, 2):\n    a = x\nelse:\n    b = x')
 
+    f = For(Name('x'),
+            Name('lst'),
+            [Call(Name('x'))])
+    assert f.emit() == \
+'''for x in lst:
+    x()'''
+
+    f = For(Name('x'),
+            Name('lst'),
+            [Call(Name('x'))],
+            [Call(Name('foo'), [Name('lst')])])
+    assert f.emit() == \
+'''for x in lst:
+    x()
+else:
+    foo(lst)'''
+    assert f.emit(indent_level=1) == \
+'''    for x in lst:
+        x()
+    else:
+        foo(lst)'''
+
 #-------------------------------------------------------------------------------
 # While
 
 def test_while():
     examine('while True:\n    a = x')
     examine('while False:\n    a = x\nelse:\n    b = x')
+
+    w = While(Num(1),
+              [Call(Name('x'))])
+    assert w.emit() == \
+'''while 1:
+    x()'''
+
+    w = While(Num(1),
+              [Call(Name('x'))],
+              [Call(Name('y'))])
+    assert w.emit() == \
+'''while 1:
+    x()
+else:
+    y()'''
+    assert w.emit(indent_level=1) == \
+'''    while 1:
+        x()
+    else:
+        y()'''
 
 #-------------------------------------------------------------------------------
 # FunctionDef

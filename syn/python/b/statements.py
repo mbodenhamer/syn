@@ -68,6 +68,7 @@ class Alias(Statement):
 
 class Import(Statement):
     _attrs = dict(names = Attr(List(Alias), groups=(AST, ACO, CC)))
+    _opts = dict(args = ('names',))
 
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):

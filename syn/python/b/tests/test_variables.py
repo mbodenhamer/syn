@@ -22,6 +22,10 @@ def test_name():
 def test_starred():
     if VER >= Starred.minver:
         examine_('*b = c')
+        
+        s = Starred(Name('foo'))
+        assert s.emit() == '*foo'
+        assert s.emit(indent_level=1) == '    *foo'
 
 #-------------------------------------------------------------------------------
 

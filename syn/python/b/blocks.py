@@ -120,7 +120,7 @@ class For(Block):
     _attrs = dict(target = Attr((Name, Tuple, List_), groups=(AST, ACO)),
                   iter = Attr(Expression, groups=(AST, ACO)),
                   orelse = Attr(List((Expression, Statement)), 
-                                groups=(AST, ACO, CC)))
+                                groups=(AST, ACO, CC), init=lambda self: list()))
     _opts = dict(args = ('target', 'iter', 'body', 'orelse'))
     
     def emit(self, **kwargs):
@@ -145,7 +145,7 @@ class For(Block):
 class While(Block):
     _attrs = dict(test = Attr(Expression, groups=(AST, ACO)),
                   orelse = Attr(List((Expression, Statement)), 
-                                groups=(AST, ACO, CC)))
+                                groups=(AST, ACO, CC), init=lambda self: list()))
     _opts = dict(args = ('test', 'body', 'orelse'))
 
     def emit(self, **kwargs):

@@ -269,7 +269,8 @@ class Keyword(Expression):
     ast = ast.keyword
     _attrs = dict(arg = Attr(STR, group=AST),
                   value = Attr(Expression, groups=(AST, ACO)))
-
+    _opts = dict(args = ('arg', 'value'))
+    
     if VER >= '3.5':
         _attrs['arg'] = Attr((STR, type(None)), group=AST)
 
@@ -335,6 +336,7 @@ class IfExp(Expression):
     _attrs = dict(test = Attr(Expression, groups=(AST, ACO)),
                   body = Attr(Expression, groups=(AST, ACO)),
                   orelse = Attr(Expression, groups=(AST, ACO)))
+    _opts = dict(args = ('test', 'body', 'orelse'))
 
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):
@@ -342,7 +344,8 @@ class IfExp(Expression):
             body = self.body.emit(**kwargs)
             orelse = self.orelse.emit(**kwargs)
 
-        ret = '({} if {} else {})'.format(body, test, orelse)
+        ret = self._indent(**kwargs)
+        ret += '({} if {} else {})'.format(body, test, orelse)
         return ret
 
 
@@ -354,6 +357,7 @@ class Attribute(Expression):
     _attrs = dict(value = Attr(Expression, groups=(AST, ACO)),
                   attr = Attr(STR, group=AST),
                   ctx = Attr(Context, Load(), groups=(AST, ACO)))
+    _opts = dict(args = ('value', 'attr'))
 
     def emit(self, **kwargs):
         with setitem(kwargs, 'indent_level', 0):
