@@ -1,18 +1,17 @@
-syn.util package
-================
+syn.util.log package
+====================
 
 Subpackages
 -----------
 
 .. toctree::
 
-    syn.util.constraint
-    syn.util.log
+    syn.util.log.b
 
 Module contents
 ---------------
 
-.. automodule:: syn.util
+.. automodule:: syn.util.log
     :members:
     :undoc-members:
     :show-inheritance:

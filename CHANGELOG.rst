@@ -1,11 +1,12 @@
 Changelog
 ---------
 
-0.0.15 (2017-04-21)
+0.0.15 (2017-04-28)
 ~~~~~~~~~~~~~~~~~~~
 - Added syn.util.constraint
-- Added some classes to syn.python.b
-- Added syn.tagmathon (some initial classes to .b)
+- Added syn.util.log
+- Added syn.python.b
+- Added syn.tagmathon.b
 
 0.0.14 (2017-03-05)
 ~~~~~~~~~~~~~~~~~~~
