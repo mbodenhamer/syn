@@ -215,9 +215,14 @@ class PythonNode(Node):
 
     def _child_type_query(self, k, value):
         typ = self._child_attr_type(k)
-        if isinstance(typ, Sequence):
-            return typ.item_type.query(value)
-        return typ.query(value)
+        try:
+            if isinstance(typ, Sequence):
+                typ.item_type.validate(value)
+            else:
+                typ.validate(value)
+            return True
+        except TypeError:
+            return False
 
     def _is_child_attr_expression_type(self, k):
         return is_expression_type(self._child_attr_type(k))
@@ -281,10 +286,13 @@ class PythonNode(Node):
 
     @logging(AsValue)
     def as_value(self, **kwargs):
-        '''Must return either an Expression or a ProgN.'''
         ret = self.copy()
-        for k, val in enumerate(ret._children):
-            ret._set_child(k, val.as_value(**kwargs))
+        if ret._children_set:
+            for k, val in enumerate(ret._children):
+                ret._set_child(k, val.as_value(**kwargs))
+        else:
+            ret._children = [c.as_value(**kwargs) for c in ret]
+            ret._init()
         return ret
 
     def emit(self, **kwargs):
@@ -506,8 +514,8 @@ class Special(PythonNode):
 
 
 class ProgN(Special):
-    def as_value(self, **kwargs):
-        raise NotImplementedError
+    # def as_value(self, **kwargs):
+    #     raise NotImplementedError
 
     def expressify_statements(self, **kwargs):
         raise NotImplementedError

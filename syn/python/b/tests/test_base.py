@@ -72,7 +72,7 @@ def test_progn():
     assert_raises(PythonError, p.validate)
     assert_raises(PythonError, p.value)
     assert_raises(PythonError, p.valuify)
-    assert_raises(NotImplementedError, p.as_value)
+    # assert_raises(NotImplementedError, p.as_value)
     assert_raises(NotImplementedError, p.expressify_statements)
 
     p = ProgN(Assign([Name('x')], Num(2)))

@@ -77,7 +77,7 @@ def test_binary_operators():
         print('-' * 80)
         print(event.display(depth))
 
-    #assert p2r.emit() == 'x = 5\nreturn (x + 2)'
+    assert p2r.emit() == 'x = 5\n_gensym_0 = (x + 2)\nreturn _gensym_0'
 
     # p3 = Module(BinOp(Assign([Name('x')],
     #                          BinOp(Assign([Name('y')],
