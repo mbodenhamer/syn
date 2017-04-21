@@ -144,6 +144,18 @@ def test_call():
         examine('foo(1, 2, *c, a=3, b=4, **d)')
 
     assert Call(Name('list')).emit() == 'list()'
+    
+    c1 = Call(Name('c1'),
+              [Num(2),
+               Assign([Name('x')],
+                      Num(3)),
+               Assign([Name('y')],
+                      Num(4))])
+    assert c1.emit() == 'c1(2, x = 3, y = 4)'
+    assert_raises(TypeError, c1.validate)
+    c1r = Module(c1).expressify_statements().resolve_progn()
+    c1r.emit()
+    assert c1r.emit() == 'x = 3\ny = 4\nc1(2, x, y)'
 
 #-------------------------------------------------------------------------------
 # IfExp
