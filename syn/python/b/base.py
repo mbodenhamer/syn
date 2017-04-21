@@ -279,9 +279,13 @@ class PythonNode(Node):
         from .statements import Return
         return Return(self.copy())
 
+    @logging(AsValue)
     def as_value(self, **kwargs):
         '''Must return either an Expression or a ProgN.'''
-        raise NotImplementedError
+        ret = self.copy()
+        for k, val in enumerate(ret._children):
+            ret._set_child(k, val.as_value(**kwargs))
+        return ret
 
     def emit(self, **kwargs):
         raise NotImplementedError
@@ -487,10 +491,6 @@ class Expression(PythonNode):
     _opts = dict(max_len = 0)
     ast = NoAST
 
-    @logging(AsValue, push=False)
-    def as_value(self, **kwargs):
-        return self.copy()
-
 
 class Statement(PythonNode):
     _opts = dict(max_len = 0)
@@ -506,6 +506,9 @@ class Special(PythonNode):
 
 
 class ProgN(Special):
+    def as_value(self, **kwargs):
+        raise NotImplementedError
+
     def expressify_statements(self, **kwargs):
         raise NotImplementedError
 

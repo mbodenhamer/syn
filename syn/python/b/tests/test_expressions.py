@@ -3,6 +3,7 @@ from nose.tools import assert_raises
 from syn.base_utils import compose, pyversion
 from syn.python.b import Expr, from_source, MatMult, Call, Name, BinOp, \
     Add, Assign, Module, Num, Return
+from syn.util.log.b import Logger
 from .test_literals import examine
 
 VER = pyversion()
@@ -60,17 +61,22 @@ def test_binary_operators():
     assert p1.emit() == '(x = 5 + 2)'
     assert_raises(TypeError, p1.validate) # Indeed, this is not valid python
     p1r = p1.expressify_statements().resolve_progn()
+    p1r.validate()
     assert p1r.emit() == 'x = 5\n(x + 2)'
 
+    lgr = Logger()
     p2 = Module(Return(BinOp(Assign([Name('x')], Num(5)),
                              Add(),
                              Num(2))))
     assert p2.emit() == 'return (x = 5 + 2)'
-    # import ipdb; ipdb.set_trace()
-    # p2.validate()
     assert_raises(TypeError, p2.validate)
-    p2ex = p2.expressify_statements()
-    p2r = p2ex.resolve_progn()
+    p2ex = p2.expressify_statements(logger=lgr)
+    p2r = p2ex.resolve_progn(logger=lgr)
+
+    for depth, event in lgr.root[1].depth_first(yield_depth=True):
+        print('-' * 80)
+        print(event.display(depth))
+
     #assert p2r.emit() == 'x = 5\nreturn (x + 2)'
 
     # p3 = Module(BinOp(Assign([Name('x')],
