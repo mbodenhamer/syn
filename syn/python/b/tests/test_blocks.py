@@ -2,7 +2,7 @@ from nose.tools import assert_raises
 from .test_statements import examine
 from syn.util.log.b import Logger
 from syn.python.b import Block, If, Num, Assign, Name, Return, Module, ProgN, \
-    For, While, Call
+    For, While, Call, Arg, Arguments, FunctionDef, Str
 from syn.base_utils import pyversion, collection_equivalent
 
 VER = pyversion()
@@ -197,6 +197,13 @@ def test_functiondef():
 
     if VER >= '3':
         examine("def foo(a: 'ann', b=1, c=2, *d, e, f=3, **g) -> 'r':\n    pass")
+
+    if VER >= '3':
+        a = Arg('x')
+        assert a.emit() == 'x'
+
+        a = Arg('x', Str('foo'))
+        assert a.emit() == "x: 'foo'"
 
 #-------------------------------------------------------------------------------
 
